@@ -16,9 +16,6 @@ import numpy as np
 from PIL import Image
 from progressbar import ProgressBar
 import pickle
-import suite2p
-from suite2p import run_s2p
-import scipy.io
 
 
 #mat = scipy.io.loadmat('file.mat')
@@ -29,7 +26,7 @@ class Thor_Exp:
     def __init__(self,dir_name,p_dir_name_main,tif_data_folder):
 #        print(tif_data_folder)
         self.d_dir = dir_name # data directory name
-        self.pd_dir_main = p_dir_name_main # 
+        self.pd_dir_main = p_dir_name_main #
         self.recording_info = self.__get_recording_info()
         self.pd_dir = p_dir_name_main + self.recording_info
         if not os.path.exists(self.pd_dir):
@@ -44,7 +41,7 @@ class Thor_Exp:
         self.__save_processing_status('abf',0)
         self.abf = abf_processor.abf_data(self.__get_abf_file_name(),self.pd_dir,self.stim_params)
         self.__save_processing_status('abf',1)
-        
+
         self.__save_processing_status('tif',0)
         if not tif_data_folder.strip():
             self.tif_dir_name = ''
@@ -63,49 +60,49 @@ class Thor_Exp:
             self.__raw_to_tif()
             self.__save_processing_status('tif',1)
         # self.__run_suite2p()
-   
-    
-    def __run_suite2p(self):
-        ops = run_s2p.default_ops()
-#        print(ops)
-        ops.update({'nplanes':self.exp_params.get('nplanes')})
-        ops.update({'save_path0':self.pd_dir})
-        ops.update({'fs':float(self.exp_params.get('frameRate'))})
-        ops.update({'save_mat':True})
-        mat = scipy.io.loadmat(self.pd_dir + '/bidishift.mat')
-        bidishift = mat['bidishift'];
-        ops.update({'do_bidiphase':True})
-        ops.update({'bidiphase':bidishift[0][0]})
-        ops.update({'roidetect':True})
-        ops.update({'do_registration':1})
-        print(ops)
-        self.__save_processing_status('s2p',0)
-#        print(self.tif_dir_name)
-        db = {
-                'h5py': [], # a single h5 file path
-                'h5py_key': 'data',
-                'data_path': [self.tif_dir_name], # a list of folders with tiffs 
-                                             # (or folder of folders with tiffs if look_one_level_down is True, or subfolders is not empty)
-                }
-        opsEnd = run_s2p.run_s2p(ops = ops,db = db)
-        self.__save_processing_status('s2p',1)
-        
-    
+
+
+#     def __run_suite2p(self):
+#         ops = run_s2p.default_ops()
+# #        print(ops)
+#         ops.update({'nplanes':self.exp_params.get('nplanes')})
+#         ops.update({'save_path0':self.pd_dir})
+#         ops.update({'fs':float(self.exp_params.get('frameRate'))})
+#         ops.update({'save_mat':True})
+#         mat = scipy.io.loadmat(self.pd_dir + '/bidishift.mat')
+#         bidishift = mat['bidishift'];
+#         ops.update({'do_bidiphase':True})
+#         ops.update({'bidiphase':bidishift[0][0]})
+#         ops.update({'roidetect':True})
+#         ops.update({'do_registration':1})
+#         print(ops)
+#         self.__save_processing_status('s2p',0)
+# #        print(self.tif_dir_name)
+#         db = {
+#                 'h5py': [], # a single h5 file path
+#                 'h5py_key': 'data',
+#                 'data_path': [self.tif_dir_name], # a list of folders with tiffs
+#                                              # (or folder of folders with tiffs if look_one_level_down is True, or subfolders is not empty)
+#                 }
+#         opsEnd = run_s2p.run_s2p(ops = ops,db = db)
+#         self.__save_processing_status('s2p',1)
+
+
     def __save_processing_status (self,param_name,value):
         self.processing_status.update({param_name:value})
         with open(self.processing_status_filename, 'wb+') as f:
             pickle.dump(self.processing_status,f)
-    
+
     def __load_processing_status (self):
         if path.exists(self.processing_status_filename):
             with open(self.processing_status_filename, 'rb') as f:
                 return pickle.load(f)
         else:
             return {}
-            
+
 
     def __raw_to_tif(self):
-        
+
         databin_filename  = self.pd_dir + '/suite2p/plane0/data.bin'
         print(self.tif_dir_name)
         if not os.path.exists(self.tif_dir_name): # if tif directory doesn't exist create it
@@ -117,11 +114,11 @@ class Thor_Exp:
             self.exp_params.update({'nplanes':1})
             self.exp_params['timepoints'] = len(self.abf.channel_data.get('frames_f'))-1
             self.exp_params['frames'] = len(self.abf.channel_data.get('frames_f'))-1
-            
+
             if path.exists(databin_filename):
                 print('data.bin present skipping converting to tifs')
                 return
-        
+
             file_list = os.listdir(r"{}".format(self.tif_dir_name))
             if len(file_list) == self.exp_params.get('timepoints'):
                 print('\n Raw to tif conversion already complete \n')
@@ -155,7 +152,7 @@ class Thor_Exp:
     #            time.sleep(0.300)
             f.close()
             print('\n Conversion of raw to tif complete \n')
-    
+
     def __get_experiment_parameters(self):
         print('Fetching the following parameters from Experiment.xml file \n')
         params = [['LSM','frameRate','pixelX','pixelY','widthUM','heightUM'],
@@ -176,8 +173,8 @@ class Thor_Exp:
                 param_listd.update({param_name:fr})
         print('\n Done fetching parameters \n')
         return param_listd
-    
-    
+
+
     def __get_stim_parameters(self):
         filename = self.__get_stim_file_name()
         tree = ET.parse(filename)
@@ -188,14 +185,14 @@ class Thor_Exp:
                 value = child1.get('name')
                 param_list.append(value)
         return param_list
-    
-    
+
+
     def __get_parameter(self,root,child_name,param_name):
         for child in root.findall(child_name):
             value = child.get(param_name)
         return value
-        
-        
+
+
     def __get_xml_root(self):
         dir_name = self.d_dir
         xml_filename = 'Experiment.xml'
@@ -204,7 +201,7 @@ class Thor_Exp:
         tree = ET.parse(file_with_path)
         root = tree.getroot()
         return root
-    
+
     def __get_raw_file_name(self):
         dir_name = self.d_dir
     #    'Image_0001_0001.raw'
@@ -212,23 +209,23 @@ class Thor_Exp:
         matching = [s for s in dlist if 'raw' in s]
         matching = [s for s in matching if 'Image' in s]
         return dir_name + '/' + matching[0]
-    
-    
+
+
     def __get_abf_file_name(self):
         dir_name = self.d_dir
     #    'Image_0001_0001.raw'
         dlist = os.listdir(dir_name)
         matching = [s for s in dlist if 'abf' in s]
         return dir_name + '/' + matching[0]
-    
-    
+
+
     def __get_recording_info (self):
         dir_name = self.d_dir
         str_pos= dir_name.find('Data')
         slash_pos = dir_name[str_pos:].find("/")
         return dir_name[str_pos+slash_pos:]
-    
-    
+
+
     def __get_stim_file_name(self):
         dir_name = self.d_dir
         dlist = os.listdir(dir_name)
