@@ -104,6 +104,7 @@ class Thor_Exp:
     def __raw_to_tif(self):
 
         databin_filename  = self.pd_dir + '/suite2p/plane0/data.bin'
+        print(databin_filename)
         print(self.tif_dir_name)
         if not os.path.exists(self.tif_dir_name): # if tif directory doesn't exist create it
             os.makedirs(self.tif_dir_name)
@@ -139,6 +140,9 @@ class Thor_Exp:
                     continue
                 f.seek(ii*rows*cols*2)
                 dbytes = np.fromfile(f,'uint16',rows*cols)
+                if dbytes.shape[0] < (rows*cols):
+                    print(dbytes.shape[0])
+                    continue
                 frame = np.reshape(dbytes,(rows,cols))
                 tif_filename = '/time%d_plane0_channel0.tif'%ii
                 tif_filename = self.tif_dir_name + tif_filename

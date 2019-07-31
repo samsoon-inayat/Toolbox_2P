@@ -8,6 +8,8 @@ from suite2p import run_s2p
 import scipy.io
 import shutil
 import os
+import numpy as np
+import subprocess
 
 
 # tif data folder where tif files will be extracted from raw data
@@ -30,6 +32,8 @@ for x in dir_names:
     print(x)
     dir_name = x
     te = Thor_Experiment.Thor_Exp(dir_name,processed_data_folder,tif_data_folder)
+    if te.exp_params.get('zFastEnable') == '1':
+        continue
     ops = run_s2p.default_ops()
 #        print(ops)
     ops.update({'nplanes':te.exp_params.get('nplanes')})
@@ -49,7 +53,10 @@ for x in dir_names:
             'data_path': [te.tif_dir_name], # a list of folders with tiffs
                                          # (or folder of folders with tiffs if look_one_level_down is True, or subfolders is not empty)
             }
-    opsEnd = run_s2p.run_s2p(ops = ops,db = db)
+    np.save('ops.npy', ops)
+    np.save('db.npy', db)
+    subprocess.call(['python','-u','-W','ignore','-m','suite2p','--ops', 'ops.npy','--db', 'db.npy'],shell=True)
+    # opsEnd = run_s2p.run_s2p(ops = ops,db = db
     if os.path.exists(te.tif_dir_name):
         shutil.rmtree(te.tif_dir_name)
     else:
