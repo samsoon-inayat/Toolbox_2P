@@ -10,13 +10,24 @@ class abf_data:
         self.filename = abf_filename
         self.pd_filename = pd_dir + '/abf_data.pyp'
         if path.exists(self.pd_filename):
-            print('Loading abf data')
+            print('Loading abf data '+self.pd_filename)
             self.channel_data = self.__load_abf_data()
+            abf = pyabf.ABF(abf_filename)
+            self.stim_params = stim_params
+            self.number_of_samples = len(abf.data[0])
+            self.si = 1e6/abf.dataRate
+            self.dataRate = abf.dataRate
+#            self.abf = abf
         else:
             print('Loading abf file')
             abf = pyabf.ABF(abf_filename)
             print('Processing abf file')
             self.channel_data = self.__get_and_save_abf_data(abf,stim_params)
+            self.stim_params = stim_params
+            self.number_of_samples = len(abf.data[0])
+            self.si = 1e6/abf.dataRate
+            self.dataRate = abf.dataRate
+           
         print('Successfuly loaded data \n')
         
     def load_pyabf(self): # if abf file object through pyabf needs to be generated later for any reason
@@ -68,6 +79,10 @@ class abf_data:
             abf.adcNames[ii]= stim_params[ii]
             f_edges = self.__find_falling_edge(abf.data[ii],-0.5,2)
             r_edges = self.__find_rising_edge(abf.data[ii],0.5,2)
+            
+            if 'air_puff' in stim_params[ii] or 'stim' in stim_params[ii] or 'photo_sensor' in stim_params[ii]:
+                cmdTxt = "o.update({'%s_raw':abf.data[ii]})"%stim_params[ii]
+                eval(cmdTxt)
             
             if 'ch_' in stim_params[ii]:
                 cmdTxt = "ecd.update({'%s':abf.data[ii]})"%stim_params[ii]
