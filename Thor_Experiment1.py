@@ -16,7 +16,7 @@ import numpy as np
 from PIL import Image
 from progressbar import ProgressBar
 import pickle
-import time
+
 
 
 #mat = scipy.io.loadmat('file.mat')
@@ -140,55 +140,52 @@ class Thor_Exp:
                 print('data.bin present skipping converting to tifs')
                 return
             file_list = os.listdir(r"{}".format(self.tif_dir_name))
-            if len(file_list) == num_planes * self.exp_params.get('timepoints'):
+            if len(file_list) >= num_planes * self.exp_params.get('timepoints'):
                 print('\n Raw to tif conversion already complete \n')
                 return
-            frameNumbers = list(range(num_planes))
+            rows = int(self.exp_params.get('pixelY'))
+            cols = int(self.exp_params.get('pixelX'))
             f = open(self.raw_filename, 'rb')
-#            pbar = ProgressBar()
-            for pn in range(num_planes):
-                frameNumbers[pn] = range(pn,actual_number_of_frames,(num_planes+1))
-                print(len(frameNumbers[pn]))
-                time.sleep(3)
-#                start_file_number = len(file_list)-10
-#                print(start_file_number)
-#                if start_file_number < 0:
-                start_file_number = 0
-                nFrames = frameNumbers[pn]
-                print(nFrames)
-                rows = int(self.exp_params.get('pixelY'))
-                cols = int(self.exp_params.get('pixelX'))
-                print('\n Starting conversion raw to tif \n')
-                f.seek(0,0)
-                frame_number = 0;
-                for ii in nFrames:
-#                    if ii < start_file_number:
-#                        continue
-                    f.seek(ii*rows*cols*2,0)
+            pbar = ProgressBar()
+            plane0 = 1
+            plane1 = 0
+            flyback = 0
+            tval = 0
+            for ii in pbar(range(actual_number_of_frames)):
+                f.seek(ii*rows*cols*2)
+                if plane0 == 1 or plane1 == 1:
                     dbytes = np.fromfile(f,'uint16',rows*cols)
-                    if dbytes.shape[0] < (rows*cols):
-                        print(dbytes.shape[0])
-                        print(ii)
-                        print('May be read error')
-#                        time.sleep(0.3)
-                        continue
-                    frame = np.reshape(dbytes,(rows,cols))
-                    tif_filename = '/time{}_plane{}_channel1.tif'.format(frame_number,pn)
-#                    print(tif_filename)
-                    tif_filename = self.tif_dir_name + tif_filename
-                    
-                    im = Image.fromarray(frame)
-                    im.save(tif_filename)
-                    frame_number = frame_number + 1
-        #            print(frame.shape)
-        #            plt.figure(10)
-        #            plt.imshow(frame)
-        #            plt.title(ii)
-        #            plt.show()
-        #            time.sleep(0.300)
-#                time.sleep(3)
-                print('\n Conversion of raw to tif complete \n')
-            f.close()
+                else:
+                    plane0 = 1
+                    tval = tval + 1
+                    continue
+                if dbytes.shape[0] < (rows*cols):
+                    print(dbytes.shape[0])
+                    continue
+                frame = np.reshape(dbytes,(rows,cols))
+                if plane0 == 1:
+                    tif_filename = '/time%d_plane0_channel0.tif'%tval
+                if plane1 == 1:
+                    tif_filename = '/time%d_plane1_channel0.tif'%tval
+                tif_filename = self.tif_dir_name + tif_filename
+                im = Image.fromarray(frame)
+                im.save(tif_filename)
+#                print(frame.shape)
+#                plt.figure(10)
+#                plt.imshow(frame)
+#                plt.title(ii)
+#                plt.show()
+#                time.sleep(0.300)
+                if plane0 == 1:
+                    plane0 = 0
+                    plane1 = 1
+                    continue
+                if plane1 == 1:
+                    plane1 = 0
+                    flyback = 1
+                    continue
+            f.close
+           
             
 #            raise Exception('You need to write code for this')
         else:

@@ -17,23 +17,35 @@ tif_data_folder = 'E:/Users/samsoon.inayat/S_Drive/Tif_Data'
 # processed_data_folder where the results of suite 2p will be stored
 #processed_data_folder = 'E:/Users/samsoon.inayat/OneDrive - University of Lethbridge/pySuite2P/processed_data'
 processed_data_folder = 'E:/Users/samsoon.inayat/S_Drive/Processed_Data'
+nas_processed_data_folder = 'Y:/homes/samsoon.inayat/S_Drive/pySuite2p_Processed_Data'
 #E:\Users\samsoon.inayat\S_Drive\Processed_Data
 # Directory name where raw data is
-dir_name = '//mohajerani-nas.uleth.ca/storage/homes/samsoon.inayat/Data/183628/2019-07-01/1_003'
+#dir_name = '//mohajerani-nas.uleth.ca/storage/homes/samsoon.inayat/Data/183628/2019-07-01/1_003'
 
 filename = 'recording_list.txt'
 f = open(filename,'r')
 dir_names = []
 for drs in f:
-    dir_names.append(drs[:-1])
+    temp = drs[:-1]
+    tempp = temp.replace(os.sep,os.altsep)
+    dir_names.append(tempp)
 f.close()
+
 
 for x in dir_names:
     print(x)
     dir_name = x
-    te = Thor_Experiment.Thor_Exp(dir_name,processed_data_folder,tif_data_folder)
-    if te.exp_params.get('zFastEnable') == '1':
+    te = Thor_Experiment.Thor_Exp(dir_name,processed_data_folder,tif_data_folder,nas_processed_data_folder)
+    data_processing_status = 0
+    for root, dirs, files in os.walk(te.nas_pd_dir):
+        for name in files:
+            if name.endswith(("Fall.mat")):
+                data_processing_status = 1
+                break
+    if data_processing_status == 1:
         continue
+#    if te.exp_params.get('zFastEnable') == '1':
+#        continue
     ops = run_s2p.default_ops()
 #        print(ops)
     ops.update({'nplanes':te.exp_params.get('nplanes')})
@@ -42,6 +54,8 @@ for x in dir_names:
     ops.update({'save_mat':True})
     mat = scipy.io.loadmat(te.pd_dir + '/bidishift.mat')
     bidishift = mat['bidishift'];
+#    print(bidishift[0][0])
+#    break
     ops.update({'do_bidiphase':True})
     ops.update({'bidiphase':bidishift[0][0]})
     ops.update({'roidetect':True})
@@ -56,12 +70,14 @@ for x in dir_names:
     np.save('ops.npy', ops)
     np.save('db.npy', db)
     subprocess.call(['python','-u','-W','ignore','-m','suite2p','--ops', 'ops.npy','--db', 'db.npy'],shell=True)
+#    break
     # opsEnd = run_s2p.run_s2p(ops = ops,db = db
     if os.path.exists(te.tif_dir_name):
         shutil.rmtree(te.tif_dir_name)
     else:
-        print('tif folder already remove')
+        print('tif folder already removed')
     del(te)
+    
 
 
 

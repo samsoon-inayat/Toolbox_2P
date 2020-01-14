@@ -17,7 +17,7 @@ class abf_data:
             self.number_of_samples = len(abf.data[0])
             self.si = 1e6/abf.dataRate
             self.dataRate = abf.dataRate
-#            self.abf = abf
+            self.abf = abf
         else:
             print('Loading abf file')
             abf = pyabf.ABF(abf_filename)
@@ -174,5 +174,6 @@ class abf_data:
                 valP = valC
                 dist.append(encoder_count)
                 continue
+            dist.append(encoder_count)
 #            print(ii)
         return np.array(dist)
