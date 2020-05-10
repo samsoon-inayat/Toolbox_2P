@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<metaD>
+<stimuli>
+
+</stimuli>
+
+<channels>
+	<channel name = "frames" value = "1"/>
+	<channel name = "ch_a" value = "2"/>
+	<channel name = "ch_b" value = "3"/>
+	<channel name = "photo_sensor" value = "4"/>
+	<channel name = "air_puff" value = "5"/>
+</channels>
+
+</metaD>
