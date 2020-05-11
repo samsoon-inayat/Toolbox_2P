@@ -25,7 +25,10 @@ for ii = 1:length(f.mainDataFolderList)
             files_listD = dir(sprintf('%s\\**\\Image_0001_0001.raw',thisFolderD));
             filesD = dir(thisFolderD);
             if isempty(files_listD)
-                continue;
+                files_listD = dir(sprintf('%s\\**\\Image_001_001.raw',thisFolderD));
+                if isempty(files_listD)
+                    continue;
+                end
             end
             animal(ind).ID = thisName;
             animalList{ind} = thisName;
@@ -45,7 +48,10 @@ for ii = 1:length(f.mainDataFolderList)
                     thisFolderR = fullfile(thisFolderD,thisNameD);
                     files_list = dir(sprintf('%s\\**\\Image_0001_0001.raw',thisFolderR));
                     if isempty(files_list)
-                        continue;
+                        files_list = dir(sprintf('%s\\**\\Image_001_001.raw',thisFolderD));
+                        if isempty(files_list)
+                            continue;
+                        end
                     end
                     animal(ind).date(indD).folder = thisFolderR;
                     animal(ind).dateList{indD} = thisNameD;

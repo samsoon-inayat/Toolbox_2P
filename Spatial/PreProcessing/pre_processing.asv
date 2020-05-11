@@ -29,7 +29,7 @@ list = {}; pList = {};
 T = [];
 for ii = 1:length(animals)
     sel_id = animals(ii);
-    TT = getTable(raw,sel_id,'recording','protocol 10'); 
+    TT = getTable(raw,sel_id,'recording','protocol_15_1'); 
     T = [T;TT];
 end
 indR = 1; nd = [];recordingFolder = [];
@@ -40,7 +40,7 @@ for ii = 1:size(T,1)
     end
     animal_id = (cell2mat(T{ii,1}));
     exp_date = datestr(cell2mat(T{ii,2}));
-    ind = D.animalListNum == str2num(animal_id);
+    ind = D.animalListNum == animal_id;
     if sum(ind) > 1
         tempD = D.animal(ind);
         for dd = 1:length(tempD)
@@ -123,7 +123,7 @@ for ii = 1:length(list)
 end
 fclose(fid);
 
-fileName = 'T_10_Thy1_N.mat';
+fileName = 'T_15_1_Thy1.mat';
 save(fileName,'T');
 
 

@@ -1,4 +1,3 @@
-
 function ids = getIDs(raw,colA,selRows)
     Alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     col = strfind(Alphabets,colA);
@@ -7,7 +6,7 @@ function ids = getIDs(raw,colA,selRows)
     end
     for ii = 1:length(selRows)
         try
-            ids(ii) = (raw{selRows(ii),col});
+            ids(ii) = str2num((raw{selRows(ii),col}));
         catch
             ids(ii) = NaN;
         end
