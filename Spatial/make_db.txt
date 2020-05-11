@@ -1,0 +1,5 @@
+db(i).nplanes       	= 1; 
+db(i).BiDiPhase     	= 0;
+db(i).diameter      	= 30;
+db(i).downsamplespace 	= 1;
+db(i).downsampletime 	= 1;
