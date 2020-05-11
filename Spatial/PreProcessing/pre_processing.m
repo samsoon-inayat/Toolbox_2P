@@ -1,6 +1,6 @@
 % function T = pre_processing
 add_to_path
-
+config = get_config;
 % clear all
 clc
 fileName = 'Data_Info4.xlsx';
@@ -13,14 +13,17 @@ readAgain = 0;
 % read excel file if not already read
 if ~exist('raw','var') | readAgain
     [num,txt,raw] = xlsread(fileName,10,'A1:N303');
-    gSS = GetGoogleSpreadsheet('1QXUoLVxvc93KDqj0sybomCTYHFQSIX821rkKu4JtnJU','1998314455');
     [f,cName,D] = getFolders;
+    system('C:\Users\samsoon.inayat\AppData\Local\Continuum\anaconda3\envs\suite2p\python.exe T:\GitHub\Toolbox_2P\Spatial\PreProcessing\readGoogleSheet.py','-echo')
+    gS = load('temp.mat');
 end
 % 
 % AD_Thy1_animals = [183224;183227;183228;183329];
 % animals = AD_Thy1_animals;
-Thy1_animals = [173062;173511;173198;174374;173706;183633;183761;183745;183628;183762];
+% Thy1_animals = [173062;173511;173198;174374;173706;183633;183761;183745;183628;183762];
 % Thy1_animals = [183628;183762];
+Thy1_animals = [173062;173511;173198;174374;173706;183633;183761;183745;183628;183762];
+
 animals = Thy1_animals;%
 db = 0; bidi = 0; s2p = 0; list_r_folders = 0;
 list = {}; pList = {};

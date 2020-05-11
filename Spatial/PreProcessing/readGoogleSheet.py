@@ -19,13 +19,14 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import scipy.io as scio
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-SAMPLE_RANGE_NAME = 'Class Data!A2:E'
+SAMPLE_SPREADSHEET_ID = '1QXUoLVxvc93KDqj0sybomCTYHFQSIX821rkKu4JtnJU'
+SAMPLE_RANGE_NAME = 'APP Training!A1:N29'
 
 def main():
     """Shows basic usage of the Sheets API.
@@ -57,14 +58,15 @@ def main():
     result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                                 range=SAMPLE_RANGE_NAME).execute()
     values = result.get('values', [])
-
+    fileName = 'temp.mat'
+    scio.savemat(fileName,result)
+    # print(result)
     if not values:
         print('No data found.')
     else:
-        print('Name, Major:')
         for row in values:
             # Print columns A and E, which correspond to indices 0 and 4.
-            print('%s, %s' % (row[0], row[4]))
+            print('%s' % (row))
 
 if __name__ == '__main__':
     main()

@@ -1,33 +1,11 @@
 function [f,compName,varargout] = getFolders
+config = get_config;
+f.mainDataFolderList = config.dFolder;
+f.tifFolder = config.tifDataFolder;
+f.pFolder = config.pFolder;
+f.py_pFolder = config.py_pFolder;
 
-f.mainDataFolder = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
-% f.mainDataFolder2 = '\\142.66.96.22\storage2\homes\samsoon.inayat\Data';
-f.mainDataFolderList{1} = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
-f.mainDataFolderList{2} = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
-f.nsDrive = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\S_Drive';
-[~, name] = system('hostname');
-
-if strcmp(strtrim(name),'Sam-WS')
-    f.sDrive = 'S:\';
-end
-
-if strcmp(strtrim(name),'imaging3-psy16')
-    f.sDrive = 'E:\Users\samsoon.inayat\S_Drive';
-end
-
-if strcmp(strtrim(name),'imaging4-psy16')
-    f.sDrive = 'E:\Users\samsoon.inayat\S_Drive';
-end
-
-if strcmp(strtrim(name),'imaging1-psy16')
-    f.sDrive = 'E:\Users\samsoon.inayat\S_Drive';
-end
-
-f.tifFolder = fullfile(f.sDrive,'Tif_Data');
-f.pFolder = fullfile(f.nsDrive,'Processed_Data');
-f.py_pFolder = fullfile(f.nsDrive,'pySuite2P_Processed_Data');
-
-compName = strtrim(name);
+compName = '';%strtrim(name);
 if nargout == 3
     varargout{1} = getExpInfo(f);
 end
