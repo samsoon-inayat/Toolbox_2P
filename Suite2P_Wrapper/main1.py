@@ -52,7 +52,7 @@ for x in dir_names:
     ops.update({'save_path0':te.pd_dir})
     ops.update({'fs':float(te.exp_params.get('frameRate'))})
     ops.update({'save_mat':True})
-    mat = scipy.io.loadmat(te.pd_dir + '/bidishift.mat')
+    mat = scipy.io.loadmat(te.nas_pd_dir + '/bidishift.mat')
     bidishift = mat['bidishift'];
 #    print(bidishift[0][0])
 #    break
@@ -77,7 +77,7 @@ for x in dir_names:
     else:
         print('tif folder already removed')
     del(te)
-    
+
 
 
 
