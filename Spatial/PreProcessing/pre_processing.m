@@ -21,7 +21,7 @@ end
 % animals = AD_Thy1_animals;
 % Thy1_animals = [173062;173511;173198;174374;173706;183633;183761;183745;183628;183762];
 % Thy1_animals = [183628;183762];
-Thy1_animals = [1432];
+Thy1_animals = [1567];
 
 animals = Thy1_animals;%
 db = 0; bidi = 0; s2p = 0; list_r_folders = 0;
@@ -38,9 +38,9 @@ for ii = 1:size(T,1)
     if ii == 15
         n = 0;
     end
-    animal_id = (cell2mat(T{ii,1}));
+    animal_id = ((T{ii,1}));
     exp_date = datestr(cell2mat(T{ii,2}));
-    ind = D.animalListNum == str2num(animal_id);
+    ind = D.animalListNum == (animal_id);
     if sum(ind) > 1
         tempD = D.animal(ind);
         for dd = 1:length(tempD)
@@ -72,6 +72,7 @@ for ii = 1:size(T,1)
     if isempty(files)
         n = 0;
     end
+    sizeOfFile = [];
     for ff = 1:length(files)
         sizeOfFile(ff) = files.bytes;
     end
@@ -123,7 +124,7 @@ for ii = 1:length(list)
 end
 fclose(fid);
 
-fileName = 'T_10_Thy1_N.mat';
+fileName = 'T_10_APP_Thy1_N.mat';
 save(fileName,'T');
 
 
@@ -275,11 +276,11 @@ for ii = 1:size(T,1)
     itf = 1;
     dbFileStr{itf,1} = sprintf('i = 0;');itf = itf+1;
     for kk = 1:nP
-        if cell2mat(T{ii,1}) == 173511
+        if (T{ii,1}) == 173511
             n = 0;
         end
         dbFileStr{itf,1} = sprintf('i = i+1;');itf = itf+1;
-        dbFileStr{itf,1} = sprintf('db(i).mouse_name    	= ''%d'';',cell2mat(T{ii,1}));itf = itf+1;
+        dbFileStr{itf,1} = sprintf('db(i).mouse_name    	= ''%d'';',(T{ii,1}));itf = itf+1;
         dbFileStr{itf,1} = sprintf('db(i).date                = ''%s'';',datestr(cell2mat(T{ii,2}),'yyyy-mm-dd'));itf = itf+1;
 %         dbFileStr{itf,1} = sprintf('db(i).expText             = ''%s'';',thisName);itf = itf+1;
         dbFileStr{itf,1} = sprintf('db(i).expts               = [%d];',kk);itf = itf+1;

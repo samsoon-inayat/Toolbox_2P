@@ -48,7 +48,7 @@ for ii = 1:length(f.mainDataFolderList)
                     thisFolderR = fullfile(thisFolderD,thisNameD);
                     files_list = dir(sprintf('%s\\**\\Image_0001_0001.raw',thisFolderR));
                     if isempty(files_list)
-                        files_list = dir(sprintf('%s\\**\\Image_001_001.raw',thisFolderD));
+                        files_list = dir(sprintf('%s\\**\\Image_001_001.raw',thisFolderR));
                         if isempty(files_list)
                             continue;
                         end

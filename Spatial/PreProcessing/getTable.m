@@ -42,5 +42,5 @@ common(bad) = [];
 % 
 
 varNames = {'ID','RecordingDate','TrainingOrRecording','Protocol','PerformanceNotes'};
-T = table(IDs(common),RecordingDate(common),TrainingOrRecording(common),Protocol(common),PerformanceNotes(common),'VariableNames',varNames);
+T = table(ids(common),RecordingDate(common),TrainingOrRecording(common),Protocol(common),PerformanceNotes(common),'VariableNames',varNames);
 
