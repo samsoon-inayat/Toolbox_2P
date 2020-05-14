@@ -13,7 +13,7 @@ if reload
     indsToLoad = [7 11 13 14 16 18 20 21];
     for ii = 1:length(indsToLoad)
         ii
-        eip(ii) = getData_py(f,T(indsToLoad(ii),:));
+        eip{ii} = getData_py(f,T(indsToLoad(ii),:));
     end
     disp('Done');
     
