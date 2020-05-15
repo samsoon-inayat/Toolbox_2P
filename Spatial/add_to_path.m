@@ -6,6 +6,7 @@ cd('..');
 mainDir = pwd;
 cd(currentDir);
 % addpath(scriptPath);
+temp = fullfile(interDir,'MatlabCode');addpath(temp);
 temp = fullfile(interDir,'MatlabCode','Common');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','append_pdfs');addpath(temp);
 temp = fullfile(interDir,'MatlabCode','Thor2P');addpath(temp);
