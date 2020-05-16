@@ -6,7 +6,11 @@ function ids = getIDs(raw,colA,selRows)
     end
     for ii = 1:length(selRows)
         try
-            ids(ii) = str2num((raw{selRows(ii),col}));
+            if isnumeric(raw{selRows(ii),col})
+                ids(ii) = (raw{selRows(ii),col});
+            else
+                ids(ii) = str2num(raw{selRows(ii),col});
+            end
         catch
             ids(ii) = NaN;
         end

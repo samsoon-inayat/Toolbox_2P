@@ -32,18 +32,19 @@ dPath{2} = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
 pdPath = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\S_Drive\Processed_Data';
 fileName = fullfile(dPath{1},fileName);
 
-[num,txt,raw] = xlsread(fileName,10,'A1:N303');
+[num,txt,raw] = xlsread(fileName,10,'A1:N333');
 Tf = [];
-emptyRow = {'','','','',''};
+emptyRow = {NaN,'','','',''};
 for ii = 1:length(uaids)
+    ii
     animalID = uaids(ii);
-    TT = getTable(raw,animalID,'',''); 
+    TT = getTable(raw,animalID,'','');
     Tf = [Tf;TT];
     Tf = [Tf;emptyRow];
 end
 n = 0;
 % writetable(Tf,'allData.xls');
-uaids1 = uaids(2:end);
+uaids1 = uaids([1 3:length(uaids)]);
 % uaids1(uaids1 == 183745) = [];
 Tr = [];
 for ii = 1:length(uaids1)
@@ -67,7 +68,7 @@ for ii = 1:length(uaids1)
     pfolderName = pfolderName(1:(pos(end-1)-1));
     for jj = 1:length(inds)
         thisTrainingDate = trainingDates(inds(jj));
-        files = dir(sprintf('%s\\*.abf',folderName));
+        files = dir(sprintf('%s\\**\\*.abf',folderName));
         found = 0;
         for kk = 1:length(files)
             thisFileName = files(kk).name;
@@ -82,7 +83,7 @@ for ii = 1:length(uaids1)
         if found == 0
             continue;
         end
-        fileName = fullfile(folderName,thisFileName);
+        fileName = fullfile(files(kk).folder,files(kk).name);
         disp(fileName);
         pos = strfind(thisFileName,'.');
         pfileName = fullfile(folderName,sprintf('%s.mat',thisFileName(1:(pos-1))));
@@ -90,7 +91,11 @@ for ii = 1:length(uaids1)
             temp = load(pfileName);
             b = calcBehav(temp.b);
             bs{ii,jj} = b;
-            td(ii,jj) = day(thisTrainingDate - trainingDates(1));
+            try
+                td(ii,jj) = day(thisTrainingDate - trainingDates(1));
+            catch
+                td(ii,jj) = (minutes(thisTrainingDate - trainingDates(1))/60)/24;
+            end
             t_date{ii,jj} = thisTrainingDate;
             continue;
         else
@@ -124,4 +129,10 @@ db.channel{3} = 'ch_b';
 db.channel{4} = 'photo_sensor';
 db.channel{5} = 'air_puff';
 [d,si] = abf2load(fileName);
+channel = identify_abf_channels(d,si);
+if ~isequal(db.channel,channel)
+    db.channel = channel;
+    disp('Channels inconsistency was found in abf');
+end
+
 b = process_abf_data(d,si,db);

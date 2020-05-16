@@ -14,6 +14,7 @@ selection = [];
 % specify min and max age
 ii = 1;
 ids = getIDs(raw,'A');
+ids = ids';
 selection{ii} = find(ids == sel_id); ii = ii + 1;
 if ~isempty(TR)
     IndexC = strfind(lower(TrainingOrRecording), TR);

@@ -4,9 +4,9 @@ ei = evalin('base','ei10');
 mData = evalin('base','mData');
 colors = mData.colors;
 sigColor = mData.sigColor;
-selAnimals = 8;
+selAnimals = 9;
 % selAnimals = 5:8;
-selAnimals = 1:4;
+% selAnimals = [1:4 9];
 mData.belt_length = ei{selAnimals(1)}.b.belt_length;
 n = 0;
 
@@ -14,8 +14,8 @@ n = 0;
 selCells = 'areCells';
 varName = 'rasters';
 planeNumbers = 'All';
-maxDistTime = [144 15];
-contextNumbers = ones(1,4)*2;
+maxDistTime = [150 15];
+contextNumbers = ones(1,4)*3;
 stimMarkers = {'air','air','belt','airI'};
 rasterTypes = {'dist','time','dist','time'};
 % contextNumbers = [1 2 3 4];
@@ -41,8 +41,8 @@ for ii = 1:length(contextNumbers)
         [tempD cns] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [zMIs cns] = getParamValues('info_metrics.ShannonMI_Zsh',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [data cns areCells] = getParamValues('',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
-        cellSel = clus(areCells) == 1;
-%         cellSel = pcs;
+%         cellSel = clus(areCells) == 1;
+        cellSel = pcs;
         distDi = [distDi;cellSel];
         try
              mR = findMeanRasters(tempD,trials);
@@ -56,7 +56,6 @@ for ii = 1:length(contextNumbers)
     dxs = diff(data.xs); bin_width = dxs(1); xs = 0:bin_width:1000;
     time_xs{ii} = xs(1:size(mRsi,2));
 end
-
 
 [~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},find(distD{CNi}));
 for ii = 1:length(contextNumbers)

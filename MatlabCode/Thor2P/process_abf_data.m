@@ -78,15 +78,15 @@ temp = find(diff(edge)<=minimum_diff);
 edge(temp+1) = [];
 temp1 = temp + 1;
 
-function edge = find_rising_edge(signal,threshold,minimum_diff)
-edge = find(diff(signal) >= threshold);
-temp = find(diff(edge)<=minimum_diff);
-edge(temp+1) = [];
-
-function edge = find_falling_edge(signal,threshold,minimum_diff)
-edge = find(diff(signal) <= threshold);
-temp = find(diff(edge)<=minimum_diff);
-edge(temp+1) = [];
+% function edge = find_rising_edge(signal,threshold,minimum_diff)
+% edge = find(diff(signal) >= threshold);
+% temp = find(diff(edge)<=minimum_diff);
+% edge(temp+1) = [];
+% 
+% function edge = find_falling_edge(signal,threshold,minimum_diff)
+% edge = find(diff(signal) <= threshold);
+% temp = find(diff(edge)<=minimum_diff);
+% edge(temp+1) = [];
 
 function dist = processEncodeSignals(cha,chb)
 n = 0;

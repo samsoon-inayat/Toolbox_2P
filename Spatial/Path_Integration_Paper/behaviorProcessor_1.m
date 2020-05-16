@@ -2,7 +2,8 @@ function behaviorProcessor_1
 temp = evalin('base','training_data');
 numberOfTrials = findNumberOfTrials(temp);
 [rr,cc] = find(numberOfTrials < 20);
-selColsAll = [2 3 4;
+selColsAll = [1 2 3
+              2 3 4;
               1 3 4;
               1 2 3;
               2 3 4;
@@ -16,7 +17,7 @@ ei1 = temp.bs;
 mData = evalin('base','mData');
 colors = mData.colors;
 % selRows = [4 5 6 8 9]; selCols = [1:4];
-selRows = [1:5 7:9]; selCols = [1:3];
+selRows = [1:6 8:10]; selCols = [1:3];
 for ii = 1:length(selRows)
     for jj = 1:3
         ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
@@ -171,13 +172,13 @@ combs = nchoosek(1:6,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs
 row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{1,6}; h(ii) = 1; 
 row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
 row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
-row = [1 5]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{1,6}; h(ii) = 1; 
-row = [1 3]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{2,6}; h(ii) = 1; 
-row = [2 6]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{3,6}; h(ii) = 1; 
+row = [1 5]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{2,6}; h(ii) = 1; 
+row = [1 3]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{1,6}; h(ii) = 1; 
+% row = [2 6]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{3,6}; h(ii) = 1; 
 
 xdata = [1 2 4 5 7 8]; maxY = 50;
 
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[15 7 1.25 1],'color','w');
+hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
 hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
