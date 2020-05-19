@@ -16,19 +16,19 @@ rasterTypes = {'dist','time'};
 n = 0;
 %%
 varName = '';
-selCells = 'cells';
+selCells = 'All';
 for ss = 1:length(stimMarkers)
     distD = [];
     for jj = 1:length(selAnimals)
         [tempVals cns ACs] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
         [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,1,'air','dist',selCells,maxDistTime);
-        [placeCells5] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,1,'air','dist',selCells,maxDistTime);
+        [placeCells5] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,1,'air','dist',selCells,maxDistTime);
     end
     dataC{ss} = tempVals;
 end
 n = 0;
 A = dataC{1}; B = dataC{2}; %C = dataC{3}; %D = dataC{4};
-PCs = placeCells5;
+PCs = placeCells5 & ACs;
 PCs = ACs & clus;
 coiSI = find(PCs)
 sum(PCs)/length(PCs);
