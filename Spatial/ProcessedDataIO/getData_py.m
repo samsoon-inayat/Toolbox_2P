@@ -14,11 +14,11 @@ for ii = 1:size(T,1)
 %     b = load(fileName);
     nP = getNumberOfPlanes(tei{ii}.thorExp);
     try
-        plane{1} = fullfile(cell2mat(T{ii,7}),'Suite2P\plane0');
-        plane{2} = fullfile(cell2mat(T{ii,7}),'Suite2P\plane1');
+        plane{1} = fullfile(cell2mat(T{ii,7}),'suite2P\plane0');
+        plane{2} = fullfile(cell2mat(T{ii,7}),'suite2P\plane1');
     catch
-        plane{1} = fullfile((T{ii,7}),'Suite2P\plane0');
-        plane{2} = fullfile((T{ii,7}),'Suite2P\plane1');
+        plane{1} = fullfile((T{ii,7}),'suite2P\plane0');
+        plane{2} = fullfile((T{ii,7}),'suite2P\plane1');
     end
     for pp = 1:length(plane)
         if isempty(plane{pp})

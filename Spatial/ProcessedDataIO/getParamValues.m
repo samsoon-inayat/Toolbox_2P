@@ -129,7 +129,8 @@ for ee = 1:length(ei)
         end
         if strcmp(varNameParts{1},'gauss_fit_on_mean')
             if ~isempty(strfind(varName,'rs'))
-                cmdTxt = sprintf('tempV = data.%s.%s(theSelectedCells);','gauss_fit_on_mean',varNameParts{2}); eval(cmdTxt);
+                tempVZ = populateDataProps(data,{rasterType,tei.b.belt_length,maxDistTime});
+                cmdTxt = sprintf('tempV = tempVZ.%s(theSelectedCells);',varNameParts{2}); eval(cmdTxt);
 %                 for ii = 1:length(tempV1)
 %                     if ~isempty(tempV1(ii).rsquare)
 %                         tempV(ii,1) = tempV1(ii).rsquare;

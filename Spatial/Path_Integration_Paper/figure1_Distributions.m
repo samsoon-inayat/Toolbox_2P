@@ -10,7 +10,7 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 axes_font_size = mData.axes_font_size;
 % allCells = mData.allCells;
-selAnimals = [1:4 9];
+selAnimals = [1:4];
 % selAnimals = 5:8;
 % selAnimals = 1:8;
 n = 0;
@@ -20,7 +20,7 @@ runthis = 1;
 if runthis
     planeNumbers = 'All';
     maxDistTime = [140 10];
-    contextNumber = ones(1,4).*[1 1 1 1];
+    contextNumber = ones(1,4).*3;
     
     stimMarkers = {'air','air','belt','airI'};
     stimLabel = {'Air','Air','Belt','InterTrial'};

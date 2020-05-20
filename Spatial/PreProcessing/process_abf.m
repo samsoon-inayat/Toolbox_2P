@@ -8,6 +8,6 @@ for ii = 1:size(T,1)
     ei.recordingFolder = f.recordingFolder;
     for jj = 1:length(db)
         ei.db = db(jj);
-        abf2behavior_1(ei,cell2mat(T{ii,7}));
+        abf2behavior_1(ei,cell2mat(T{ii,7}),'overwrite_behavior',1);
     end
 end

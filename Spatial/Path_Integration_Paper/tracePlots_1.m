@@ -10,31 +10,31 @@ selAnimals = 9; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
-contextNumber = [1 1];
+contextNumber = [3 3];
 stimMarkers = {'air','air'};
 rasterTypes = {'dist','time'};
 n = 0;
 %%
 varName = '';
-selCells = 'cells';
+selCells = 'All';
 for ss = 1:length(stimMarkers)
     distD = [];
     for jj = 1:length(selAnimals)
         [tempVals cns ACs] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
-        [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,1,'air','dist',selCells,maxDistTime);
-        [placeCells5] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,1,'air','dist',selCells,maxDistTime);
+        [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
+        [placeCells5] = getParamValues('placeCells1',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
     end
     dataC{ss} = tempVals;
 end
 n = 0;
 A = dataC{1}; B = dataC{2}; %C = dataC{3}; %D = dataC{4};
-PCs = placeCells5;
+% PCs = ACs & placeCells5;
 PCs = ACs & clus;
 coiSI = find(PCs)
-sum(PCs)/length(PCs);
-[~,inds] = sort([A.centers(coiSI)']);
-coiSI = coiSI(inds); centers = A.centers(coiSI);
-[coiSI(inds) A.centers(coiSI(inds))' A.pws(coiSI(inds))'];
+% % % % % sum(PCs)/length(PCs);
+% % % % % [~,inds] = sort([A.centers(coiSI)']);
+% % % % % coiSI = coiSI(inds); centers = A.centers(coiSI);
+% % % % % [coiSI(inds) A.centers(coiSI(inds))' A.pws(coiSI(inds))'];
 
 % coiSI =  coiSI(centers > 1 & centers < 40)';
 % coiSI =  coiSI(centers > 40)';

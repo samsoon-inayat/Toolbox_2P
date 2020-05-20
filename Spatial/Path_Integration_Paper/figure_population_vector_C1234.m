@@ -6,7 +6,7 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 % selAnimals = 1;
 % selAnimals = 5:8;
-selAnimals = [1:8];
+selAnimals = [1:4];
 mData.belt_length = ei{selAnimals(1)}.b.belt_length;
 n = 0;
 
@@ -15,17 +15,18 @@ selCells = 'areCells';
 varName = 'rasters';
 planeNumbers = 'All';
 maxDistTime = [150 15];
-contextNumbers = ones(1,4)*4;
+contextNumbers = ones(1,4).*[1 2 3 4]
 stimMarkers = {'air','air','belt','airI'};
 rasterTypes = {'dist','time','dist','time'};
 % contextNumbers = [1 2 3 4];
-% stimMarkers = {'air','air','air','air'};
-% rasterTypes = {'dist','dist','dist','dist'};
+stimMarkers = {'air','air','air','air'};
+rasterTypes = {'time','time','time','time'};
 trials = 3:10;
 trials10 = 3:9;
 % align cells
-CNi = 1;
+
 for ii = 1:length(contextNumbers)
+    CNi = ii;
     contextNumber = contextNumbers(ii);
     mRsi = []; distDi = [];
     for jj = 1:length(selAnimals)
@@ -35,14 +36,14 @@ for ii = 1:length(contextNumbers)
         end
 %         [pcs_d cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'airI','dist',selCells,maxDistTime);
         [pcs cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'air','dist',selCells,maxDistTime);
-        [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,contextNumbers(CNi),stimMarkers{CNi},rasterTypes{CNi},selCells,maxDistTime);
+        [clus] = getParamValues('cluster3',ei(selAnimals(jj)),planeNumbers,contextNumbers(CNi),stimMarkers{CNi},rasterTypes{CNi},selCells,maxDistTime);
 %         pcs = pcs_d | pcs_t;
 %         pcs = logical(ones(size(pcs)));
         [tempD cns] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [zMIs cns] = getParamValues('info_metrics.ShannonMI_Zsh',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [data cns areCells] = getParamValues('',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
-%         cellSel = clus(areCells) == 1;
-        cellSel = pcs;
+        cellSel = clus(areCells) == 1;
+%         cellSel = pcs;
         distDi = [distDi;cellSel];
         try
              mR = findMeanRasters(tempD,trials);
@@ -88,7 +89,7 @@ for sii = 1:length(stimMarkers)
             text(-21,25,sprintf('Cells'),'FontSize',FS+3,'FontWeight','Bold','rotation',90);
         end
 %     end
-    text(3,size(P,1)+round(size(P,1)/10),sprintf('%s-%s',stimMarkers{sii},rasterTypes{sii}),'FontSize',FS,'FontWeight','Normal');
+    text(3,size(P,1)+round(size(P,1)/10),sprintf('Condition %d',sii),'FontSize',FS,'FontWeight','Normal');
     set(gca,'Ydir','Normal','linewidth',0.25,'FontSize',FS,'FontWeight','Bold','YTick',[1 size(P,1)]);
     cols = size(P,2);
     colsHalf = ceil(cols/2);

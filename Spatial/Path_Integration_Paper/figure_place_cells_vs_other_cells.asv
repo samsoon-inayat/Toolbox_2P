@@ -6,7 +6,7 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 % selAnimals = 1;
 % selAnimals = 5:8;
-selAnimals = [1:8];
+selAnimals = [];
 mData.belt_length = ei{selAnimals(1)}.b.belt_length;
 n = 0;
 
@@ -15,7 +15,7 @@ selCells = 'areCells';
 varName = 'rasters';
 planeNumbers = 'All';
 maxDistTime = [150 15];
-contextNumbers = ones(1,4)*4;
+contextNumbers = ones(1,4)*1;
 stimMarkers = {'air','air','belt','airI'};
 rasterTypes = {'dist','time','dist','time'};
 % contextNumbers = [1 2 3 4];
@@ -34,7 +34,7 @@ for ii = 1:length(contextNumbers)
             n = 0;
         end
 %         [pcs_d cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'airI','dist',selCells,maxDistTime);
-        [pcs cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'air','dist',selCells,maxDistTime);
+        [pcs cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'airI','time',selCells,maxDistTime);
         [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,contextNumbers(CNi),stimMarkers{CNi},rasterTypes{CNi},selCells,maxDistTime);
 %         pcs = pcs_d | pcs_t;
 %         pcs = logical(ones(size(pcs)));

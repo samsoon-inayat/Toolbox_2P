@@ -5,7 +5,7 @@ mData = evalin('base','mData');
 colors = mData.colors;
 sigColor = mData.sigColor;
 selAnimals = 1:4;
-selAnimals = 1:8;
+% selAnimals = 1:8;
 n = 0;
 %%
 selCells = 'areCells';
@@ -71,7 +71,7 @@ save_pdf(hf,mData.pdf_folder,'Number Of Place Cells',600);
 return
 end
 %%
-runthis = 1;
+runthis = 0;
 if runthis
 pcsC = [];
 for kk = 1:4
@@ -100,7 +100,7 @@ return;
 end
 
 %%
-runthis = 1;
+runthis = 0;
 if runthis
 theData = [];
 for jj = 1:3
@@ -125,7 +125,7 @@ return;
 end
 
 %%
-runthis = 1;
+runthis = 0;
 if runthis
 theData = [];
 for jj = 1:3
