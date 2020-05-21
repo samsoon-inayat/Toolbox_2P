@@ -197,6 +197,7 @@ catch
     return;
 end
 [rs,coeffs] = getMRFS_vals(mrfs);
+data.gauss_fit_on_mean.rs = rs;
 A = coeffs(:,1);
 mu = coeffs(:,2);
 sigma = coeffs(:,3);
@@ -238,9 +239,9 @@ end
 for ii = 1:size(data.sp_rasters,3)
     mRast(ii) = nanmean(nanmean(data.sp_rasters(:,:,ii)));
 end
-data.propMatrix = [data.SI' data.fractal_dim.HaFD' data.fractal_dim.HiFD'];
-% data.propMatrix = [data.SI' data.fractal_dim.HiFD'];
-% data.propMatrix = [data.SI'];
+% data.propMatrix = [data.SI' data.fractal_dim.HaFD' data.fractal_dim.HiFD'];
+data.propMatrix = [data.SI' data.rs' data.fractal_dim.HaFD' data.fractal_dim.HiFD'];
+% data.propMatrix = [data.SI' data.rs'];
 
 rng('default');  % For reproducibility
 if size(data.propMatrix,1)>1 & exist('clus_SI_th','var') & ~isempty(strfind(data.varName,'cluster'))

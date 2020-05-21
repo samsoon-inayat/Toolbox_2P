@@ -1,17 +1,16 @@
 function hc = putColorBar(hai,positionShift,minmax,fs,varargin)
 
-
-
 p = inputParser;
 addRequired(p,'hai',@isobject);
 addRequired(p,'positionShift',@isnumeric);
 addRequired(p,'minmax',@isnumeric);
 addRequired(p,'fs',@isnumeric);
-addOptional(p,'location','northoutside',@ishcar);
+addOptional(p,'location','eastoutside',@ishcar);
+addOptional(p,'text_margins',[0.3 0.125],@isnumeric);
 parse(p,hai,positionShift,minmax,fs,varargin{:});
 
 location = p.Results.location;
-
+text_margins = p.Results.text_margins;
 
 pos = get(hai,'Position');
 ha = axes('Position',pos,'Visible','off');
@@ -21,7 +20,7 @@ changePosition(ha,positionShift);
 colormap parula;
 caxis(minmax);
 xlims = xlim;
-xincr = 0.3; yincr = 0.125;
+xincr = text_margins(1); yincr = text_margins(2);
 if minmax(1) > 10
     minmax(1) = round(minmax(1));
 end

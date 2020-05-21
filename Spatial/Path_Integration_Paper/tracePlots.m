@@ -23,7 +23,6 @@ ccs = ei.areCells;%(ccsi);
 n = 0;
 %%
 
-
 numberOfRows = 3;
 numberOfCols = 2;
 graphsOnOneFigure = numberOfRows * numberOfCols;

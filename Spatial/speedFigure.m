@@ -1,14 +1,14 @@
 function speedFigure
 
 aei = evalin('base','ei10');
-ei = aei([1:8]);
+ei = aei([1:4]);
 mData = evalin('base','mData');
 
 n = 0
 
 speed = [];
 iSpeed = [];
-for ii = 1:8
+for ii = 1:4
     onsets = ei{ii}.plane{1}.contexts(1).markers.air_onsets;
     offsets = ei{ii}.plane{1}.contexts(1).markers.air_offsets;
     iOnsets = offsets(1:(end-1));
@@ -45,7 +45,7 @@ xlim([0.5 2.5]);
 h = ylabel('Speed (cm/sec)'); changePosition(h,[0.6 -5 0]);
 set(gca,'Ydir','normal','XTickLabel',{'Trials','InterTrials'},'FontSize',6,'FontWeight','Bold','TickDir','out');
 xtickangle(25);
-text(0.75,35,{'t-test','(N = 8 Mice)'},'FontSize',5);
+text(0.75,35,{'t-test','(N = 4 Mice)'},'FontSize',5);
 save_pdf(gcf,mData.pdf_folder,sprintf('speedAvg.pdf'),600);
 
 

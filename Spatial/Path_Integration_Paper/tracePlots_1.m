@@ -6,11 +6,11 @@ ei = evalin('base','ei10');
 % dataAOn = evalin('base','dataAOn010');
 % dataAOff= evalin('base','dataAOff010');
 mData = evalin('base','mData');
-selAnimals = 9; pl = 1;
+selAnimals = 1; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
-contextNumber = [3 3];
+contextNumber = [1 1];
 stimMarkers = {'air','air'};
 rasterTypes = {'dist','time'};
 n = 0;
@@ -28,6 +28,7 @@ for ss = 1:length(stimMarkers)
 end
 n = 0;
 A = dataC{1}; B = dataC{2}; %C = dataC{3}; %D = dataC{4};
+% rasters = A;
 % PCs = ACs & placeCells5;
 PCs = ACs & clus;
 coiSI = find(PCs)
@@ -40,11 +41,11 @@ coiSI = find(PCs)
 % coiSI =  coiSI(centers > 40)';
 
 % plot_trial_correlation(dataC,coiSI);return;
-plotRasters(dataC,coiSI);return
+% plotRasters(dataC,coiSI);return
 ccsi = [200 46 152 37 22]; % animal 1 plane 1
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis
     
 cellList = ccsi;

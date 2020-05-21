@@ -11,10 +11,14 @@ saving_mean_raster_fits
 behaviorProcessor_1
 
 %% figure 1C
-plotTrialsImage
+plotSpeedTrialsImage
+plotTimeToOnsetOfMovementAfterAirPuff
+plotAverageSpeedConditions
 
 %% figure 1D
 speedFigure
+
+
 
 %% figure 1F
 tracePlots_1

@@ -12,7 +12,7 @@ axes_font_size = mData.axes_font_size;
 % allCells = mData.allCells;
 selAnimals = 1:4;
 % selAnimals = 5:8;
-selAnimals = 1:8;
+% selAnimals = 1:8;
 n = 0;
 
 %%
