@@ -11,7 +11,7 @@ temp = fullfile(interDir,'MatlabCode','Common');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','append_pdfs');addpath(temp);
 temp = fullfile(interDir,'MatlabCode','Thor2P');addpath(temp);
 temp = fullfile(interDir,'MatlabCode','FigureFunctions');addpath(temp);
-temp = fullfile(mainDir,'Downloaded','spatial-information-metrics-master');addpath(temp);
+temp = fullfile(mainDir,'Downloaded','spatial-information-metrics');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','npy-matlab-master');addpath(temp);
 temp = fullfile(mainDir,'Downloaded');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','ca_source_extraction-master');p = genpath(temp);addpath(p);
