@@ -10,22 +10,22 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 axes_font_size = mData.axes_font_size;
 % allCells = mData.allCells;
-selAnimals = [1:4];
+selAnimals = [1:4 9];
 % selAnimals = 5:8;
 % selAnimals = 1:8;
 n = 0;
-cN = 1;
+cN = 4;
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 %     cN = 1;
     planeNumbers = 'All';
-    maxDistTime = [140 10];
+    maxDistTime = [142 15];
     contextNumber = ones(1,4).*cN;
     
     stimMarkers = {'air','air','belt','airI'};
     stimLabel = {'Air','Air','Belt','InterTrial'};
-    xstimLabel = {'Air-D','Air-T','Belt-D','AirI-T'};
+    xstimLabel = {'AirD','AirT','BeltD','AirIT'};
     rasterTypes = {'dist','time','dist','time'};
     rasterLabel = {'Distance','Time','Distance','Time'};
 %     stimMarkers = {'air','air','air','air'};
@@ -35,8 +35,8 @@ if runthis
     for ss = 1:length(stimMarkers)
         distD = [];
         for jj = 1:length(selAnimals)
-            [pcs cns areCells] = getParamValues('placeCells1',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),'air','dist',selCells,maxDistTime);
-            [pcs cns areCells] = getParamValues('placeCells1',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),'air','time',selCells,maxDistTime);
+            [pcs cns areCells] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),'air','dist',selCells,maxDistTime);
+            [pcs cns areCells] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),'air','time',selCells,maxDistTime);
             pcs = logical(ones(size(pcs)));
             [tempVals cns ACs] = getParamValues('info_metrics.ShannonMI_Zsh',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
 %             [tempVals cns ACs] = getParamValues('gauss_fit_on_mean.rs',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
@@ -99,11 +99,11 @@ if runthis
     put_axes_labels(gca,{'Raster Type',[0 0 0]},{{'Mutual Information','(z score)'},[-0.1 -0.5 0]});
     xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
     legs{ii+1} = [xlims(1)+dx/2 dx/30 ylims(1)+dy/3 dy/15];
-    if size(data,2) > 2
-        putLegend(ha,legs,'colors',colors,'sigR',{sigR,'anova',sigColor,6});
-    else
-        putLegend(ha,legs,'colors',colors,'sigR',{sigR,'ttest',sigColor,10});
-    end
+%     if size(data,2) > 2
+%         putLegend(ha,legs,'colors',colors,'sigR',{sigR,'anova',sigColor,6});
+%     else
+%         putLegend(ha,legs,'colors',colors,'sigR',{sigR,'ttest',sigColor,10});
+%     end
     save_pdf(hf,mData.pdf_folder,sprintf('Mean zMI Condition %d',cN),600);
     
 return;
@@ -116,7 +116,7 @@ runthis = 0;
 if runthis
 %     cN = 1;
     planeNumbers = 'All';
-    maxDistTime = [140 10];
+    maxDistTime = [142 15];
     contextNumber = ones(1,4).*cN;
     
     stimMarkers = {'air','air','belt','airI'};
@@ -199,7 +199,7 @@ runthis = 0;
 if runthis
 %     cN = 1;
     planeNumbers = 'All';
-    maxDistTime = [140 10];
+    maxDistTime = [142 15];
     contextNumber = ones(1,4).*cN;
     
     stimMarkers = {'air','air','belt','airI'};
@@ -281,7 +281,7 @@ runthis = 1;
 if runthis
 %     cN = 1;
     planeNumbers = 'All';
-    maxDistTime = [140 10];
+    maxDistTime = [142 15];
     contextNumber = ones(1,4).*cN;
     
     stimMarkers = {'air','air','belt','airI'};

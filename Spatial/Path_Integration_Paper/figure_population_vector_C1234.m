@@ -6,7 +6,7 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 % selAnimals = 1;
 % selAnimals = 5:8;
-selAnimals = [1:4];
+selAnimals = [1:4 9];
 mData.belt_length = ei{selAnimals(1)}.b.belt_length;
 n = 0;
 
@@ -35,15 +35,15 @@ for ii = 1:length(contextNumbers)
             n = 0;
         end
 %         [pcs_d cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'airI','dist',selCells,maxDistTime);
-        [pcs cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'air','dist',selCells,maxDistTime);
-        [clus] = getParamValues('cluster3',ei(selAnimals(jj)),planeNumbers,contextNumbers(CNi),stimMarkers{CNi},rasterTypes{CNi},selCells,maxDistTime);
+        [pcs cns areCells] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,contextNumber,'air','dist',selCells,maxDistTime);
+%         [clus] = getParamValues('cluster3',ei(selAnimals(jj)),planeNumbers,contextNumbers(CNi),stimMarkers{CNi},rasterTypes{CNi},selCells,maxDistTime);
 %         pcs = pcs_d | pcs_t;
 %         pcs = logical(ones(size(pcs)));
         [tempD cns] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [zMIs cns] = getParamValues('info_metrics.ShannonMI_Zsh',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [data cns areCells] = getParamValues('',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
-        cellSel = clus(areCells) == 1;
-%         cellSel = pcs;
+%         cellSel = clus(areCells) == 1;
+        cellSel = pcs;
         distDi = [distDi;cellSel];
         try
              mR = findMeanRasters(tempD,trials);

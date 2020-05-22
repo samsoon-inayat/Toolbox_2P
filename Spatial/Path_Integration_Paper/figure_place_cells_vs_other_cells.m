@@ -6,7 +6,7 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 % selAnimals = 1;
 % selAnimals = 5:8;
-selAnimals = [1];
+selAnimals = [1:4 9];
 mData.belt_length = ei{selAnimals(1)}.b.belt_length;
 n = 0;
 
@@ -14,7 +14,7 @@ n = 0;
 selCells = 'areCells';
 varName = 'rasters';
 planeNumbers = 'All';
-maxDistTime = [150 15];
+maxDistTime = [142 15];
 contextNumbers = ones(1,4)*1;
 stimMarkers = {'air','air','belt','airI'};
 rasterTypes = {'dist','time','dist','time'};
@@ -24,9 +24,9 @@ rasterTypes = {'dist','time','dist','time'};
 trials = 3:10;
 trials10 = 3:9;
 % align cells
-CNi = 1;
+CNi = 4;
 % select spatial cells
-sNi = 1;
+sNi = 4;
 % cNi = sNi;
 for ii = 1:length(contextNumbers)
     contextNumber = contextNumbers(ii);
@@ -38,14 +38,16 @@ for ii = 1:length(contextNumbers)
         end
 %         [pcs_d cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'airI','dist',selCells,maxDistTime);
         [pcs cns areCells] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{sNi},rasterTypes{sNi},selCells,maxDistTime);
-        [clus] = getParamValues('cluster3',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{sNi},rasterTypes{sNi},selCells,maxDistTime);
+%         [clus] = getParamValues('cluster3',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{sNi},rasterTypes{sNi},selCells,maxDistTime);
 %         pcs = pcs_d | pcs_t;
 %         pcs = logical(ones(size(pcs)));
         [tempD cns] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [zMIs cns] = getParamValues('info_metrics.ShannonMI_Zsh',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
         [data cns areCells] = getParamValues('',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
-        cellSel = clus(areCells) == 1;
-%         cellSel = pcs;
+%         cellSel = clus(areCells) == 1;
+        cellSel = pcs;
+%         cellSel = 1:sum(areCells)';
+        npcs(jj,ii) = 100*sum(pcs)/length(pcs);
         distDi = [distDi;cellSel];
         try
              mR = findMeanRasters(tempD,trials);
@@ -65,6 +67,7 @@ for ii = 1:length(contextNumbers)
     mRsi = allRs{ii};
     [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,find(distDi),cellNums);
 end
+npcs(:,1)
 n = 0;
 %%
 ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...

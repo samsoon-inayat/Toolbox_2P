@@ -3,7 +3,7 @@ function plotAverageSpeedConditions(b,markers1,markers2,fn)
 n = 0;
 %%
 ei = evalin('base','ei10');
-ei = ei([1:4]);
+ei = ei([1:4 9]);
 
 speed_threshold = 1;
 
@@ -13,7 +13,7 @@ timeBefore = 0;
 timeAfter = 15;
 
 meanSpeedTrialsAnimals = nan(4,8);
-for an = 1:4
+for an = 1:5
     for cc = 1:4
         thisspeed = ei{an}.plane{1}.contexts(cc).rasters.airT.speed;
         meanSpeedTrials(:,cc) = nanmean(thisspeed,2);
@@ -63,7 +63,7 @@ row = [7 8]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{1,6}; h(ii) = 1;
 row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
 row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 
-xdata = [1 2 4 5 7 8 10 11]; maxY = 20;
+xdata = [1 2 4 5 7 8 10 11]; maxY = 22;
 colors = mData.colors;
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
@@ -77,11 +77,11 @@ end
 set(gca,'xlim',[0.25 11.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
 xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'C1','C2','C3','C4'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-changePosition(gca,[0.1 0.02 -0.03 -0.011])
+changePosition(gca,[0.1 0.02 -0.03 -0.011]);
 put_axes_labels(gca,{[],[0 0 0]},{'Avg. Speed (cm/sec)',[0 0 0]});
-rectangle(gca,'Position',[0.75 18 1 2],'edgecolor','k','facecolor','k');
-text(1.85,19,'Trials','FontSize',5);
-rectangle(gca,'Position',[6 18 1 2],'edgecolor','k');
-text(7.2,19,'Inter-Trials','FontSize',5);
+rectangle(gca,'Position',[0.75 20 1 2],'edgecolor','k','facecolor','k');
+text(1.85,21,'Trials','FontSize',5);
+rectangle(gca,'Position',[6 20 1 2],'edgecolor','k');
+text(7.2,21,'Inter-Trials','FontSize',5);
 save_pdf(hf,mData.pdf_folder,'AverageSpeedConditions',600);
 

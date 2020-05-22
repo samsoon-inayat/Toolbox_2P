@@ -115,9 +115,14 @@ for ee = 1:length(ei)
             tempC = [ones(size(tempV,3),1)*ee ones(size(tempV,3),1)*pp find(theSelectedCells)];
             cns = [cns;tempC];
         end
-        if strcmp(varNameParts{1},'info_metrics') || strcmp(varNameParts{1},'fractal_dim')
-%             tempVZ = populateDataProps(data,{rasterType,tei.b.belt_length,maxDistTime});
-            cmdTxt = sprintf('tempV = data.%s(theSelectedCells);',varName); eval(cmdTxt);
+        if strcmp(varNameParts{1},'info_metrics') || strcmp(varNameParts{1},'fractal_dim') || strcmp(varNameParts{1},'place_field_properties')
+            if strcmp(varNameParts{1},'place_field_properties')
+                tempVZ = populateDataProps(data,{rasterType,tei.b.belt_length,maxDistTime});
+                cmdTxt = sprintf('tempV = tempVZ.%s(theSelectedCells);',varName);
+            else          
+                cmdTxt = sprintf('tempV = data.%s(theSelectedCells);',varName);
+            end
+            eval(cmdTxt);
 %             tempV = tempVZ.SI(theSelectedCells);
             if isrow(tempV)
                 tempV = tempV';
@@ -204,10 +209,12 @@ sigma = coeffs(:,3);
 as = A*exp(0.5);
 bs = mu;
 cs = sigma;
+rs_th = 0.4;
 PWs = 2.36*cs./sqrt(2)*binwidth;
-data.rs = rs; data.pws = PWs';
+data.place_field_properties.rs = rs; data.place_field_properties.pws = PWs';
 if strcmp(rasterType,'dist')
-    data.centers = (bs * binwidth)';
+    data.place_field_properties.centers = (bs * binwidth)';
+%     data.centers = (bs * binwidth)';
     if maxDistTime == Inf
         binNum = size(data.sp_rasters_nan_corrected,2);
     else
@@ -216,7 +223,8 @@ if strcmp(rasterType,'dist')
 %     data.rasters = data.sp_rasters_nan_corrected(:,1:binNum,:); % 48 corresponding to 141 cm
     data.rasters = data.sp_rasters(:,1:binNum,:);
 else
-    data.centers = (bs * binwidth)';
+%     data.centers = (bs * binwidth)';
+    data.place_field_properties.centers = (bs * binwidth)';
     if maxDistTime == Inf
         binNum = size(data.sp_rasters_nan_corrected,2);
     else
@@ -227,11 +235,11 @@ else
 end
 data.SI = data.info_metrics.ShannonMI_Zsh;
 data.peaks = as';
-rs_th = 0.4;
 center1 = size(data.rasters,1);
 center2 = size(data.rasters,2);
 if ~isempty(strfind(data.varName,'placeCells'))
-    cmdTxt = sprintf('data.placeCells%d = (logical((rs > rs_th) & (bs > center1 & bs < center2)'' & (data.SI > %d)))'';',clus_SI_th,clus_SI_th);
+%     cmdTxt = sprintf('data.placeCells%d = (logical((rs > rs_th) & (bs > center1 & bs < center2)'' & (data.SI > %d)))'';',clus_SI_th,clus_SI_th);
+    cmdTxt = sprintf('data.placeCells%d = data.SI > %d;',clus_SI_th,clus_SI_th);
     eval(cmdTxt);
 end
 
@@ -240,7 +248,9 @@ for ii = 1:size(data.sp_rasters,3)
     mRast(ii) = nanmean(nanmean(data.sp_rasters(:,:,ii)));
 end
 % data.propMatrix = [data.SI' data.fractal_dim.HaFD' data.fractal_dim.HiFD'];
-data.propMatrix = [data.SI' data.rs' data.fractal_dim.HaFD' data.fractal_dim.HiFD'];
+% data.propMatrix = [data.SI' data.rs' data.fractal_dim.HaFD' data.fractal_dim.HiFD'];
+data.propMatrix = [data.SI' data.fractal_dim.HiFD'];
+% data.propMatrix = [data.SI' data.rs' data.fractal_dim.HaFD'];
 % data.propMatrix = [data.SI' data.rs'];
 
 rng('default');  % For reproducibility

@@ -1,7 +1,7 @@
 function speedFigure
 
 aei = evalin('base','ei10');
-ei = aei([1:4]);
+ei = aei([1:4 9]);
 mData = evalin('base','mData');
 
 n = 0
@@ -40,12 +40,12 @@ set(gcf,'units','inches');
 set(gcf,'Position',[10 4 1 1]);
 plotBarsWithSigLines(mVals',semVals',[1 2],[h p],'colors',{'r','b'},'ySpacing',10,'maxY',45,'sigTestName','','sigAsteriskFontSize',10, ...
                     'barWidth',0.6,'sigLinesStartYFactor',0.05);
-changePosition(gca,[0.05 0.09 -0.4 -0.06]);
+changePosition(gca,[0.07 0.1 -0.4 -0.06]);
 xlim([0.5 2.5]);
-h = ylabel('Speed (cm/sec)'); changePosition(h,[0.6 -5 0]);
+h = ylabel('Speed (cm/sec)'); changePosition(h,[0.2 -5 0]);
 set(gca,'Ydir','normal','XTickLabel',{'Trials','InterTrials'},'FontSize',6,'FontWeight','Bold','TickDir','out');
-xtickangle(25);
-text(0.75,35,{'t-test','(N = 4 Mice)'},'FontSize',5);
+xtickangle(20);
+text(0.75,35,{'t-test','(N = 5 Mice)'},'FontSize',5);
 save_pdf(gcf,mData.pdf_folder,sprintf('speedAvg.pdf'),600);
 
 

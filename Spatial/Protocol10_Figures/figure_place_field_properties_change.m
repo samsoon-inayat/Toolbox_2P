@@ -5,7 +5,7 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 % selAnimals = 1:3;
 % selAnimals = 6:11;
-selAnimals = 1:8;
+selAnimals = [1:4 9];
 mData.belt_length = adata{selAnimals(1)}{1}{1}.belt_length;
 n = 0;
 
