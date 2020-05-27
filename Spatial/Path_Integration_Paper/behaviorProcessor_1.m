@@ -3,10 +3,10 @@ temp = evalin('base','training_data');
 numberOfTrials = findNumberOfTrials(temp);
 [rr,cc] = find(numberOfTrials < 20);
 selColsAll = [1 2 3
-              2 3 4;
+              1 3 4;
               1 3 4;
               1 2 3;
-              2 3 4;
+              1 3 4;
               1 2 3;
               1 2 3;
               1 2 3;
@@ -43,28 +43,37 @@ for iii = 1:size(ei,1)
 end
 n = 0;
 %%
-runthis = 0;
+runthis =1;
 if runthis
 thisCols_all = mData.colors;
-ff = makeFigureWindow__one_axes_only(5,[10 4 1.25 1],[0.19 0.2 0.79 0.75]);
-axes(ff.ha);hold on;
-ass = as{6};
-for ii = 1:length(ass)
-    this = ass{ii};
-    plot(1:length(this),this,'linewidth',0.5,'color',thisCols_all{ii});
-    lenTs(ii) = length(this);
+    selRowi = 5;
+for selRowi = 1:9
+    selRowi
+    ass = as{selRowi};
+    ff = makeFigureWindow__one_axes_only(5,[10 4 1.25 1.25],[0.19 0.2 0.79 0.75]);
+    axes(ff.ha);hold on;
+    % ass = as1{selRowi};
+    for ii = 1:length(ass)
+        this = ass{ii};
+        plot(1:length(this),this,'linewidth',0.5,'color',thisCols_all{ii});
+        lenTs(ii) = length(this);
+    end
+    plot(1:max(lenTs),ones(size(1:max(lenTs)))*7,'m','linewidth',0.5);
+    set(gca,'xlim',[0 max(lenTs)],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    changePosition(gca,[0.03 0.09 -0.03 -0.1])
+    put_axes_labels(gca,{'Inter-Trial Nmber',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
+    legs = [];
+    for ii = 1:length(ass)
+        legs{ii} = sprintf('Day %1d',ii);
+    end
+    legs{ii+1} = [5 3 30 4];
+    putLegendH(ff.ha,legs,'colors',mData.colors,'sigR',{[],'anova',[],5});
+    legs = {sprintf('Animal %d',temp.animalIDs(selRows(selRowi))),[22 0 25 4]};
+%     putLegend(ff.ha,legs,'colors',{'k'});
+    title(sprintf('Animal %d',temp.animalIDs(selRows(selRowi))));
+    changePosition(gca,[0 -0.05 0 0]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_InterTrials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
 end
-plot(1:max(lenTs),ones(size(1:max(lenTs)))*7,'m','linewidth',0.5);
-set(gca,'xlim',[0 max(lenTs)],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
-changePosition(gca,[0.03 0.09 -0.03 -0.1])
-put_axes_labels(gca,{'Trials',[0 0 0]},{'Speed (cm/sec',[0 0 0]});
-legs = [];
-for ii = 1:length(ass)
-    legs{ii} = sprintf('Day %1d',ii);
-end
-legs{ii+1} = [5 3 30 4];
-putLegend(ff.ha,legs,'colors',mData.colors,'sigR',{[],'anova',[],5});
-save_pdf(ff.hf,mData.pdf_folder,'Figure_1_Speed_vs_Trials.pdf',600);
 return;
 end
 

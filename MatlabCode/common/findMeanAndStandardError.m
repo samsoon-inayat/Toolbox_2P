@@ -12,7 +12,7 @@ end
 
 if nargin > 1
     dim = varargin{1};
-    if dim>2
+    if dim>3
         error;
     end
 else

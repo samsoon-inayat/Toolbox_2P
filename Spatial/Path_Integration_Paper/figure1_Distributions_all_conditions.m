@@ -10,13 +10,13 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 axes_font_size = mData.axes_font_size;
 % allCells = mData.allCells;
-selAnimals = [1:4 9];
+selAnimals = [1:9];
 % selAnimals = 5:8;
 % selAnimals = 1:8;
 n = 0;
 cN = 1;
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 %     cN = 1;
     planeNumbers = 'All';
@@ -40,7 +40,7 @@ if runthis
                 [pcs cns areCells] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,cnsi,'belt','dist',selCells,maxDistTime);
 %                 [clus] = getParamValues('cluster3',ei(selAnimals(jj)),planeNumbers,cnsi,'air','dist',selCells,maxDistTime);
 %                 [pcs cns areCells] = getParamValues('placeCells1',ei(selAnimals(jj)),planeNumbers,cnsi,'air','time',selCells,maxDistTime);
-%                 pcs = logical(ones(size(pcs)));
+                pcs = logical(ones(size(pcs)));
 %                 pcs = logical(clus(areCells));
                 npcs(jj,cnsi) = sum(pcs)/length(pcs);
                 [tempVals cns ACs] = getParamValues('info_metrics.ShannonMI_Zsh',ei(selAnimals(jj)),planeNumbers,cnsi,stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
@@ -269,19 +269,19 @@ if runthis
         co = coeffvalues(ftc);
         yhvals = ft(co(1),co(2),xvals);
         hold on;plot(xvals,yhvals,'color',colors{ii},'LineWidth',1)
-        text(20,25-3*ii,sprintf('Rsq = %.3f',rsq(ii)),'color',colors{ii});
+        text(20,15-3*ii,sprintf('Rsq = %.3f',rsq(ii)),'color',colors{ii});
         xa = [xa;xvals]; ya = [ya;yvals]; gr = [gr;ones(size(xvals))*ii];
     end
     sigR = do_ancova(xa,ya,gr);
-    ylim([0 45]);
+    ylim([0 30]);
     set(gca,'TickDir','out','FontSize',mData.axes_font_size,'FontWeight','Bold');
     hx = xlabel('Mutual Information (Z score)');%changePosition(hx,[0 0.0 0]);
     hy = ylabel('Mutual Information (Z score)');%changePosition(hy,[2.2 -3.0 0]);
     for ii = 1:size(combs,1)
         legs{ii} = sprintf('C %d-%d',combs(ii,1),combs(ii,2));%{'Context 1','Context 2','Context 3','Context 4',[30 3 35 3]};
     end
-    legs{ii+1} = [5 1 40 3];putLegend(gca,legs,'colors',colors,'sigR',{sigR,'ancovas',sigColor,9}); text(3,45,'Slope','FontWeight','Bold');
-    legs{ii+1} = [20 1 40 3];putLegend(gca,legs,'colors',colors,'sigR',{sigR,'ancovai',sigColor,9}); text(20,45,'Intercept','FontWeight','Bold');
+    legs{ii+1} = [5 1 25 3];putLegend(gca,legs,'colors',colors,'sigR',{sigR,'ancovas',sigColor,9}); text(3,28,'Slope','FontWeight','normal');
+    legs{ii+1} = [20 1 25 3];putLegend(gca,legs,'colors',colors,'sigR',{sigR,'ancovai',sigColor,9}); text(20,28,'Intercept','FontWeight','normal');
     changePosition(gca,[-0.03 0.09 0.09 -0.06]);
     
     save_pdf(hf,mData.pdf_folder,sprintf('scatter zMI'),600);

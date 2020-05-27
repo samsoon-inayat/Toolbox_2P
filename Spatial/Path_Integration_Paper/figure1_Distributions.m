@@ -10,11 +10,11 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 axes_font_size = mData.axes_font_size;
 % allCells = mData.allCells;
-selAnimals = [1:4 9];
+selAnimals = [1:9];
 % selAnimals = 5:8;
 % selAnimals = 1:8;
 n = 0;
-cN = 4;
+cN = 1;
 %%
 runthis = 1;
 if runthis
@@ -54,7 +54,7 @@ if runthis
     minBin = min(gAllVals);
     maxBin = 15;%max(gAllVals);
     incr = (maxBin-minBin)/100;
-    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 4 2 1.5],'color','w');
+    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 2 1.5],'color','w');
     hold on;
     [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
     hold on;
