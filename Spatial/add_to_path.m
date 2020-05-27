@@ -12,12 +12,12 @@ temp = fullfile(mainDir,'Downloaded','append_pdfs');addpath(temp);
 temp = fullfile(interDir,'MatlabCode','Thor2P');addpath(temp);
 temp = fullfile(interDir,'MatlabCode','FigureFunctions');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','spatial-information-metrics');addpath(temp);
-temp = fullfile(mainDir,'Downloaded','npy-matlab-master');addpath(temp);
+temp = fullfile(mainDir,'Downloaded','npy-matlab');addpath(temp);
 temp = fullfile(mainDir,'Downloaded');addpath(temp);
-temp = fullfile(mainDir,'Downloaded','ca_source_extraction-master');p = genpath(temp);addpath(p);
+temp = fullfile(mainDir,'Downloaded','ca_source_extraction');p = genpath(temp);addpath(p);
 
 
-temp = fullfile(mainDir,'Downloaded','Suite2P-master');p = genpath(temp);addpath(p);
+temp = fullfile(mainDir,'Downloaded','Suite2P');p = genpath(temp);addpath(p);
 
 temp = pwd; p = genpath(temp);addpath(p);
 remove_from_path
