@@ -11,15 +11,13 @@ paramMs = get_parameters_matrices(ei,selAnimals,owr);
 % subgroup of cells
 % here is the selection criteria
 
+selC.air
 selC.areCells = 1; % to see if it is identified as cell by Suite2P
-selC.plane_number = NaN; % to select a particular plane to analyze
-selC.conditionNumber = [2];
-selC.rasterType = [1];
 selC.zMI_threshold = 3; % to select tuned cells
 selC.fwidth_limits = NaN; % to select limits of field widths to be included
 selC.fcenter_limits = NaN; % to select field center locations to be included
 selC.frs_threshold = NaN; % to select a threshold to be put on fitting r-square value
-
+selC.plane_number = NaN; % to select a particular plane to analyze
 
 paramMs1 = get_parameters_matrices(paramMs,selC);
 

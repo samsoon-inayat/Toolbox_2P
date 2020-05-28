@@ -1,74 +1,78 @@
-function figure_place_cells_vs_other_cells(fn,allRs,ccs)
+function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
+
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-colors = mData.colors;
-sigColor = mData.sigColor;
-% selAnimals = 1;
-% selAnimals = 5:8;
-selAnimals = [1:4 9];
-mData.belt_length = ei{selAnimals(1)}.b.belt_length;
-n = 0;
+selAnimals = [1:9];
+% in the following variable all the measurements are in the matrices form
+% for each variable colums indicate raster and stim marker types specified 
+% the rows indicate condition numbers.
+owr = 0;
+paramMs = get_parameters_matrices(ei,[1:9],owr);
+% after getting all matrics, we can apply selection criteria to select a
+% subgroup of cells
+% here is the selection criteria
 
+selC.areCells = NaN; % to see if it is identified as cell by Suite2P
+selC.plane_number = NaN; % to select a particular plane to analyze
+selC.conditionNumber = [1];
+selC.rasterType = [1];
+selC.zMI_threshold = 3; % to select tuned cells
+selC.fwidth_limits = NaN; % to select limits of field widths to be included
+selC.fcenter_limits = NaN; % to select field center locations to be included
+selC.frs_threshold = 0.4; % to select a threshold to be put on fitting r-square value
+paramMs1 = get_parameters_matrices(paramMs,selC);
+
+
+for ani = 1:length(selAnimals)
+    an = selAnimals(ani);
+    Perc_an(1,ani) = 100*sum(paramMs1.cellSel{an})/sum(paramMs.all_areCells{an});
+end
+Perc_an
 %%
-selCells = 'areCells';
-varName = 'rasters';
-planeNumbers = 'All';
-maxDistTime = [142 15];
-contextNumbers = ones(1,4)*1;
-stimMarkers = {'air','air','belt','airI'};
-rasterTypes = {'dist','time','dist','time'};
-% contextNumbers = [1 2 3 4];
-% stimMarkers = {'air','air','air','air'};
-% rasterTypes = {'dist','dist','dist','dist'};
 trials = 3:10;
 trials10 = 3:9;
 % align cells
-CNi = 4;
-% select spatial cells
-sNi = 4;
-% cNi = sNi;
-for ii = 1:length(contextNumbers)
-    contextNumber = contextNumbers(ii);
-    mRsi = []; distDi = [];
-    for jj = 1:length(selAnimals)
-        disp([ii jj]);
-        if isequal([ii jj],[1 5])
-            n = 0;
+CNi = selC.rasterType;
+stimMarkers = paramMs.stimMarkers;
+rasterTypes = paramMs.rasterTypes;
+conditionNumber = selC.conditionNumber;
+
+[temp,~,~] = getParamValues('',ei(1),1,1,'air','dist','areCells',[Inf Inf]);
+dxs = diff(temp.xs); bin_width = dxs(1); xs = 0:bin_width:1000;
+
+for si = 1:length(stimMarkers)
+    stimMarker = stimMarkers{si};
+    rasterType = rasterTypes{si};
+    mRsi = [];
+    for ani = 1:length(selAnimals)
+        an = selAnimals(ani);
+        tei = ei(an);
+        selCells = paramMs1.cellSel{an};
+        cns = paramMs.all_cns{an};
+        maxDistTime = paramMs.maxDistTime;
+        [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,conditionNumber,stimMarker,rasterType,cns(selCells,2:3),maxDistTime);
+        if length(tempD) == 0
+            continue;
         end
-%         [pcs_d cns areCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber,'airI','dist',selCells,maxDistTime);
-        [pcs cns areCells] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{sNi},rasterTypes{sNi},selCells,maxDistTime);
-%         [clus] = getParamValues('cluster3',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{sNi},rasterTypes{sNi},selCells,maxDistTime);
-%         pcs = pcs_d | pcs_t;
-%         pcs = logical(ones(size(pcs)));
-        [tempD cns] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
-        [zMIs cns] = getParamValues('info_metrics.ShannonMI_Zsh',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
-        [data cns areCells] = getParamValues('',ei(selAnimals(jj)),planeNumbers,contextNumber,stimMarkers{ii},rasterTypes{ii},selCells,maxDistTime);
-%         cellSel = clus(areCells) == 1;
-        cellSel = pcs;
-%         cellSel = 1:sum(areCells)';
-        npcs(jj,ii) = 100*sum(pcs)/length(pcs);
-        distDi = [distDi;cellSel];
         try
              mR = findMeanRasters(tempD,trials);
-         catch
+        catch
              mR = findMeanRasters(tempD,trials10);
-         end
-         mRsi = [mRsi;mR];
+        end
+        mRsi = [mRsi;mR];
     end
-    distD{ii} = distDi;
-     allRs{ii} = mRsi;
-    dxs = diff(data.xs); bin_width = dxs(1); xs = 0:bin_width:1000;
-    time_xs{ii} = xs(1:size(mRsi,2));
+    allRs{si} = mRsi;
+    time_xs{si} = xs(1:size(mRsi,2));
+end
+[~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},[]);
+for ii = 1:length(stimMarkers)
+    mRsi = allRs{ii};
+    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
 end
 
-[~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},find(distD{CNi}));
-for ii = 1:length(contextNumbers)
-    mRsi = allRs{ii};
-    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,find(distDi),cellNums);
-end
-npcs(:,1)
 n = 0;
+
 %%
 ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...
     'spaceRowsCols',[-0.01 -0.05],'rightUpShifts',[0.1 0.06],'widthHeightAdjustment',...

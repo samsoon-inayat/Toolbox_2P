@@ -23,11 +23,15 @@ for ee = 1:length(ei)
     tei = ei{ee};
     allplanes = tei.plane;
     if ~ischar(planeNumbers)
-        for ii = 1:length(planeNumbers)
-            try
-                planes(ii) = allplanes(planeNumbers(ii));
-            catch
-                continue;
+        if isnan(planeNumbers)
+            planes = allplanes;
+        else
+            for ii = 1:length(planeNumbers)
+                try
+                    planes(ii) = allplanes(planeNumbers(ii));
+                catch
+                    continue;
+                end
             end
         end
     else
@@ -41,12 +45,18 @@ for ee = 1:length(ei)
         areCells = logical(tplane.tP.iscell(:,1));
         if ischar(selCells)
             if strcmp(selCells,'All')
-                theSelectedCells = ones(length(areCells),1);
+                theSelectedCells = logical(ones(length(areCells),1));
             else
                 theSelectedCells = areCells;
             end
         else
-            theSelectedCells = logical(selCells);
+            if size(selCells,2) == 1
+                theSelectedCells = logical(selCells);
+            else
+                cellsInds = selCells(selCells(:,1) == pp,2);
+                theSelectedCells = logical(zeros(size(areCells)));
+                theSelectedCells(cellsInds) = 1;
+            end
         end
         rasters = tplane.contexts(contextNumber).rasters;
         if strcmp(rasterType,'dist')
@@ -212,6 +222,7 @@ cs = sigma;
 rs_th = 0.4;
 PWs = 2.36*cs./sqrt(2)*binwidth;
 data.place_field_properties.rs = rs; data.place_field_properties.pws = PWs';
+data.place_field_properties.amp = as;
 if strcmp(rasterType,'dist')
     data.place_field_properties.centers = (bs * binwidth)';
 %     data.centers = (bs * binwidth)';
