@@ -12,8 +12,8 @@ paramMs = get_parameters_matrices(ei,[1:9],owr);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 
-cellsOrNot = 1; planeNumber = NaN;
-selCN = [1 1]; selRT = [1 2];
+cellsOrNot = NaN; planeNumber = NaN;
+selCN = [1 2]; selRT = [1 ];
 selC = make_selC_struct(cellsOrNot,planeNumber,selCN,selRT,3,NaN,NaN,NaN);
 pMs = get_parameters_matrices(paramMs,selC);
 
@@ -31,7 +31,7 @@ end
 
 for ani = 1:length(selAnimals)
     an = selAnimals(ani);
-    Perc_an(1,ani) = 100*sum(pMs.cellSel{an})/sum(areCells{an});
+    Perc_an(1,ani) = 100*sum(cellSel{an})/sum(areCells{an});
 end
 Perc_an
 
@@ -66,7 +66,7 @@ if 1
         for ani = 1:length(selAnimals)
             an = selAnimals(ani);
             tei = ei(an);
-            selCells = pMs.cellSel{an};
+            selCells = cellSel{an};
             cns = paramMs.all_cns{an};
             maxDistTime = paramMs.maxDistTime;
             [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,conditionNumber,stimMarker,rasterType,cns(selCells,2:3),maxDistTime);

@@ -84,7 +84,6 @@ if isstruct(aei) & isstruct(selAnimals)
     conditionNumbers = selC.conditionNumber;
     rasterTypes = selC.rasterType;
     for ci = 1:length(conditionNumbers)
-        
         cellLists{ci} = getCellList(paraMs,selC,varNamesDH,conditionNumbers(ci),rasterTypes(ci));
     end
 %     cellList = andCellLists(cellLists);
@@ -105,16 +104,7 @@ for an = 1:length(cellLists{1})
     for clsi = 1:length(cellLists)
         cellSel0s = cellSel0s | cellLists{clsi}{an};
     end
-    cellList{an} = cellSel0s;
-end
-
-function cellList = andCellLists(cellLists)
-for an = 1:length(cellLists{1})
-    cellSel0s = logical(ones(size(cellLists{1}{an})));
-    for clsi = 1:length(cellLists)
-        cellSel0s = cellSel0s & cellLists{clsi}{an};
-    end
-    cellList{an} = cellSel0s;
+    cellList{an} = cellSel0s
 end
 
 function cellList = getCellList(paraMs,selC,varNamesDH,conditionNumber,rasterType)
