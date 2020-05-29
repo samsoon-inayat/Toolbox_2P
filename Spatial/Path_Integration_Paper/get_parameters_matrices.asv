@@ -81,12 +81,20 @@ end
 if isstruct(aei) & isstruct(selAnimals)
     paraMs = aei; clear aei;
     selC = selAnimals; clear selAnimals;
-    conditionNumbers = selC.conditionNumber;
-    rasterTypes = selC.rasterType;
-    for ci = 1:length(conditionNumbers)
-        cellLists{ci} = getCellList(paraMs,selC,varNamesDH,conditionNumbers(ci),rasterTypes(ci));
+    CsRTs = selC.conditionsAndRasterTypes;
+    [rows,cols] = size(CsRTs);
+    for rr = 1:rows
+        for cc = 1:cols
+            tcond = CsRTs(rr,cc);
+            Ndigits = dec2base(tcond,10) - '0';
+            cellLists{ci} = getCellList(paraMs,selC,varNamesDH,Ndigits(1),Ndigits(2));
+    %         cellListsD = [];
+    %         for di = 1:length(Ndigits)
+    %             cellListsD{di} = getCellList(paraMs,selC,varNamesDH,Ndigits(di),rasterTypes(ci));
+    %         end
+    %         cellLists{ci} = andCellLists(cellListsD);
+        end
     end
-%     cellList = andCellLists(cellLists);
     cellList = orCellLists(cellLists);
     out = getVals(paraMs,cellList,varNamesDH);
     return;
@@ -104,7 +112,16 @@ for an = 1:length(cellLists{1})
     for clsi = 1:length(cellLists)
         cellSel0s = cellSel0s | cellLists{clsi}{an};
     end
-    cellList{an} = cellSel0s
+    cellList{an} = cellSel0s;
+end
+
+function cellList = andCellLists(cellLists)
+for an = 1:length(cellLists{1})
+    cellSel0s = logical(ones(size(cellLists{1}{an})));
+    for clsi = 1:length(cellLists)
+        cellSel0s = cellSel0s & cellLists{clsi}{an};
+    end
+    cellList{an} = cellSel0s;
 end
 
 function cellList = getCellList(paraMs,selC,varNamesDH,conditionNumber,rasterType)

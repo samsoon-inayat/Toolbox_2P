@@ -16,7 +16,7 @@ selAnimals = [1:9];
 n = 0;
 cN = 1;
 %%
-runthis = 1;
+runthis = 0;
 if runthis
 %     cN = 1;
     planeNumbers = 'All';

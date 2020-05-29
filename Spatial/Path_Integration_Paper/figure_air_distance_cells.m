@@ -2,7 +2,7 @@ function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-selAnimals = [1:9];
+selAnimals = [1:4 9];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -13,52 +13,33 @@ paramMs = get_parameters_matrices(ei,[1:9],owr);
 % here is the selection criteria in make_selC_structure function
 
 
-cellsOrNot = 1; planeNumber = NaN;
-selCN = [1 2 3 4]; selRT = [1];
-% selC = make_selC_struct(cellsOrNot,planeNumber,selCN,selRT,3,NaN,NaN,0.4);
-% pMs = get_parameters_matrices(paramMs,selC);
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
+conditionsAndRasterTypes = [11 13]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+[cpMs1,pMs1] = get_parameters_matrices(paramMs,selC);
 
-for cni = 1:length(selCN)
-    cn = selCN(cni);
-    for rti = 1:length(selRT)
-        rt = selRT(rti);
-        % selC = make_selC_struct(areCells,planeNumber,conditionNumber,rasterType,zMI_threshold,fwidth_limits,fcenter_limits,frs_threshold)
-        selC = make_selC_struct(cellsOrNot,planeNumber,cn,rt,3,NaN,NaN,0.4);
-        pMs{cni,rti} = get_parameters_matrices(paramMs,selC);
-    end
-end
+conditionsAndRasterTypes = [21 23]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+[cpMs2,pMs2] = get_parameters_matrices(paramMs,selC);
+
+conditionsAndRasterTypes = [11 13 21 23]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+[cpMs,pMs] = get_parameters_matrices(paramMs,selC);
+
+
 
 for rr = 1:size(pMs,1)
-    for ani = 1:length(paramMs.all_areCells)
-        cellSel{rr,ani} = pMs{rr,1}.cellSel{ani};% & ~pMs{rr,2}.cellSel{ani};
-    end
-end
-for ani = 1:length(paramMs.all_areCells)
-    
-%     if length(pMs) > 1
-%         for ss = 2:length(pMs)
-%             cellSel{ani} = cellSel{ani} & pMs{ss}.cellSel{ani};
-%         end
-%     end
-    if ~isnan(cellsOrNot)
-        if cellsOrNot
-            areCells{ani} = paramMs.all_areCells{ani};
-        else
-            areCells{ani} = ~paramMs.all_areCells{ani};
+    for cc = 1:size(pMs,2)
+        for ani = 1:length(selAnimals)
+            an = selAnimals(ani);
+            Perc_an(rr,cc,ani) = pMs{rr,cc}.perc(an);
         end
-    else
-        areCells{ani} = logical(ones(size(paramMs.all_areCells{ani})));
     end
 end
 
-for rr = 1:size(pMs,1)
-    for ani = 1:length(selAnimals)
-        an = selAnimals(ani);
-        Perc_an(rr,ani) = 100*sum(cellSel{rr,an})/sum(areCells{an});
-    end
-end
+squeeze(Perc_an)
 
-Perc_an
+[cpMs1.perc;pMs1{1,1}.perc;pMs1{1,2}.perc]
+
+[cpMs2.perc;pMs2{1,1}.perc;pMs2{1,2}.perc]
+
 %%
 trials = 3:10;
 trials10 = 3:9;
@@ -66,20 +47,23 @@ trials10 = 3:9;
 stimMarkers = paramMs.stimMarkers;
 rasterTypes = paramMs.rasterTypes;
 CNi = 3; 
-rasterTypeN = selRT(1);
+rasterTypeN = 1;
 
 
-for si = 1:4
-    stimMarker = stimMarkers{rasterTypeN};
-    rasterType = rasterTypes{rasterTypeN};
+for si = 1:length(conditionsAndRasterTypes)
+    tcond = conditionsAndRasterTypes(si);
+    Ndigits = dec2base(tcond,10) - '0';
     mRsi = [];
     for ani = 1:length(selAnimals)
+%         [si ani]
         an = selAnimals(ani);
         tei = ei(an);
-        selCells = cellSel{si,ani};%pMs{si,1}.cellSel{ani};
+        selCells = pMs{si}.cellSel{an};
+%         selCells = cpMs.cellSel{an};
         cns = paramMs.all_cns{an};
         maxDistTime = paramMs.maxDistTime;
-        [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,si,stimMarker,rasterType,cns(selCells,2:3),maxDistTime);
+        [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
+            cns(selCells,2:3),maxDistTime);
         if length(tempD) == 0
             continue;
         end
@@ -90,11 +74,11 @@ for si = 1:4
         end
         mRsi = [mRsi;mR];
     end
-    [temp,~,~] = getParamValues('',ei(1),1,1,stimMarker,rasterType,'areCells',[Inf Inf]);
+    [temp,~,~] = getParamValues('',ei(1),1,1,stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},'areCells',[Inf Inf]);
     dxs = diff(temp.xs); bin_width = dxs(1); xs = 0:bin_width:1000;
     allRs{si} = mRsi;
     time_xs{si} = xs(1:size(mRsi,2));
-    raster_labels{si} = sprintf('Condition # %d',si);
+    raster_labels{si} = sprintf('Con# %d, Rast - %d',Ndigits(1),Ndigits(2));
 end
 
 

@@ -1,4 +1,4 @@
-function out = get_parameters_matrices(aei,selAnimals,owr)
+function [out,all_out] = get_parameters_matrices(aei,selAnimals,owr)
 
 if ~exist('aei','var')
     aei = evalin('base','ei10');
@@ -81,14 +81,20 @@ end
 if isstruct(aei) & isstruct(selAnimals)
     paraMs = aei; clear aei;
     selC = selAnimals; clear selAnimals;
-    conditionNumbers = selC.conditionNumber;
-    rasterTypes = selC.rasterType;
-    for ci = 1:length(conditionNumbers)
-        
-        cellLists{ci} = getCellList(paraMs,selC,varNamesDH,conditionNumbers(ci),rasterTypes(ci));
+    CsRTs = selC.conditionsAndRasterTypes;
+    [rows,cols] = size(CsRTs);
+    cellListsRows = [];
+    for rr = 1:rows
+        cellListsCols = [];
+        for cc = 1:cols
+            tcond = CsRTs(rr,cc);
+            Ndigits = dec2base(tcond,10) - '0';
+            cellListsCols{cc} = getCellList(paraMs,selC,varNamesDH,Ndigits(1),Ndigits(2));
+            all_out{rr,cc} = getVals(paraMs,cellListsCols{cc},varNamesDH);
+        end
+        cellListsRows{rr} = andCellLists(cellListsCols);
     end
-%     cellList = andCellLists(cellLists);
-    cellList = orCellLists(cellLists);
+    cellList = orCellLists(cellListsRows);
     out = getVals(paraMs,cellList,varNamesDH);
     return;
 end
@@ -162,5 +168,9 @@ for an = 1:length(paraMs.all_areCells)
         cmdTxt = sprintf('out.all_%s{an} = paraMs.all_%s{an}(:,:,cellList{an});',thisVarDH,thisVarDH);
         eval(cmdTxt);
     end
+    out.numCells(an) = sum(cellList{an});
+    out.perc(an) = 100*sum(cellList{an})/length(cellList{an});
+    out.numROIs(an) = length(cellList{an});
+    out.areCells(an) = sum(paraMs.all_areCells{an});
 end
 out.cellSel = cellList;

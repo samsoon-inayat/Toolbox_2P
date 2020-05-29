@@ -1,8 +1,8 @@
-function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
+function figure_place_remapping(fn,allRs,ccs)
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-selAnimals = [1:4 9];
+selAnimals = [1:9];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -12,10 +12,10 @@ paramMs = get_parameters_matrices(ei,[1:9],owr);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 
-cellsOrNot = 1; planeNumber = NaN;
-selCN = [1 1]; selRT = [1 2];
-selC = make_selC_struct(cellsOrNot,planeNumber,selCN,selRT,3,NaN,NaN,NaN);
-pMs = get_parameters_matrices(paramMs,selC);
+cellsOrNot = NaN; planeNumber = NaN;
+conditionsAndRasterTypes = [11 21 31 41];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,3,NaN,NaN,0.4);
+[pMs apMs] = get_parameters_matrices(paramMs,selC);
 
 for ani = 1:length(paramMs.all_areCells)
     if ~isnan(cellsOrNot)
@@ -56,9 +56,9 @@ trials10 = 3:9;
 stimMarkers = paramMs.stimMarkers;
 rasterTypes = paramMs.rasterTypes;
 CNi = 1; 
-conditionNumber = 1; rasterTypeN = selRT(1);
+conditionNumber = 1; rasterTypeN = 1;
 
-if 1
+if 0
     for si = 1:length(stimMarkers)
         stimMarker = stimMarkers{si};
         rasterType = rasterTypes{si};
@@ -86,6 +86,11 @@ if 1
         time_xs{si} = xs(1:size(mRsi,2));
         raster_labels{si} = sprintf('%s-%s',stimMarker,rasterType);
     end
+    [~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},[]);
+    for ii = 1:length(stimMarkers)
+        mRsi = allRs{ii};
+        [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
+    end
 else
     for si = 1:4
         stimMarker = stimMarkers{rasterTypeN};
@@ -94,7 +99,7 @@ else
         for ani = 1:length(selAnimals)
             an = selAnimals(ani);
             tei = ei(an);
-            selCells = cellSel{an};
+            selCells = apMs{si}.cellSel{an};
             cns = paramMs.all_cns{an};
             maxDistTime = paramMs.maxDistTime;
             [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,si,stimMarker,rasterType,cns(selCells,2:3),maxDistTime);
@@ -114,15 +119,16 @@ else
         time_xs{si} = xs(1:size(mRsi,2));
         raster_labels{si} = sprintf('Condition # %d',si);
     end
+    [~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},[]);
+    for ii = 1:length(stimMarkers)
+        mRsi = allRs{ii};
+        [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[]);
+    end
 end
 
 
 
-[~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},[]);
-for ii = 1:length(stimMarkers)
-    mRsi = allRs{ii};
-    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
-end
+
 
 n = 0;
 

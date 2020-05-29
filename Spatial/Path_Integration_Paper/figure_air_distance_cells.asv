@@ -2,7 +2,7 @@ function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-selAnimals = [1:9];
+selAnimals = [1:4 9];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -12,21 +12,22 @@ paramMs = get_parameters_matrices(ei,[1:9],owr);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 
-cellsOrNot = NaN; planeNumber = NaN;
-selCN = [1 2 3 4]; selRT = [1 2];
-for cni = 1:length(selCN)
-    cn = selCN(cni);
-    for rti = 1:length(selRT)
-        rt = selRT(rti);
-        % selC = make_selC_struct(areCells,planeNumber,conditionNumber,rasterType,zMI_threshold,fwidth_limits,fcenter_limits,frs_threshold)
-        selC = make_selC_struct(cellsOrNot,planeNumber,cn,rt,3,NaN,NaN,0.4);
-        pMs{cni,rti} = get_parameters_matrices(paramMs,selC);
+
+cellsOrNot = 1; planeNumber = NaN;
+% conditionsAndRasterTypes = [11 21 31 41];
+% conditionsAndRasterTypes = [12 22 32 42];
+conditionsAndRasterTypes = [13 23 33 43];
+conditionsAndRasterTypes = [14 24 34 44];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,3,NaN,NaN,NaN);
+[~,pMs] = get_parameters_matrices(paramMs,selC);
+
+for rr = 1:size(pMs,1)
+    for ani = 1:length(paramMs.all_areCells)
+        cellSel{rr,ani} = pMs{rr,1}.cellSel{ani};% & ~pMs{rr,2}.cellSel{ani};
     end
 end
-
 for ani = 1:length(paramMs.all_areCells)
-    for rr = 1:size(pMs,
-    cellSel{ani} = pMs{1}.cellSel{ani};
+    
 %     if length(pMs) > 1
 %         for ss = 2:length(pMs)
 %             cellSel{ani} = cellSel{ani} & pMs{ss}.cellSel{ani};
@@ -43,10 +44,13 @@ for ani = 1:length(paramMs.all_areCells)
     end
 end
 
-for ani = 1:length(selAnimals)
-    an = selAnimals(ani);
-    Perc_an(1,ani) = 100*sum(cellSel{an})/sum(areCells{an});
+for rr = 1:size(pMs,1)
+    for ani = 1:length(selAnimals)
+        an = selAnimals(ani);
+        Perc_an(rr,ani) = 100*sum(cellSel{rr,an})/sum(areCells{an});
+    end
 end
+
 Perc_an
 %%
 trials = 3:10;
@@ -54,8 +58,8 @@ trials10 = 3:9;
 % align cells
 stimMarkers = paramMs.stimMarkers;
 rasterTypes = paramMs.rasterTypes;
-CNi = 1; 
-rasterTypeN = selRT(1);
+CNi = 3; 
+rasterTypeN = 1;
 
 
 for si = 1:4
@@ -63,9 +67,10 @@ for si = 1:4
     rasterType = rasterTypes{rasterTypeN};
     mRsi = [];
     for ani = 1:length(selAnimals)
+%         [si ani]
         an = selAnimals(ani);
         tei = ei(an);
-        selCells = pMs{si,1}.cellSel{ani};
+        selCells = pMs{si}.cellSel{an};
         cns = paramMs.all_cns{an};
         maxDistTime = paramMs.maxDistTime;
         [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,si,stimMarker,rasterType,cns(selCells,2:3),maxDistTime);
