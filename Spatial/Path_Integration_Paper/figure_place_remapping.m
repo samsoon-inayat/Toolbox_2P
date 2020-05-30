@@ -3,6 +3,11 @@ function figure_place_remapping(fn,allRs,ccs)
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
 selAnimals = [1:9];
+
+colors = mData.colors;
+sigColor = mData.sigColor;
+axes_font_size = mData.axes_font_size;
+
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -12,43 +17,42 @@ paramMs = get_parameters_matrices(ei,[1:9],owr);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 
-cellsOrNot = NaN; planeNumber = NaN;
-conditionsAndRasterTypes = [11 21 31 41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,3,NaN,NaN,0.4);
-[pMs apMs] = get_parameters_matrices(paramMs,selC);
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = [0 140]; rs_th = 0.4;
+conditionsAndRasterTypes = [21 31]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+[cpMs pMs] = get_parameters_matrices(paramMs,selC);
 
-for ani = 1:length(paramMs.all_areCells)
-    if ~isnan(cellsOrNot)
-        if cellsOrNot
-            areCells{ani} = paramMs.all_areCells{ani};
-        else
-            areCells{ani} = ~paramMs.all_areCells{ani};
-        end
-    else
-        areCells{ani} = logical(ones(size(paramMs.all_areCells{ani})));
-    end
-end
-
-for ani = 1:length(selAnimals)
-    an = selAnimals(ani);
-    Perc_an(1,ani) = 100*sum(pMs.cellSel{an})/sum(areCells{an});
-end
-Perc_an
-
-conditions = [1 2]; rasterTypes = [1];
-for ani = 1:length(selAnimals)
-    an = selAnimals(ani);
-%     cells = 
-        
-end
 
 %% place field centers scatter plot from one condition to another
-
+runthis = 1;
+if runthis
+    for si = 1:length(conditionsAndRasterTypes)
+        tcond = conditionsAndRasterTypes(si);
+        Ndigits = dec2base(tcond,10) - '0';
+        pcs = [];
+        for ani = 1:length(selAnimals)
+            an = selAnimals(ani);
+            pcs = [pcs;squeeze(cpMs.all_fcenters{an}(Ndigits(1),Ndigits(2),:))];
+        end
+        apcs{si} = pcs;
+    end
+    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 2 1.5],'color','w');
+    hold on;
+    xvals = apcs{1}; yvals = apcs{2}; ii = 1;
+    scatter(xvals,yvals,20,'.','MarkerEdgeColor',colors{ii},'MarkerFaceColor','none');
+    mdl = fit_linear(xvals,yvals);
+    ft = fittype('poly1');
+    [ftc,gof,output] = fit(xvals,yvals,ft);    rsq(ii) = gof.rsquare;
+    co = coeffvalues(ftc)
+    yhvals = ft(co(1),co(2),xvals);
+    hold on;plot(xvals,yhvals,'color',colors{ii},'LineWidth',1)
+    text(20,15-3*ii,sprintf('Rsq = %.3f',rsq(ii)),'color',colors{ii});
+    return;
+end
 
 
 
 %%
-runthis = 1;
+runthis = 0;
 if runthis
 trials = 3:10;
 trials10 = 3:9;

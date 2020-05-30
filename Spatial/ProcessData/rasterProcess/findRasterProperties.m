@@ -5,6 +5,9 @@ if sum(ow) == -3
 end
 
 allContexts = contextDefinitions;
+% 
+% allContexts.rasterFunctions = {'find_MI';'getFits_myGaussFit';'fractalDim'};
+% allContexts.varNames = {'info_metrics';'gauss_fit_on_mean';'fractal_dim'};
 
 
 Rs_functions = allContexts.rasterFunctions;
