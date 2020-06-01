@@ -138,8 +138,9 @@ if isvector(distD) & strcmp(do_mean,'Yes')
     ylim([0 maxY]);
     set(gca,'TickDir','out','FontSize',7,'FontWeight','Normal','XTick',bins(1:2:end),'linewidth',0.5);
    
-
-    sigR = significanceTesting(distD);
+    if length(distD) > 1
+        sigR = significanceTesting(distD);
+    end
 
     if ~isempty(barGraph)
         barPos = barGraph{2};

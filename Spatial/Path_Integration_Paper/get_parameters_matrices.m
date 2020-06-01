@@ -88,8 +88,17 @@ if isstruct(aei) & isstruct(selAnimals)
         cellListsCols = [];
         for cc = 1:cols
             tcond = CsRTs(rr,cc);
+            if tcond < 0
+                tcond = abs(tcond);
+                neg = 1;
+            else
+                neg = 0;
+            end
             Ndigits = dec2base(tcond,10) - '0';
             cellListsCols{cc} = getCellList(paraMs,selC,varNamesDH,Ndigits(1),Ndigits(2));
+            if neg
+                cellListsCols{cc} = notCellList(cellListsCols{cc});
+            end
             all_out{rr,cc} = getVals(paraMs,cellListsCols{cc},varNamesDH);
         end
         cellListsRows{rr} = andCellLists(cellListsCols);
@@ -103,6 +112,11 @@ if isstruct(aei) & isnumeric(selAnimals)
     paraMs = aei; clear aei;
     selC = selAnimals; clear selAnimals;
 
+end
+
+function cellList = notCellList(cellList)
+for an = 1:length(cellList)
+    cellList{an} = ~cellList{an};
 end
 
 function cellList = orCellLists(cellLists)

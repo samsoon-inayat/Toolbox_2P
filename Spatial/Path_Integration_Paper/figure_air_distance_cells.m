@@ -49,7 +49,7 @@ rasterTypeN = 1;
 
 
 for si = 1:length(conditionsAndRasterTypes)
-    tcond = conditionsAndRasterTypes(si);
+    tcond = abs(conditionsAndRasterTypes(si));
     Ndigits = dec2base(tcond,10) - '0';
     mRsi = [];
     for ani = 1:length(selAnimals)
