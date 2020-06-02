@@ -1,4 +1,15 @@
-function T = getTable(raw,sel_id,TR,P)
+function T = getTable(raw,animals,TR,P)
+
+T = [];
+for ii = 1:length(animals) % for all the animals in the animal list make a table for the selected protocol or recording /training
+    sel_id = animals(ii);
+    TT = getTable_1(raw,sel_id,TR,P); 
+    T = [T;TT];
+end
+
+
+function T = getTable_1(raw,sel_id,TR,P)
+
 % columns in excel file
 IDs = getSelectedCol(raw,'A');
 RecordingDate = getSelectedCol(raw,'B');

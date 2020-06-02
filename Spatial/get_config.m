@@ -6,4 +6,8 @@ config.dFolder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data
 config.dFolder{2} = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
 config.pFolder = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\S_Drive\Processed_Data';
 config.py_pFolder = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\S_Drive\pySuite2p_Processed_Data';
+config.pdFolder{1} = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\S_Drive\pySuite2p_Processed_Data';
+config.pdFolder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data';
 config.tifDataFolder = 'S:\Tif_Data';
+
+config.mainCodeFolder = pwd;

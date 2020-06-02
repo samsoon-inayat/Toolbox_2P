@@ -1,11 +1,11 @@
-function recordingFolder = getRecordingFolder(T,D)
+function T = getRecordingFolder(T,D)
 nd = [];
 for ii = 1:size(T,1)
-    ii
-    if ii == 15
+%     ii
+    if ii == 3
         n = 0;
     end
-    animal_id = (cell2mat(T{ii,1}));
+    animal_id = ((T{ii,1}));
     exp_date = datestr(cell2mat(T{ii,2}));
     ind = D.animalListNum == animal_id;
     if sum(ind) > 1
@@ -24,7 +24,8 @@ for ii = 1:size(T,1)
             end
         end
         if length(ind) > 1
-            error;
+            recordingFolder{ii,1} = 'Missing - Check Manually';
+            continue;
         end
     end
     animal_data = D.animal(ind);
@@ -32,6 +33,7 @@ for ii = 1:size(T,1)
     ind = strcmp(cellstr(date_list),exp_date);
     if sum(ind) == 0 || isempty(ind)
         nd = [nd ii];
+        recordingFolder{ii,1} = 'Missing - Check Manually';
         continue;
     end
     animal_date_data = animal_data.date(ind);
@@ -45,3 +47,6 @@ for ii = 1:size(T,1)
     ind = sizeOfFile == max(sizeOfFile);
     recordingFolder{ii,1} = files(ind).folder;
 end
+
+TTemp = table(recordingFolder,'VariableNames',{'RecorodingFolder'});
+T = [T TTemp];

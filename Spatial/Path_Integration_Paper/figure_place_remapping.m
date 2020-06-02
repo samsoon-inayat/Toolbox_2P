@@ -18,7 +18,7 @@ paramMs = get_parameters_matrices(ei,[1:9],owr);
 % here is the selection criteria in make_selC_structure function
 
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [3 120]; fcens = [0 140]; rs_th = 0.4;
-conditionsAndRasterTypes = [21 31]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+conditionsAndRasterTypes = [11 21]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs pMs] = get_parameters_matrices(paramMs,selC);
 
 
@@ -31,10 +31,13 @@ if runthis
         pcs = [];
         for ani = 1:length(selAnimals)
             an = selAnimals(ani);
-            pcs = [pcs;squeeze(cpMs.all_fwidths{an}(Ndigits(1),Ndigits(2),:))];
+            thisan_pcs = squeeze(cpMs.all_fwidths{an}(Ndigits(1),Ndigits(2),:));
+            pcs = [pcs;thisan_pcs];
+            apcs_an{ani,si} = thisan_pcs;
         end
         apcs{si} = pcs;
     end
+    apcs_an
     hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 2 1.5],'color','w');
     hold on;
     xvals = apcs{1}; yvals = apcs{2}; ii = 1;

@@ -5,6 +5,9 @@ function ids = getIDs(raw,colA,selRows)
         selRows = 1:size(raw,1);
     end
     for ii = 1:length(selRows)
+        if ii == 313
+            n = 0;
+        end
         try
             if isnumeric(raw{selRows(ii),col})
                 ids(ii) = (raw{selRows(ii),col});
