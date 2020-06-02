@@ -61,6 +61,7 @@ for x in dir_names:
     ops.update({'bidiphase':bidishift[0][0]})
     ops.update({'roidetect':True})
     ops.update({'do_registration':1})
+    ops.update({'tau':1.5})
     print(ops)
     db = {
             'h5py': [], # a single h5 file path
