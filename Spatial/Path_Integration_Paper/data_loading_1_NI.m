@@ -4,10 +4,10 @@ clear all
 clc
 [f,cName] = getFolders;
 T10 = load('T_10_All.mat');
-selT = T10.T([7 11 13 14 16 18 20 21 22],:);
-for ii = 1:size(selT,1)
+selTi = [1:14];
+for ii = 1:size(T10.T,1)
     if ismember(ii,[1:9]) % select which data to load in the second argument
-        ei10(ii) = getData_py(f,selT(ii,:));
+        ei10(ii) = getData_py(f,T10.T(ii,:));
     end
 end
 % ei10 = getData_py(f,selT);
