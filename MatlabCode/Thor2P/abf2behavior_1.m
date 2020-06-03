@@ -24,6 +24,13 @@ if size(d,2) ~= length(db.channel)
     display('Check your meta data file ... number of channels not consistent with number of channel names provided');
     error;
 end
+o.channelsChanged = 0;
+i_channels = identify_abf_channels(d,si);
+if ~isequal(db.channel,i_channels)
+    db.channel = i_channels;
+    disp('Channel designation in xml file is not correct, please check ... using identified channels');
+    o.channelsChanged = 1;
+end
 
 temp = ~cellfun(@isempty,(strfind(lower(db.channel),'lfp')));
 [val,idx] = find(temp);

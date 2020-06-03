@@ -1,6 +1,7 @@
 function channels = identify_abf_channels(d,si)
 
 if size(d,2) == 5
+    channels = cell(1,5);
     for ii = 1:size(d,2)
         thisSignal = d(:,ii);
         risingEdges = find_rising_edge(d(:,ii),0.5,2);
@@ -11,14 +12,13 @@ if size(d,2) == 5
         vals(ii,2) = sum(thisSignal < 2.5);
         ratioV(ii) = vals(ii,1)/vals(ii,2);
     end
-
-
-    ind = find(ratioV == max(ratioV));
-    channels{ind} = 'photo_sensor';
-
+    
     channels{1} = 'frames';
 
-    inds = setdiff([1:size(d,2)],[1 ind]);
+    ind = find(ratioV(2:end) == max(ratioV(2:end)));
+    channels{ind+1} = 'photo_sensor';
+
+    inds = setdiff([1:size(d,2)],[1 (ind+1)]);
 
     ind = find(edges(inds,1) == min(edges(inds,1)));
 

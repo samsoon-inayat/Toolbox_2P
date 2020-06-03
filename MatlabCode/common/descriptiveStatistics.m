@@ -33,6 +33,6 @@ if isvector(data)
 % %     if decimal_places == 0
 % %         avg = round(avg);sd = round(sd);med = round(med);minD = round(minD); maxD = round(maxD);
 % %     end
-    cmdTxt = sprintf('out.txt = sprintf(''%s'',avg,sd,med,minD,maxD);',txt);
+    cmdTxt = sprintf('out.txt = sprintf(''%s'',avg,med,sd,minD,maxD);',txt);
     eval(cmdTxt)
 end

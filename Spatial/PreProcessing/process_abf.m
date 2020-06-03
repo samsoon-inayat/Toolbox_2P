@@ -3,6 +3,9 @@ function process_abf(T)
 for ii = 1:size(T,1)
     f.recordingFolder = cell2mat(T{ii,6});
     disp(f.recordingFolder);
+    if ~isempty(strfind(f.recordingFolder,'Missing'))
+        continue;
+    end
     db = get_db(f);
     ei = thorGetExperimentInfo(f.recordingFolder);
     ei.recordingFolder = f.recordingFolder;
