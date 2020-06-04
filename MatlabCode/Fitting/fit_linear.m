@@ -1,6 +1,5 @@
 function mdl = fit_linear(xs,ys)
 
-
 statsetfitnlm = statset('fitnlm');
 statsetfitnlm.MaxIter = 1000;
 statsetfitnlm.TolFun = 1e-10;

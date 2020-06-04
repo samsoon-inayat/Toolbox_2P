@@ -2,7 +2,7 @@ function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-selAnimals = [1:4 9];
+selAnimals = [1:9];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -14,14 +14,7 @@ paramMs = get_parameters_matrices(ei,[1:9],owr);
 
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
 conditionsAndRasterTypes = [11 13]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
-[cpMs1,pMs1] = get_parameters_matrices(paramMs,selC);
-
-conditionsAndRasterTypes = [21 23]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
-[cpMs2,pMs2] = get_parameters_matrices(paramMs,selC);
-
-conditionsAndRasterTypes = [11 21 31 41]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = get_parameters_matrices(paramMs,selC);
-
 
 for rr = 1:size(pMs,1)
     for cc = 1:size(pMs,2)
@@ -34,9 +27,6 @@ end
 
 squeeze(Perc_an)
 
-[cpMs1.perc;pMs1{1,1}.perc;pMs1{1,2}.perc]
-
-[cpMs2.perc;pMs2{1,1}.perc;pMs2{1,2}.perc]
 
 %%
 trials = 3:10;
@@ -57,7 +47,7 @@ for si = 1:length(conditionsAndRasterTypes)
         an = selAnimals(ani);
         tei = ei(an);
         selCells = pMs{si}.cellSel{an};
-%         selCells = cpMs.cellSel{an};
+        selCells = cpMs.cellSel{an};
         cns = paramMs.all_cns{an};
         maxDistTime = paramMs.maxDistTime;
         [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
@@ -76,14 +66,11 @@ for si = 1:length(conditionsAndRasterTypes)
     dxs = diff(temp.xs); bin_width = dxs(1); xs = 0:bin_width:1000;
     allRs{si} = mRsi;
     time_xs{si} = xs(1:size(mRsi,2));
-    raster_labels{si} = sprintf('Con# %d, Rast - %d',Ndigits(1),Ndigits(2));
+    raster_labels{si} = sprintf('Cond - %d, Rast - %d',Ndigits(1),Ndigits(2));
 end
 
-
-
-
-[~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},[]);
-for ii = 1:length(stimMarkers)
+% [~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},[]);
+for ii = 1:length(conditionsAndRasterTypes)
     mRsi = allRs{ii};
     [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[]);
 end
@@ -98,7 +85,7 @@ gg = 1;
 set(gcf,'color','w');
 set(gcf,'Position',[1 6 3.5 2]);
 FS = 4;
-for sii = 1:length(stimMarkers)
+for sii = 1:length(conditionsAndRasterTypes)
     P = allP{sii};
     axes(ff.h_axes(1,sii));changePosition(gca,[0 0.05 -0.091 -0.1]);
     imagesc(P);

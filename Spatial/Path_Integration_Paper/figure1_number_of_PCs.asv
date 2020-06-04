@@ -82,7 +82,7 @@ if runthis
         Num2 = find(ismember(within{:,:},[Condition2 Rtype],'rows'));
         row = [Num1 Num2]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{1,6}; h(ii) = 1;
     end
-    xdata = [1:1.5:(10*size(data,2))]; xdata = xdata(1:size(data,2)); maxY = 130;
+    xdata = [1:1.5:(10*size(data,2))]; xdata = xdata(1:size(data,2)); maxY = 200;
     hf = figure(15);clf;set(gcf,'Units','Inches');set(gcf,'Position',[3 3 4 1.5],'color','w');
     hold on;
     ind = 1;
@@ -93,8 +93,8 @@ if runthis
         end
     end
     hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0.5);
+        'maxY',maxY,'ySpacing',8,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0);
     set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 
     xticklabels = {'AirD','AirT','BeltD','AirIT'};xticklabels = repmat(xticklabels,1,4);
