@@ -25,15 +25,14 @@ for ii = 1:size(T10.T,1)
          behaviorPlot(eiB(ii))
          ii
          key = getkey;
-         if key == 27 % esc
+         if key == 27
              break;
          end
-         if key == 105 %i
+         if key == 105
              inds = [inds ii];
          end
     end
 end
-inds
 disp('Done!');
 
 
@@ -49,9 +48,6 @@ for ii = 1:size(T10.T,1)
     end
 end
 disp('Done');
-%%
-
-
 %%
 % ei10 = getData_py(f,selT);
 ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);

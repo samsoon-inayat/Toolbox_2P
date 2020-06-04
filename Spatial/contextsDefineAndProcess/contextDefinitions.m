@@ -1,8 +1,8 @@
 function allContexts = contextDefinitions
 
 allContexts.names = {
-    'Light - Brake';
-    'Air - Brake';
+    'Light - Brake'; % stop the animal with the brake and apply flashes of light
+    'Air - Brake'; % stop the animal with the brake and apply air puff
     'Air - No Cues - No Brake';
     'Air - Light - No Brake';
     'Air - Cues - No Brake';
@@ -10,7 +10,7 @@ allContexts.names = {
     'Air - No Cues - Brake';
     'Air - Tone - Brake';
     'Air - Light - Brake';
-    'Tone - Brake';
+    'Tone - Brake'; % stop the animal with the brake and apply tone
     };
 
 

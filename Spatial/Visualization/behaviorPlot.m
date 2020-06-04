@@ -12,7 +12,7 @@ end
 for ee = 1:length(aei)
     ei = aei{ee};
     try
-    plotMarkers(ei.b,ei.b.air_puff_r,ei.b.stim_r,1001);
+        plotMarkers(ei.b,ei.b.air_puff_r,ei.b.stim_r,1001);
     catch
         plotMarkers(ei.b,ei.b.air_puff_r,[],1001);
     end
