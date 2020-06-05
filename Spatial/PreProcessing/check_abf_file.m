@@ -13,7 +13,7 @@ for ii = 1:size(T,1)
     end
 end
 
-TTemp = table(out,'VariableNames',{'ABF File'});
+TTemp = table(out,'VariableNames',{'ABF_File'});
 T = [T TTemp];
 
 

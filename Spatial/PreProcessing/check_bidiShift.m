@@ -5,7 +5,7 @@ if ~exist('owr','var')
 end
 
 for ii = 1:size(T,1)
-    ii
+%     ii
     try
         rFolder  = cell2mat(T{ii,6});
     catch
