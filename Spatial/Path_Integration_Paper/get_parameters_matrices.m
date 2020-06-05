@@ -31,6 +31,9 @@ contextNumbers = [1 2 3 4];
 
 for an = 1:length(selAnimals)
     tei = aei(selAnimals(an));
+    if isempty(tei{1})
+        continue;
+    end
     for vi = 1:length(varNames)
         thisVarDH = varNamesDH{vi};
         cmdTxt = sprintf('%s_c = [];',thisVarDH);
@@ -141,6 +144,9 @@ function cellList = getCellList(paraMs,selC,varNamesDH,conditionNumber,rasterTyp
 thresholdVars = {'zMI_threshold','','fwidth_limits','fcenter_limits','frs_threshold'};
 for an = 1:length(paraMs.all_areCells)
         cellSel1s = logical(ones(size(paraMs.all_areCells{an})));
+        if isempty(cellSel1s)
+            continue;
+        end
 %         cellSel0s = logical(zeros(size(paraMs.all_areCells{an})));
         cellSel = cellSel1s;
         if ~isnan(selC.areCells)

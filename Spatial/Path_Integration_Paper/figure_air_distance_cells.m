@@ -2,18 +2,18 @@ function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-selAnimals = [1:3];
+selAnimals = [1:7 9:13];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-owr = 1;
-paramMs = get_parameters_matrices(ei,[1:3],owr);
+owr = 0;
+paramMs = get_parameters_matrices(ei,[1:13],owr);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-conditionsAndRasterTypes = [-11 21]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+conditionsAndRasterTypes = [11 21 31 41]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = get_parameters_matrices(paramMs,selC);
 
 for rr = 1:size(pMs,1)
@@ -49,7 +49,7 @@ for si = 1:length(conditionsAndRasterTypes)
         an = selAnimals(ani);
         tei = ei(an);
         selCells = pMs{si}.cellSel{an};
-        selCells = cpMs.cellSel{an};
+%         selCells = cpMs.cellSel{an};
         cns = paramMs.all_cns{an};
         maxDistTime = paramMs.maxDistTime;
         [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
