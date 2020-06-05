@@ -13,7 +13,12 @@ if ischar(ei)
     xmlFile = makeName('Experiment.xml',dataFolder);
     clear ei;
     files = dir(sprintf('%s/*.abf',dataFolder));
-    ei.abf_file = makeName(files.name,dataFolder);
+    if length(files) > 0
+        ei.abf_file = makeName(files.name,dataFolder);
+    else
+        ei.abf_file = 'No abf file found';
+        disp('No abf file found');
+    end
 end
 
 xDoc = xmlread(xmlFile);

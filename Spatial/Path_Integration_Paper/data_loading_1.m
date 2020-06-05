@@ -6,12 +6,12 @@ clc
 T10 = load('T.mat');
 selT = T10.T([7 11 13 14 16 18 20 21 22],:);
 for ii = 1:size(selT,1)
-    if ismember(ii,[9]) % select which data to load in the second argument
+    if ismember(ii,[1:9]) % select which data to load in the second argument
         ei10(ii) = getData_py(f,selT(ii,:));
     end
 end
 % ei10 = getData_py(f,selT);
-ei10 = loadContextsResponses(ei10,[1 1],[0 1 0]);
+ei10(10) = loadContextsResponses(ei10(10),[1 1],[0 0 0]);
 
 disp('Done');
 %%

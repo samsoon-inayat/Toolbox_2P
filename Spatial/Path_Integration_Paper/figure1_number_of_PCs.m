@@ -2,7 +2,7 @@ function figure1_number_of_PCs
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-selAnimals = [1:9];
+selAnimals = [1:10];
 
 colors = mData.colors;
 sigColor = mData.sigColor;
