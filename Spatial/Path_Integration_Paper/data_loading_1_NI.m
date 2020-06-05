@@ -66,8 +66,8 @@ ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
 
 %% for Sam-WS
 owr = [1,1]; owrp = [0 0 0];
-for ii = 1:size(selT,1)
-    if ismember(ii,[9])
+for ii = 1:length(selRecs)
+    if ismember(ii,[7:13])
         ei10(ii) = loadContextsResponses(ei10(ii),owr,owrp);
     end
 end
