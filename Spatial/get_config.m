@@ -11,4 +11,6 @@ config.pdFolder{1} = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\S_
 config.pdFolder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data';
 config.tifDataFolder = 'S:\Tif_Data';
 
-config.mainCodeFolder = pwd;
+p = mfilename('fullpath');
+pos = strfind(p,'\');
+config.mainCodeFolder = p(1:(pos(end)-1));
