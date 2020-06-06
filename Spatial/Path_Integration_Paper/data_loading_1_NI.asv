@@ -50,13 +50,17 @@ for ii = 1:size(T10.T,1)
 end
 disp('Done');
 %%
-
+ei10(8) = getData_py(f,T10.T(selRecs(8),:));
 
 %%
 % ei10 = getData_py(f,selT);
 ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
 
 disp('Done');
+
+%%
+parameter_matrices('calculate',ei10);
+disp('Done!');
 %%
 training_data = behaviorProcessor;
 
@@ -67,7 +71,7 @@ ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
 %% for Sam-WS
 owr = [1,1]; owrp = [0 0 0];
 for ii = 1:length(selRecs)
-    if ismember(ii,[4 5 6 7 9:13])
+    if ismember(ii,[8])
         ei10(ii) = loadContextsResponses(ei10(ii),owr,owrp);
     end
 end

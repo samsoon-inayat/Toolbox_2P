@@ -4,7 +4,7 @@
 import Thor_Experiment
 #import os
 #import subprocess
-from suite2p import run_s2p
+from suite2p import run_s2p, default_ops
 import scipy.io
 import shutil
 import os
@@ -47,7 +47,7 @@ for x in dir_names:
         continue
 #    if te.exp_params.get('zFastEnable') == '1':
 #        continue
-    ops = run_s2p.default_ops()
+    ops = default_ops()
 #        print(ops)
     ops.update({'nplanes':te.exp_params.get('nplanes')})
     ops.update({'save_path0':te.pd_dir})

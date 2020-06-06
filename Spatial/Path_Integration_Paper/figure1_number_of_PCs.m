@@ -2,41 +2,31 @@ function figure1_number_of_PCs
 
 ei = evalin('base','ei10');
 mData = evalin('base','mData');
-selAnimals = [1:10];
-
+T = evalin('base','T10.T(selRecs,:)');
 colors = mData.colors;
-sigColor = mData.sigColor;
-axes_font_size = mData.axes_font_size;
-
+selAnimals = [1:7 9:13];
+% selAnimals = [1:4 10:13];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-owr = 0;
-paramMs = get_parameters_matrices(ei,[1:9],owr);
+paramMs = parameter_matrices('get');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [11 12 13 14 21 22 23 24 31 32 33 34 41 42 43 44]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
-[cpMs pMs] = get_parameters_matrices(paramMs,selC);
-
+conditionsAndRasterTypes = [11 12 13 14 21 22 23 24 31 32 33 34 41 42 43 44];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+[cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
+perc_cells = parameter_matrices('print ',{cpMs,pMs,T,selAnimals});
 
 for rr = 1:size(pMs,1)
     for cc = 1:size(pMs,2)
-        for ani = 1:length(selAnimals)
-            an = selAnimals(ani);
-            Perc_an(ani,rr,cc) = pMs{rr,cc}.perc(an);
-            Num_an(ani,rr,cc) = pMs{rr,cc}.numCells(an);
-        end
         tcond = conditionsAndRasterTypes(rr,cc);
         nds = dec2base(tcond,10) - '0';
         varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
     end
 end
-perc_cells = squeeze(Perc_an)
-num_cells = squeeze(Num_an)
+
 %%
 runthis = 1;
 if runthis

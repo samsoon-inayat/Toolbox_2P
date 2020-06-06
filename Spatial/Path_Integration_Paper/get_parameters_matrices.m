@@ -1,23 +1,30 @@
-function [out,all_out] = get_parameters_matrices(aei,selAnimals,owr)
+function [out,all_out] = get_parameters_matrices(aei,selAnimals)
 
-if ~exist('aei','var')
-    aei = evalin('base','ei10');
-    selAnimals = [1,2];
-    owr = 1;
+fileName = fullfile(pwd,'matFiles','parameters_matrics.mat');
+
+if nargin == 0
+    out = load(fileName);
+    return
 end
+% 
+% if ~exist('aei','var')
+%     aei = evalin('base','ei10');
+%     selAnimals = [1,2];
+% %     owr = 1;
+% end
 
 varNames = {'info_metrics.ShannonMI_Zsh','place_field_properties.amp','place_field_properties.pws','place_field_properties.centers','place_field_properties.rs'};
 varNamesDH = {'zMIs','fFR','fwidths','fcenters','frs'};
 
 if iscell(aei)
-
+selAnimals = 1:length(aei);
 fileName = fullfile(pwd,'matFiles','parameters_matrics.mat');
 
-if owr == 0
-    out = load(fileName);
-    return
-end
-% 
+% if owr == 0
+%     out = load(fileName);
+%     return
+% end
+% % 
 
 selCells = 'All';
 planeNumbers = 'All';
@@ -34,6 +41,7 @@ for an = 1:length(selAnimals)
     if isempty(tei{1})
         continue;
     end
+    rFs{an} = tei{1}.recordingFolder;
     for vi = 1:length(varNames)
         thisVarDH = varNamesDH{vi};
         cmdTxt = sprintf('%s_c = [];',thisVarDH);
@@ -69,7 +77,7 @@ for an = 1:length(selAnimals)
         eval(cmdTxt);
     end
 end
-
+out.recordingFolders = rFs;
 out.selCells = selCells;
 out.planeNumbers = planeNumbers;
 out.maxDistTime = maxDistTime;
