@@ -4,6 +4,21 @@ clear all
 clc
 [f,cName] = getFolders;
 T10 = load('T.mat');
+%%
+
+%%
+% for loading behavior and 2p data
+selRecs = [7 11 13 14 16 18 20 21 22];
+T10.T(selRecs,1:2);
+ind = 1;
+for ii = 1:size(T10.T,1)
+    if ismember(ii,selRecs) % select which data to load in the second argument
+        ei10(ind) = getData_py(f,T10.T(ii,:));
+        ind = ind + 1;
+    end
+end
+disp('Done');
+
 selT = T10.T([7 11 13 14 16 18 20 21 22],:);
 for ii = 1:size(selT,1)
     if ismember(ii,[1:9]) % select which data to load in the second argument
