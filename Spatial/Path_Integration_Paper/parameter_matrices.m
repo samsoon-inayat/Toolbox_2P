@@ -35,7 +35,11 @@ if ~isempty(strfind(lower(to_do),'print'))
     perc_cellsT = array2table(perc_cells);
     num_cells = squeeze(Num_an);
     num_cellsT = array2table(num_cells);
-    Ttext = table(num2str(T{selAnimals,1}),'VariableNames',{'Animal_id'});
+    if ~iscell(T{1,1})
+        Ttext = table(num2str(T{selAnimals,1}),'VariableNames',{'Animal_id'});
+    else
+        Ttext = table((T{selAnimals,1}),'VariableNames',{'Animal_id'});
+    end
     if strcmp(to_do,'print numbers')
         TT = [Ttext T(selAnimals,2) num_cellsT]
         out = num_cells;

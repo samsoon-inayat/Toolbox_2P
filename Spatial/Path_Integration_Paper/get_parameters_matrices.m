@@ -1,6 +1,6 @@
 function [out,all_out] = get_parameters_matrices(aei,selAnimals)
 
-fileName = fullfile(pwd,'matFiles','parameters_matrics.mat');
+fileName = fullfile(pwd,'matFiles',sprintf('parameters_matrics.mat'));
 
 if nargin == 0
     out = load(fileName);
