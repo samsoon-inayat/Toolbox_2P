@@ -57,7 +57,7 @@ runThis = 1;
 if runThis
 hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 4 6 2.5],'color','w');hold on;
 ya = []; xa = []; gr = [];
-for ii = 1:length(all_pws_c)
+for ii = 1:2%length(all_pws_c)
     pwidths = all_pws_c{ii};
     pcenters = all_cs_c{ii};
     scatter(pcenters,pwidths,20,'.','MarkerEdgeColor',colors{ii},'MarkerFaceColor','none');
