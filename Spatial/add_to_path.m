@@ -4,9 +4,9 @@ cd('..');
 interDir = pwd;
 cd('..');
 mainDir = pwd;
-if ~exist(fullfile(mainDir,'Downloaded'),'dir')
+% if ~exist(fullfile(mainDir,'Downloaded'),'dir')
     mainDir = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\ForBrendan';
-end
+% end
 cd(currentDir);
 % addpath(scriptPath);
 
