@@ -4,7 +4,7 @@ ei = evalin('base','ei10');
 mData = evalin('base','mData');
 T = evalin('base','T10.T(selRecs,:)');
 
-selAnimals = [1:7 9:13];
+selAnimals = [1:2];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -13,6 +13,7 @@ paramMs = parameter_matrices('get');
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 21 31 41]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
 parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
