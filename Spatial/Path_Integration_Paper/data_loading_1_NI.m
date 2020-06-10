@@ -40,7 +40,8 @@ disp('Done!');
 %%
 % for loading behavior and 2p data
 selRecs = [4     8    12    15    16    17    18    19    20    21    22    24    25];
-T10.T(selRecs,1:2);
+selRecs = selRecs([2 3 4 5 7 9 11 12 13]);
+T10.T{selRecs,1};
 ind = 1;
 for ii = 1:size(T10.T,1)
     if ismember(ii,selRecs) % select which data to load in the second argument
