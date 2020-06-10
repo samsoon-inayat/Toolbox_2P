@@ -12,15 +12,15 @@ paramMs = parameter_matrices('get');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 5; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [13 23 33 41]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 1; fwids = NaN; fcens = NaN; rs_th = NaN;
+conditionsAndRasterTypes = [11]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
 parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
 
 %%
-trials = 3:10;
-trials10 = 3:9;
+all_trials = {1,2};%3:10;
+% trials10 = 1;%3:9;
 % align cells
 stimMarkers = paramMs.stimMarkers;
 rasterTypes = paramMs.rasterTypes;
@@ -28,8 +28,8 @@ CNi = 3;
 rasterTypeN = 1;
 
 
-for si = 1:length(conditionsAndRasterTypes)
-    tcond = abs(conditionsAndRasterTypes(si));
+for si = 1:length(all_trials)
+    tcond = conditionsAndRasterTypes(1);
     Ndigits = dec2base(tcond,10) - '0';
     mRsi = [];
     for ani = 1:length(selAnimals)
@@ -45,11 +45,8 @@ for si = 1:length(conditionsAndRasterTypes)
         if length(tempD) == 0
             continue;
         end
-        try
-             mR = findMeanRasters(tempD,trials);
-        catch
-             mR = findMeanRasters(tempD,trials10);
-        end
+        trials = all_trials{si};
+         mR = findMeanRasters(tempD,trials);
         mRsi = [mRsi;mR];
     end
     [temp,~,~] = getParamValues('',ei(1),1,1,stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},'areCells',[Inf Inf]);

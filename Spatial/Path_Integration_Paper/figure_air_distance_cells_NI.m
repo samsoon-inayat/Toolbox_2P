@@ -13,14 +13,14 @@ paramMs = parameter_matrices('get');
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [13 23 33 43]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 1; fwids = NaN; fcens = NaN; rs_th = NaN;
+conditionsAndRasterTypes = [11 21 31 41]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
 parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
 
 %%
-trials = 3:10;
-trials10 = 3:9;
+trials = 2;%3:10;
+% trials10 = 1;%3:9;
 % align cells
 stimMarkers = paramMs.stimMarkers;
 rasterTypes = paramMs.rasterTypes;
