@@ -4,7 +4,7 @@ ei = evalin('base','ei10');
 mData = evalin('base','mData');
 T = evalin('base','T10.T(selRecs,:)');
 
-selAnimals = [1:13];
+selAnimals = [1];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -12,14 +12,16 @@ paramMs = parameter_matrices('get');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 1; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [11]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+conditionsAndRasterTypes = [32]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
-parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
+% parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
 
 %%
-all_trials = {1,2};%3:10;
+all_trials = {1:2,3:4,5:7,8:10};%3:10;
+all_trials = {1,2,3,4,5,6,7,8,9,10};%3:10;
+sel_trials = [1 2 3 4];
 % trials10 = 1;%3:9;
 % align cells
 stimMarkers = paramMs.stimMarkers;
@@ -36,12 +38,13 @@ for si = 1:length(all_trials)
 %         [si ani]
         an = selAnimals(ani);
         tei = ei(an);
-        selCells = pMs{si}.cellSel{an};
+        selCells = pMs{1}.cellSel{an};
 %         selCells = cpMs.cellSel{an};
         cns = paramMs.all_cns{an};
         maxDistTime = paramMs.maxDistTime;
-        [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
-            cns(selCells,2:3),maxDistTime);
+%         [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
+        [tempD cnso] = getParamValues('fromFrames.sp_rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
+        cns(selCells,2:3),maxDistTime);
         if length(tempD) == 0
             continue;
         end
@@ -54,12 +57,13 @@ for si = 1:length(all_trials)
     allRs{si} = mRsi;
     time_xs{si} = xs(1:size(mRsi,2));
     raster_labels{si} = sprintf('Cond - %d, Rast - %d',Ndigits(1),Ndigits(2));
+    [~,~,all_cellSeq{si}] = findPopulationVectorPlot(allRs{si},[]);
 end
 
-% [~,~,cellNums] = findPopulationVectorPlot(allRs{CNi},[]);
-for ii = 1:length(conditionsAndRasterTypes)
+[~,~,cellNums] = findPopulationVectorPlot(allRs{1},[]);
+for ii = 1:length(all_trials(sel_trials))
     mRsi = allRs{ii};
-    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[]);
+    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
 end
 
 n = 0;
@@ -72,7 +76,7 @@ gg = 1;
 set(gcf,'color','w');
 set(gcf,'Position',[1 6 3.5 2]);
 FS = 4;
-for sii = 1:length(conditionsAndRasterTypes)
+for sii = 1:length(all_trials(sel_trials))
     P = allP{sii};
     axes(ff.h_axes(1,sii));changePosition(gca,[0 0.05 -0.091 -0.1]);
     imagesc(P);

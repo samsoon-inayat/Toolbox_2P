@@ -4,7 +4,7 @@ ei = evalin('base','ei10');
 mData = evalin('base','mData');
 T = evalin('base','T10.T(selRecs,:)');
 
-selAnimals = [1:2];
+selAnimals = [1:9];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.

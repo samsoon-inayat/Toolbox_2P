@@ -135,7 +135,7 @@ for ee = 1:length(ei)
             else
                 svalues = size(values,2); stempV = size(tempV,2);
                 if svalues > stempV
-                    values = values(:,1:stempV,:);
+                    
                 else
                     tempV = tempV(:,1:svalues,:);
                 end
