@@ -19,7 +19,7 @@ end
 Thy1_animals = [173062;173511;173198;174374;173706;183633;183761;183745;183628;183762;1432];
 % Thy1_animals = [183628];
 animals = Thy1_animals;%
-T = getTable(raw,animals,'recording','protocol 10'); 
+T = getTable(raw,animals,'recording','protocol 15'); 
 T = getRecordingFolder(T,D);
 T = make_db_and_pdPaths(T,config,2);
 
@@ -42,6 +42,6 @@ for ii = 1:length(list)
 end
 fclose(fid);
 
-fileName = 'T_10_All.mat';
+fileName = 'T_15_All.mat';
 save(fileName,'T');
 
