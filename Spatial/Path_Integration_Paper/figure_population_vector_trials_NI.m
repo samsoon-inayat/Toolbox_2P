@@ -4,7 +4,7 @@ ei = evalin('base','ei10');
 mData = evalin('base','mData');
 T = evalin('base','T10.T(selRecs,:)');
 
-selAnimals = [1];
+selAnimals = [4];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -13,15 +13,22 @@ paramMs = parameter_matrices('get');
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [32]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+conditionsAndRasterTypes = [12]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
 % parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
 
 %%
 all_trials = {1:2,3:4,5:7,8:10};%3:10;
-all_trials = {1,2,3,4,5,6,7,8,9,10};%3:10;
-sel_trials = [1 2 3 4];
+tcond = conditionsAndRasterTypes(1);
+Ndigits = dec2base(tcond,10) - '0';
+if Ndigits(2) == 1 || Ndigits(2) == 3 || Ndigits(2) == 2
+    all_trials = {1,2,3,4,5,6,7,8,9,10 };%3:10;
+    sel_trials = [1 2 3 4 5 6 7 8 9,10];
+else
+    all_trials = {1,2,3,4,5,6,7,8,9};%3:10;
+    sel_trials = [1 2 3 4 5 6 7 8 9];
+end
 % trials10 = 1;%3:9;
 % align cells
 stimMarkers = paramMs.stimMarkers;
@@ -42,14 +49,20 @@ for si = 1:length(all_trials)
 %         selCells = cpMs.cellSel{an};
         cns = paramMs.all_cns{an};
         maxDistTime = paramMs.maxDistTime;
-%         [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
-        [tempD cnso] = getParamValues('fromFrames.sp_rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
-        cns(selCells,2:3),maxDistTime);
+        if Ndigits(2) == 1 || Ndigits(2) == 3
+            [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
+            cns(selCells,2:3),maxDistTime);
+        else
+            [tempD cnso] = getParamValues('fromFrames.sp_rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
+            cns(selCells,2:3),maxDistTime);
+            [temp_rst] = getParamValues('gauss_fit_on_mean.rst',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
+            cns(selCells,2:3),maxDistTime);
+        end
         if length(tempD) == 0
             continue;
         end
         trials = all_trials{si};
-         mR = findMeanRasters(tempD,trials);
+        mR = findMeanRasters(tempD,trials);
         mRsi = [mRsi;mR];
     end
     [temp,~,~] = getParamValues('',ei(1),1,1,stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},'areCells',[Inf Inf]);
@@ -60,24 +73,26 @@ for si = 1:length(all_trials)
     [~,~,all_cellSeq{si}] = findPopulationVectorPlot(allRs{si},[]);
 end
 
-[~,~,cellNums] = findPopulationVectorPlot(allRs{1},[]);
+[~,~,cellNums] = findPopulationVectorPlot(allRs{end},[]);
 for ii = 1:length(all_trials(sel_trials))
-    mRsi = allRs{ii};
+    mRsi = allRs{sel_trials(ii)};
     [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
+    thisC = allC{ii}; cinds = triu(true(size(thisC)),1);
+    meanC(ii) = nanmean(thisC(cinds)); 
 end
 
 n = 0;
 
 %%
-ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...
-    'spaceRowsCols',[-0.01 -0.05],'rightUpShifts',[0.1 0.06],'widthHeightAdjustment',...
-    [15 -30]);
+ff = makeFigureRowsCols(107,[1 0.5 7 1],'RowsCols',[2 10],...
+    'spaceRowsCols',[-0.01 -0.05],'rightUpShifts',[0.05 0.06],'widthHeightAdjustment',...
+    [45 -30]);
 gg = 1;
 set(gcf,'color','w');
-set(gcf,'Position',[1 6 3.5 2]);
+set(gcf,'Position',[1 6 7 2]);
 FS = 4;
 for sii = 1:length(all_trials(sel_trials))
-    P = allP{sii};
+    P = allP{(sii)};
     axes(ff.h_axes(1,sii));changePosition(gca,[0 0.05 -0.091 -0.1]);
     imagesc(P);
     box off;
@@ -104,7 +119,9 @@ for sii = 1:length(all_trials(sel_trials))
     dec = -0.09;
     changePosition(gca,[0.0 0.05 dec dec]);
     imagesc(allC{sii},[-1 1]);
-    minC(sii) = min(allC{sii}(:));
+    thisC = allC{sii}; cinds = triu(true(size(thisC)),1);
+    meanC(sii) = nanmean(thisC(cinds)); 
+    minC(sii) = min(allC{sii}(:));maxC(sii) = max(allC{sii}(:));
     box off;
 %     axis equal
 %     axis off
@@ -121,11 +138,12 @@ for sii = 1:length(all_trials(sel_trials))
 %         text(-21,-3,sprintf('Position (cm)'),'FontSize',FS+3,'FontWeight','Bold','rotation',90);
 %     end
     set(gca,'Ydir','Normal','linewidth',1,'FontSize',FS,'FontWeight','Bold');
-    if strcmp(rasterTypes{sii},'dist')
+    if Ndigits(2) == 1 || Ndigits(2) == 3
         h = xlabel('Position (cm)');    changePosition(h,[0 0 0]);
     else
         h = xlabel('Time (sec)');    changePosition(h,[0 0 0]);
     end
+    title(meanC(sii));
     if sii == 1
 %         h = ylabel('Position (cm)');    changePosition(h,[1 0 0]);
     end
@@ -138,9 +156,10 @@ end
 
 colormap parula
 mI = min(minC);
+MI = max(maxC);
 for ii = 1:4
     axes(ff.h_axes(2,ii));
-    caxis([mI 1]);
+    caxis([mI MI]);
 end
 
 axes(ff.h_axes(2,4));
