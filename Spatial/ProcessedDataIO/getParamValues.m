@@ -162,22 +162,23 @@ for ee = 1:length(ei)
             
         end
         if strcmp(varNameParts{1},'gauss_fit_on_mean')
-            if ~isempty(strfind(varName,'rs'))
+            if ~isempty(strfind(varName,'rs')) && isempty(strfind(varName,'rst'))
                 tempVZ = populateDataProps(data,{rasterType,tei.b.belt_length,maxDistTime});
-                cmdTxt = sprintf('tempV = tempVZ.%s(theSelectedCells);',varNameParts{2}); eval(cmdTxt);
-%                 for ii = 1:length(tempV1)
-%                     if ~isempty(tempV1(ii).rsquare)
-%                         tempV(ii,1) = tempV1(ii).rsquare;
-%                     else
-%                         tempV(ii,1) = NaN;
-%                     end
-%                 end
+                cmdTxt = sprintf('tempV = tempVZ.%s(theSelectedCells);',varName); eval(cmdTxt);
                 if isrow(tempV)
                     tempV = tempV';
                 end
                 values = [values;tempV];
                 tempC = [ones(size(tempV))*ee ones(size(tempV))*pp find(theSelectedCells)];
                 cns = [cns;tempC];
+            end
+            if ~isempty(strfind(varName,'rst'))
+                tempVZ = populateDataProps(data,{rasterType,tei.b.belt_length,maxDistTime});
+                cmdTxt = sprintf('tempV = tempVZ.%s(:,theSelectedCells);',varName); eval(cmdTxt);
+                if isrow(tempV)
+                    tempV = tempV';
+                end
+                values = [values tempV];
             end
             if ~isempty(strfind(varName,'coe'))
                 cmdTxt = sprintf('tempV1 = data.%s.%s(theSelectedCells);','gauss_fit_on_mean',varNameParts{2}); eval(cmdTxt);
@@ -232,6 +233,9 @@ catch
 end
 [rs,coeffs] = getMRFS_vals(mrfs);
 data.gauss_fit_on_mean.rs = rs;
+[rst,coeffst] = getMRFS_vals_Trials(mrfs);
+data.gauss_fit_on_mean.rst = rst;
+data.gauss_fit_on_mean.coeffst = coeffst;
 A = coeffs(:,1);
 mu = coeffs(:,2);
 sigma = coeffs(:,3);

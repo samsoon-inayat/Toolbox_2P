@@ -2,6 +2,13 @@
 % add_to_path
 clear all
 clc
+mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'};
+% mData.colors = getColors(10,{'w','g'});
+mData.axes_font_size = 6;
+mData.sigColor = [0.54 0.27 0.06];
+mData.pdf_folder = fullfile(pwd,'PDFs');
+disp('data extracted');
+
 [f,cName] = getFolders;
 T10 = load('T_10_All.mat');
 %%
@@ -108,10 +115,3 @@ disp('Done!');
 T15 = load('T15.mat');
 ei15 = getData_py(f,T15.T([8 2 6 4 10],:));
 
-%%
-mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'};
-% mData.colors = getColors(10,{'w','g'});
-mData.axes_font_size = 6;
-mData.sigColor = [0.54 0.27 0.06];
-mData.pdf_folder = fullfile(pwd,'PDFs');
-disp('data extracted');
