@@ -33,6 +33,7 @@ class Thor_Exp:
         self.pd_dir = p_dir_name_main + self.recording_info
         self.nas_pd_dir = nas_p_dir_name_main + self.recording_info
         if not os.path.exists(self.pd_dir):
+            print(self.pd_dir)
             os.makedirs(self.pd_dir)
         if not os.path.exists(self.nas_pd_dir):
             os.makedirs(self.nas_pd_dir)
@@ -176,7 +177,7 @@ class Thor_Exp:
                     tif_filename = '/time{}_plane{}_channel1.tif'.format(frame_number,pn)
 #                    print(tif_filename)
                     tif_filename = self.tif_dir_name + tif_filename
-                    
+
                     im = Image.fromarray(frame)
                     im.save(tif_filename)
                     frame_number = frame_number + 1
@@ -189,7 +190,7 @@ class Thor_Exp:
 #                time.sleep(3)
                 print('\n Conversion of raw to tif complete \n')
             f.close()
-            
+
 #            raise Exception('You need to write code for this')
         else:
             self.exp_params.update({'nplanes':1})
