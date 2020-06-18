@@ -47,7 +47,7 @@ n = 0;
     ds = descriptiveStatistics(data)
 %%
     n = 0;
-    axdata = [1:1.5:(10*size(data,2))]; axdata = axdata(1:numCols); maxY = 0.24;
+    axdata = [1:1.5:(10*size(data,2))]; axdata = axdata(1:numCols); maxY = 0.4;
     xdata = []; ixdata = []; offset = 2;
     for ii = 1:numRows
         if ii == 1
@@ -69,7 +69,7 @@ n = 0;
     hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'maxY',maxY,'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0);
-    set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0.2 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 
     xticklabels = {'T1','T2','T3','T4','T5','T6','T7','T8'};xticklabels = repmat(xticklabels,1,4);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
@@ -153,7 +153,7 @@ end
 for ii = 1:length(all_trials(sel_trials))
     mRsi = allRs{sel_trials(ii)};
     [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
-    thisC = allC{ii}; cinds = triu(true(size(thisC)),1);% & tril(true(size(thisC)),5);
+    thisC = allC{ii}; cinds = triu(true(size(thisC)),1) & tril(true(size(thisC)),5);
     meanC(ii) = nanmean(thisC(cinds)); 
 end
 

@@ -19,13 +19,13 @@ paramMs = parameter_matrices('get');
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [12 22 32 42]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+conditionsAndRasterTypes = [14 24 34 44]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
 % parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
 
 %%
 all_trials = {1:2,3:4,5:7,8:10};%3:10;
-all_trials = {1,2,3,4,5,6,7,8,9,10};%3:10;
+all_trials = {1,2,3,4,5,6,7,8,9};%3:10;
 sel_trials = [1 2 3 4];
 % trials10 = 1;%3:9;
 % align cells
@@ -39,7 +39,7 @@ for ani = 1:length(selAnimals)
     tei = ei(an);
     selCells = pMs{1}.cellSel{an};
     cns = paramMs.all_cns{an};
-    a_cell_pos = [];;
+    a_cell_pos = [];
 for crt = 1:length(conditionsAndRasterTypes)
     all_cellSeq = [];
 for si = 1:length(all_trials)
@@ -55,17 +55,15 @@ for si = 1:length(all_trials)
 %         selCells = cpMs.cellSel{an};
 %         cns = paramMs.all_cns{an};
         maxDistTime = paramMs.maxDistTime;
-        if Ndigits(2) == 2
         [tempD cnso] = getParamValues('fromFrames.sp_rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
         cns(selCells,2:3),maxDistTime);
-        else
-        [tempD cnso] = getParamValues('rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
-            cns(selCells,2:3),maxDistTime);
-        end
         if length(tempD) == 0
             continue;
         end
         trials = all_trials{si};
+        if trials > 9
+            continue;
+        end
          mR = findMeanRasters(tempD,trials);
         mRsi = [mRsi;mR];
 %     end
