@@ -6,7 +6,7 @@ if reload
     clear all
     clc
     [f,cName] = getFolders;
-    load('T_15_1_Thy1.mat');
+    load('T_15_All.mat');
     animal_ids = cell2mat(T{:,1});
     ow = 0;
 %     ei = getData(f,T([3 7 11 13 15 16 18 20 21],:));
