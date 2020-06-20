@@ -13,7 +13,7 @@ nas_processed_data_folder = '//mohajerani-nas.uleth.ca/storage/homes/brendan.mca
 # Directory name where raw data is
 #dir_name = '//mohajerani-nas.uleth.ca/storage/homes/samsoon.inayat/Data/183628/2019-07-01/1_003'
 
-filename = 'recording_list_r.txt'
+filename = 'recording_list.txt'
 f = open(filename,'r')
 dir_names = []
 for drs in f:

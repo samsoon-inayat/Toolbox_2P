@@ -12,7 +12,7 @@ disp('data extracted');
 [f,cName] = getFolders;
 T10 = load('T_10_All.mat');
 T15 = load('T_15_All.mat');
-T16 = load('T_16_All.mat');
+
 
 %%
 % this is just to load behavior
@@ -74,33 +74,12 @@ for ii = 1:size(T15.T,1)
     end
 end
 disp('Done');
-
-%% for loading behavior and 2p data
-selRecs = [1 2 4 5];
-% selRecs = [10 11 14 15];
-T16.T{selRecs,4};
-ind = 1;
-for ii = 1:size(T16.T,1)
-    disp(sprintf('%d of %d',ii,size(T16.T,1)));
-    if ismember(ii,selRecs) % select which data to load in the second argument
-        ei16(ind) = getData_py(f,T16.T(ii,:));
-        ind = ind + 1;
-    end
-end
-disp('Done');
-
 %%
 ei10(8) = getData_py(f,T10.T(selRecs(8),:));
 
 %%
 % ei10 = getData_py(f,selT);
 ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
-
-disp('Done');
-
-%%
-% ei10 = getData_py(f,selT);
-ei16 = loadContextsResponses(ei16,[1 1],[0 0 0]);
 
 disp('Done');
 
