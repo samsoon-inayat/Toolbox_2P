@@ -76,7 +76,7 @@ end
 disp('Done');
 
 %% for loading behavior and 2p data
-selRecs = [1:5];
+selRecs = [1 2 4 5];
 % selRecs = [10 11 14 15];
 T16.T{selRecs,4};
 ind = 1;
