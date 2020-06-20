@@ -69,9 +69,9 @@ n = 0;
     hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'maxY',maxY,'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0);
-    set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0.02 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 
-    xticklabels = {'T1','T2','T3','T4','T5','T6','T7','T8'};xticklabels = repmat(xticklabels,1,4);
+    xticklabels = {'T1','T2','T3','T4','T5','T6','T7','T8','T9','T10'};xticklabels = repmat(xticklabels,1,4);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
    
