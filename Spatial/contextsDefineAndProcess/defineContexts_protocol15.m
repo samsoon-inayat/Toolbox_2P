@@ -57,9 +57,9 @@ table((1:length(typesOfMarkers))',typesOfMarkers)
 contextTypeOfMarkers = {
     [11];
     [15 16 19 20];
-    [1 2 13 14 17 18];
-    [1 2 11 13 14 17 18];
-    [1 2 13 14 17 18];
+    [1 2 9];
+    [1 2 9 11];
+    [1 2 9];
     [11];
     [15 16 19 20];
     };
