@@ -99,6 +99,12 @@ ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
 disp('Done');
 
 %%
+% ei10 = getData_py(f,selT);
+ei16 = loadContextsResponses(ei16,[1 1],[0 0 0]);
+
+disp('Done');
+
+%%
 parameter_matrices('calculate',ei10);
 disp('Done!');
 %%
