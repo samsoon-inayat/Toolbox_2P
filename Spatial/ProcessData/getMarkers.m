@@ -99,6 +99,20 @@ if strcmp(lower(markerType),'tone11')
 %     end
 end
 
+if strcmp(lower(markerType),'tone22')
+%     if size(trials,1) > 1
+%         trials = trials(2,:);
+%     end
+%     if strcmp(lower(context),'tone - brake')
+        onsets = ei.b.stim_r(trials);
+        offsets = ei.b.stim_f(trials);
+        toffsets = offsets + round(1e6 * 2/ei.b.si);
+        tonsets = onsets - round(1e6 * 2/ei.b.si);
+        markersOn = tonsets;
+        markersOff = toffsets;
+%     end
+end
+
 if strcmp(lower(markerType),'airi')
     onsets = ei.b.air_puff_r(trials);
     offsets = ei.b.air_puff_f(trials);
