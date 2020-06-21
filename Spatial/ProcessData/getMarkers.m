@@ -71,6 +71,20 @@ if strcmp(lower(markerType),'light22')
 %     end
 end
 
+if strcmp(lower(markerType),'light0p30p3')
+%     if size(trials,1) > 1
+%         trials = trials(2,:);
+%     end
+%     if strcmp(lower(context),'light - brake')
+        onsets = ei.b.stim_r(trials);
+        offsets = ei.b.stim_f(trials);
+        toffsets = offsets + round(1e6 * 0.3/ei.b.si);
+        tonsets = onsets - round(1e6 * 0.3/ei.b.si);
+        markersOn = tonsets;
+        markersOff = toffsets;
+%     end
+end
+
 if strcmp(lower(markerType),'tone')
 %     if size(trials,1) > 1
 %         trials = trials(2,:);
@@ -108,6 +122,20 @@ if strcmp(lower(markerType),'tone22')
         offsets = ei.b.stim_f(trials);
         toffsets = offsets + round(1e6 * 2/ei.b.si);
         tonsets = onsets - round(1e6 * 2/ei.b.si);
+        markersOn = tonsets;
+        markersOff = toffsets;
+%     end
+end
+
+if strcmp(lower(markerType),'tone0p30p3')
+%     if size(trials,1) > 1
+%         trials = trials(2,:);
+%     end
+%     if strcmp(lower(context),'tone - brake')
+        onsets = ei.b.stim_r(trials);
+        offsets = ei.b.stim_f(trials);
+        toffsets = offsets + round(1e6 * 0.3/ei.b.si);
+        tonsets = onsets - round(1e6 * 0.3/ei.b.si);
         markersOn = tonsets;
         markersOff = toffsets;
 %     end
