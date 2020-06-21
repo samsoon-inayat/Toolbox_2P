@@ -44,7 +44,7 @@ contextTrials = {
     [1:10];
     [1:10];
     [11:20];
-    {[21:30];[21:30];[11:20];[21:30];[21:30];[21:30];[21:30]};
+    {[21:30];[21:30];[21:30];[11:20];};
     [31:40];
     [21:30];
     [41:50];
@@ -55,13 +55,13 @@ typesOfMarkers = allContexts.typesOfMarkers;
 table((1:length(typesOfMarkers))',typesOfMarkers)
 
 contextTypeOfMarkers = {
-    [11];
-    [15 16 19 20];
+    [23];
+    [24];
     [1 2 9];
-    [1 2 9 11];
+    [1 2 9 23];
     [1 2 9];
-    [11];
-    [15 16 19 20];
+    [23];
+    [24];
     };
 
 for ii = 1:length(contextIDs)

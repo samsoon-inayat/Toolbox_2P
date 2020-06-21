@@ -87,6 +87,7 @@ for aa = 1:length(ei) % process each recording
                     plotMarkers(tei.b,markersOn,markersOff,101,1);
                 end
                 plotMarkers(tei.b,markersOn,markersOff,101,0);
+                title(tei.recordingFolder);
                 pause(0.1);
     % %             ylim([0 40]);
                 if jj == 3 && ii == 4
