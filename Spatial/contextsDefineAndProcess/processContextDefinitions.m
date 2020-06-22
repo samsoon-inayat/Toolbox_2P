@@ -9,6 +9,7 @@ function processContextDefinitions(ei)
 % offset, belt markers and motion onsets and offsets
 
 %%
+plotFlag = 0;
 allContexts = contextDefinitions;
 if ~exist('ei','var')
     ei = evalin('base','ei([1:2])');
@@ -44,12 +45,6 @@ for aa = 1:length(ei) % process each recording
                 display(sprintf('%s---%s',contexts(ii).name,stimMarkers{jj}));
                 if strcmp(stimMarkers{jj},'air') | strcmp(stimMarkers{jj},'airI') | strcmp(stimMarkers{jj},'motionOnsetsOffsets') | ...
                         strcmp(stimMarkers{jj},'motionOffsetAirOnset')
-    %                 if ii == 3 || ii == 4
-    %                     trials = trials(2:end);
-    %                 end
-    %                 if ii == 2 & ~isempty(contexts(1).trials)
-    %                     trials = trials(2:end);
-    %                 end
                 end
                 if strcmp(stimMarkers{jj},'motionI')
                     markersOn = motionI.markersOn;
@@ -67,7 +62,7 @@ for aa = 1:length(ei) % process each recording
                     end
                 end
                 if ~strcmp(stimMarkers{jj},'airI') & ~strcmp(stimMarkers{jj},'motionOffsetAirOnset') & ~strcmp(contexts(ii).name,'Light - Brake') & ~strcmp(contexts(ii).name,'Air - Brake')...
-                        & ~strcmp(stimMarkers{jj},'light') & ~strcmp(stimMarkers{jj},'tone') & ~strcmp(stimMarkers{jj},'airOffsets22') & ~strcmp(stimMarkers{jj},'airOnsets22')...
+                        & isempty(strfind(stimMarkers{jj},'light')) & isempty(strfind(stimMarkers{jj},'tone')) & ~strcmp(stimMarkers{jj},'airOffsets22') & ~strcmp(stimMarkers{jj},'airOnsets22')...
                         & ~strcmp(stimMarkers{jj},'airOffsets27') & ~strcmp(stimMarkers{jj},'airOnsets27')...
                         & ~strcmp(stimMarkers{jj},'airOffsets11') & ~strcmp(stimMarkers{jj},'airOnsets11')...
                         & ~strcmp(stimMarkers{jj},'airOffsets01') & ~strcmp(stimMarkers{jj},'airOnsets01')...
@@ -86,9 +81,11 @@ for aa = 1:length(ei) % process each recording
                 if strcmp(stimMarkers{jj},'motionOffsetAirOnset')
                     plotMarkers(tei.b,markersOn,markersOff,101,1);
                 end
-                plotMarkers(tei.b,markersOn,markersOff,101,0);
-                title(tei.recordingFolder);
-                pause(0.1);
+                if plotFlag
+                    plotMarkers(tei.b,markersOn,markersOff,101,0);
+                    title(tei.recordingFolder);
+                    pause(0.1);
+                end
     % %             ylim([0 40]);
                 if jj == 3 && ii == 4
                     n = 0;

@@ -23,11 +23,11 @@ table(allContexts.ids,allContexts.names);
 
 allContexts.typesOfMarkers = {'air';'belt';'motionOnsetsOffsets';'airOnsets22';'airOffsets22';'motionI';'motionOnsets22';'motionOffsets22';...
     'airI';'motionOffsetAirOnset';'light';'tone';'airOnsets27';'airOffsets27';'airOnsets11';'airOffsets11';'airOnsets010';'airOffsets010';...
-    'airOnsets01';'airOffsets01';'light11';'tone11';'light22';'air44';'tone22'};
+    'airOnsets01';'airOffsets01';'light11';'tone11';'light22';'air44';'tone22';'light0p30p3';'tone0p30p3'};
 
 allContexts.typesOfRasters = {{'dist';'time'};{'dist';'time'};{'dist';'time'};'time';'time';'time';'time';'time';...
     {'dist';'time'};'time';'time';'time';'time';'time';'time';'time';'time';'time';...
-    'time';'time';'time';'time';'time';'time';'time'};
+    'time';'time';'time';'time';'time';'time';'time';'time';'time'};
 
 allContexts.rasterFunctions = {'find_MI';'getFits_myGaussFit';'fractalDim'};
 allContexts.varNames = {'info_metrics';'gauss_fit_on_mean';'fractal_dim'};
