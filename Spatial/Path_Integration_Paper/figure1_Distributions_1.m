@@ -6,13 +6,13 @@ colors = mData.colors;
 sigColor = mData.sigColor;
 axes_font_size = mData.axes_font_size;
 selAnimals = [1:4 9];
-paramMs = get_parameters_matrices(ei,[1:9],0);
+paramMs = get_parameters_matrices;%(ei,[1:9],0);
 cellsOrNot = NaN; planeNumber = NaN;
 conditionsAndRasterTypes = [11 13 31 33];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,NaN,NaN,NaN,NaN);
 [cpMs pMs] = get_parameters_matrices(paramMs,selC);
 
-cN = 1; 
+cN = 1;
 %%
 runthis = 1;
 if runthis
