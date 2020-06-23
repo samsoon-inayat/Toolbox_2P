@@ -1,15 +1,15 @@
-function [out,out1] = parameter_matrices(to_do,params)
+function [out,out1] = parameter_matrices(to_do,params,protocol)
 
 out = [];
 out1 = [];
 
 if strcmp(lower(to_do),'calculate')
-    get_parameters_matrices(params);
+    get_parameters_matrices(params,protocol);
     return;
 end
 
 if strcmp(lower(to_do),'get')
-    out = get_parameters_matrices;
+    out = get_parameters_matrices(protocol);
     return;
 end
 
