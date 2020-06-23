@@ -112,7 +112,8 @@ ei16 = loadContextsResponses(ei16,[1 1],[1 1 1]);
 disp('Done');
 
 %%
-parameter_matrices('calculate',ei10);
+parameter_matrices('calculate','10',ei10);
+parameter_matrices('calculate','15',ei15);
 disp('Done!');
 %%
 training_data = behaviorProcessor;

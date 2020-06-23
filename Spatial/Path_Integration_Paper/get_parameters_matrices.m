@@ -1,8 +1,8 @@
-function [out,all_out] = get_parameters_matrices(aei,selAnimals)
+function [out,all_out] = get_parameters_matrices(protocol,aei,selAnimals)
 
-fileName = fullfile(pwd,'matFiles',sprintf('parameters_matrics.mat'));
+fileName = fullfile(pwd,'matFiles',sprintf('parameters_matrics_%s.mat',protocol));
 
-if nargin == 0
+if nargin == 1
     out = load(fileName);
     return
 end
@@ -10,7 +10,7 @@ end
 varNames = {'info_metrics.ShannonMI_Zsh','place_field_properties.amp','place_field_properties.pws','place_field_properties.centers','place_field_properties.rs'};
 varNamesDH = {'zMIs','fFR','fwidths','fcenters','frs'};
 
-if iscell(aei)
+if strcmp(protocol,'10') && iscell(aei)
     selAnimals = 1:length(aei);
     fileName = fullfile(pwd,'matFiles','parameters_matrics.mat');
 

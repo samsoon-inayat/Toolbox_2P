@@ -13,7 +13,7 @@ selAnimals = [1:5 7 9 11:13];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs = parameter_matrices('get');
+paramMs = parameter_matrices('get','10');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function

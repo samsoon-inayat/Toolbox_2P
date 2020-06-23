@@ -1,10 +1,19 @@
-function [out,out1] = parameter_matrices(to_do,params,protocol)
+function [out,out1] = parameter_matrices(to_do,protocol,varargin)
+
+p = inputParser;
+addRequired(p,'to_do',@ischar);
+addRequired(p,'protocol',@ischar);
+addOptional(p,'data',[]);
+parse(p,to_do,protocol,varargin{:});
+
+data = p.Results.data;
+
 
 out = [];
 out1 = [];
 
 if strcmp(lower(to_do),'calculate')
-    get_parameters_matrices(params,protocol);
+    get_parameters_matrices(protocol,data);
     return;
 end
 
