@@ -1,120 +1,43 @@
 
 % add_to_path
-clear all
-clc
-mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'};
-% mData.colors = getColors(10,{'w','g'});
-mData.axes_font_size = 6;
-mData.sigColor = [0.54 0.27 0.06];
-mData.pdf_folder = fullfile(pwd,'PDFs');
-disp('data extracted');
-
+% clear all
+% clc
 [f,cName] = getFolders;
 T10 = load('T_10_All.mat');
 T15 = load('T_15_All.mat');
 T16 = load('T_16_All.mat');
-
+selRecs10 = [4     8    12    15    16    17    18    19    20    21    22    24    25];
+selRecs15 = [1:9 12 13 16];
+selRecs16 = [1 2 4 5];
+ET10 = T10.T(selRecs10,:); ET15 = T15.T(selRecs15,:); ET16 = T16.T(selRecs16,:);
 %%
-% this is just to load behavior
-
-for ii = 1:size(T10.T,1)
-    if ismember(ii,[1:size(T10.T,1)]) % select which data to load in the second argument
-        eiB(ii) = getBehavior(f,T10.T(ii,:));
-    end
-end
-disp('Done!');
-
-%%
-% This is just to visualize behavior graphs
-inds = [];
-for ii = 1:size(T10.T,1)
-    if ismember(ii,[1:size(T10.T,1)]) % select which data to load in the second argument
-        if isempty(eiB{ii})
-            continue;
-        end
-         behaviorPlot(eiB(ii))
-         ii
-         key = getkey;
-         if key == 27 % esc
-             break;
-         end
-         if key == 105 %i
-             inds = [inds ii];
-         end
-    end
-end
-inds
-disp('Done!');
-
+mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
+mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = fullfile(pwd,'PDFs'); 
+mData.selAnimals10 = [1:5 7 9 11:13]; mData.selAnimals15 = [1 2 4 6 8 10 12]; mData.selAnimals16 = [1 2 3 4];
+disp('Done');
 
 %%
 % for loading behavior and 2p data
-selRecs = [4     8    12    15    16    17    18    19    20    21    22    24    25];
-% selRecs = selRecs([2 3 4 5 7 9 11 12 13]);
-T10.T{selRecs,1};
-ind = 1;
-for ii = 1:size(T10.T,1)
-    if ismember(ii,selRecs) % select which data to load in the second argument
-        ei10(ind) = getData_py(f,T10.T(ii,:));
-        ind = ind + 1;
-    end
+for ii = 1:size(ET10.T,1)
+    ei10(ii) = getData_py(f,ET10.T(ii,:));
 end
-disp('Done');
 
-%% for loading behavior and 2p data
-selRecs = [1:9 12 13 16];
-% selRecs = [10 11 14 15];
-T15.T{selRecs,4};
-ind = 1;
-for ii = 1:size(T15.T,1)
-    disp(sprintf('%d of %d',ii,size(T15.T,1)));
-    if ismember(ii,selRecs) % select which data to load in the second argument
-        ei15(ind) = getData_py(f,T15.T(ii,:));
-        ind = ind + 1;
-    end
+for ii = 1:size(ET15.T,1)
+    ei15(ii) = getData_py(f,ET15.T(ii,:));
 end
-disp('Done');
 
-%% for loading behavior and 2p data
-selRecs = [1 2 4 5];
-% selRecs = [10 11 14 15];
-T16.T{selRecs,4};
-ind = 1;
-for ii = 1:size(T16.T,1)
-    disp(sprintf('%d of %d',ii,size(T16.T,1)));
-    if ismember(ii,selRecs) % select which data to load in the second argument
-        ei16(ind) = getData_py(f,T16.T(ii,:));
-        ind = ind + 1;
-    end
+for ii = 1:size(ET16.T,1)
+    ei16(ii) = getData_py(f,ET16.T(ii,:));
 end
-disp('Done');
 
-%%
-ei10(8) = getData_py(f,T10.T(selRecs(8),:));
-
-%%
-% ei10 = getData_py(f,selT);
 ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
-
-disp('Done');
-
-%%
-% ei10 = getData_py(f,selT);
 ei15 = loadContextsResponses(ei15,[1 1],[0 0 0]);
+ei16 = loadContextsResponses(ei16,[1 1],[0 0 0]);
 
-disp('Done');
-
-
-%%
-% ei10 = getData_py(f,selT);
-ei16 = loadContextsResponses(ei16,[1 1],[1 1 1]);
-
-disp('Done');
-
-%%
 parameter_matrices('calculate','10',ei10);
 parameter_matrices('calculate','15',ei15);
-disp('Done!');
+parameter_matrices('calculate','16',ei16);
+disp('All Done!');
 %%
 training_data = behaviorProcessor;
 
@@ -160,4 +83,37 @@ disp('Done!');
 
 T15 = load('T15.mat');
 ei15 = getData_py(f,T15.T([8 2 6 4 10],:));
+
+
+%%
+% this is just to load behavior
+
+for ii = 1:size(T10.T,1)
+    if ismember(ii,[1:size(T10.T,1)]) % select which data to load in the second argument
+        eiB(ii) = getBehavior(f,T10.T(ii,:));
+    end
+end
+disp('Done!');
+
+%%
+% This is just to visualize behavior graphs
+inds = [];
+for ii = 1:size(T10.T,1)
+    if ismember(ii,[1:size(T10.T,1)]) % select which data to load in the second argument
+        if isempty(eiB{ii})
+            continue;
+        end
+         behaviorPlot(eiB(ii))
+         ii
+         key = getkey;
+         if key == 27 % esc
+             break;
+         end
+         if key == 105 %i
+             inds = [inds ii];
+         end
+    end
+end
+inds
+disp('Done!');
 

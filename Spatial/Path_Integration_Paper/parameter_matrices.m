@@ -23,14 +23,15 @@ if strcmp(lower(to_do),'get')
 end
 
 if strcmp(lower(to_do),'select')
-    [out,out1] = get_parameters_matrices(params{1},params{2});
+    [out,out1] = get_parameters_matrices(protocol,data{1},data{2});
     return;
 end
 
 if ~isempty(strfind(lower(to_do),'print'))
-    pMs = params{2};
-    T = params{3};
-    selAnimals = params{4};
+    cpMs = data{1};
+    pMs = data{2}; 
+    T = data{3};
+    selAnimals = data{4};
     for rr = 1:size(pMs,1)
         for cc = 1:size(pMs,2)
             for ani = 1:length(selAnimals)
@@ -56,5 +57,10 @@ if ~isempty(strfind(lower(to_do),'print'))
         TTp = [Ttext T(selAnimals,2) perc_cellsT]
         out = perc_cells;
     end
+    ds = descriptiveStatistics(cpMs.perc(selAnimals));
+    disp('Common');
+    disp(cpMs.perc(selAnimals)');
+    disp('Average');
+    disp(sprintf('Mean = %.3f - SEM = %.3f',ds.avg,ds.sem));
     return;
 end

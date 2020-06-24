@@ -1,27 +1,28 @@
 function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
-ei = evalin('base','ei10');
+protocol = '15';
+ei = evalin('base',sprintf('ei%s',protocol));
 mData = evalin('base','mData');
-
 colors = mData.colors;
 sigColor = mData.sigColor;
 axes_font_size = mData.axes_font_size;
+ET = evalin('base',sprintf('ET%s',protocol));
 
-T = evalin('base','T10.T(selRecs,:)');
-
-selAnimals = [1:5 7 9 11:13];
+% selAnimals = [1:5 7 9 11:13];
+selAnimals = [1 2 4 6 8 10 12];
+% selAnimals = [1 2 3 4];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs = parameter_matrices('get','10');
+paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [12 22 32 42]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
-[cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
-% parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
+conditionsAndRasterTypes = [32 42 52]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+[cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
+% parameter_matrices('print percentag es',{cpMs,pMs,T,selAnimals});
 
 %%
 all_trials = {1:2,3:4,5:7,8:10};%3:10;
@@ -39,7 +40,7 @@ for ani = 1:length(selAnimals)
     tei = ei(an);
     selCells = pMs{1}.cellSel{an};
     cns = paramMs.all_cns{an};
-    a_cell_pos = [];;
+    a_cell_pos = [];
 for crt = 1:length(conditionsAndRasterTypes)
     all_cellSeq = [];
 for si = 1:length(all_trials)
@@ -69,7 +70,7 @@ for si = 1:length(all_trials)
          mR = findMeanRasters(tempD,trials);
         mRsi = [mRsi;mR];
 %     end
-    [temp,~,~] = getParamValues('',ei(1),1,1,stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},'areCells',[Inf Inf]);
+    [temp,~,~] = getParamValues('',ei(1),1,3,stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},'areCells',[Inf Inf]);
     dxs = diff(temp.xs); bin_width = dxs(1); xs = 0:bin_width:1000;
     allRs{si} = mRsi;
     time_xs{si} = xs(1:size(mRsi,2));
@@ -216,6 +217,10 @@ n = 0;
         data(ii,:) = reshape(thisd',1,numRows*numCols);
     end
     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols)];    
+    colVar2 = [1:numCols 1:numCols 1:numCols];
+%     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols) 5*ones(1,numCols) 6*ones(1,numCols) 7*ones(1,numCols)];    
+%     colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols 1:numCols 1:numCols 1:numCols];
     within = table(colVar1',colVar2'); within.Properties.VariableNames = {'Condition','TrialDiff'};
     ra = repeatedMeasuresAnova(data,varNames,within);
     rm = ra.rm;

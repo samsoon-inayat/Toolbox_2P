@@ -1,4 +1,4 @@
-function [hbs] = plotBarsWithSigLines (means,sems,combs,sig,varargin)
+function [hbs,myys] = plotBarsWithSigLines (means,sems,combs,sig,varargin)
 
 p = inputParser;
 default_maxY = max(means+sems);
@@ -92,9 +92,15 @@ if numberOfSigLines > 0
             sigText = getNumberOfAsterisks(pvalue);
             xt1 = x1 + (x2-x1)/2;
             text(xt1,yy+dy/7,sigText,'FontSize',sigAsteriskFontSize,'HorizontalAlignment','center','Color',sigColor);
+            all_yys(ii,jj) = yy;
         end
     end
-    ylimvs = [yl(1) myy];
+    myys = max(all_yys(:));
+    if myys > myy
+        ylimvs = [yl(1) myys];
+    else
+        ylimvs = [yl(1) myy];
+    end
     ylim(ylimvs);
     yt = ylimvs(2);
     xdata = xlim;
@@ -105,7 +111,8 @@ if numberOfSigLines > 0
     xt = xdata(1) + indent + total/10;
     set(ht,'Position',[xt yt 0]);
 else
-    ylimvs = [yl(1) myy];
+    myys = maxY;
+    ylimvs = [yl(1) maxY];
     ylim(ylimvs);
     yt = default_maxY + ((ylimvs(2)-ylimvs(1))/10);
     if isempty(xdatai)

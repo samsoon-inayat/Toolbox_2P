@@ -1,17 +1,33 @@
 function figure1_Distributions_1
 
-ei = evalin('base','ei10');
-mData = evalin('base','mData');
-colors = mData.colors;
-sigColor = mData.sigColor;
-axes_font_size = mData.axes_font_size;
-selAnimals = [1:4 9];
-paramMs = get_parameters_matrices;%(ei,[1:9],0);
-cellsOrNot = NaN; planeNumber = NaN;
-conditionsAndRasterTypes = [11 13 31 33];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,NaN,NaN,NaN,NaN);
-[cpMs pMs] = get_parameters_matrices(paramMs,selC);
+protocol = '10';
+% protocol = '15';
+ei = evalin('base',sprintf('ei%s',protocol));
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+ET = evalin('base',sprintf('ET%s',protocol));
+selAnimals = eval(sprintf('mData.selAnimals%s',protocol));
 
+% in the following variable all the measurements are in the matrices form
+% for each variable colums indicate raster and stim marker types specified 
+% the rows indicate condition numbers.
+paramMs = parameter_matrices('get',protocol);
+% after getting all matrics, we can apply selection criteria to select a
+% subgroup of cells
+% here is the selection criteria in make_selC_structure function
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
+conditionsAndRasterTypes = [11 12 13 14 15];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+[cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
+perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
+
+for rr = 1:size(pMs,1)
+    for cc = 1:size(pMs,2)
+        tcond = conditionsAndRasterTypes(rr,cc);
+        nds = dec2base(tcond,10) - '0';
+        varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
+    end
+end
 cN = 1;
 %%
 runthis = 1;
