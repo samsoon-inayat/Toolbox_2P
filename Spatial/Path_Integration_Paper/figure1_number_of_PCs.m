@@ -14,8 +14,8 @@ paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 2; fwids = [0 140]; fcens = [0 140]; rs_th = NaN;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = NaN;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
 % conditionsAndRasterTypes = [11 21 31 41]';
@@ -30,10 +30,10 @@ for rr = 1:size(pMs,1)
         nds = dec2base(tcond,10) - '0';
         varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
         all_conds = [all_conds nds(1)]; all_rts = [all_rts nds(2)];
+        xticklabels{cc,rr} = sprintf('%s-%s',paramMs.stimMarkers{nds(2)},paramMs.rasterTypes{nds(2)}(1));
     end
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
-xticklabels = varNames';
 %%
 runthis = 1;
 if runthis
@@ -64,7 +64,7 @@ if runthis
     [combs,h,p] = populate_multcomp_h_p(data,within,mcTI,mcDays);
     
     xdata = [1:1.5:(10*size(data,2))]; xdata = xdata(1:size(data,2)); maxY = 130;
-    hf = figure(15);clf;set(gcf,'Units','Inches');set(gcf,'Position',[3 3 4 1.5],'color','w');
+    hf = figure(15);clf;set(gcf,'Units','Inches');set(gcf,'Position',[3 3 6 2],'color','w');
     hold on;
     ind = 1;
     for ii = 1:length(all_conds)
@@ -74,14 +74,14 @@ if runthis
         end
     end
     [hbs,maxYr] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'maxY',maxY,'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
     set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 maxYr],'FontSize',7,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 
 %     xticklabels = repmat(xticklabels,length(all_rts),length(all_conds));
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
-    changePosition(gca,[0.1 0.02 -0.03 -0.011])
+    changePosition(gca,[0 0.02 0.03 -0.011])
     put_axes_labels(gca,{[],[0 0 0]},{{'Percentage of PCs'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Percentage of PCs'),600);
 return;
