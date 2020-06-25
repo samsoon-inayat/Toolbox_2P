@@ -76,7 +76,7 @@ if runthis
         mcDays = find_sig_mctbl(multcompare(rm,'Condition','ComparisonType','bonferroni'),5);
     end
     [mVar semVar] = findMeanAndStandardError(data);
-    [combs,h,p] = populate_multcomp_h_p(data,within,mcTI,[]);
+    [combs,h,p] = populate_multcomp_h_p(data,within,[],mcDays);
     
     xdata = [1:1.5:(10*size(data,2))]; xdata = xdata(1:size(data,2)); 
     ind = 1;
