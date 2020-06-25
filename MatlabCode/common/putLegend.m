@@ -63,6 +63,12 @@ if isstruct(sigR)
         sigTypeT = 'ANOVA';
     end
     
+    if strcmp(sigType,'ranova')
+        sig(:,2) = sigR.ranova.multcompare.p;
+        sig(:,1) = sigR.ranova.multcompare.h;
+        sigTypeT = 'RANOVA';
+    end
+    
     if strcmp(sigType,'ancovas')
         sig(:,2) = sigR.ancova.multcompare.ps;
         sig(:,1) = sigR.ancova.multcompare.hs;

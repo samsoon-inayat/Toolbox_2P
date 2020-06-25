@@ -62,7 +62,7 @@ if ismatrix(data)
     end
     if iscell(data)
         if isvector(data{1})
-            for ii = 1:size(data,1)
+            for ii = 1:size(data,1) % go through each row
                 try
                     rowSigR{ii} = significanceTesting(data(ii,:));
                 catch
@@ -78,6 +78,31 @@ if ismatrix(data)
             end
             out = significanceTesting(mdatac);
             out.rowSigR = rowSigR;
+            
+            dataRMA = mdata; numCols = size(dataRMA,2);
+            cmdTxt = sprintf('dataT = table(');
+            for ii = 1:(size(dataRMA,2)-1)
+                cmdTxt = sprintf('%sdataRMA(:,%d),',cmdTxt,ii);
+            end
+            cmdTxt = sprintf('%sdataRMA(:,size(dataRMA,2)));',cmdTxt);
+            eval(cmdTxt);
+            varNames = dataT.Properties.VariableNames;
+            cmdTxt = sprintf('rm = fitrm(dataT,''');
+            for ii = 1:(length(varNames)-1)
+                cmdTxt = sprintf('%s%s,',cmdTxt,varNames{ii});
+            end
+            cmdTxt = sprintf('%s%s~1'');',cmdTxt,varNames{length(varNames)});
+            eval(cmdTxt);
+            out.ranova.rm = rm;
+            out.ranova.table = ranova(rm);
+            out.ranova.mauchlytbl = mauchly(rm);
+            mcTI = find_sig_mctbl(multcompare(rm,'Time','ComparisonType','bonferroni'),5);
+            [combs,h,p] = populate_multcomp_h_p(dataRMA,rm.WithinDesign,mcTI,[]);
+            out.ranova.multcompare.tbl = mcTI;
+            out.ranova.multcompare.combs = combs;
+            out.ranova.multcompare.h = h;
+            out.ranova.multcompare.p = p;
+            out.ranova.ds = descriptiveStatistics(dataRMA);
             return;
         end
     end    

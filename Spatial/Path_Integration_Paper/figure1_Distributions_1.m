@@ -15,7 +15,7 @@ paramMs = parameter_matrices('get',protocol);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 13 14 15];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});

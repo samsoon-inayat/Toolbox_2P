@@ -8,7 +8,7 @@ addRequired(p,'means',@isnumeric);
 addRequired(p,'sems',@isnumeric);
 addRequired(p,'combs',@isnumeric);
 addRequired(p,'sig',@isnumeric);
-addOptional(p,'maxY',default_maxY,@isnumeric);
+addOptional(p,'maxY',default_maxY+10*default_maxY,@isnumeric);
 addOptional(p,'colors',default_colors,@iscell);
 % addOptional(p,'ySpacingFactor',default_ySpacingFactor,@isnumeric);
 addOptional(p,'ySpacing',1,@isnumeric);
@@ -131,3 +131,5 @@ else
     xt = xdata(1) + indent + total/10;
     set(ht,'Position',[xt yt 0]);
 end
+
+myys = 1.1*myys;

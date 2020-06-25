@@ -1,4 +1,4 @@
-
+pause(60);
 % add_to_path
 % clear all
 % clc
@@ -11,9 +11,13 @@ selRecs15 = [1:9 12 13 16];
 selRecs16 = [1 2 4 5];
 ET10 = T10.T(selRecs10,:); ET15 = T15.T(selRecs15,:); ET16 = T16.T(selRecs16,:);
 %%
-mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
+colormaps = load('../MatlabCode/colorblind_colormap.mat');
+colormaps.colorblind = flipud(colormaps.colorblind);
+mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = fullfile(pwd,'PDFs'); 
-mData.selAnimals10 = [1:5 7 9 11:13]; mData.selAnimals15 = [1 2 4 6 8 10 12]; mData.selAnimals16 = [1 2 3 4];
+mData.selAnimals10 = [1:5 7 9 11:13]; 
+mData.selAnimals15 = [1 2 4 6 8 10 12]; 
+mData.selAnimals16 = [1 2 3 4];
 disp('Done');
 
 %%
