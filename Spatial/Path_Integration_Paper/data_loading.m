@@ -18,16 +18,16 @@ disp('Done');
 
 %%
 % for loading behavior and 2p data
-for ii = 1:size(ET10.T,1)
-    ei10(ii) = getData_py(f,ET10.T(ii,:));
+for ii = 1:size(ET10,1)
+    ei10(ii) = getData_py(f,ET10(ii,:));
 end
 
-for ii = 1:size(ET15.T,1)
-    ei15(ii) = getData_py(f,ET15.T(ii,:));
+for ii = 1:size(ET15,1)
+    ei15(ii) = getData_py(f,ET15(ii,:));
 end
 
-for ii = 1:size(ET16.T,1)
-    ei16(ii) = getData_py(f,ET16.T(ii,:));
+for ii = 1:size(ET16,1)
+    ei16(ii) = getData_py(f,ET16(ii,:));
 end
 
 ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
