@@ -14,8 +14,8 @@ paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
@@ -32,7 +32,7 @@ for rr = 1:size(pMs,1)
     end
 end
 
-bins = 0:10:155;
+bins = 0:37:155;
 for an = 1:length(selAnimals)
     for cc = 1:length(conditionsAndRasterTypes)
         theseCenters = f_centers{an,1,cc};
@@ -49,7 +49,7 @@ n=0;
     varNames = [];
     for ii = 1:numRows
         for jj = 1:numCols
-            varNames{ind} = sprintf('C%dTD%d',ii,jj);
+            varNames{ind} = sprintf('C%dBin%d',ii,jj);
             ind = ind + 1;
         end
     end
@@ -64,7 +64,7 @@ n=0;
     rm = ra.rm;
     mcTI = find_sig_mctbl(multcompare(rm,'TrialDiff','By','Condition','ComparisonType','bonferroni'),6);
     mcConds = find_sig_mctbl(multcompare(rm,'Condition','By','TrialDiff','ComparisonType','bonferroni'),6);
-    [combs,h,p] = populate_multcomp_h_p(data,within,[],mcConds);
+    [combs,h,p] = populate_multcomp_h_p(data,within,mcTI,mcConds);
     [mVar semVar] = findMeanAndStandardError(data);
     ds = descriptiveStatistics(data)
 %%
@@ -93,14 +93,14 @@ n=0;
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0);
     set(gca,'xlim',[0.25 max(xdata)+.75],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 
-    xticklabels = {'T12','T23','T34','T45','T56','T67','T78','T89','T910'};xticklabels = repmat(xticklabels,1,4);
+    xticklabels = {'Bin1','Bin2','Bin3','Bin4'};xticklabels = repmat(xticklabels,1,4);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
 %     hbis = bar(ixdata,int_env.avg,'barWidth',0.05,'BaseValue',0.1,'ShowBaseline','off');
 %     set(hbis,'FaceColor','m','EdgeColor','m');
 %     errorbar(ixdata,int_env.avg,int_env.sem,'linestyle', 'none','CapSize',3);
-    changePosition(gca,[0.1 0.02 -0.03 -0.011])
-    put_axes_labels(gca,{[],[0 0 0]},{{'Percent cell_seq _shift','(z-score)'},[0 0 0]});
+    changePosition(gca,[0.1 0.067 -0.03 -0.05])
+    put_axes_labels(gca,{'PF Center Bins',[0 0 0]},{{'Percent Place Cells'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('cell_seq'),600);
     
 

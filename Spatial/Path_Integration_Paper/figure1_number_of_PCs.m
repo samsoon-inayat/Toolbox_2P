@@ -14,11 +14,11 @@ paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = NaN;
-% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
-% conditionsAndRasterTypes = [11 21 31 41]';
+conditionsAndRasterTypes = [15 25 35 45]';
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
@@ -74,7 +74,7 @@ if runthis
         end
     end
     [hbs,maxYr] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'maxY',maxY,'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
     set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 maxYr],'FontSize',7,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 

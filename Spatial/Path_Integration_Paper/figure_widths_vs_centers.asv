@@ -16,7 +16,7 @@ paramMs = parameter_matrices('get',protocol);
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
-conditionsAndRasterTypes = [11 21 31 41];
+conditionsAndRasterTypes = [11 21];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
@@ -33,16 +33,17 @@ for rr = 1:size(pMs,1)
     end
 end
 
-bins = 0:10:145; binS = bins(length(bins)-1); binE = bins(2):10:145;
+bins = 0:50:155;
 for an = 1:length(selAnimals)
     for cc = 1:length(conditionsAndRasterTypes)
         theseCenters = f_centers{an,1,cc};
         theseWidths = f_widths{an,1,cc};
-        for bb  = 1:length(bins)
-            binS = bins(bb)
-            temp = hist(theseCenters,bins);
-            all_data(cc,:,an) = temp/sum(temp);
+        [N,E,Bi] = histcounts(theseCenters,bins);
+        for bb = 1:length(N)
+            mean_widths(bb) = nanmean(theseWidths(Bi == bb));
         end
+        mean_widths(isnan(mean_widths)) = 0;
+        all_data(cc,:,an) = mean_widths;
     end
 end
 n=0;
@@ -62,19 +63,22 @@ n=0;
     for ii = 1:size(all_data,3)
         thisd = all_data(:,:,ii);
         data(ii,:) = reshape(thisd',1,numRows*numCols);
+    end 
+    colVar1 = ones(1,numCols); colVar2 = 1:numCols;
+    for cc = 2:length(conditionsAndRasterTypes)
+        colVar1 = [colVar1 cc*ones(1,numCols)]; colVar2 = [colVar2 1:numCols];
     end
-    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
     within = table(colVar1',colVar2'); within.Properties.VariableNames = {'Condition','TrialDiff'};
     ra = repeatedMeasuresAnova(data,varNames,within);
     rm = ra.rm;
     mcTI = find_sig_mctbl(multcompare(rm,'TrialDiff','By','Condition','ComparisonType','bonferroni'),6);
     mcConds = find_sig_mctbl(multcompare(rm,'Condition','By','TrialDiff','ComparisonType','bonferroni'),6);
-    [combs,h,p] = populate_multcomp_h_p(data,within,[],mcConds);
+    [combs,h,p] = populate_multcomp_h_p(data,within,mcTI,mcConds);
     [mVar semVar] = findMeanAndStandardError(data);
     ds = descriptiveStatistics(data)
 %%
     n = 0;
-    axdata = [1:1.5:(10*size(data,2))]; axdata = axdata(1:numCols); maxY = 1;
+    axdata = [1:1.5:(10*size(data,2))]; axdata = axdata(1:numCols); maxY = 40;
     xdata = []; ixdata = []; offset = 2;
     for ii = 1:numRows
         if ii == 1
@@ -93,9 +97,9 @@ n=0;
             ind = ind + 1;
         end
     end
-    hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0);
+    [hbs,m = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'maxY',maxY,'ySpacing',2.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0.25);
     set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 
     xticklabels = {'T12','T23','T34','T45','T56','T67','T78','T89','T910'};xticklabels = repmat(xticklabels,1,4);

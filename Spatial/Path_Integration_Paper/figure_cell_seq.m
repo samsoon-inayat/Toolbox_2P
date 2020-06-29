@@ -1,6 +1,6 @@
 function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
-protocol = '15';
+protocol = '16';
 ei = evalin('base',sprintf('ei%s',protocol));
 mData = evalin('base','mData');
 colors = mData.colors;
@@ -10,7 +10,7 @@ ET = evalin('base',sprintf('ET%s',protocol));
 
 % selAnimals = [1:5 7 9 11:13];
 selAnimals = [1 2 4 6 8 10 12];
-% selAnimals = [1 2 3 4];
+selAnimals = [1 2 3 4];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -20,7 +20,7 @@ paramMs = parameter_matrices('get',protocol);
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [32 42 52]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+conditionsAndRasterTypes = [52 62 72]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 % parameter_matrices('print percentag es',{cpMs,pMs,T,selAnimals});
 

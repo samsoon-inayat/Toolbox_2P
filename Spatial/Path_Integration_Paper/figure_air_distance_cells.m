@@ -1,15 +1,13 @@
 function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
-protocol = '16';
+protocol = '10';
+% protocol = '15';
 ei = evalin('base',sprintf('ei%s',protocol));
-mData = evalin('base','mData');
-colors = mData.colors;
-sigColor = mData.sigColor;
-axes_font_size = mData.axes_font_size;
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ET = evalin('base',sprintf('ET%s',protocol));
+selAnimalsA = eval(sprintf('mData.selAnimals%s',protocol));
+selAnimals = selAnimalsA(6);
 
-selAnimals = [1 2 4 6 8 10 12];
-selAnimals = [1 2 3 4];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -17,11 +15,38 @@ paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [11 31 41 51]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
+% conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
+conditionsAndRasterTypes = [11 21 31 41]';
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
-parameter_matrices('print percentages',protocol,{cpMs,pMs,ET,selAnimals});
+% perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
+
+for rr = 1:size(pMs,1)
+    for cc = 1:size(pMs,2)
+        tcond = conditionsAndRasterTypes(rr,cc);
+        nds = dec2base(tcond,10) - '0';
+        varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
+        for an = 1:length(selAnimals)
+            zMIs(an,rr,cc) = nanmean(squeeze(pMs{rr,cc}.all_zMIs{selAnimals(an)}(nds(1),nds(2),:)));
+        end
+    end
+end
+
+all_conds = []; all_rts = [];
+for rr = 1:size(pMs,1)
+    for cc = 1:size(pMs,2)
+        tcond = conditionsAndRasterTypes(rr,cc);
+        nds = dec2base(tcond,10) - '0';
+        varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
+        xticklabels{cc,rr} = sprintf('%s-%s',paramMs.stimMarkers{nds(2)},paramMs.rasterTypes{nds(2)}(1));
+        all_conds = [all_conds nds(1)]; all_rts = [all_rts nds(2)];
+    end
+end
+all_conds = unique(all_conds); all_rts = unique(all_rts);
+n = 0;
 
 %%
 trials = 3:10;
@@ -54,6 +79,13 @@ for si = 1:length(conditionsAndRasterTypes)
              mR = findMeanRasters(tempD,trials);
         catch
              mR = findMeanRasters(tempD,trials10);
+        end
+        if ~isempty(mRsi)
+            try
+                mR = mR(:,1:size(mRsi,2));
+            catch
+                mRsi = mRsi(:,1:size(mR,2));
+            end
         end
         mRsi = [mRsi;mR];
     end
@@ -98,7 +130,11 @@ for sii = 1:length(conditionsAndRasterTypes)
         end
 %     end
     text(3,size(P,1)+round(size(P,1)/10),sprintf('%s',raster_labels{sii}),'FontSize',FS,'FontWeight','Normal');
-    set(gca,'Ydir','Normal','linewidth',0.25,'FontSize',FS,'FontWeight','Bold','YTick',[1 size(P,1)]);
+    if size(P,1) > 1
+        set(gca,'Ydir','Normal','linewidth',0.25,'FontSize',FS,'FontWeight','Bold','YTick',[1 size(P,1)]);
+    else
+        set(gca,'Ydir','Normal','linewidth',0.25,'FontSize',FS,'FontWeight','Bold','YTick',[1]);
+    end
     cols = size(P,2);
     colsHalf = ceil(cols/2);
     ts = round(time_xs{sii}(1:cols));
