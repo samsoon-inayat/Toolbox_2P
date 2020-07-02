@@ -7,8 +7,8 @@ if nargin == 1
     return
 end
 
-varNames = {'info_metrics.ShannonMI_Zsh','place_field_properties.amp','place_field_properties.pws','place_field_properties.centers','place_field_properties.rs'};
-varNamesDH = {'zMIs','fFR','fwidths','fcenters','frs'};
+varNames = {'info_metrics.ShannonMI_Zsh','place_field_properties.amp','place_field_properties.pws','place_field_properties.centers','place_field_properties.rs','fractal_dim.HaFD','fractal_dim.HiFD'};
+varNamesDH = {'zMIs','fFR','fwidths','fcenters','frs','HaFD','HiFD'};
 
 if strcmp(protocol,'10') && iscell(aei)
     selAnimals = 1:length(aei);
@@ -265,7 +265,7 @@ for an = 1:length(cellLists{1})
 end
 
 function cellList = getCellList(paraMs,selC,varNamesDH,conditionNumber,rasterType)
-thresholdVars = {'zMI_threshold','','fwidth_limits','fcenter_limits','frs_threshold'};
+thresholdVars = {'zMI_threshold','','fwidth_limits','fcenter_limits','frs_threshold','HaFD_threshold','HiFD_threshold'};
 for an = 1:length(paraMs.all_areCells)
         cellSel1s = logical(ones(size(paraMs.all_areCells{an})));
         if isempty(cellSel1s)

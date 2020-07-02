@@ -1,22 +1,27 @@
 function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
-ei = evalin('base','ei10');
-mData = evalin('base','mData');
-T = evalin('base','T10.T(selRecs,:)');
-
-selAnimals = [1];
+protocol = '10';
+% protocol = '15';
+ei = evalin('base',sprintf('ei%s',protocol));
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+ET = evalin('base',sprintf('ET%s',protocol));
+selAnimalsA = eval(sprintf('mData.selAnimals%s',protocol));
+selAnimals = selAnimalsA(5);
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs = parameter_matrices('get');
+paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [12]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
-[cpMs,pMs] = parameter_matrices('select',{paramMs,selC});
-% parameter_matrices('print percentages',{cpMs,pMs,T,selAnimals});
+conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
+% conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
+conditionsAndRasterTypes = [33]';
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
+[cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
+% perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
+
 
 %%
 all_trials = {1:2,3:4,5:7,8:10};%3:10;
@@ -35,7 +40,6 @@ stimMarkers = paramMs.stimMarkers;
 rasterTypes = paramMs.rasterTypes;
 CNi = 3; 
 rasterTypeN = 1;
-
 
 for si = 1:length(all_trials)
     tcond = conditionsAndRasterTypes(1);
@@ -65,7 +69,7 @@ for si = 1:length(all_trials)
         mR = findMeanRasters(tempD,trials);
         mRsi = [mRsi;mR];
     end
-    [temp,~,~] = getParamValues('',ei(1),1,1,stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},'areCells',[Inf Inf]);
+    [temp,~,~] = getParamValues('',ei(1),1,3,stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},'areCells',[Inf Inf]);
     dxs = diff(temp.xs); bin_width = dxs(1); xs = 0:bin_width:1000;
     allRs{si} = mRsi;
     time_xs{si} = xs(1:size(mRsi,2));
@@ -73,10 +77,10 @@ for si = 1:length(all_trials)
     [~,~,all_cellSeq{si}] = findPopulationVectorPlot(allRs{si},[]);
 end
 
-[~,~,cellNums] = findPopulationVectorPlot(allRs{end},[]);
+[~,~,cellNums] = findPopulationVectorPlot(allRs{1},[]);
 for ii = 1:length(all_trials(sel_trials))
     mRsi = allRs{sel_trials(ii)};
-    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
+    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[]);
     thisC = allC{ii}; cinds = triu(true(size(thisC)),1);
     meanC(ii) = nanmean(thisC(cinds)); 
 end

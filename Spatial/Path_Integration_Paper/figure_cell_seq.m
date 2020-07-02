@@ -1,6 +1,6 @@
 function figure_place_cells_vs_other_cells_1(fn,allRs,ccs)
 
-protocol = '16';
+protocol = '10';
 ei = evalin('base',sprintf('ei%s',protocol));
 mData = evalin('base','mData');
 colors = mData.colors;
@@ -8,9 +8,9 @@ sigColor = mData.sigColor;
 axes_font_size = mData.axes_font_size;
 ET = evalin('base',sprintf('ET%s',protocol));
 
-% selAnimals = [1:5 7 9 11:13];
-selAnimals = [1 2 4 6 8 10 12];
-selAnimals = [1 2 3 4];
+selAnimals = [1:5 7 9 11:13];
+% selAnimals = [1 2 4 6 8 10 12];
+% selAnimals = [1 2 3 4];
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -19,15 +19,15 @@ paramMs = parameter_matrices('get',protocol);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [52 62 72]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
+conditionsAndRasterTypes = [12 22 32 42]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 % parameter_matrices('print percentag es',{cpMs,pMs,T,selAnimals});
 
 %%
 all_trials = {1:2,3:4,5:7,8:10};%3:10;
 all_trials = {1,2,3,4,5,6,7,8,9,10};%3:10;
-sel_trials = [1 2 3 4];
+% sel_trials = [1 2 3 4];
 % trials10 = 1;%3:9;
 % align cells
 stimMarkers = paramMs.stimMarkers;
@@ -217,8 +217,8 @@ n = 0;
         data(ii,:) = reshape(thisd',1,numRows*numCols);
     end
     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
-    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols)];    
-    colVar2 = [1:numCols 1:numCols 1:numCols];
+%     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols)];    
+%     colVar2 = [1:numCols 1:numCols 1:numCols];
 %     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols) 5*ones(1,numCols) 6*ones(1,numCols) 7*ones(1,numCols)];    
 %     colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols 1:numCols 1:numCols 1:numCols];
     within = table(colVar1',colVar2'); within.Properties.VariableNames = {'Condition','TrialDiff'};
@@ -262,7 +262,7 @@ n = 0;
     set(hbis,'FaceColor','m','EdgeColor','m');
     errorbar(ixdata,int_env.avg,int_env.sem,'linestyle', 'none','CapSize',3);
     changePosition(gca,[0.1 0.02 -0.03 -0.011])
-    put_axes_labels(gca,{[],[0 0 0]},{{'Percent cell_seq _shift','(z-score)'},[0 0 0]});
+    put_axes_labels(gca,{[],[0 0 0]},{{'Percent Cell Seq Shift'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('cell_seq'),600);
     
 
