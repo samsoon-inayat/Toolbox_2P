@@ -21,8 +21,8 @@ for ss = 1:length(stimMarkers)
     distD = [];
     for jj = 1:length(selAnimals)
         [tempVals cns ACs] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
-        [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
-        [placeCells5] = getParamValues('placeCells1',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
+%         [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
+%         [placeCells5] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
     end
     dataC{ss} = tempVals;
 end
@@ -30,7 +30,7 @@ n = 0;
 A = dataC{1}; B = dataC{2}; %C = dataC{3}; %D = dataC{4};
 % rasters = A;
 % PCs = ACs & placeCells5;
-PCs = ACs & clus;
+PCs = ACs;% & clus;
 coiSI = find(PCs)
 % % % % % sum(PCs)/length(PCs);
 % % % % % [~,inds] = sort([A.centers(coiSI)']);
@@ -41,7 +41,7 @@ coiSI = find(PCs)
 % coiSI =  coiSI(centers > 40)';
 
 % plot_trial_correlation(dataC,coiSI);return;
-% plotRasters(dataC,coiSI);return
+plotRasters(dataC,coiSI);return
 ccsi = [200 46 152 37 22]; % animal 1 plane 1
 
 %%

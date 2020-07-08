@@ -93,12 +93,19 @@ else
                 xs = 1:size(A.rasters,2);
                 uxs = linspace(1,length(xs),length(xs)*10);
 %                 coeff = A.coeff(:,cn);
-                fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
                 imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);hold on;
-                plot(xs,size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1.5,'color','r');
+                try
+                    fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
+                    plot(xs,size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1.5,'color','r');
+                catch
+                end
                 plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',1.5,'color','m');
+                try
                 title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)-Rsq(%.2f)-HaFD(%.3f)-HiFD(%.3f)',cn,A.SI(cn),A.centers(cn),...
                     max(mSig),A.rs(cn),A.fractal_dim.HaFD(cn),A.fractal_dim.HiFD(cn)));
+                catch
+                    title(sprintf('%d',cn));
+                end
                 box off;
                 set(gca,'FontSize',8,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
                 xticks = [1:10:size(thisRaster,2)];

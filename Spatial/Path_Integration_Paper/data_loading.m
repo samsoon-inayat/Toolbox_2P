@@ -1,5 +1,6 @@
-pause(60);
-% add_to_path
+for ii = 1:60
+    pause(1);
+end% add_to_path
 % clear all
 % clc
 [f,cName] = getFolders;

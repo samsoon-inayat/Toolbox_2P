@@ -15,9 +15,10 @@ paramMs = parameter_matrices('get',protocol);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 conditionsAndRasterTypes = [11 21 31 41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
 

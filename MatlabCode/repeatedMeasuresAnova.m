@@ -24,7 +24,7 @@ for ii = 1:length(withinVarNames)
 end
 withinModel = withinVarNames{1};
 for ii = 2:length(withinVarNames)
-    withinModel = [withinModel '+' withinVarNames{ii}];
+    withinModel = [withinModel '*' withinVarNames{ii}];
 end
 
 % writetable(between,'Training_Data.xls');

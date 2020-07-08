@@ -60,6 +60,7 @@ if ~isempty(strfind(lower(to_do),'print'))
     ds = descriptiveStatistics(cpMs.perc(selAnimals));
     disp('Common');
     disp(cpMs.perc(selAnimals)');
+    disp(cpMs.numCells(selAnimals)');
     disp('Average');
     disp(sprintf('Mean = %.3f - SEM = %.3f',ds.avg,ds.sem));
     return;

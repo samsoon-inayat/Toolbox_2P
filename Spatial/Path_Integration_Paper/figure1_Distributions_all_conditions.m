@@ -16,18 +16,17 @@ paramMs = parameter_matrices('get',protocol);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 2; fwids = [0 140]; fcens = [0 140]; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
-% conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
-% conditionsAndRasterTypes = [11 21 31 41]';
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+conditionsAndRasterTypes = [12 -11];
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 perc_cells = parameter_matrices('print numbers',protocol,{cpMs,pMs,ET,selAnimals});
 
 for rr = 1:size(pMs,1)
     for cc = 1:size(pMs,2)
         tcond = conditionsAndRasterTypes(rr,cc);
-        nds = dec2base(tcond,10) - '0';
+        nds = dec2base(abs(tcond),10) - '0';
         varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
         for an = 1:length(selAnimals)
             zMIs(an,rr,cc) = nanmean(squeeze(pMs{rr,cc}.all_zMIs{selAnimals(an)}(nds(1),nds(2),:)));
@@ -39,7 +38,7 @@ all_conds = []; all_rts = [];
 for rr = 1:size(pMs,1)
     for cc = 1:size(pMs,2)
         tcond = conditionsAndRasterTypes(rr,cc);
-        nds = dec2base(tcond,10) - '0';
+        nds = dec2base(abs(tcond),10) - '0';
         varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
         xticklabels{cc,rr} = sprintf('%s-%s',paramMs.stimMarkers{nds(2)},paramMs.rasterTypes{nds(2)}(1));
         all_conds = [all_conds nds(1)]; all_rts = [all_rts nds(2)];

@@ -6,7 +6,7 @@ ei = evalin('base',sprintf('ei%s',protocol));
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ET = evalin('base',sprintf('ET%s',protocol));
 selAnimalsA = eval(sprintf('mData.selAnimals%s',protocol));
-selAnimals = selAnimalsA(2);
+selAnimals = selAnimalsA;
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
@@ -16,11 +16,11 @@ paramMs = parameter_matrices('get',protocol);
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 5; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
-conditionsAndRasterTypes = [13 23 33 43]';
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+conditionsAndRasterTypes = [11 21 31 41];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 % perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
 

@@ -6,7 +6,7 @@ ei = evalin('base',sprintf('ei%s',protocol));
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ET = evalin('base',sprintf('ET%s',protocol));
 selAnimalsA = eval(sprintf('mData.selAnimals%s',protocol));
-selAnimals = selAnimalsA(5);
+selAnimals = selAnimalsA(3);
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -16,8 +16,8 @@ paramMs = parameter_matrices('get',protocol);
 % here is the selection criteria in make_selC_structure function
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
-conditionsAndRasterTypes = [33]';
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
+conditionsAndRasterTypes = [31]';
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 5; fwids = NaN; fcens = NaN; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 % perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
@@ -26,7 +26,7 @@ selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,f
 %%
 all_trials = {1:2,3:4,5:7,8:10};%3:10;
 tcond = conditionsAndRasterTypes(1);
-Ndigits = dec2base(tcond,10) - '0';
+Ndigits = dec2base(abs(tcond),10) - '0';
 if Ndigits(2) == 1 || Ndigits(2) == 3 || Ndigits(2) == 2
     all_trials = {1,2,3,4,5,6,7,8,9,10 };%3:10;
     sel_trials = [1 2 3 4 5 6 7 8 9,10];
@@ -43,7 +43,7 @@ rasterTypeN = 1;
 
 for si = 1:length(all_trials)
     tcond = conditionsAndRasterTypes(1);
-    Ndigits = dec2base(tcond,10) - '0';
+    Ndigits = dec2base(abs(tcond),10) - '0';
     mRsi = [];
     for ani = 1:length(selAnimals)
 %         [si ani]
@@ -59,8 +59,8 @@ for si = 1:length(all_trials)
         else
             [tempD cnso] = getParamValues('fromFrames.sp_rasters',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
             cns(selCells,2:3),maxDistTime);
-            [temp_rst] = getParamValues('gauss_fit_on_mean.rst',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
-            cns(selCells,2:3),maxDistTime);
+%             [temp_rst] = getParamValues('gauss_fit_on_mean.rst',tei,selC.plane_number,Ndigits(1),stimMarkers{Ndigits(2)},rasterTypes{Ndigits(2)},...
+%             cns(selCells,2:3),maxDistTime);
         end
         if length(tempD) == 0
             continue;
@@ -77,10 +77,10 @@ for si = 1:length(all_trials)
     [~,~,all_cellSeq{si}] = findPopulationVectorPlot(allRs{si},[]);
 end
 
-[~,~,cellNums] = findPopulationVectorPlot(allRs{1},[]);
+[~,~,cellNums] = findPopulationVectorPlot(allRs{end},[]);
 for ii = 1:length(all_trials(sel_trials))
     mRsi = allRs{sel_trials(ii)};
-    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[]);
+    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[],cellNums);
     thisC = allC{ii}; cinds = triu(true(size(thisC)),1);
     meanC(ii) = nanmean(thisC(cinds)); 
 end

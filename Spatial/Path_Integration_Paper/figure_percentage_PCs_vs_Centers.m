@@ -14,10 +14,11 @@ paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
 conditionsAndRasterTypes = [11 21 31 41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
 
@@ -59,11 +60,12 @@ n=0;
         data(ii,:) = reshape(thisd',1,numRows*numCols);
     end
     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
-    within = table(colVar1',colVar2'); within.Properties.VariableNames = {'Condition','TrialDiff'};
+    within = table(colVar1',colVar2'); within.Properties.VariableNames = {'Condition','Bin'};
     ra = repeatedMeasuresAnova(data,varNames,within);
     rm = ra.rm;
-    mcTI = find_sig_mctbl(multcompare(rm,'TrialDiff','By','Condition','ComparisonType','bonferroni'),6);
-    mcConds = find_sig_mctbl(multcompare(rm,'Condition','By','TrialDiff','ComparisonType','bonferroni'),6);
+%     rm.BetweenDesign
+    mcTI = find_sig_mctbl(multcompare(rm,'Bin','By','Condition','ComparisonType','bonferroni'),6);
+    mcConds = find_sig_mctbl(multcompare(rm,'Condition','By','Bin','ComparisonType','bonferroni'),6);
     [combs,h,p] = populate_multcomp_h_p(data,within,mcTI,mcConds);
     [mVar semVar] = findMeanAndStandardError(data);
     ds = descriptiveStatistics(data)
@@ -92,8 +94,11 @@ n=0;
         'maxY',maxY,'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0);
     set(gca,'xlim',[0.25 max(xdata)+.75],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata; 
-    xticklabels = {'Bin1','Bin2','Bin3','Bin4'};xticklabels = repmat(xticklabels,1,4);
+    xticks = xdata;
+    for ii = 1:(length(bins)-1)
+        xticklabels{ii} = sprintf('Bin%d',ii);
+    end
+    xticklabels = repmat(xticklabels,1,4);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
 %     hbis = bar(ixdata,int_env.avg,'barWidth',0.05,'BaseValue',0.1,'ShowBaseline','off');
