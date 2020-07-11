@@ -1,25 +1,25 @@
 function figure_place_remapping(fn,allRs,ccs)
 
-ei = evalin('base','ei10');
-mData = evalin('base','mData');
-selAnimals = [1:9];
-
-colors = mData.colors;
-sigColor = mData.sigColor;
-axes_font_size = mData.axes_font_size;
+protocol = '10';
+% protocol = '15';
+ei = evalin('base',sprintf('ei%s',protocol));
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+ET = evalin('base',sprintf('ET%s',protocol));
+selAnimals = eval(sprintf('mData.selAnimals%s',protocol));
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-owr = 0;
-paramMs = get_parameters_matrices(ei,[1:9],owr);
+paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-conditionsAndRasterTypes = [11 21]; selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
-[cpMs pMs] = get_parameters_matrices(paramMs,selC);
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
+conditionsAndRasterTypes = [11 21];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
+[cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
+perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
 
 
 %% place field centers scatter plot from one condition to another

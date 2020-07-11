@@ -1,5 +1,11 @@
 function out = repeatedMeasuresAnova(data,varNames,within,varargin)
 
+if nargin == 4
+    betweenFactors = varargin{1};
+else
+    betweenFactors = 1;
+end
+
 % p = inputParser;
 % addRequired(p,'data',@isnumeric);
 % addOptional(p,'dimension',1,@isnumeric);
@@ -23,18 +29,34 @@ for ii = 1:length(withinVarNames)
     eval(cmdTxt);
 end
 withinModel = withinVarNames{1};
+if length(unique(within{:,2})) == 1
+    interactTerm = '+';
+else
+    interactTerm = '*';
+end
 for ii = 2:length(withinVarNames)
-    withinModel = [withinModel '*' withinVarNames{ii}];
+    withinModel = [withinModel interactTerm withinVarNames{ii}];
 end
 
 % writetable(between,'Training_Data.xls');
-cmdTxt = sprintf('rm = fitrm(dataT,''');
-for ii = 1:(length(varNames)-1)
-    cmdTxt = sprintf('%s%s,',cmdTxt,varNames{ii});
+if betweenFactors == 1
+    cmdTxt = sprintf('rm = fitrm(dataT,''');
+    for ii = 1:(length(varNames)-1)
+        cmdTxt = sprintf('%s%s,',cmdTxt,varNames{ii});
+    end
+    cmdTxt = sprintf('%s%s~1'');',cmdTxt,varNames{length(varNames)});
+else
+    cmdTxt = sprintf('dataT.%s = categorical(dataT.%s);',varNames{1},varNames{1});
+    eval(cmdTxt);    
+    cmdTxt = sprintf('rm = fitrm(dataT,''');
+    for ii = 2:(length(varNames)-1)
+        cmdTxt = sprintf('%s%s,',cmdTxt,varNames{ii});
+    end
+    cmdTxt = sprintf('%s%s~%s'');',cmdTxt,varNames{length(varNames)},varNames{1});
 end
-cmdTxt = sprintf('%s%s~1'');',cmdTxt,varNames{length(varNames)});
 eval(cmdTxt);
 rm.WithinDesign = within;
+
 rm.WithinModel = withinModel;
 out.rm = rm;
 out.table = ranova(rm,'WithinModel',rm.WithinModel);

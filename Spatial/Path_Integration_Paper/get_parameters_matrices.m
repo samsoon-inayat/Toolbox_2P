@@ -97,7 +97,7 @@ if strcmp(protocol,'15') && iscell(aei)
             eval(cmdTxt);
         end
         for ci = 1:length(contextNumbers)
-            contextNumber = contextNumbers;
+            contextNumber = contextNumbers(ci);
             for si = 1:length(stimMarkers)
                 disp([an ci si]);
                 stimMarker = stimMarkers{si};

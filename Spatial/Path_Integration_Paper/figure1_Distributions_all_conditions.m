@@ -1,6 +1,5 @@
 function figure1_Distributions_all_conditions
 
-
 protocol = '10';
 % protocol = '15';
 ei = evalin('base',sprintf('ei%s',protocol));
@@ -17,8 +16,8 @@ paramMs = parameter_matrices('get',protocol);
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 2; fwids = [0 140]; fcens = [0 140]; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
-conditionsAndRasterTypes = [12 -11];
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
+conditionsAndRasterTypes = [11 21 31 41]';
+cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = 0.5; HaFD_th = NaN; HiFD_th = NaN;
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
 perc_cells = parameter_matrices('print numbers',protocol,{cpMs,pMs,ET,selAnimals});
