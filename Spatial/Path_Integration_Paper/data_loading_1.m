@@ -17,8 +17,14 @@ colormaps = load('../MatlabCode/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = fullfile(pwd,'PDFs'); 
-mData.selAnimals10 = [1:5 7 9 11:13]; 
-mData.selAnimals15 = [1 2 4 6 8 10 12]; 
+mData.selAnimals10_d1 = [2 3 4 5 11];%[1:5 7 9 11:13]; 
+mData.selAnimals10_af15 = [7 9 11 12];%[1:5 7 9 11:13]; 
+mData.selAnimals10 = mData.selAnimals10_d1;
+mData.selAnimals10 = mData.selAnimals10_af15;
+mData.selAnimals15_d1 = [8 2 6 4 10];%[1 2 4 6 8 10 12]; 
+mData.selAnimals15_d2 = mData.selAnimals15_d1 + 1;%[1 2 4 6 8 10 12]; 
+mData.selAnimals15 = mData.selAnimals15_d1;
+mData.selAnimals15 = mData.selAnimals15_d2;
 mData.selAnimals16 = [1 2 3 4];
 disp('Done');
 
