@@ -24,6 +24,7 @@ mData.selAnimals15_d1 = [8 2 6 4 10];%[1 2 4 6 8 10 12];
 mData.selAnimals15_d2 = mData.selAnimals15_d1 + 1;%[1 2 4 6 8 10 12]; 
 mData.selAnimals15 = mData.selAnimals15_d1;
 mData.selAnimals15 = mData.selAnimals15_d2;
+mData.selAnimals15 = [mData.selAnimals15_d1 mData.selAnimals15_d2];
 mData.selAnimals16 = [1 2 3 4];
 disp('Done');
 
