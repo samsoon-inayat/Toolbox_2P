@@ -16,7 +16,7 @@ paramMs = parameter_matrices('get',protocol);
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
 conditionsAndRasterTypes = [31 41 51];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
 [cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
@@ -33,7 +33,7 @@ for rr = 1:size(pMs,1)
     end
 end
 
-bins = 0:37:155;
+bins = 0:20:155;
 for an = 1:length(selAnimals)
     for cc = 1:length(conditionsAndRasterTypes)
         theseCenters = f_centers{an,1,cc};

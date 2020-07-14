@@ -1,6 +1,7 @@
 for ii = 1:60
     pause(1);
-end% add_to_path
+end
+% add_to_path
 % clear all
 % clc
 [f,cName] = getFolders;
@@ -20,6 +21,7 @@ mData.selAnimals10_d1 = [2 3 4 5 11];%[1:5 7 9 11:13];
 mData.selAnimals10_af15 = [7 9 11 12];%[1:5 7 9 11:13]; 
 mData.selAnimals10 = mData.selAnimals10_d1;
 mData.selAnimals10 = mData.selAnimals10_af15;
+mData.selAnimals10 = [mData.selAnimals10_af15 mData.selAnimals10_d1];
 mData.selAnimals15_d1 = [8 2 6 4 10];%[1 2 4 6 8 10 12]; 
 mData.selAnimals15_d2 = mData.selAnimals15_d1 + 1;%[1 2 4 6 8 10 12]; 
 mData.selAnimals15 = mData.selAnimals15_d1;

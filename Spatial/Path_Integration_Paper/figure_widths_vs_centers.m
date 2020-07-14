@@ -14,7 +14,7 @@ paramMs = parameter_matrices('get',protocol);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 conditionsAndRasterTypes = [11 21 31 41];
@@ -41,7 +41,8 @@ for an = 1:length(selAnimals)
         theseWidths = f_widths{an,1,cc};
         [N,E,Bi] = histcounts(theseCenters,bins);
         for bb = 1:length(N)
-            mean_widths(bb) = nanmean(theseWidths(Bi == bb));
+%             mean_widths(bb) = nanmean(theseWidths(Bi == bb & theseWidths < 30));
+            mean_widths(bb) = nanmedian(theseWidths(Bi == bb));
         end
         mean_widths(isnan(mean_widths)) = 0;
         all_data(cc,:,an) = mean_widths;
@@ -103,7 +104,10 @@ n=0;
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0.25);
     set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 mYr],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata; 
-    xticklabels = {'Bin1','Bin2','Bin3','Bin4'};xticklabels = repmat(xticklabels,1,4);
+    for ii = 1:(length(mVar)/4)
+        xticklabels{ii} = sprintf('Bin%d',ii);
+    end
+    xticklabels = repmat(xticklabels,1,4);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
 %     hbis = bar(ixdata,int_env.avg,'barWidth',0.05,'BaseValue',0.1,'ShowBaseline','off');
