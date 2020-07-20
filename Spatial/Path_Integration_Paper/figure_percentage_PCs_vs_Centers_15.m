@@ -33,7 +33,7 @@ for rr = 1:size(pMs,1)
     end
 end
 
-bins = 0:20:155;
+bins = 0:30:155;
 for an = 1:length(selAnimals)
     for cc = 1:length(conditionsAndRasterTypes)
         theseCenters = f_centers{an,1,cc};
