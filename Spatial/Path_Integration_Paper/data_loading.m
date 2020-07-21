@@ -1,6 +1,7 @@
-for ii = 1:60
+for ii = 1:1000
     pause(1);
 end
+%%
 % add_to_path
 % clear all
 % clc
@@ -12,6 +13,8 @@ selRecs10 = [4     8    12    15    16    17    18    19    20    21    22    24
 selRecs15 = [1:9 12 13 16];
 selRecs16 = [1 2 4 5];
 ET10 = T10.T(selRecs10,:); ET15 = T15.T(selRecs15,:); ET16 = T16.T(selRecs16,:);
+disp('Done');
+
 %%
 colormaps = load('../MatlabCode/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
