@@ -1,6 +1,8 @@
 for ii = 1:1000
     pause(1);
 end
+
+add_to_path
 %%
 % add_to_path
 % clear all
