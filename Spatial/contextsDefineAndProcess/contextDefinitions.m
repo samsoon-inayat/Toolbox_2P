@@ -34,4 +34,3 @@ allContexts.varNames = {'info_metrics';'gauss_fit_on_mean';'fractal_dim';'info_m
 
 
 
-
