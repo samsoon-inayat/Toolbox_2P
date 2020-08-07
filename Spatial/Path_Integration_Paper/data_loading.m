@@ -45,6 +45,11 @@ for ii = 1:size(ET15,1)
     ei15(ii) = getData_py(f,ET15(ii,:));
 end
 
+for ii = 1:size(ET15_AD,1)
+    ei15(ii) = getData_py(f,ET15(ii,:));
+end
+
+
 for ii = 1:size(ET16,1)
     ei16(ii) = getData_py(f,ET16(ii,:));
 end
