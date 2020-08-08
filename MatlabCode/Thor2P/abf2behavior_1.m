@@ -83,7 +83,7 @@ data_rate = 1/(si*1e-6);
 if ei.zFastEnable
     frames_diff_threshold = floor(data_rate/((ei.frameRate)*(ei.zSteps+1))+25);
 else
-    frames_diff_threshold = floor(data_rate/((ei.frameRate))+50);
+    frames_diff_threshold = floor(data_rate/((ei.frameRate))+25);
 end
 % disp(sprintf('Using frame diff threshold %d',frames_diff_threshold));
 dFf = diff(o.frames_f);
