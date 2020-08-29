@@ -4,7 +4,12 @@ FS = 7;
 micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;
 xrange = ei.plane{pl}.tP.ops.xrange;
 yrange = ei.plane{pl}.tP.ops.yrange;
-mimg = ei.plane{pl}.tP.ops.meanImg;
+mimg = ei.plane{pl}.tP.ops.meanImgE;
+% mimg = ei.plane{pl}.tP.ops.refImg;
+if isempty(ha)
+    figure(102);clf;plot(0,0);
+    ha = gca;
+end
 axes(ha);
 imagesc(mimg,[min(mimg(:)) max(mimg(:))]);
 colormap gray;

@@ -14,6 +14,7 @@ behaviorProcessor_1
 plotSpeedTrialsImage
 plotTimeToOnsetOfMovementAfterAirPuff
 plotAverageSpeedConditions
+plotAverageSpeedConditions_AD
 
 %% figure 1D
 speedFigure
