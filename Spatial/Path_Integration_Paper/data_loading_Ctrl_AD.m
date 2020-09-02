@@ -53,7 +53,8 @@ parameter_matrices('calculate','15',ei15);
 parameter_matrices('calculate','16',ei16);
 disp('All Done!');
 %%
-training_data = behaviorProcessor;
+training_data_C = behaviorProcessor;
+training_data_A = behaviorProcessor_AD;
 
 ei10 = loadContextsResponses(ei10,[0 0],[-1 -1 -1]);
 ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);

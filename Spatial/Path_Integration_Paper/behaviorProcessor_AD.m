@@ -39,28 +39,30 @@ for ii = 1:length(uaids)
 end
 n = 0;
 % writetable(Tf,'allData.xls');
-uaids1 = uaids([1 3:length(uaids)]);
+uaids1 = uaids;%([1 3:length(uaids)]);
 % uaids1(uaids1 == 183745) = [];
 Tr = [];
 for ii = 1:length(uaids1)
     animalID = uaids1(ii);
+    an_inds = find(D.animalListNum == animalID)
+    animal_info = D.animal(an_inds(1))
     subT = T(animalID == animalIDs,:);
     datesHere = convertToDate(subT{:,2});
     datesHere = sort(datesHere);
     firstRecordingDate = datesHere(1);
-    recordingFolders = subT{:,6};
-    pdFolders = subT{:,7};
+%     recordingFolders = subT{:,6};
+%     pdFolders = subT{:,7};
     TT = getTable(raw,animalID,'training',[]);
     trainingDates = convertToDate(TT{:,2});
     inds = find(trainingDates < firstRecordingDate);
     inds = sort(inds);
     N(ii) = length(inds);
-    folderName = recordingFolders{1};
-    pos = strfind(folderName,'\');
-    folderName = folderName(1:(pos(end-1)-1));
-    pfolderName = pdFolders{1};
-    pos = strfind(pfolderName,'\');
-    pfolderName = pfolderName(1:(pos(end-1)-1));
+    folderName = animal_info.folder;%recordingFolders{1};
+%     pos = strfind(folderName,'\');
+%     folderName = folderName(1:(pos(end-1)-1));
+%     pfolderName = pdFolders{1};
+%     pos = strfind(pfolderName,'\');
+%     pfolderName = pfolderName(1:(pos(end-1)-1));
     for jj = 1:length(inds)
         thisTrainingDate = trainingDates(inds(jj));
         files = dir(sprintf('%s\\**\\*.abf',folderName));
@@ -99,7 +101,11 @@ for ii = 1:length(uaids1)
                 save(pfileName,'b');
                 b = calcBehav(b);
                 bs{ii,jj} = b;
-                td(ii,jj) = day(thisTrainingDate - trainingDates(1));
+                try
+                    td(ii,jj) = day(thisTrainingDate - trainingDates(1));
+                catch
+                    td(ii,jj) = (minutes(thisTrainingDate - trainingDates(1))/60)/24;
+                end
                 t_date{ii,jj} = thisTrainingDate;
             catch
                 bs{ii,jj} = [];

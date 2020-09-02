@@ -20,7 +20,7 @@ AD_Thy1_animals = [183224;183227;183228;183329;1567;1569];
 % Thy1_animals = [173062;173511;173198;174374;173706;183633;183761;183745;183628;183762;1432];
 % Thy1_animals = [183628];
 animals = AD_Thy1_animals;%
-T = getTable(raw,animals,'recording','protocol 15'); 
+T = getTable(raw,animals,'training',''); 
 T = getRecordingFolder(T,D);
 T = make_db_and_pdPaths(T,config,2);
 
@@ -43,6 +43,6 @@ for ii = 1:length(list)
 end
 fclose(fid);
 
-fileName = 'T_16_All.mat';
+fileName = 'Training_Table.mat';
 save(fileName,'T');
 

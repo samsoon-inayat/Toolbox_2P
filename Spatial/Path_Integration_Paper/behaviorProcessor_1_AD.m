@@ -1,12 +1,8 @@
 function behaviorProcessor_1
-temp = evalin('base','training_data_C');
+temp = evalin('base','training_data_A');
 numberOfTrials = findNumberOfTrials(temp);
 [rr,cc] = find(numberOfTrials < 20);
 selColsAll = [1 2 3
-              1 3 4;
-              1 3 4;
-              1 2 3;
-              1 3 4;
               1 2 3;
               1 2 3;
               1 2 3;
@@ -17,7 +13,7 @@ ei1 = temp.bs;
 mData = evalin('base','mData');
 colors = mData.colors;
 % selRows = [4 5 6 8 9]; selCols = [1:4];
-selRows = [1:6 8:10]; selCols = [1:3];
+selRows = [1:6]; selCols = [1:3];
 for ii = 1:length(selRows)
     for jj = 1:3
         ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
@@ -47,12 +43,12 @@ runthis =1;
 if runthis
 thisCols_all = mData.colors;
     selRowi = 5;
-for selRowi = 1:9
+for selRowi = 1:6
     selRowi
-    ass = as{selRowi};
+%     ass = as{selRowi};
     ff = makeFigureWindow__one_axes_only(5,[10 4 1.25 1.25],[0.19 0.2 0.79 0.75]);
     axes(ff.ha);hold on;
-%     ass = as1{selRowi};
+    ass = as1{selRowi};
     for ii = 1:length(ass)
         this = ass{ii};
         plot(1:length(this),this,'linewidth',0.5,'color',thisCols_all{ii});
@@ -61,7 +57,7 @@ for selRowi = 1:9
     plot(1:max(lenTs),ones(size(1:max(lenTs)))*7,'m','linewidth',0.5);
     set(gca,'xlim',[0 max(lenTs)],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
     changePosition(gca,[0.03 0.09 -0.03 -0.1])
-    put_axes_labels(gca,{'Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
+    put_axes_labels(gca,{'Inter-Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
     legs = [];
     for ii = 1:length(ass)
         legs{ii} = sprintf('Day %1d',ii);
@@ -72,7 +68,7 @@ for selRowi = 1:9
 %     putLegend(ff.ha,legs,'colors',{'k'});
     title(sprintf('Animal %d',temp.animalIDs(selRows(selRowi))));
     changePosition(gca,[0 -0.05 0 0]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_Trials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_InterTrials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
 end
 return;
 end

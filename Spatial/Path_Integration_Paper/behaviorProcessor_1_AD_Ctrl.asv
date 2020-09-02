@@ -1,58 +1,19 @@
 function behaviorProcessor_1
-temp = evalin('base','training_data_C');
-numberOfTrials = findNumberOfTrials(temp);
-[rr,cc] = find(numberOfTrials < 20);
-selColsAll = [1 2 3
-              1 3 4;
-              1 3 4;
-              1 2 3;
-              1 3 4;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              ];
-ei1 = temp.bs;
 mData = evalin('base','mData');
-colors = mData.colors;
-% selRows = [4 5 6 8 9]; selCols = [1:4];
-selRows = [1:6 8:10]; selCols = [1:3];
-for ii = 1:length(selRows)
-    for jj = 1:3
-        ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
-    end
-end
-temp.animalIDs(selRows)
-aids = temp.animalIDs(selRows);
-td = temp.training_days(selRows,selColsAll);
-ii = 1;
-moas = NaN(size(ei));
-moasi = moas;
-for iii = 1:size(ei,1)
-    if iii == 4
-        n = 0;
-    end
-    out = behaviorProcessor_2(ei(iii,:));
-    as{ii} = out.asT; mas{ii} = out.masT; semas{ii} = out.semasT;
-    as1{ii} = out.asIT; mas1{ii} = out.masIT; semas1{ii} = out.semasIT;
-    masD{ii} = out.masD; semasD{ii} = out.semasD;
-    ii = ii + 1;
-    moas(iii,:) = mas{ii-1};
-    moasi(iii,:) = mas1{ii-1};
-end
-n = 0;
+data_C = get_training_data_C;
+data_A = get_training_data_A;
+
 %%
-runthis =1;
+runthis =0;
 if runthis
 thisCols_all = mData.colors;
     selRowi = 5;
-for selRowi = 1:9
+for selRowi = 1:6
     selRowi
-    ass = as{selRowi};
+%     ass = as{selRowi};
     ff = makeFigureWindow__one_axes_only(5,[10 4 1.25 1.25],[0.19 0.2 0.79 0.75]);
     axes(ff.ha);hold on;
-%     ass = as1{selRowi};
+    ass = as1{selRowi};
     for ii = 1:length(ass)
         this = ass{ii};
         plot(1:length(this),this,'linewidth',0.5,'color',thisCols_all{ii});
@@ -61,7 +22,7 @@ for selRowi = 1:9
     plot(1:max(lenTs),ones(size(1:max(lenTs)))*7,'m','linewidth',0.5);
     set(gca,'xlim',[0 max(lenTs)],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
     changePosition(gca,[0.03 0.09 -0.03 -0.1])
-    put_axes_labels(gca,{'Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
+    put_axes_labels(gca,{'Inter-Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
     legs = [];
     for ii = 1:length(ass)
         legs{ii} = sprintf('Day %1d',ii);
@@ -72,7 +33,7 @@ for selRowi = 1:9
 %     putLegend(ff.ha,legs,'colors',{'k'});
     title(sprintf('Animal %d',temp.animalIDs(selRows(selRowi))));
     changePosition(gca,[0 -0.05 0 0]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_Trials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_InterTrials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
 end
 return;
 end
@@ -145,16 +106,24 @@ if runthis
 % mauchlytbl = mauchly(rm);
 % mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
 % mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
-
+n = 0;
+moas = data_C.moas;
+moasi = data_C.moasi;
+moas_A = data_A.moas;
+moasi_A = data_A.moasi;
 for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
 for ii = 1:size(moasi,2)
     varNamesI{ii} = sprintf('InterTrials_Day%d',ii);
 end
-data = [moas moasi];
-dataT = table(data(:,1),data(:,4),data(:,2),data(:,5),data(:,3),data(:,6));
-dataT.Properties.VariableNames = {varNames{1} varNamesI{1} varNames{2} varNamesI{2} varNames{3} varNamesI{3}};
+data_C = [moas moasi];
+data_A = [moas_A moasi_A];
+group = categorical([ones(size(data_C,1),1);(2*ones(size(data_A,1),1))]);
+data = [data_C;data_A];
+dataT = table(group,data(:,1),data(:,4),data(:,2),data(:,5),data(:,3),data(:,6));
+dataT.Properties.VariableNames = {'Group' varNames{1} varNamesI{1} varNames{2} varNamesI{2} varNames{3} varNamesI{3}};
+% writetable(dataT,'Training_data_C_A.xlsx')
 within = table([varNames';varNamesI']);
 columnText = cell(size(within,1),1);columnText(1:2:end)= varNames';columnText(2:2:end)= varNamesI';
 within = table([varNames';varNamesI'],columnText);
@@ -164,47 +133,55 @@ within.TI = categorical(within.TI);
 within.Day = categorical(within.Day);
 
 % writetable(between,'Training_Data.xls');
-rm = fitrm(dataT,'Trials_Day1,InterTrials_Day1,Trials_Day2,InterTrials_Day2,Trials_Day3,InterTrials_Day3 ~ 1','WithinDesign',within,'WithinModel','Day*TI');
+rm = fitrm(dataT,'Trials_Day1,InterTrials_Day1,Trials_Day2,InterTrials_Day2,Trials_Day3,InterTrials_Day3 ~ Group','WithinDesign',within,'WithinModel','Day*TI');
 rtable = ranova(rm,'WithinModel',rm.WithinModel);
 mauchlytbl = mauchly(rm);
 % multcompare(rm,'Day','ComparisonType','bonferroni')
+mcGroup = find_sig_mctbl(multcompare(rm,'Group','By','Day','ComparisonType','bonferroni'),6);
 mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
 mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
 
 [mVarT,semVarT] = findMeanAndStandardError(moas);
 [mVarIT,semVarIT] = findMeanAndStandardError(moasi);
-mVar = NaN(1,length(mVarT)+length(mVarIT));
+
+[mVarT_A,semVarT_A] = findMeanAndStandardError(moas_A);
+[mVarIT_A,semVarIT_A] = findMeanAndStandardError(moasi_A);
+
+mVar = NaN(1,2*(length(mVarT)+length(mVarIT)));
 semVar = mVar;
-mVar(1:2:length(mVar)) = mVarT;semVar(1:2:length(mVar)) = semVarT;
-mVar(2:2:length(mVar)) = mVarIT;semVar(2:2:length(mVar)) = semVarIT;
-combs = nchoosek(1:6,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
-row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{1,6}; h(ii) = 1; 
-row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
-row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
-row = [1 5]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{2,6}; h(ii) = 1; 
-row = [1 3]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{1,6}; h(ii) = 1; 
-% row = [2 6]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{3,6}; h(ii) = 1; 
+mVar(1:2:6) = mVarT;semVar(1:2:6) = semVarT;
+mVar(2:2:6) = mVarIT;semVar(2:2:6) = semVarIT;
+mVar(7:2:12) = mVarT_A;semVar(7:2:12) = semVarT_A;
+mVar(8:2:12) = mVarIT_A;semVar(8:2:12) = semVarIT_A;
+combs = nchoosek(1:14,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
+% row = [7 8]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{1,6}; h(ii) = 1; 
+% row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
+% row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 
-xdata = [1 2 4 5 7 8]; maxY = 50;
-
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+xdata = [1 2 4 5 7 8 [13 14 16 17 19 20]-1]; maxY = 22;
+colors = mData.colors;
+hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
 hold on;
-tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
+tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
 hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0);
+    'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
 for ii = 2:2:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 end
-set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = [1.5 4.5 7.5]; xticklabels = {'Day1','Day2','Day3'};
+% plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+xticks = xdata(1:2:end)+0.5; xticklabels = {'D1','D2','D3','D1','D2','D3'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-changePosition(gca,[0.1 0.02 -0.03 -0.011])
-put_axes_labels(gca,{[],[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
-rectangle(gca,'Position',[0.75 47 1 3],'edgecolor','k','facecolor','k');
-text(1.85,49,'Trials','FontSize',5);
-rectangle(gca,'Position',[4 47 1 3],'edgecolor','k');
-text(5.2,49,'Inter-Trials','FontSize',5);
+changePosition(gca,[0.02 0.03 0.02 -0.11]);
+put_axes_labels(gca,{[],[0 0 0]},{'Avg. Speed (cm/sec)',[0 0 0]});
+rectangle(gca,'Position',[0.75 21 1 2],'edgecolor','k','facecolor','k');
+text(1.85,22,'Trials','FontSize',5);
+rectangle(gca,'Position',[6 21 1 2],'edgecolor','k');
+text(7.2,22,'Inter-Trials','FontSize',5);
+text(3.5,18,'Control','FontSize',7);
+text(18.5,18,'APP','FontSize',7);
+% applyhatch_plusC(gcf
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova.pdf',600);
 return;
@@ -302,3 +279,94 @@ for ii = 1:size(bs,1)
         numberOfTrials(ii,jj) = length(thisb.air_puff_r);
     end
 end
+
+
+function out1 = get_training_data_C
+temp = evalin('base','training_data_C');
+numberOfTrials = findNumberOfTrials(temp);
+[rr,cc] = find(numberOfTrials < 20);
+selColsAll = [1 2 3
+              1 3 4;
+              1 3 4;
+              1 2 3;
+              1 3 4;
+              1 2 3;
+              1 2 3;
+              1 2 3;
+              1 2 3;
+              1 2 3;
+              ];
+ei1 = temp.bs;
+mData = evalin('base','mData');
+colors = mData.colors;
+% selRows = [4 5 6 8 9]; selCols = [1:4];
+selRows = [4 6 8:10]; selCols = [1:3];
+for ii = 1:length(selRows)
+    for jj = 1:3
+        ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
+    end
+end
+temp.animalIDs(selRows)
+aids = temp.animalIDs(selRows);
+td = temp.training_days(selRows,selColsAll);
+ii = 1;
+moas = NaN(size(ei));
+moasi = moas;
+for iii = 1:size(ei,1)
+    if iii == 4
+        n = 0;
+    end
+    out = behaviorProcessor_2(ei(iii,:));
+    as{ii} = out.asT; mas{ii} = out.masT; semas{ii} = out.semasT;
+    as1{ii} = out.asIT; mas1{ii} = out.masIT; semas1{ii} = out.semasIT;
+    masD{ii} = out.masD; semasD{ii} = out.semasD;
+    ii = ii + 1;
+    moas(iii,:) = mas{ii-1};
+    moasi(iii,:) = mas1{ii-1};
+end
+out1.moas = moas;
+out1.moasi = moasi;
+n = 0;
+
+function out1 = get_training_data_A
+temp = evalin('base','training_data_A');
+numberOfTrials = findNumberOfTrials(temp);
+[rr,cc] = find(numberOfTrials < 20);
+selColsAll = [1 2 3
+              1 2 3;
+              1 2 3;
+              1 2 3;
+              1 2 3;
+              1 2 3;
+              ];
+ei1 = temp.bs;
+mData = evalin('base','mData');
+colors = mData.colors;
+% selRows = [4 5 6 8 9]; selCols = [1:4];
+selRows = [1 2 4:6]; selCols = [1:3];
+for ii = 1:length(selRows)
+    for jj = 1:3
+        ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
+    end
+end
+temp.animalIDs(selRows)
+aids = temp.animalIDs(selRows);
+td = temp.training_days(selRows,selColsAll);
+ii = 1;
+moas = NaN(size(ei));
+moasi = moas;
+for iii = 1:size(ei,1)
+    if iii == 4
+        n = 0;
+    end
+    out = behaviorProcessor_2(ei(iii,:));
+    as{ii} = out.asT; mas{ii} = out.masT; semas{ii} = out.semasT;
+    as1{ii} = out.asIT; mas1{ii} = out.masIT; semas1{ii} = out.semasIT;
+    masD{ii} = out.masD; semasD{ii} = out.semasD;
+    ii = ii + 1;
+    moas(iii,:) = mas{ii-1};
+    moasi(iii,:) = mas1{ii-1};
+end
+out1.moas = moas;
+out1.moasi = moasi;
+n = 0;
