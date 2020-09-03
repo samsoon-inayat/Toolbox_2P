@@ -2,8 +2,8 @@ function plotTimeToOnsetOfMovementAfterAirPuff(b,markers1,markers2,fn)
 %%
 n = 0;
 %%
-ei_C = evalin('base','ei10_C');
-ei_A = evalin('base','ei10_A');
+ei_C = evalin('base','ei15_C');
+ei_A = evalin('base','ei15_A');
 mData = evalin('base','mData');
 
 dt_C = get_duration_and_time(ei_C);
@@ -17,16 +17,16 @@ for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
 end
 data = [moas;moas_A];
-dataT = table([ones(size(moas,1),1);2*ones(size(moas_A,1),1)],data(:,1),data(:,2),data(:,3),data(:,4));
-dataT.Properties.VariableNames = {'Group' varNames{1} varNames{2} varNames{3} varNames{4}};
-within = table([1 2 3 4]');
+dataT = table([ones(size(moas,1),1);2*ones(size(moas_A,1),1)],data(:,1),data(:,2),data(:,3));
+dataT.Properties.VariableNames = {'Group' varNames{1} varNames{2} varNames{3}};
+within = table([1 2 3]');
 within.Properties.VariableNames = {'Condition'};
 within.Condition = categorical(within.Condition);
 
 % writetable(between,'Training_Data.xls');
-rm = fitrm(dataT,'Trials_Cond1,Trials_Cond2,Trials_Cond3,Trials_Cond4~Group','WithinDesign',within,'WithinModel','Condition');
+rm = fitrm(dataT,'Trials_Cond1,Trials_Cond2,Trials_Cond3~Group','WithinDesign',within,'WithinModel','Condition');
 rtable = ranova(rm,'WithinModel',rm.WithinModel);
-save('duration_to_onset_C_AD_P10.mat','dataT','rtable')
+save('duration_to_onset_C_AD_P15.mat','dataT','rtable')
 mauchlytbl = mauchly(rm);
 % multcompare(rm,'Day','ComparisonType','bonferroni')
 mcTI = find_sig_mctbl(multcompare(rm,'Condition','ComparisonType','bonferroni'));
@@ -96,31 +96,35 @@ timeBefore = 0;
 timeAfter = 15;
 speed_threshold = 1;
 for an = 1:length(ei)
-    for cc = 1:4
-        b = ei{an}.b;
-        markers1i = ei{an}.plane{1}.contexts(cc).markers.air_onsets;
-        markers2i = ei{an}.plane{1}.contexts(cc).markers.air_offsets;
-        fn = 101;
-        speed = b.fSpeed;
-        % figure(1000);clf;plot(b.speed);
-        ts = b.ts;
-        markers1 = markers1i - round(1e6 * timeBefore/b.si);
-        markers2 = markers2i + round(1e6 * timeAfter/b.si);
-        duration_onset_moveT = []; timeToCompleteT = [];
-        for ii = 1:length(markers1)
-            st = markers1(ii);
-            se = markers2(ii);
-            sp{ii} = speed(st:se);
-            t{ii} = ts(st:se)-ts(st);
-            ind(ii) = find((st:se)-markers2i(ii)>0,1,'first');
-            t_on_move = find(sp{ii} > speed_threshold,1,'first');
-            duration_onset_move(ii,cc,an) = t{ii}(t_on_move);
-            duration_onset_moveT(ii) = t{ii}(t_on_move);
-            
-            timeToCompleteT(ii) = ts(markers2i(ii)) - ts(markers1i(ii));
+    cc = 1;
+    for ccc = 1:length(ei{an}.plane{1}.contexts)
+        if strcmp(ei{an}.plane{1}.contexts(ccc).name,'Air - No Cues - No Brake') || strcmp(ei{an}.plane{1}.contexts(ccc).name,'Air - Light - No Brake')
+            b = ei{an}.b;
+            markers1i = ei{an}.plane{1}.contexts(ccc).markers.air_onsets;
+            markers2i = ei{an}.plane{1}.contexts(ccc).markers.air_offsets;
+            fn = 101;
+            speed = b.fSpeed;
+            % figure(1000);clf;plot(b.speed);
+            ts = b.ts;
+            markers1 = markers1i - round(1e6 * timeBefore/b.si);
+            markers2 = markers2i + round(1e6 * timeAfter/b.si);
+            duration_onset_moveT = []; timeToCompleteT = [];
+            for ii = 1:length(markers1)
+                st = markers1(ii);
+                se = markers2(ii);
+                sp{ii} = speed(st:se);
+                t{ii} = ts(st:se)-ts(st);
+                ind(ii) = find((st:se)-markers2i(ii)>0,1,'first');
+                t_on_move = find(sp{ii} > speed_threshold,1,'first');
+                duration_onset_move(ii,cc,an) = t{ii}(t_on_move);
+                duration_onset_moveT(ii) = t{ii}(t_on_move);
+
+                timeToCompleteT(ii) = ts(markers2i(ii)) - ts(markers1i(ii));
+            end
+            duration_onset_moveC(an,cc) = mean(duration_onset_moveT);
+            timeToCompleteC(an,cc) = mean(timeToCompleteT);
+            cc = cc + 1;
         end
-        duration_onset_moveC(an,cc) = mean(duration_onset_moveT);
-        timeToCompleteC(an,cc) = mean(timeToCompleteT);
     end
 end
 out.duration = duration_onset_moveC;
