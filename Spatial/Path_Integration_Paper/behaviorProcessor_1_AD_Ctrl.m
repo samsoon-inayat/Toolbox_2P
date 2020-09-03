@@ -123,7 +123,7 @@ group = categorical([ones(size(data_C,1),1);(2*ones(size(data_A,1),1))]);
 data = [data_C;data_A];
 dataT = table(group,data(:,1),data(:,4),data(:,2),data(:,5),data(:,3),data(:,6));
 dataT.Properties.VariableNames = {'Group' varNames{1} varNamesI{1} varNames{2} varNamesI{2} varNames{3} varNamesI{3}};
-% writetable(dataT,'Training_data_C_A.xlsx')
+writetable(dataT,'Training_data_C_A.xlsx')
 within = table([varNames';varNamesI']);
 columnText = cell(size(within,1),1);columnText(1:2:end)= varNames';columnText(2:2:end)= varNamesI';
 within = table([varNames';varNamesI'],columnText);
@@ -300,10 +300,16 @@ ei1 = temp.bs;
 mData = evalin('base','mData');
 colors = mData.colors;
 % selRows = [4 5 6 8 9]; selCols = [1:4];
-selRows = [4 6 8:10]; selCols = [1:3];
+selRows = [1 4 5 6 7 8:10]; selCols = [1:3];
+
 for ii = 1:length(selRows)
     for jj = 1:3
-        ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
+        if ii == 3
+            ei(ii,jj) = ei1(selRows(ii),jj+1);
+        else
+            ei(ii,jj) = ei1(selRows(ii),jj);
+        end
+%         ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
     end
 end
 temp.animalIDs(selRows)
@@ -313,7 +319,7 @@ ii = 1;
 moas = NaN(size(ei));
 moasi = moas;
 for iii = 1:size(ei,1)
-    if iii == 4
+    if iii == 3
         n = 0;
     end
     out = behaviorProcessor_2(ei(iii,:));
@@ -343,10 +349,11 @@ ei1 = temp.bs;
 mData = evalin('base','mData');
 colors = mData.colors;
 % selRows = [4 5 6 8 9]; selCols = [1:4];
-selRows = [1 2 4:6]; selCols = [1:3];
+selRows = [1 2 3 4:6]; selCols = [1:3];
 for ii = 1:length(selRows)
     for jj = 1:3
-        ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
+        ei(ii,jj) = ei1(selRows(ii),jj);
+%         ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
     end
 end
 temp.animalIDs(selRows)

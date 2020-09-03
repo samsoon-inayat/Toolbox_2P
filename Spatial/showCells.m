@@ -63,5 +63,7 @@ plot([scaleBarS scaleBarE],[scaleBarY scaleBarY],'c','linewidth',2);
 % text(scaleBarS,scaleBarY-20,sprintf('%.0f um',(scaleBarE - scaleBarS)*micronsPerPixel),'color','r','FontSize',14,'FontWeight','Bold');
 if iscell(selCells)
     title(tcColors');
+else
+    title(ei.recordingFolder)
 end
 % xlim([200 900]); ylim([200 900]);
