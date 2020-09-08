@@ -43,7 +43,7 @@ ei15_A = loadContextsResponses(ei15_A,[1 1],[0 0 0]);
 % ei15_AA = loadContextsResponses(ei15_AA,[1 1],[0 0 0]);
 % ei15_A(3) = ei15_AA(2);
 
-%%
+
 % for loading behavior and 2p data
 for ii = 1:size(ET10_C,1)
     ei10_C(ii) = getData_py(f,ET10_C(ii,:));
@@ -57,6 +57,11 @@ ei10_C = loadContextsResponses(ei10_C,[1 1],[0 0 0]);
 ei10_A = loadContextsResponses(ei10_A,[1 1],[0 0 0]);
 training_data_C = behaviorProcessor;
 training_data_A = behaviorProcessor_AD;
+
+parameter_matrices('calculate','10_C',ei10_C);
+parameter_matrices('calculate','15_C',ei15_C);
+parameter_matrices('calculate','10_A',ei10_A);
+parameter_matrices('calculate','15_A',ei15_A);
 %%
 for ii = 1:size(ET15,1)
     ei15(ii) = getData_py(f,ET15(ii,:));
@@ -68,9 +73,9 @@ ei10 = loadContextsResponses_1(ei10,[1 1],[1 -1 1]);
 ei15 = loadContextsResponses(ei15,[1 1],[0 0 0]);
 ei16 = loadContextsResponses(ei16,[1 1],[0 0 0]);
 
-parameter_matrices('calculate','10',ei10);
-parameter_matrices('calculate','15',ei15);
-parameter_matrices('calculate','16',ei16);
+% parameter_matrices('calculate','10_C',ei10_C);
+% parameter_matrices('calculate','15_C',ei15_C);
+% parameter_matrices('calculate','16',ei16);
 disp('All Done!');
 %%
 

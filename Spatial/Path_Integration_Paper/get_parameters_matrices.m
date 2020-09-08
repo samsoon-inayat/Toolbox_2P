@@ -10,7 +10,7 @@ end
 varNames = {'info_metrics.ShannonMI_Zsh','place_field_properties.amp','place_field_properties.pws','place_field_properties.centers','place_field_properties.rs','fractal_dim.HaFD','fractal_dim.HiFD'};
 varNamesDH = {'zMIs','fFR','fwidths','fcenters','frs','HaFD','HiFD'};
 
-if strcmp(protocol,'10') && iscell(aei)
+if ~isempty(strfind(protocol,'10')) && iscell(aei)
     selAnimals = 1:length(aei);
     selCells = 'All';
     planeNumbers = 'All';
@@ -75,7 +75,7 @@ if strcmp(protocol,'10') && iscell(aei)
     return;
 end
 
-if strcmp(protocol,'15') && iscell(aei)
+if ~isempty(strfind(protocol,'15')) && iscell(aei)
     selAnimals = 1:length(aei);
     selCells = 'All';
     planeNumbers = 'All';
@@ -97,8 +97,15 @@ if strcmp(protocol,'15') && iscell(aei)
             eval(cmdTxt);
         end
         for ci = 1:length(contextNumbers)
-            contextNumber = contextNumbers(ci);
+            if an == 5
+                contextNumber = contextNumbers(ci)-1;
+            else
+                contextNumber = contextNumbers(ci);
+            end
             for si = 1:length(stimMarkers)
+%                 if [an ci si] == [1 3 1]
+%                     n = 0;
+%                 end
                 disp([an ci si]);
                 stimMarker = stimMarkers{si};
                 rasterType = rasterTypes{si};
@@ -138,7 +145,7 @@ if strcmp(protocol,'15') && iscell(aei)
     return;
 end
 
-if strcmp(protocol,'16') && iscell(aei)
+if ~isempty(strfind(protocol,'16')) && iscell(aei)
     selAnimals = 1:length(aei);
     selCells = 'All';
     planeNumbers = 'All';
