@@ -97,7 +97,7 @@ if ~isempty(strfind(protocol,'15')) && iscell(aei)
             eval(cmdTxt);
         end
         for ci = 1:length(contextNumbers)
-            if an == 5
+            if an == 5 && ~isempty(strfind(protocol,'_A'))
                 contextNumber = contextNumbers(ci)-1;
             else
                 contextNumber = contextNumbers(ci);

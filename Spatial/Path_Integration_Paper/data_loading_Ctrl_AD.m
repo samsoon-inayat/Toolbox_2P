@@ -30,38 +30,44 @@ mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = fullfile(pwd,'PDFs'); 
 disp('Done');
 %%
-for ii = 1:size(ET15_C,1)
-    ei15_C(ii) = getData_py(f,ET15_C(ii,:));
+try
+    send_email({'samsoon.inayat@uleth.ca','brendan.mcallister@uleth.ca'},'Neuroimaging 3 has started loading data for Protocol 10 and 15')
+    for ii = 1:size(ET15_C,1)
+        ei15_C(ii) = getData_py(f,ET15_C(ii,:));
+    end
+
+    for ii = 1:size(ET15_A,1)
+        ei15_A(ii) = getData_py(f,ET15_A(ii,:));
+    end
+
+    ei15_C = loadContextsResponses(ei15_C,[1 1],[0 0 0]);
+    ei15_A = loadContextsResponses(ei15_A,[1 1],[0 0 0]);
+    % ei15_AA = loadContextsResponses(ei15_AA,[1 1],[0 0 0]);
+    % ei15_A(3) = ei15_AA(2);
+
+
+    % for loading behavior and 2p data
+    for ii = 1:size(ET10_C,1)
+        ei10_C(ii) = getData_py(f,ET10_C(ii,:));
+    end
+
+    for ii = 1:size(ET10_A,1)
+        ei10_A(ii) = getData_py(f,ET10_A(ii,:));
+    end
+
+    ei10_C = loadContextsResponses(ei10_C,[1 1],[0 0 0]);
+    ei10_A = loadContextsResponses(ei10_A,[1 1],[0 0 0]);
+    training_data_C = behaviorProcessor;
+    training_data_A = behaviorProcessor_AD;
+
+    parameter_matrices('calculate','10_C',ei10_C);
+    parameter_matrices('calculate','15_C',ei15_C);
+    parameter_matrices('calculate','10_A',ei10_A);
+    parameter_matrices('calculate','15_A',ei15_A);
+    send_email({'samsoon.inayat@uleth.ca','brendan.mcallister@uleth.ca'},'Complete - Loading data for Protocol 10 and 15')
+catch
+    send_email({'samsoon.inayat@uleth.ca','brendan.mcallister@uleth.ca'},'Error occurred while loading data')
 end
-
-for ii = 1:size(ET15_A,1)
-    ei15_A(ii) = getData_py(f,ET15_A(ii,:));
-end
-
-ei15_C = loadContextsResponses(ei15_C,[1 1],[0 0 0]);
-ei15_A = loadContextsResponses(ei15_A,[1 1],[0 0 0]);
-% ei15_AA = loadContextsResponses(ei15_AA,[1 1],[0 0 0]);
-% ei15_A(3) = ei15_AA(2);
-
-
-% for loading behavior and 2p data
-for ii = 1:size(ET10_C,1)
-    ei10_C(ii) = getData_py(f,ET10_C(ii,:));
-end
-
-for ii = 1:size(ET10_A,1)
-    ei10_A(ii) = getData_py(f,ET10_A(ii,:));
-end
-
-ei10_C = loadContextsResponses(ei10_C,[1 1],[0 0 0]);
-ei10_A = loadContextsResponses(ei10_A,[1 1],[0 0 0]);
-training_data_C = behaviorProcessor;
-training_data_A = behaviorProcessor_AD;
-
-parameter_matrices('calculate','10_C',ei10_C);
-parameter_matrices('calculate','15_C',ei15_C);
-parameter_matrices('calculate','10_A',ei10_A);
-parameter_matrices('calculate','15_A',ei15_A);
 %%
 for ii = 1:size(ET15,1)
     ei15(ii) = getData_py(f,ET15(ii,:));

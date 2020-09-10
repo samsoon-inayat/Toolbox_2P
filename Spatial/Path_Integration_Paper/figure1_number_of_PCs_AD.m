@@ -72,9 +72,13 @@ if runthis
 
     rm = fitrm(dataT,sprintf('%s,%s,%s,%s~Group',varNames{1},varNames{2},varNames{3},varNames{4}),'WithinDesign',within,'WithinModel','Condition');
     rtable = ranova(rm,'WithinModel',rm.WithinModel);
+%     writetable(dataT,'Percentage_of_PCs_10.xlsx','WriteRowNames',true)
+%     writetable(rtable,'RANOVA_Number_of_PCs_10.xlsx','WriteRowNames',true)
     mauchlytbl = mauchly(rm);
     % multcompare(rm,'Day','ComparisonType','bonferroni')
     mcGroup = find_sig_mctbl(multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni'),6);
+    mcGroup = multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni');
+    writetable(mcGroup,'RANOVA_Number_of_PCs_multcompare_10.xlsx')
 %     mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
 %     mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
     
