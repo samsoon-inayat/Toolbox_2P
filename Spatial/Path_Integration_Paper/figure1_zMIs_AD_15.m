@@ -62,7 +62,7 @@ all_conds = unique(all_conds); all_rts = unique(all_rts);
 var_oi_A = squeeze(zMIs_A);
 var_oi_C = squeeze(zMIs_C);
 %%
-runthis = 0;
+runthis = 1;
 if runthis
     numCols = length(all_rts);
     data = var_oi_C;
@@ -92,15 +92,14 @@ if runthis
 
     rm = fitrm(dataT,sprintf('%s,%s,%s~Group',varNames{1},varNames{2},varNames{3}),'WithinDesign',within,'WithinModel','Condition');
     rtable = ranova(rm,'WithinModel',rm.WithinModel);
-%     writetable(dataT,'Percentage_of_PCs_15.xlsx','WriteRowNames',true)
-%     writetable(rtable,'RANOVA_Number_of_PCs_15.xlsx','WriteRowNames',true)
+    file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA.xlsx',mfilename));
+    writetable(rtable,file_name,'WriteRowNames',true)
     mauchlytbl = mauchly(rm);
     % multcompare(rm,'Day','ComparisonType','bonferroni')
     mcGroup = find_sig_mctbl(multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni'),6);
     mcGroup = multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni');
-%     writetable(mcGroup,'RANOVA_Number_of_PCs_multcompare_15.xlsx')
-%     mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
-%     mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
+    file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA_multcompare.xlsx',mfilename));
+    writetable(mcGroup,file_name,'WriteRowNames',true)
     
 
     [mVarT,semVarT] = findMeanAndStandardError(var_oi_C);
@@ -139,7 +138,7 @@ if runthis
 %     text(3.5,18,'Control','FontSize',7);
 %     text(18.5,18,'APP','FontSize',7);
     % applyhatch_plusC(gcf
-    save_pdf(hf,mData.pdf_folder,sprintf('Average_zMI_15'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph',mfilename),600);
 return;
 end
 
