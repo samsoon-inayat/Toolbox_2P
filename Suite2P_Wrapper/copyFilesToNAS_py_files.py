@@ -30,7 +30,7 @@ for x in dir_names:
     rec_info = dir_name[str_pos+slash_pos:]
     spdir_name = processed_data_folder + rec_info
     dpdir_name = nas_processed_data_folder + rec_info
-    
+
 
     ssuite2p_folder = spdir_name + '/suite2p'
     dsuite2p_folder = dpdir_name + '/suite2p'
