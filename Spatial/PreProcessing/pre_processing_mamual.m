@@ -1,5 +1,5 @@
-rFolder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Data\RSC_HPC\003347\2020-08-10\1'
-pd_path = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data\RSC_HPC\003347\2020-08-10\1'
+rFolder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Data\RSC_HPC\003351\2020-08-09\1'
+pd_path = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data\RSC_HPC\003351\2020-08-09\1'
 
 eip = thorGetExperimentInfo(rFolder);
 
