@@ -1,9 +1,9 @@
-function plot_Vars_wrt_centers_AD
+function plot_Vars_wrt_centers_AD_15
 
-protocol_C = '10_C';
-protocol_A = '10_A';
-ei_C = evalin('base','ei10_C');
-ei_A = evalin('base','ei10_A');
+protocol_C = '15_C';
+protocol_A = '15_A';
+ei_C = evalin('base','ei15_C');
+ei_A = evalin('base','ei15_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ET_C = evalin('base',sprintf('ET%s',protocol_C));
 ET_A = evalin('base',sprintf('ET%s',protocol_A));
@@ -13,17 +13,15 @@ selAnimals_A = 1:length(ei_A)
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_C');
-paramMs_A = parameter_matrices('get','10_A');
-paramMs_C.belt_lengths = get_mean_belt_length(ei_C,protocol_C)
-paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
+paramMs_C = parameter_matrices('get',protocol_C);
+paramMs_A = parameter_matrices('get',protocol_A);
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','PF Widths','RS','Percent PCs'};
-maxYs = [10,20,20,0.7,100];
-svn = 1; %gcn = 3
+maxYs = [10,30,30,0.7,100];
+svn = 5; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
@@ -35,10 +33,10 @@ else
 end
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [11 21 31 41];
+conditionsAndRasterTypes = [31 41 51];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-[cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
-[cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
+[cpMs_C,pMs_C] = parameter_matrices('select',protocol_C,{paramMs_C,selC});
+[cpMs_A,pMs_A] = parameter_matrices('select',protocol_A,{paramMs_A,selC});
 % perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
 % perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
@@ -179,7 +177,7 @@ if runthis
     data_C = [];
     data_A = [];
     ind = 1;
-    for gcni = 1:4
+    for gcni = 1:3
         if svn == 5
             tempC = squeeze(out_C.all_data_N(gcni,:,:))';
             tempA = squeeze(out_A.all_data_N(gcni,:,:))';
@@ -190,6 +188,8 @@ if runthis
             sum_A = sum(tempA,2);
             for ii = 1:size(tempC,1)
                 tempC(ii,:) = 100*tempC(ii,:)/sum_C(ii);
+            end
+            for ii = 1:size(tempA,1)
                 tempA(ii,:) = 100*tempA(ii,:)/sum_A(ii);
             end
         else
@@ -221,7 +221,7 @@ if runthis
     dataT.Properties.VariableNames = {'Group',varNames{:}};
     numCols = size(tempC,2);
     dataT.Group = categorical(int32(dataT.Group))
-    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols];
     within = table(colVar1',colVar2');
     within.Properties.VariableNames = {'Condition','Bin'};
     within.Condition = categorical(within.Condition);
@@ -257,8 +257,8 @@ if runthis
 
     xdata = 1:TL; maxY = maxYs(svn);
     colors = mData.colors;
-%     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
-    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+%     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
     hold on;
     ind = 1
 
@@ -301,26 +301,26 @@ for rr = 1:size(pMs_C,1)
         all_conds = [all_conds nds(1)]; all_rts = [all_rts nds(2)];
         xticklabels{cc,rr} = sprintf('%s-%s',paramMs_C.stimMarkers{nds(2)},paramMs_C.rasterTypes{nds(2)}(1));
         for an = 1:length(selAnimals_C)
-            f_centers_C{an,rr,cc} = squeeze(pMs_C{rr,cc}.all_fcenters{selAnimals_C(an)}(nds(1),nds(2),:));
-            cmdTxt = sprintf('sV_C(an,rr,cc) = nanmean(squeeze(pMs_C{rr,cc}.%s{selAnimals_C(an)}(nds(1),nds(2),:)));',selected_variable);
+            f_centers_C{an,rr,cc} = squeeze(pMs_C{rr,cc}.all_fcenters{selAnimals_C(an)}(nds(1)-2,nds(2),:));
+            cmdTxt = sprintf('sV_C(an,rr,cc) = nanmean(squeeze(pMs_C{rr,cc}.%s{selAnimals_C(an)}(nds(1)-2,nds(2),:)));',selected_variable);
             eval(cmdTxt)
-            cmdTxt = sprintf('a_sV_C{an,rr,cc} = squeeze(pMs_C{rr,cc}.%s{selAnimals_C(an)}(nds(1),nds(2),:));',selected_variable);
+            cmdTxt = sprintf('a_sV_C{an,rr,cc} = squeeze(pMs_C{rr,cc}.%s{selAnimals_C(an)}(nds(1)-2,nds(2),:));',selected_variable);
             eval(cmdTxt)
             gAllVals_C = [gAllVals_C;a_sV_C{an,rr,cc}];
         end
     end
 end
 
-% bins = 0:number_of_bins:155;
+
+bins = 0:number_of_bins:155;
 for an = 1:length(selAnimals_C)
     for cc = 1:length(conditionsAndRasterTypes)
         theseCenters = f_centers_C{an,1,cc};
         these_sV_Vals = a_sV_C{an,1,cc};
-        mbl = paramMs_C.belt_lengths{an}(cc);
+         mbl = paramMs_C.belt_lengths{an}(cc);
         binSize = mbl/number_of_bins;
         bins = 0:binSize:mbl;
         [N,E,Bi] = histcounts(theseCenters,bins);
-        mean_sv_Vals = [];
         for bb = 1:length(N)
             mean_sv_Vals(bb) = nanmean(these_sV_Vals(Bi == bb));
 %             mean_sv_Vals(bb) = nanmedian(these_sV_Vals(Bi == bb));

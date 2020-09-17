@@ -15,13 +15,15 @@ selAnimals_A = 1:length(ei_A)
 % the rows indicate condition numbers.
 paramMs_C = parameter_matrices('get','10_C');
 paramMs_A = parameter_matrices('get','10_A');
+paramMs_C.belt_lengths = get_mean_belt_length(ei_C,protocol_C)
+paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','PF Widths','RS','Percent PCs'};
 maxYs = [10,20,20,0.7,100];
-svn = 1; %gcn = 3
+svn = 5; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
@@ -254,7 +256,8 @@ if runthis
 
     xdata = 1:TL; maxY = maxYs(svn);
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+%     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
     hold on;
     ind = 1
 
@@ -306,14 +309,19 @@ for rr = 1:size(pMs_C,1)
         end
     end
 end
+
 bins = 0:binSize:155;
 for an = 1:length(selAnimals_C)
     for cc = 1:length(conditionsAndRasterTypes)
         theseCenters = f_centers_C{an,1,cc};
         these_sV_Vals = a_sV_C{an,1,cc};
+%         mbl = paramMs_C.belt_lengths{an}(cc);
+%         binSize = mbl/4;
+%         bins = 0:binSize:mbl;
         [N,E,Bi] = histcounts(theseCenters,bins);
         for bb = 1:length(N)
             mean_sv_Vals(bb) = nanmean(these_sV_Vals(Bi == bb));
+%             mean_sv_Vals(bb) = nanmedian(these_sV_Vals(Bi == bb));
         end
 %         mean_sv_Vals(isnan(mean_sv_Vals)) = 0;
         all_data_C(cc,:,an) = mean_sv_Vals;

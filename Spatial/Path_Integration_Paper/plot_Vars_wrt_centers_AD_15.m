@@ -15,19 +15,23 @@ selAnimals_A = 1:length(ei_A)
 % the rows indicate condition numbers.
 paramMs_C = parameter_matrices('get',protocol_C);
 paramMs_A = parameter_matrices('get',protocol_A);
+paramMs_C.belt_lengths = get_mean_belt_length(ei_C,protocol_C)
+paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','PF Widths','RS','Percent PCs'};
 maxYs = [10,30,30,0.7,100];
-svn = 5; %gcn = 3
+svn = 1; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
+    number_of_bins = 4;
 else
     selected_variable = all_variables{svn};
     selected_variable_f = selected_variable;
+    number_of_bins = 4;
 end
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
@@ -38,9 +42,8 @@ selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,f
 % perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
 % perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
-binSize = 36.25;
-out_C = get_values(paramMs_C,pMs_C,selAnimals_C,selected_variable,conditionsAndRasterTypes,binSize);
-out_A = get_values(paramMs_A,pMs_A,selAnimals_A,selected_variable,conditionsAndRasterTypes,binSize);
+out_C = get_values(paramMs_C,pMs_C,selAnimals_C,selected_variable,conditionsAndRasterTypes,number_of_bins);
+out_A = get_values(paramMs_A,pMs_A,selAnimals_A,selected_variable,conditionsAndRasterTypes,number_of_bins);
 
 all_conds = unique(out_C.all_conds); all_rts = unique(out_C.all_rts);
 var_oi_A = squeeze(out_A.sV);
@@ -290,7 +293,7 @@ return;
 end
 
 
-function out = get_values(paramMs_C,pMs_C,selAnimals_C,selected_variable,conditionsAndRasterTypes,binSize)
+function out = get_values(paramMs_C,pMs_C,selAnimals_C,selected_variable,conditionsAndRasterTypes,number_of_bins)
 all_conds = []; all_rts = []; gAllVals_C = [];
 for rr = 1:size(pMs_C,1)
     for cc = 1:size(pMs_C,2)
@@ -309,12 +312,18 @@ for rr = 1:size(pMs_C,1)
         end
     end
 end
-bins = 0:binSize:155;
+
+
+bins = 0:number_of_bins:155;
 for an = 1:length(selAnimals_C)
     for cc = 1:length(conditionsAndRasterTypes)
         theseCenters = f_centers_C{an,1,cc};
         these_sV_Vals = a_sV_C{an,1,cc};
+         mbl = paramMs_C.belt_lengths{an}(cc);
+        binSize = mbl/number_of_bins;
+        bins = 0:binSize:mbl;
         [N,E,Bi] = histcounts(theseCenters,bins);
+        mean_sv_Vals = [];
         for bb = 1:length(N)
             mean_sv_Vals(bb) = nanmean(these_sV_Vals(Bi == bb));
 %             mean_sv_Vals(bb) = nanmedian(these_sV_Vals(Bi == bb));

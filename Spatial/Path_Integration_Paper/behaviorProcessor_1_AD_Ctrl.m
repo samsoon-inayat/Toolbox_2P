@@ -1,4 +1,4 @@
-function behaviorProcessor_1
+function behaviorProcessor_1_AD_Ctrl
 mData = evalin('base','mData');
 data_C = get_training_data_C;
 data_A = get_training_data_A;
@@ -285,17 +285,17 @@ function out1 = get_training_data_C
 temp = evalin('base','training_data_C');
 numberOfTrials = findNumberOfTrials(temp);
 [rr,cc] = find(numberOfTrials < 20);
-selColsAll = [1 2 3
-              1 3 4;
-              1 3 4;
-              1 2 3;
-              1 3 4;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              ];
+% selColsAll = [1 2 3
+%               1 3 4;
+%               1 3 4;
+%               1 2 3;
+%               1 3 4;
+%               1 2 3;
+%               1 2 3;
+%               1 2 3;
+%               1 2 3;
+%               1 2 3;
+%               ];
 ei1 = temp.bs;
 mData = evalin('base','mData');
 colors = mData.colors;
@@ -314,7 +314,7 @@ for ii = 1:length(selRows)
 end
 temp.animalIDs(selRows)
 aids = temp.animalIDs(selRows);
-td = temp.training_days(selRows,selColsAll);
+td = temp.training_days(selRows,1:3);
 ii = 1;
 moas = NaN(size(ei));
 moasi = moas;
@@ -338,13 +338,13 @@ function out1 = get_training_data_A
 temp = evalin('base','training_data_A');
 numberOfTrials = findNumberOfTrials(temp);
 [rr,cc] = find(numberOfTrials < 20);
-selColsAll = [1 2 3
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              1 2 3;
-              ];
+% selColsAll = [1 2 3
+%               1 2 3;
+%               1 2 3;
+%               1 2 3;
+%               1 2 3;
+%               1 2 3;
+%               ];
 ei1 = temp.bs;
 mData = evalin('base','mData');
 colors = mData.colors;
@@ -358,7 +358,7 @@ for ii = 1:length(selRows)
 end
 temp.animalIDs(selRows)
 aids = temp.animalIDs(selRows);
-td = temp.training_days(selRows,selColsAll);
+td = temp.training_days(selRows,1:3);
 ii = 1;
 moas = NaN(size(ei));
 moasi = moas;

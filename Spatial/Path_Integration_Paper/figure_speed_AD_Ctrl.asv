@@ -1,0 +1,77 @@
+function figure_speed_AD_Ctrl(fn,allRs,ccs)
+
+protocol_C = '10_C';
+protocol_A = '10_A';
+ei_C = evalin('base','ei10_C');
+ei_A = evalin('base','ei10_A');
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+ET_C = evalin('base',sprintf('ET%s',protocol_C));
+ET_A = evalin('base',sprintf('ET%s',protocol_A));
+selAnimals_C = 1:length(ei_C)
+selAnimals_A = 1:length(ei_A)
+%%
+[mean_speed_middle_C,mean_speed_end_C] = get_speeds(ei_C);
+[mean_speed_middle_A,mean_speed_end_A] = get_speeds(ei_A);
+
+data_CT = [ones(size(mean_speed_middle_C,1),1) mean_speed_middle_C mean_speed_end_C];
+data_CT(:,2:2:end) = mean_speed_middle_C; data_CT(:,3:2:end) = mean_speed_end_C;
+data_AT = [2*ones(size(mean_speed_middle_A,1),1) mean_speed_middle_A mean_speed_end_A];
+data_AT(:,2:2:end) = mean_speed_middle_A; data_AT(:,3:2:end) = mean_speed_end_A;
+
+w2 = {'Mid','End'};
+varNames = []; ind = 1;
+for ii = 1:4
+    for jj = 1:2
+        varNames{ind} = sprintf('C%d%s',ii,w2{jj});
+        ind = ind + 1;
+    end
+end
+
+dataT = array2table([data_CT;data_AT]);
+dataT.Properties.VariableNames = {'Group',varNames{:}};
+numCols = size(dataT,2)-1;
+dataT.Group = categorical(int32(dataT.Group))
+colVar1 = [1 1 2 2 3 3 4 4];    colVar2 = [1 2 1 2 1 2 1 2];
+within = table(colVar1',colVar2');
+within.Properties.VariableNames = {'Condition','Bin'};
+within.Condition = categorical(within.Condition);
+within.Bin = categorical(within.Bin);
+
+rm = fitrm(dataT,sprintf('%s,%s,%s,%s,%s,%s,%s,%s~Group',varNames{1},varNames{2},varNames{3},varNames{4},...
+    varNames{5},varNames{6},varNames{7},varNames{8}),'WithinDesign',within,'WithinModel','Condition');
+rtable = ranova(rm,'WithinModel',rm.WithinModel);
+%     writetable(dataT,'Percentage_of_PCs_10.xlsx','WriteRowNames',true)
+file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA.xlsx',mfilename));
+writetable(rtable,file_name,'WriteRowNames',true)
+mauchlytbl = mauchly(rm);
+% multcompare(rm,'Day','ComparisonType','bonferroni')
+mcGroup = find_sig_mctbl(multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni'),6);
+mcGroup = multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni');
+file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA_multcompare.xlsx',mfilename));
+writetable(mcGroup,file_name,'WriteRowNames',true)
+
+
+    
+    function [mean_speed_middle,mean_speed_end] = get_speeds(ei_C)
+for an = 1:length(ei_C)
+    temp_bl = [];
+    for cn = 1:4
+        onsets = ei_C{an}.plane{1}.contexts(cn).markers.air_onsets;
+        offsets = ei_C{an}.plane{1}.contexts(cn).markers.air_offsets;
+        b = ei_C{an}.b;
+        temp_bl(cn,:) = b.dist(offsets)-b.dist(onsets);
+        m_belt_length(an,cn) = mean(b.dist(offsets)-b.dist(onsets));
+        sz(an,cn) = size(ei_C{an}.plane{1}.contexts(cn).rasters.airD.sp_rasters_nan_corrected,2);
+        speeds_C{an,cn} = ei_C{an}.plane{1}.contexts(cn).rasters.airD.speed(:,1:sz(an,cn));
+        this_speed_raster = speeds_C{an,cn};
+        middle_bin = floor(sz(an,cn)/2);
+        start_bin = middle_bin - 2;
+        end_bin = middle_bin + 2;
+        middle_speeds = this_speed_raster(:,start_bin:end_bin);
+        mean_speed_middle(an,cn) = nanmean(middle_speeds(:));
+        end_speeds = this_speed_raster(:,(sz(an,cn)-4):end);
+        mean_speed_end(an,cn) = nanmean(end_speeds(:));
+        
+    end
+    belt_lengths{an} = temp_bl;
+end
