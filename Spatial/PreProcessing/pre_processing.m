@@ -39,10 +39,11 @@ for ii = 1:length(list)
     catch
         thisLine = list;
     end
+    thisLine = replace(thisLine,'\','/');
     fprintf(fid, '%s\n',thisLine);
 end
 fclose(fid);
 
-fileName = 'T_16_All.mat';
+fileName = 'T_10_C_ReProcessing.mat';
 save(fileName,'T');
 
