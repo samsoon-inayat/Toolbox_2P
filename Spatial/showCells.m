@@ -25,15 +25,15 @@ if ~iscell(selCells)
         cellY = double(stat{1}.ypix);% + double(min(yrange));
         mx = min(cellX);
         my = max(cellY);
-        if selCells(cc) == 46
-            text(mx+30,my+0,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');
-        else
-            if selCells(cc) == 22
-                text(mx-60,my-20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
-            else
-                text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
-            end
-        end
+%         if selCells(cc) == 46
+%             text(mx+30,my+0,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');
+%         else
+%             if selCells(cc) == 22
+%                 text(mx-60,my-20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
+%             else
+%                 text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
+%             end
+%         end
         plot(cellX,cellY,'.','color','r');
     end
 else
@@ -49,7 +49,7 @@ else
             cellY = ei.tP.stat(ccs(cc)).ypix + min(yrange);
             mx = min(cellX);
             my = max(cellY);
-            text(mx-5,my,num2str(selCells(cc)),'color',tcColors{ss},'fontsize',FS);
+%             text(mx-5,my,num2str(selCells(cc)),'color',tcColors{ss},'fontsize',FS);
             plot(cellX,cellY,'.','color',cColors{ss});
         end
     end

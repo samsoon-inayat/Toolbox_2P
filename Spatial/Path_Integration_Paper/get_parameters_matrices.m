@@ -320,8 +320,10 @@ for an = 1:length(paraMs.all_areCells)
         eval(cmdTxt);
     end
     out.numCells(an) = sum(cellList{an});
-    out.perc(an) = 100*sum(cellList{an})/length(cellList{an});
-    out.numROIs(an) = length(cellList{an});
     out.areCells(an) = sum(paraMs.all_areCells{an});
+    out.perc(an) = 100*sum(cellList{an})/out.areCells(an);
+    out.perc_of_rois(an) = 100*sum(cellList{an})/length(cellList{an});
+    out.numROIs(an) = length(cellList{an});
+    
 end
 out.cellSel = cellList;

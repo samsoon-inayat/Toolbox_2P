@@ -10,6 +10,18 @@ ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
 selAnimals_A = 1:length(ei_A)
 
+ei = ei_C;
+for ii = 1:length(ei)
+    tei = ei{ii};
+    nPlanes_C(ii) = length(tei.plane);
+end
+
+ei = ei_A;
+for ii = 1:length(ei)
+    tei = ei{ii};
+    nPlanes_A(ii) = length(tei.plane);
+end
+
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
@@ -19,6 +31,7 @@ paramMs_A = parameter_matrices('get','10_A');
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
@@ -29,6 +42,9 @@ selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,f
 [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
 perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
 perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+
+perc_cells_C_n = parameter_matrices('print numbers','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A_n = parameter_matrices('print numbers','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
 all_conds = []; all_rts = [];
 for rr = 1:size(pMs_C,1)
@@ -91,7 +107,7 @@ if runthis
     mVar(1:2:8) = mVarT;semVar(1:2:8) = semVarT;
     mVar(2:2:8) = mVarT_A;semVar(2:2:8) = semVarT_A;
     combs = nchoosek(1:8,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
-    row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcGroup{1,6}; h(ii) = 1; 
+%     row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcGroup{1,6}; h(ii) = 1; 
     % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
     % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 
