@@ -112,8 +112,8 @@ end
 % for ii = 1:size(ET16,1)
 %     ei16(ii) = getData_py(f,ET16(ii,:));
 % end
-
-ei10 = loadContextsResponses_1(ei10,[1 1],[1 -1 1]);
+%%
+ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
 ei15 = loadContextsResponses(ei15,[1 1],[0 0 0]);
 % ei16 = loadContextsResponses(ei16,[1 1],[0 0 0]);
 
