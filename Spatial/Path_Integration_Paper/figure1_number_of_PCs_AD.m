@@ -30,8 +30,8 @@ paramMs_A = parameter_matrices('get','10_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
@@ -88,7 +88,8 @@ if runthis
 
     rm = fitrm(dataT,sprintf('%s,%s,%s,%s~Group',varNames{1},varNames{2},varNames{3},varNames{4}),'WithinDesign',within,'WithinModel','Condition');
     rtable = ranova(rm,'WithinModel',rm.WithinModel);
-%     writetable(dataT,'Percentage_of_PCs_10.xlsx','WriteRowNames',true)
+    file_name = fullfile(mData.pdf_folder,sprintf('%s_Data_%s.xlsx',mfilename,'PercentPCs'));
+    writetable(dataT,file_name,'WriteRowNames',true)
 %     writetable(rtable,'RANOVA_Number_of_PCs_10.xlsx','WriteRowNames',true)
     mauchlytbl = mauchly(rm);
     % multcompare(rm,'Day','ComparisonType','bonferroni')

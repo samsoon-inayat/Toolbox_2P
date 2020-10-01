@@ -22,8 +22,8 @@ paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 % here is the selection criteria in make_selC_structure function
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','PF Widths','RS','Percent PCs'};
-maxYs = [10,20,20,0.7,100];
-svn = 1; %gcn = 3
+maxYs = [10,30,20,0.7,100];
+svn = 2; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
@@ -111,7 +111,7 @@ if runthis
 
     xdata = [1 2 4 5 7 8 10 11]; maxY = maxYs(svn);
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 2.25 1],'color','w');
     hold on;
     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
     hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -258,7 +258,7 @@ if runthis
     xdata = 1:TL; maxY = maxYs(svn);
     colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
-    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 6.9 2],'color','w');
     hold on;
     ind = 1
 
