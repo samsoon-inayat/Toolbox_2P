@@ -1,0 +1,19 @@
+% ei15_C = loadContextsResponses(ei15_C,[1 1],[1 1 1]);
+% ei10_C = loadContextsResponses(ei10_C,[1 1],[1 1 1]);
+
+
+old_folder = 'Z:\homes\brendan.mcallister\2P\Processed_Data\OLD';
+new_folder = 'Z:\homes\brendan.mcallister\2P\Processed_Data';
+
+filesToCopy = {'contexts.mat','contexts_trials_markers.mat'};
+
+TT = ET10_C;
+for ii = 1:size(TT,1)
+    animal_id = TT{ii,1};
+    pyProcessedFolder = TT{ii,7};
+    ind = findstr(pyProcessedFolder{1},num2str(animal_id));
+    animal_folder = pyProcessedFolder{1}(ind:end);
+    for jj = 1:length(filesToCopy)
+        old_file_name = fullfile(
+    end
+end
