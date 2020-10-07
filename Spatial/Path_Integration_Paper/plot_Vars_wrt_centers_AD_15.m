@@ -22,8 +22,8 @@ paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 % here is the selection criteria in make_selC_structure function
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','PF Widths','RS','Percent PCs'};
-maxYs = [10,30,30,0.7,100];
-svn = 1; %gcn = 3
+maxYs = [10,40,50,0.7,100];
+svn = 5; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
@@ -31,7 +31,7 @@ if svn == 5
 else
     selected_variable = all_variables{svn};
     selected_variable_f = selected_variable;
-    number_of_bins = 4;
+    number_of_bins = 1;
 end
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
@@ -228,7 +228,7 @@ if runthis
     within.Properties.VariableNames = {'Condition','Bin'};
     within.Condition = categorical(within.Condition);
     within.Bin = categorical(within.Bin);
-
+%     rmaR = repeatedMeasuresAnova(dataT,within);
 %     rm = fitrm(dataT,sprintf('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s~Group',...
 %         varNames{1},varNames{2},varNames{3},varNames{4},varNames{5},varNames{6},varNames{7},varNames{8},...
 %         varNames{9},varNames{10},varNames{11},varNames{12},varNames{13},varNames{14},varNames{15},varNames{16}),'WithinDesign',within,'WithinModel','Condition*Bin');

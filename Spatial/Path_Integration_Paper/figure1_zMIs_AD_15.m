@@ -18,8 +18,8 @@ paramMs_A = parameter_matrices('get','15_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [31 41 51];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices('select','15_C',{paramMs_C,selC});
@@ -114,7 +114,7 @@ if runthis
     % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
     % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 
-    xdata = [1 2 4 5 7 8]; maxY = 10;
+    xdata = [1 2 4 5 7 8]; maxY = 3;
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
     hold on;
@@ -131,10 +131,10 @@ if runthis
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     changePosition(gca,[0.02 0.03 0.02 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{'Average zMI',[0 0 0]});
-    rectangle(gca,'Position',[0.75 9 1 2],'edgecolor','k','facecolor','k');
-    text(1.85,10,'Control','FontSize',5);
-    rectangle(gca,'Position',[6 9 1 2],'edgecolor','k');
-    text(7.2,10,'APP','FontSize',5);
+    rectangle(gca,'Position',[0.75 3.5 1 0.5],'edgecolor','k','facecolor','k');
+    text(1.85,3.5,'Control','FontSize',5);
+    rectangle(gca,'Position',[6 3.5 1 0.5],'edgecolor','k');
+    text(7.2,3.5,'APP','FontSize',5);
 %     text(3.5,18,'Control','FontSize',7);
 %     text(18.5,18,'APP','FontSize',7);
     % applyhatch_plusC(gcf

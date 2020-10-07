@@ -28,6 +28,42 @@ number_wit_factors = size(within,2);
 within_factors = within.Properties.VariableNames;
 n=0;
 %%
+if number_bet_factors == 0 && number_wit_factors == 1
+    wilk_text = '';
+    for ii = 1:size(between,2)
+        wilk_text = [wilk_text b_varNames{ii} ','];
+    end
+    wilk_text(end) = '~';
+    wilk_text = [wilk_text '1'];
+    rm = fitrm(between,wilk_text);
+    rm.WithinDesign = within;
+    rm.WithinModel = within_factors{1};
+    out.rm = rm;
+    out.ranova = rm.ranova('WithinModel',rm.WithinModel);
+    for ii = 1:length(within_factors)
+        nameOfVariable = sprintf('mc_%s',within_factors{ii});
+        rhs = sprintf('find_sig_mctbl(multcompare(rm,within_factors{ii},''ComparisonType'',''bonferroni''),5);');
+        cmdTxt = sprintf('%s = %s;',nameOfVariable,rhs); eval(cmdTxt)
+    end
+    eval(sprintf('mc_within = %s;',nameOfVariable));
+    est_margmean = margmean(rm,{within_factors{1}});
+    combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
+    if ~isempty(mc_within)
+        for ii = 1:size(mc_within,1)
+            num1 = mc_within{ii,1};
+            num2 = mc_within{ii,2};
+            ind = find(ismember(categorical(combs),[num1,num2],'rows'));
+            p(ind) = mc_within{ii,5};
+        end
+    end
+    out.est_marginal_means = est_margmean;
+    out.combs = combs;
+    out.p = p;
+    eval(sprintf('out.%s = %s;',nameOfVariable,nameOfVariable));
+    [out.mean,out.sem] = findMeanAndStandardError(between{:,:});
+    return;
+end
+%%
 if number_bet_factors == 1 && number_wit_factors == 1
     wilk_text = '';
     for ii = 2:size(between,2)
@@ -72,9 +108,19 @@ if number_bet_factors == 1 && number_wit_factors == 1
     out.mc_within = mc_within;
     out.mc_between_by_within = mc_between_by_within;
     out.mc_within_by_between = mc_within_by_between;
-    out.est_marginal_means = est_margmean;
     out.combs = combs;
     out.p = p;
+    cemm = size(est_margmean,2);
+    for rr = 1:size(est_margmean,1)
+        group_val = est_margmean{rr,1};
+        with_level = est_margmean{rr,2};
+        all_bet_vals = between{:,1};
+        col_num = find(within{:,1} == with_level)+1;
+        values = between{all_bet_vals == group_val,col_num};
+        est_margmean{rr,cemm+1} = std(values)/sqrt(length(values));
+    end
+    est_margmean.Properties.VariableNames{cemm+1} = 'Formula_StdErr';
+    out.est_marginal_means = est_margmean;
     return;
 end
 %%
