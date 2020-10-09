@@ -29,6 +29,9 @@ selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,f
 perc_cells_C = parameter_matrices('print','15_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
 perc_cells_A = parameter_matrices('print','15_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
+perc_cells_C_n = parameter_matrices('print numbers','15_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A_n = parameter_matrices('print numbers','15_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+
 all_conds = []; all_rts = [];
 for rr = 1:size(pMs_C,1)
     for cc = 1:size(pMs_C,2)

@@ -28,13 +28,10 @@ if 0
     [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',200,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
     hold on;
     legs = {'Ctrl','AD'};
-<<<<<<< HEAD
     ylim([0 40]);
     xlim([0 maxBin+10]);
-=======
 %     ylim([0 15]);
     xlim([0 maxBin+10])
->>>>>>> a6316f757e9530a3b0c2eb39fd3cfb38beb32f99
     xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
     legs{length(legs)+1} = [xlims(1)+dx/1.5 dx/30 ylims(1)+dy/3 dy/15];
     putLegend(ha,legs,'colors',colors);
@@ -42,18 +39,12 @@ if 0
     h = xlabel('Spike Rate (Hz)');%changePosition(h,[0 -dy/3 0]);
     h = ylabel('Percentage');changePosition(h,[-0.1 0 0]);
     set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.01 -0.05 -0.05]);
-<<<<<<< HEAD
     file_name = sprintf('%s_distribution spike rate',mfilename);
     save_pdf(hf,mData.pdf_folder,file_name,600);
 end
 
-=======
-    file_name = sprintf('%s_distribution spike rate.pdf',mfilename);
-    save_pdf(hf,mData.pdf_folder,file_name,600);
-end
-
 %%
-if 1
+if 0
     [mVar_C,semVar_C] = findMeanAndStandardError(out_C.m_sp_animal_level_th);
     [mVar_A,semVar_A] = findMeanAndStandardError(out_A.m_sp_animal_level_th);
     mVar = [mVar_C,mVar_A];
@@ -82,17 +73,25 @@ end
 
 %%
 if 1
-    colVar1 = [ones(1,5) 2*ones(1,5)];
-    betweenTable_C = table(out_C.m_sp_animal_level_motion',out_C.m_sp_animal_level_rest','VariableNames',{'Motion','Rest'});
-    betweenTable_A = table(out_A.m_sp_animal_level_motion',out_A.m_sp_animal_level_rest','VariableNames',{'Motion','Rest'});
-    betweenTable = [table(colVar1','VariableNames',{'Group'}) [betweenTable_C;betweenTable_A]];
-    betweenTable.Group = categorical(betweenTable.Group);
-    withinTable = table([1 2]','VariableNames',{'Type'});
-    withinTable.Type = categorical(withinTable.Type);
-    rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
+    data_C_motion = out_C.m_sp_animal_level_motion;
+    data_A_motion = out_A.m_sp_animal_level_motion;
+    data_C_rest = out_C.m_sp_animal_level_rest;
+    data_A_rest = out_A.m_sp_animal_level_rest;
+    
+    dataT_C = array2table(fliplr([data_C_motion' data_C_rest'])); dataT_C.Properties.VariableNames = {'Rest','Motion'};
+    dataT_A = array2table(fliplr([data_A_motion' data_A_rest'])); dataT_A.Properties.VariableNames = {'Rest','Motion'};
+    groupT = table([ones(size(dataT_C,1),1);2*ones(size(dataT_A,1),1)]); groupT.Properties.VariableNames = {'Group'};
+    between = [groupT [dataT_C;dataT_A]]; between.Group = categorical(between.Group);
+    within = table([1 2]');
+    within.Properties.VariableNames = {'State'};
+    within.State = categorical(within.State);
+    rmaR = repeatedMeasuresAnova(between,within);
+    writetable(between,fullfile(mData.pdf_folder,sprintf('%s_dataT_Spike_Rate_motion_rest.xlsx',mfilename)));
+    writetable(rmaR.ranova,fullfile(mData.pdf_folder,sprintf('%s_dataT_Spike_Rate_motion_rest_stats_output.xlsx',mfilename)),'WriteRowNames',true);
+    
 %     findMeanAndStandardError
     mVar = rmaR.est_marginal_means.Mean;
-    semVar = rmaR.est_marginal_means.StdErr;
+    semVar = rmaR.est_marginal_means.Formula_StdErr;
     combs = rmaR.combs;
     p = rmaR.p; h = p<0.05;
     xdata = [1 2 3 4]; maxY = 1;
@@ -115,7 +114,6 @@ if 1
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph_overall',mfilename),600);
 end
 
->>>>>>> a6316f757e9530a3b0c2eb39fd3cfb38beb32f99
 n = 0;
 %%
 if 0
