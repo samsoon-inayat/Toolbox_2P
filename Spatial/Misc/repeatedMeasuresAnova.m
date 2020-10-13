@@ -85,6 +85,11 @@ if number_bet_factors == 1 && number_wit_factors == 1
     mc_within_by_between = find_sig_mctbl(multcompare(rm,within_factors{1},'By',between_factors{1},'ComparisonType','bonferroni'),6);
     mc_between = find_sig_mctbl(multcompare(rm,between_factors{1},'ComparisonType','bonferroni'),5);
     mc_within = find_sig_mctbl(multcompare(rm,within_factors{1},'ComparisonType','bonferroni'),5);
+    
+    mc_lsd_between_by_within = find_sig_mctbl(multcompare(rm,between_factors{1},'By',within_factors{1},'ComparisonType','lsd'),6);
+    mc_lsd_within_by_between = find_sig_mctbl(multcompare(rm,within_factors{1},'By',between_factors{1},'ComparisonType','lsd'),6);
+    mc_lsd_between = find_sig_mctbl(multcompare(rm,between_factors{1},'ComparisonType','lsd'),5);
+    mc_lsd_within = find_sig_mctbl(multcompare(rm,within_factors{1},'ComparisonType','lsd'),5);
     est_margmean = margmean(rm,{between_factors{1},within_factors{1}});
     combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
     if ~isempty(mc_between_by_within)
@@ -113,6 +118,12 @@ if number_bet_factors == 1 && number_wit_factors == 1
     out.mc_within = mc_within;
     out.mc_between_by_within = mc_between_by_within;
     out.mc_within_by_between = mc_within_by_between;
+    
+    out.mc_lsd_between = mc_lsd_between;
+    out.mc_lsd_within = mc_lsd_within;
+    out.mc_lsd_between_by_within = mc_lsd_between_by_within;
+    out.mc_lsd_within_by_between = mc_lsd_within_by_between;
+    
     cemm = size(est_margmean,2);
     est_margmean{:,cemm+1} = NaN(size(est_margmean,1),1);
     for rr = 1:size(est_margmean,1)

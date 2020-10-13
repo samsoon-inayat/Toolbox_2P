@@ -94,12 +94,14 @@ if runthis
     rtable = ranova(rm,'WithinModel',rm.WithinModel);
     file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA.xlsx',mfilename));
     writetable(rtable,file_name,'WriteRowNames',true)
+    file_name = fullfile(mData.pdf_folder,sprintf('%s_dataT.xlsx',mfilename));
+    writetable(dataT,file_name,'WriteRowNames',true)
     mauchlytbl = mauchly(rm);
     % multcompare(rm,'Day','ComparisonType','bonferroni')
     mcGroup = find_sig_mctbl(multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni'),6);
     mcGroup = multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni');
     file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA_multcompare.xlsx',mfilename));
-    writetable(mcGroup,file_name,'WriteRowNames',true)
+    writetable(mcGroup,file_name,'WriteRowNames',true);
     
 
     [mVarT,semVarT] = findMeanAndStandardError(var_oi_C);

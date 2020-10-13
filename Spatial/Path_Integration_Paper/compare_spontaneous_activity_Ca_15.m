@@ -50,7 +50,9 @@ allVals = []; allVals_motion = []; allVals_rest = []; allVals_th = [];
 for ii = 1:length(ei_C)
     ii
     ei = ei_C{ii};
-    spSigAll = nan(length(ei.plane{1}.tP.deconv.caSigAll),length(ei.plane{1}.tP.deconv.caSigAll{1}));
+    caSigAll = nan(length(ei.plane{1}.tP.deconv.caSigAll),length(ei.plane{1}.tP.deconv.caSigAll{1}));
+    sp_SigAll = nan(length(ei.plane{1}.tP.deconv.caSigAll),length(ei.plane{1}.tP.deconv.caSigAll{1}));
+    corr_coeff = nan(size(caSigAll,1),1);
     iscell = logical(ei.plane{1}.tP.iscell(:,1));
     count_prom = [];
     wp_prom = [];
@@ -58,7 +60,8 @@ for ii = 1:length(ei_C)
         if ~iscell(cn)
             continue;
         end
-        spSigAll(cn,:) = ei.plane{1}.tP.deconv.caSigAll{cn}';
+        caSigAll(cn,:) = ei.plane{1}.tP.deconv.caSigAll{cn}';
+        sp_SigAll(cn,:) = ei.plane{1}.tP.deconv.spSigAll{cn}';
         thisSig = ei.plane{1}.tP.deconv.caSigAll{cn}';
         threshold = 3*std(thisSig);
         thisSig_th = thisSig > threshold;
@@ -70,6 +73,14 @@ for ii = 1:length(ei_C)
         indsprom = prom > prom_th;
         wp_prom(cn) = sum(pks(indsprom));
         count_prom(cn) = sum(indsprom);
+        ca_vals = caSigAll(cn,locs(indsprom));
+        sp_vals = sp_SigAll(cn,locs(indsprom));
+        if sum(indsprom)>1
+            temp = corrcoef(ca_vals,sp_vals);
+            corr_coeff(cn) = temp(1,2);
+        else
+            corr_coeff(cn) = nan;
+        end
 %         figure(100);clf;
 %         plot(thisSig);hold on;
 %         plot(locs(indsprom),pks(indsprom),'*')
@@ -82,6 +93,8 @@ for ii = 1:length(ei_C)
     count_prom = count_prom(iscell);
     count_prom_animal(ii) = mean(count_prom)/(ts(end)/60);
     wp_prom_animal(ii) = mean(wp_prom)/(ts(end)/60);
+    corr_coeff_animals(ii) = {corr_coeff};
 end
 out.count_prom_animal = count_prom_animal;
 out.wp_prom_animal = wp_prom_animal;
+out.corr_coeff = corr_coeff_animals;
