@@ -1,4 +1,4 @@
-function figure_place_remapping_10(fn,allRs,ccs)
+function figure_place_remapping_AD(fn,allRs,ccs)
 
 protocol_C = '10_C';
 protocol_A = '10_A';
@@ -18,7 +18,7 @@ paramMs_A = parameter_matrices('get','10_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = 1; planeNumber = NaN; zMI_Th =1.65; fwids = [1 120]; fcens = [0 140]; rs_th = 0;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th =3; fwids = [1 120]; fcens = [0 140]; rs_th = 0;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 included_cells = 'All';
 conditionsAndRasterTypes = [11;21;31;41];
@@ -123,7 +123,8 @@ for rr = 1:size(pMs_C,1)
             selCells = cpMs.cellSel{an};
             cns = paramMs_C.all_cns{an};
             [temp_rasters ~] = getParamValues('rasters',tei,selC.plane_number,conditionNumber,stimMarker,rasterType,cns(selCells,2:3),maxDistTime);
-            mean_rasters_C{an,cc} = squeeze(nanmean(temp_rasters,1))';
+            this_mean_rasters = squeeze(nanmean(temp_rasters,1))';
+            mean_rasters_C{an,cc} = this_mean_rasters;
         end
     end
 end
@@ -147,6 +148,14 @@ for an = 1:length(selAnimals_C)
         end
         ccs(ii,:) = cc;
         gAllVals = [gAllVals cc];
+        
+        [pv1,pvc1,cellnums] = findPopulationVectorPlot(set1,[]);
+        [pv2,pvc2,~] = findPopulationVectorPlot(set2,[],cellnums);
+        corr = find_pv_corr(pv1,pv2);
+        figure(100);clf;imagesc(pv1);%set(gca,'Ydir','Normal');
+        figure(101);clf;imagesc(pv2);%set(gca,'Ydir','Normal');
+        figure(103);clf;imagesc(corr);colorbar;%set(gca,'Ydir','Normal');colorbar
+        n = 0;
     end
     all_ccs_C(an) = {ccs};
     mean_over_cells_C(an,:) = nanmean(ccs,2)';
