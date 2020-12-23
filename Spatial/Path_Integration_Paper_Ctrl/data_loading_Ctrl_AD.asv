@@ -57,13 +57,12 @@ try
         ei10_A(ii) = getData_py(f,ET10_CC(ii,:));
     end
 
-    ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[0 0 0]);
-    ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[1 1 0]);
+    ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[1 0 0]);
+%     ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[0 0 0]);
     training_data_C = behaviorProcessor;
 %     training_data_A = behaviorProcessor_AD;
 
-    parameter_matrices_ctrl('calculate','10_CD_Ctrl',ei10_C);
-    parameter_matrices_ctrl('calculate','10_CC_Ctrl',ei10_A);
+    parameter_matrices_ctrl('calculate','10_C_Ctrl',ei10_C);
 %     parameter_matrices('calculate','15_C',ei15_C);
 %     parameter_matrices('calculate','10_A',ei10_A);
 %     parameter_matrices('calculate','15_A',ei15_A);
