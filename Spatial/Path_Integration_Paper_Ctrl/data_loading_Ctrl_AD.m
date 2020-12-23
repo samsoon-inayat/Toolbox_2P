@@ -12,12 +12,13 @@ selRecs10 = [4     8    12    15    16    17    18    19    20    21    22    24
 % selRecs15 = [1:9 12 13 16];
 selRecs15 = [1 2 4 6 8 12 16];
 ET10_C = T10.T(selRecs10,:); ET15_C = T15.T(selRecs15,:); 
-ET10_C = ET10_C([6 7 9 11 12],:);
+ET10_CC = ET10_C([6 7 9 11 12],:);
+ET10_CD = ET10_C([1 2 3],:);
 
-T10_AD = load('T_10_All_AD.mat');
-T15_AD = load('T_15_All_AD.mat');
-ET10_A = T10_AD.T(2:6,:); ET15_A = T15_AD.T([1 4 9 10 13 14],:); 
-clear('selRecs10','selRecs15','T10','T15','T10_AD','T15_AD','cName')
+% T10_AD = load('T_10_All_AD.mat');
+% T15_AD = load('T_15_All_AD.mat');
+% ET10_A = T10_AD.T(2:6,:); ET15_A = T15_AD.T([1 4 9 10 13 14],:); 
+% clear('selRecs10','selRecs15','T10','T15','T10_AD','T15_AD','cName')
 disp('done')
 % \174374\2019-02-12\1_002'
 % %%
@@ -26,23 +27,24 @@ disp('done')
 %%
 colormaps = load('../MatlabCode/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
-mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
-mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = fullfile(pwd,'PDFs'); 
+% mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%
+mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
+mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = fullfile(pwd,'PDFs_ctrl'); 
 disp('Done');
 %%
 try
-    send_email({'samsoon.inayat@uleth.ca','brendan.mcallister@uleth.ca'},'Neuroimaging 3 has started loading data for Protocol 10 and 15')
-    for ii = 1:size(ET15_C,1)
-        ei15_C(ii) = getData_py(f,ET15_C(ii,:));
-    end
-
-    for ii = 1:size(ET15_A,1)
-        ei15_A(ii) = getData_py(f,ET15_A(ii,:));
-    end
-
-    ei15_C = loadContextsResponses(ei15_C,[1 1],[0 0 0]);
-    ei15_A = loadContextsResponses(ei15_A,[1 1],[0 0 0]);
-    % ei15_AA = loadContextsResponses(ei15_AA,[1 1],[0 0 0]);
+%     send_email({'samsoon.inayat@uleth.ca'},'Neuroimaging 3 has started loading data for Protocol 10 and 15')
+%     for ii = 1:size(ET15_C,1)
+%         ei15_C(ii) = getData_py(f,ET15_C(ii,:));
+%     end
+% 
+% %     for ii = 1:size(ET15_A,1)
+% %         ei15_A(ii) = getData_py(f,ET15_A(ii,:));
+% %     end
+% 
+%     ei15_C = loadContextsResponses_ctrl(ei15_C,[1 1],[0 0 0]);
+%     ei15_A = loadContextsResponses_ctrl(ei15_A,[1 1],[0 0 0]);
+    % ei15_AA = loadContextsResponses_ctrl(ei15_AA,[1 1],[0 0 0]);
     % ei15_A(3) = ei15_AA(2);
 
 
@@ -51,22 +53,23 @@ try
         ei10_C(ii) = getData_py(f,ET10_C(ii,:));
     end
 
-    for ii = 1:size(ET10_A,1)
-        ei10_A(ii) = getData_py(f,ET10_A(ii,:));
+    for ii = 1:size(ET10_CC,1)
+        ei10_A(ii) = getData_py(f,ET10_CC(ii,:));
     end
 
-    ei10_C = loadContextsResponses(ei10_C,[1 1],[0 0 0]);
-    ei10_A = loadContextsResponses(ei10_A,[1 1],[0 0 0]);
+    ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[1 0 0]);
+%     ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[0 0 0]);
     training_data_C = behaviorProcessor;
-    training_data_A = behaviorProcessor_AD;
+%     training_data_A = behaviorProcessor_AD;
 
-    parameter_matrices('calculate','10_C',ei10_C);
-    parameter_matrices('calculate','15_C',ei15_C);
-    parameter_matrices('calculate','10_A',ei10_A);
-    parameter_matrices('calculate','15_A',ei15_A);
-    send_email({'samsoon.inayat@uleth.ca','brendan.mcallister@uleth.ca'},'Complete - Loading data for Protocol 10 and 15')
+    parameter_matrices_ctrl('calculate','10_C_Ctrl',ei10_C);
+%     parameter_matrices('calculate','15_C',ei15_C);
+%     parameter_matrices('calculate','10_A',ei10_A);
+%     parameter_matrices('calculate','15_A',ei15_A);
+%     send_email({'samsoon.inayat@uleth.ca'},'Complete - Loading data for Protocol 10 and 15')
 catch
-    send_email({'samsoon.inayat@uleth.ca','brendan.mcallister@uleth.ca'},'Error occurred while loading data')
+%     send_email({'samsoon.inayat@uleth.ca'},'Error occurred while loading data')
+    lasterror
 end
 %%
 for ii = 1:size(ET15,1)
@@ -76,8 +79,8 @@ end
 
 %%
 ei10 = loadContextsResponses_1(ei10,[1 1],[1 -1 1]);
-ei15 = loadContextsResponses(ei15,[1 1],[0 0 0]);
-ei16 = loadContextsResponses(ei16,[1 1],[0 0 0]);
+ei15 = loadContextsResponses_ctrl(ei15,[1 1],[0 0 0]);
+ei16 = loadContextsResponses_ctrl(ei16,[1 1],[0 0 0]);
 
 % parameter_matrices('calculate','10_C',ei10_C);
 % parameter_matrices('calculate','15_C',ei15_C);
@@ -86,15 +89,15 @@ disp('All Done!');
 %%
 
 
-ei10 = loadContextsResponses(ei10,[0 0],[-1 -1 -1]);
-ei10 = loadContextsResponses(ei10,[1 1],[0 0 0]);
-% ei10 = loadContextsResponses(ei10,1,[1 1 1]);
+ei10 = loadContextsResponses_ctrl(ei10,[0 0],[-1 -1 -1]);
+ei10 = loadContextsResponses_ctrl(ei10,[1 1],[0 0 0]);
+% ei10 = loadContextsResponses_ctrl(ei10,1,[1 1 1]);
 
 %% for Sam-WS
 owr = [1,1]; owrp = [0 0 0];
 for ii = 1:length(selRecs)
     if ismember(ii,[8])
-        ei10(ii) = loadContextsResponses(ei10(ii),owr,owrp);
+        ei10(ii) = loadContextsResponses_ctrl(ei10(ii),owr,owrp);
     end
 end
 disp('Done!');
@@ -107,7 +110,7 @@ disp('Done!');
 owr = [1,1]; owrp = [0 1 1];
 for ii = 1:size(selT,1)
     if ismember(ii,[1:8])
-        ei10(ii) = loadContextsResponses(ei10(ii),owr,owrp);
+        ei10(ii) = loadContextsResponses_ctrl(ei10(ii),owr,owrp);
     end
 end
 disp('Done!');
@@ -115,7 +118,7 @@ disp('Done!');
 owr = [1,1]; owrp = [1 0 0];
 for ii = 1:size(selT,1)
     if ismember(ii,[1:8])
-        ei10(ii) = loadContextsResponses(ei10(ii),owr,owrp);
+        ei10(ii) = loadContextsResponses_ctrl(ei10(ii),owr,owrp);
     end
 end
 disp('Done!');

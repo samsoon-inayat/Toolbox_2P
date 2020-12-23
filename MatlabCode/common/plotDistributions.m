@@ -178,8 +178,8 @@ if ismatrix(distD) && strcmp(do_mean,'Yes')
             [bar1 xs] = hist(bd,bins); bar1 = 100*bar1/sum(bar1);
             allBars = [allBars;bar1];
         end
-%         [mDist,semDist] = findMeanAndStandardError(cumsum(allBars,2));
-        [mDist,semDist] = findMeanAndStandardError(allBars);
+        [mDist,semDist] = findMeanAndStandardError(cumsum(allBars,2));
+%         [mDist,semDist] = findMeanAndStandardError(allBars);
         shadedErrorBar(bins,mDist,semDist,{'color',cols{dd}},0.7);
     end
     ha = gca;

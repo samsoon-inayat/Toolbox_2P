@@ -2,26 +2,29 @@ function figure_population_vectors(fn,allRs,ccs)
 
 protocol = '10';
 % protocol = '15';
-ei = evalin('base',sprintf('ei%s',protocol));
+ei_C = evalin('base',sprintf('ei%s_C',protocol));
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET = evalin('base',sprintf('ET%s',protocol));
-selAnimalsA = eval(sprintf('mData.selAnimals%s',protocol));
-selAnimals = selAnimalsA;
+ET = evalin('base',sprintf('ET%s_C',protocol));
+% selAnimalsA = eval(sprintf('mData.selAnimals%s',protocol));
+selAnimals = 1:length(ei_C);
+selAnimals_C = selAnimals;
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs = parameter_matrices('get',protocol);
+paramMs_C = parameter_matrices_ctrl('get',protocol);
+paramMs = paramMs_C;
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 5; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 5; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4; HaFD_th = NaN; HiFD_th = NaN;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 5; fwids = NaN; fcens = NaN; rs_th = NaN; HaFD_th = NaN; HiFD_th = NaN;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
-conditionsAndRasterTypes = [11 21 31 41];
+conditionsAndRasterTypes = [11;21;31;41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,HaFD_th,HiFD_th);
-[cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
+[cpMs_C,pMs_C] = parameter_matrices_ctrl('select',protocol,{paramMs_C,selC});
+pMs = pMs_C;
 % perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
 
 for rr = 1:size(pMs,1)
@@ -46,6 +49,9 @@ for rr = 1:size(pMs,1)
     end
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
+trials = 9:10;
+out_C = find_corr_coeff_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,cpMs_C,trials);
+
 n = 0;
 
 %%

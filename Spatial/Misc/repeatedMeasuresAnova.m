@@ -198,42 +198,79 @@ if length(all_factors) == 2
 end
 
 if length(all_factors) > 2
-    factor1 = all_factors{1};
-    factor2 = all_factors{2};
-    factor3 = all_factors{3};
-    cmdTxt = sprintf('mc_w_by_b = mcs.%s_%s_by_%s;',factor2,factor3,factor1); eval(cmdTxt);
-    cmdTxt = sprintf('mc_b_by_w = mcs.%s_by_%s_%s;',factor1,factor2,factor3); eval(cmdTxt);
-    for rr = 1:size(combs,1)
-        row1 = combs(rr,1); row2 = combs(rr,2);
-        group_val_1 = est_margmean{row1,1};
-        with_level_1_1 = est_margmean{row1,2};
-        with_level_2_1 = est_margmean{row1,3};
-        w12_1 = categorical(with_level_1_1).*categorical(with_level_2_1);
-
-        group_val_2 = est_margmean{row2,1};
-        with_level_1_2 = est_margmean{row2,2};
-        with_level_2_2 = est_margmean{row2,3};
-        w12_2 = categorical(with_level_1_2).*categorical(with_level_2_2);
-
-%             disp([group_val_1 w12_1 group_val_2 w12_2])
-
-        if group_val_1 == group_val_2
-            all_g_vals = mc_w_by_b{:,1};
-            tmc = mc_w_by_b(all_g_vals == group_val_1,2:end);
-            value_to_check = w12_1; row_col1 = tmc{:,1}==value_to_check;
-            value_to_check = w12_2; row_col2 = tmc{:,2}==value_to_check;
-            rowN = find(row_col1 & row_col2);
-            p(rr) = tmc{rowN,5};
-        else
-            if w12_1 == w12_2
-                all_w12 = mc_b_by_w{:,1};
-                tmc = mc_b_by_w(all_w12 == w12_1,2:end);
+    if nbf == 0
+        factor1 = all_factors{1};
+        factor2 = all_factors{2};
+        cmdTxt = sprintf('mc_w_by_b = mcs.%s_by_%s;',factor2,factor1); eval(cmdTxt);
+        cmdTxt = sprintf('mc_b_by_w = mcs.%s_by_%s;',factor1,factor2); eval(cmdTxt);
+%         processed_rows = [];
+        for rr = 1:size(combs,1)
+            row1 = combs(rr,1); row2 = combs(rr,2);
+            group_val_1 = est_margmean{row1,1};
+            with_level_1_1 = est_margmean{row1,2};
+            group_val_2 = est_margmean{row2,1};
+            with_level_1_2 = est_margmean{row2,2};
+            if group_val_1 == group_val_2
+                all_g_vals = mc_w_by_b{:,1};
+                tmc = mc_w_by_b(all_g_vals == group_val_1,2:end);
+                value_to_check = with_level_1_1; row_col1 = tmc{:,1}==value_to_check;
+                value_to_check = with_level_1_2; row_col2 = tmc{:,2}==value_to_check;
+                rowN = find(row_col1 & row_col2);
+                p(rr) = tmc{rowN,5}; 
+%                 processed_rows = [processed_rows rr];
+                continue;
+            end
+            if with_level_1_1 == with_level_1_2
+                all_g_vals = mc_b_by_w{:,1};
+                tmc = mc_b_by_w(all_g_vals == with_level_1_1,2:end);
                 value_to_check = group_val_1; row_col1 = tmc{:,1}==value_to_check;
                 value_to_check = group_val_2; row_col2 = tmc{:,2}==value_to_check;
                 rowN = find(row_col1 & row_col2);
                 p(rr) = tmc{rowN,5};
+%                 processed_rows = [processed_rows rr];
+                continue;
+            end
+        end
+    end
+    
+    if nbf == 1
+        factor1 = all_factors{1};
+        factor2 = all_factors{2};
+        factor3 = all_factors{3};
+        cmdTxt = sprintf('mc_w_by_b = mcs.%s_%s_by_%s;',factor2,factor3,factor1); eval(cmdTxt);
+        cmdTxt = sprintf('mc_b_by_w = mcs.%s_by_%s_%s;',factor1,factor2,factor3); eval(cmdTxt);
+        for rr = 1:size(combs,1)
+            row1 = combs(rr,1); row2 = combs(rr,2);
+            group_val_1 = est_margmean{row1,1};
+            with_level_1_1 = est_margmean{row1,2};
+            with_level_2_1 = est_margmean{row1,3};
+            w12_1 = categorical(with_level_1_1).*categorical(with_level_2_1);
+
+            group_val_2 = est_margmean{row2,1};
+            with_level_1_2 = est_margmean{row2,2};
+            with_level_2_2 = est_margmean{row2,3};
+            w12_2 = categorical(with_level_1_2).*categorical(with_level_2_2);
+
+    %             disp([group_val_1 w12_1 group_val_2 w12_2])
+
+            if group_val_1 == group_val_2
+                all_g_vals = mc_w_by_b{:,1};
+                tmc = mc_w_by_b(all_g_vals == group_val_1,2:end);
+                value_to_check = w12_1; row_col1 = tmc{:,1}==value_to_check;
+                value_to_check = w12_2; row_col2 = tmc{:,2}==value_to_check;
+                rowN = find(row_col1 & row_col2);
+                p(rr) = tmc{rowN,5};
             else
-                n = 0;
+                if w12_1 == w12_2
+                    all_w12 = mc_b_by_w{:,1};
+                    tmc = mc_b_by_w(all_w12 == w12_1,2:end);
+                    value_to_check = group_val_1; row_col1 = tmc{:,1}==value_to_check;
+                    value_to_check = group_val_2; row_col2 = tmc{:,2}==value_to_check;
+                    rowN = find(row_col1 & row_col2);
+                    p(rr) = tmc{rowN,5};
+                else
+                    n = 0;
+                end
             end
         end
     end

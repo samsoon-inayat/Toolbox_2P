@@ -268,6 +268,7 @@ else
     data.rasters = data.sp_rasters(:,1:binNum,:);
 end
 data.SI = data.info_metrics.ShannonMI_Zsh;
+
 data.peaks = as';
 center1 = size(data.rasters,1);
 center2 = size(data.rasters,2);

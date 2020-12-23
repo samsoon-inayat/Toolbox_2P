@@ -67,13 +67,6 @@ n=0;
 %     colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
     within = table(colVar1',colVar2'); within.Properties.VariableNames = {'Condition','Bin'};
     ra = repeatedMeasuresAnova(data,varNames,within);
-    rm = ra.rm;
-%     rm.BetweenDesign
-    mcTI = find_sig_mctbl(multcompare(rm,'Bin','By','Condition','ComparisonType','bonferroni'),6);
-    mcConds = find_sig_mctbl(multcompare(rm,'Condition','By','Bin','ComparisonType','bonferroni'),6);
-    [combs,h,p] = populate_multcomp_h_p(data,within,mcTI,mcConds);
-    [mVar semVar] = findMeanAndStandardError(data);
-    ds = descriptiveStatistics(data)
 %%
     n = 0;
     axdata = [1:1.5:(10*size(data,2))]; axdata = axdata(1:numCols); maxY = 1;

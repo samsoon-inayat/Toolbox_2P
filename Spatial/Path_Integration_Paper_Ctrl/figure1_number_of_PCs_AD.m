@@ -1,14 +1,14 @@
 function figure1_number_of_PCs
 
 protocol_C = '10_C';
-protocol_A = '10_A';
+% protocol_A = '10_A';
 ei_C = evalin('base','ei10_C');
-ei_A = evalin('base','ei10_A');
+% ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ET_C = evalin('base',sprintf('ET%s',protocol_C));
-ET_A = evalin('base',sprintf('ET%s',protocol_A));
+% ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
-selAnimals_A = 1:length(ei_A)
+% selAnimals_A = 1:length(ei_A)
 
 ei = ei_C;
 for ii = 1:length(ei)
@@ -16,35 +16,37 @@ for ii = 1:length(ei)
     nPlanes_C(ii) = length(tei.plane);
 end
 
-ei = ei_A;
-for ii = 1:length(ei)
-    tei = ei{ii};
-    nPlanes_A(ii) = length(tei.plane);
-end
+% ei = ei_A;
+% for ii = 1:length(ei)
+%     tei = ei{ii};
+%     nPlanes_A(ii) = length(tei.plane);
+% end
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_C');
-paramMs_A = parameter_matrices('get','10_A');
+paramMs_C = parameter_matrices('get','10_C_ctrl');
+% paramMs_A = parameter_matrices('get','10_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
-conditionsAndRasterTypes = [11 21 31 41];
+conditionsAndRasterTypes = [11 13 21 23 31 33 41 43];
+% conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
-[cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
+% [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
 perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+% perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
 perc_cells_C_n = parameter_matrices('print numbers','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A_n = parameter_matrices('print numbers','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+% perc_cells_A_n = parameter_matrices('print numbers','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
 all_conds = []; all_rts = [];
 for rr = 1:size(pMs_C,1)
@@ -57,6 +59,7 @@ for rr = 1:size(pMs_C,1)
     end
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
+n = 0;
 %%
 runthis = 1;
 if runthis
@@ -68,73 +71,44 @@ if runthis
     end
     cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
     eval(cmdTxt);
-    data = perc_cells_A;
-    cmdTxt = sprintf('dataT_A = table(');
-    for ii = 1:(size(data,2)-1)
-        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
-    end
-    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
-    eval(cmdTxt);
-    dataT = [dataT_C;dataT_A]
+    dataT = dataT_C;%[dataT_C;dataT_A]
     dataT.Properties.VariableNames = varNames;
-    dataT = [table([ones(length(ei_C),1);2*ones(length(ei_A),1)]) dataT];
-    dataT.Properties.VariableNames{1} = 'Group';
-    dataT.Group = categorical(dataT.Group)
-    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
-    within = table(colVar1');
-    within.Properties.VariableNames = {'Condition'};
-    within.Condition = categorical(within.Condition);
-%     within.Raster_Type = categorical(within.Raster_Type);
-
-    rm = fitrm(dataT,sprintf('%s,%s,%s,%s~Group',varNames{1},varNames{2},varNames{3},varNames{4}),'WithinDesign',within,'WithinModel','Condition');
-    rtable = ranova(rm,'WithinModel',rm.WithinModel);
-%     writetable(dataT,'Percentage_of_PCs_10.xlsx','WriteRowNames',true)
-%     writetable(rtable,'RANOVA_Number_of_PCs_10.xlsx','WriteRowNames',true)
-    mauchlytbl = mauchly(rm);
-    % multcompare(rm,'Day','ComparisonType','bonferroni')
-    mcGroup = find_sig_mctbl(multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni'),6);
-    mcGroup = multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni');
-    writetable(mcGroup,'RANOVA_Number_of_PCs_multcompare_10.xlsx')
-%     mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
-%     mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
     
+    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+%     colVar1 = [1 2 3 4];
+%     within = table(colVar1');
+    within = table(colVar1',colVar2');
+%     within.Properties.VariableNames = {'Condition'};
+    within.Properties.VariableNames = {'Condition','Raster'};
+    within.Condition = categorical(within.Condition);
+    within.Raster = categorical(within.Raster);
+    ra = repeatedMeasuresAnova(dataT,within);
 
-    [mVarT,semVarT] = findMeanAndStandardError(perc_cells_C);
-    [mVarT_A,semVarT_A] = findMeanAndStandardError(perc_cells_A);
-
-    mVar = NaN(1,2*(length(mVarT)));
-    semVar = mVar;
-    mVar(1:2:8) = mVarT;semVar(1:2:8) = semVarT;
-    mVar(2:2:8) = mVarT_A;semVar(2:2:8) = semVarT_A;
-    combs = nchoosek(1:8,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
-%     row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcGroup{1,6}; h(ii) = 1; 
-    % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
-    % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
-
-    xdata = [1 2 4 5 7 8 10 11]; maxY = 10;
+    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    xdata = [1 2 3 4 5 6 7 8];
+%     xdata = [1 2 3 4];
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
     hold on;
-    tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
-    hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.3);
+    tcolors ={colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',2.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = 1:length(hbs)
+        set(hbs(ii),'facecolor',tcolors{ii},'edgecolor',tcolors{ii});
+    end
     for ii = 2:2:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:2:end)+0.5; xticklabels = {'C1','C2','C3','C4'};
+    xticks = xdata(1:end)+0; xticklabels = {'C1-AD','C1-BD','C2-AD','C2-BD','C3-AD','C3-BD','C4-AD','C4-BD'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    changePosition(gca,[0.02 0.03 0.02 -0.11]);
-    put_axes_labels(gca,{[],[0 0 0]},{'Place Cells (%)',[0 0 0]});
-    rectangle(gca,'Position',[0.75 9 1 2],'edgecolor','k','facecolor','k');
-    text(1.85,10,'Control','FontSize',5);
-    rectangle(gca,'Position',[6 9 1 2],'edgecolor','k');
-    text(7.2,10,'APP','FontSize',5);
-%     text(3.5,18,'Control','FontSize',7);
-%     text(18.5,18,'APP','FontSize',7);
-    % applyhatch_plusC(gcf
+    xtickangle(30);
+    changePosition(gca,[0.04 0.03 0.02 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
+    
     save_pdf(hf,mData.pdf_folder,sprintf('Percentage of PCs'),600);
 return;
 end

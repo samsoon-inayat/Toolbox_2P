@@ -2,10 +2,10 @@ function figure1_number_of_PCs
 
 protocol = '10';
 % protocol = '15';
-ei = evalin('base',sprintf('ei%s',protocol));
+ei = evalin('base',sprintf('ei%s_C',protocol));
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET = evalin('base',sprintf('ET%s',protocol));
-selAnimals = eval(sprintf('mData.selAnimals%s',protocol));
+ET = evalin('base',sprintf('ET%s_C',protocol));
+selAnimals = 1:5;%eval(sprintf('mData.selAnimals%s',protocol));
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
