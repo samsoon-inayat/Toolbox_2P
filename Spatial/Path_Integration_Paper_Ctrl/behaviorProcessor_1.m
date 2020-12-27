@@ -1,5 +1,5 @@
 function behaviorProcessor_1
-temp = evalin('base','training_data_C');
+temp = evalin('base','training_data_C1');
 numberOfTrials = findNumberOfTrials(temp);
 [rr,cc] = find(numberOfTrials < 20);
 selColsAll = [1 2 3
@@ -16,32 +16,64 @@ selColsAll = [1 2 3
 ei1 = temp.bs;
 mData = evalin('base','mData');
 colors = mData.colors;
-% selRows = [4 5 6 8 9]; selCols = [1:4];
-selRows = [1:6 8:10]; selCols = [1:3];
-for ii = 1:length(selRows)
-    for jj = 1:3
-        ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
-    end
-end
+
+selRows = [1:6 7 8:11]; selCols = [1:3];
+% for ii = 1:length(selRows)
+%     for jj = 1:3
+%         ei(ii,jj) = ei1(selRows(ii),selColsAll(ii,jj));
+%     end
+% end
+ei = ei1;
 temp.animalIDs(selRows)
 aids = temp.animalIDs(selRows);
 td = temp.training_days(selRows,selColsAll);
 ii = 1;
 moas = NaN(size(ei));
 moasi = moas;
+pa7 = moas;
 for iii = 1:size(ei,1)
     if iii == 4
         n = 0;
     end
+    disp(temp.animalIDs(iii));
     out = behaviorProcessor_2(ei(iii,:));
+    allbs{ii} = out;
     as{ii} = out.asT; mas{ii} = out.masT; semas{ii} = out.semasT;
     as1{ii} = out.asIT; mas1{ii} = out.masIT; semas1{ii} = out.semasIT;
     masD{ii} = out.masD; semasD{ii} = out.semasD;
     ii = ii + 1;
     moas(iii,:) = mas{ii-1};
     moasi(iii,:) = mas1{ii-1};
+    pa7(iii,:) = out.percentAbove7;
 end
 n = 0;
+%% peercent of trials with greater than 7 cm/sec
+runthis = 0;
+if runthis
+    thesecolors = distinguishable_colors(size(pa7,1),'w');
+    ff = makeFigureWindow__one_axes_only(5,[10 4 2 1],[0.19 0.2 0.79 0.75]);
+    axes(ff.ha);hold on;
+    for ii = 1:size(pa7,1)
+        if ismember(ii,[2:4])
+%             continue;
+        end
+        ys = pa7(ii,:);
+        xs = temp.training_days(ii,:)+1;
+        temppos = find(xs == 1);
+        lastpos = temppos(find(temppos>1,1,'first'))-1;
+        xs = xs(1:lastpos);
+        ys = ys(1:lastpos);
+        plot(xs,ys,'.-','color',thesecolors(ii,:));
+    end
+    set(gca,'xlim',[0 9.5],'ylim',[-5 101],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xtick',1:11);
+    xlabel('Training Day');
+    ylabel({'Percent of trials','above 7cm/sec'});
+    changePosition(gca,[0.02 0.06 -0.05 -0.06]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('percenta7.pdf'),600);
+    return;
+end
+
 %%
 runthis =1;
 if runthis
@@ -213,6 +245,9 @@ end
 
 
 function out = behaviorProcessor_2(ei)
+as = cell(1,length(ei)); lenT = NaN(1,length(ei)); mas = lenT; semas = lenT; percentAbove7 = lenT;
+as1 = as; lenT1 = lenT; mas1 = mas; semas1 = semas; 
+asd = as; lenTd = lenT; masd = mas; semasd = semas; 
 for ii = 1:length(ei)
     b = ei{ii};
     if isempty(b)
@@ -228,6 +263,7 @@ for ii = 1:length(ei)
     lenT(ii) = length(as{ii});
     mas(ii) = mean(as{ii});
     semas(ii) = std(as{ii})/sqrt(lenT(ii));
+    percentAbove7(ii) = 100*sum(as{ii}>7)/sum(~isnan(as{ii}));
     
     as1{ii} = findAverageSpeedInterTrials(b);
     lenT1(ii) = length(as1{ii});
@@ -235,19 +271,25 @@ for ii = 1:length(ei)
     semas1(ii) = std(as1{ii})/sqrt(lenT1(ii));
     
     asd{ii} = findDiffTrialsInterTrials(b);
-    lenT(ii) = length(asd{ii});
+    lenTd(ii) = length(asd{ii});
     masd(ii) = mean(asd{ii});
-    semasd(ii) = std(asd{ii})/sqrt(lenT(ii));
+    semasd(ii) = std(asd{ii})/sqrt(lenTd(ii));
+    
     
     n = 0;
 end
 out.asT = as; out.lenT = lenT; out.masT = mas; out.semasT = semas;
 out.asIT = as1; out.lenIT = lenT1; out.masIT = mas1; out.semasIT = semas1;
 out.masD = masd; out.semasD = semasd;
+out.percentAbove7 = percentAbove7;
 n = 0;
 
 
 function as = findDiffTrialsInterTrials (b)
+if isfield(b,'stim_f')
+    b.air_puff_r = b.stim_r;
+    b.air_puff_f = b.stim_f;
+end
 as = [];
 for ii = 1:(length(b.air_puff_r)-1)
     speeds = b.fSpeed(b.air_puff_r(ii):b.air_puff_f(ii));
@@ -265,6 +307,10 @@ end
 
 
 function as = findAverageSpeedTrials (b)
+if isfield(b,'stim_f')
+    b.air_puff_r = b.stim_r;
+    b.air_puff_f = b.stim_f;
+end
 as = [];
 for ii = 1:length(b.air_puff_r)
     speeds = b.fSpeed(b.air_puff_r(ii):b.air_puff_f(ii));
@@ -278,6 +324,10 @@ end
 % n = 0;
 
 function as = findAverageSpeedInterTrials (b)
+if isfield(b,'stim_f')
+    b.air_puff_r = b.stim_r;
+    b.air_puff_f = b.stim_f;
+end
 as = [];
 for ii = 1:(length(b.air_puff_r)-1)
     speeds = b.fSpeed(b.air_puff_f(ii):b.air_puff_r(ii+1));

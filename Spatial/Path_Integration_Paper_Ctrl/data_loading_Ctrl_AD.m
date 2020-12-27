@@ -59,7 +59,7 @@ try
 
     ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[0 0 0]);
     ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[1 1 0]);
-    training_data_C = behaviorProcessor;
+    training_data_C1 = behaviorProcessor;
 %     training_data_A = behaviorProcessor_AD;
 
     parameter_matrices_ctrl('calculate','10_CD_Ctrl',ei10_C);

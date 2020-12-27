@@ -1,14 +1,14 @@
 function figure1_number_of_PCs
 
 protocol_C = '10_C';
-% protocol_A = '10_A';
+protocol_A = '10_A';
 ei_C = evalin('base','ei10_C');
-% ei_A = evalin('base','ei10_A');
+ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s',protocol_C));
-% ET_A = evalin('base',sprintf('ET%s',protocol_A));
+ET_C = evalin('base',sprintf('ET%s','10_CD'));
+ET_A = evalin('base',sprintf('ET%s','10_CC'));
 selAnimals_C = 1:length(ei_C)
-% selAnimals_A = 1:length(ei_A)
+selAnimals_A = 1:length(ei_A)
 
 ei = ei_C;
 for ii = 1:length(ei)
@@ -16,17 +16,17 @@ for ii = 1:length(ei)
     nPlanes_C(ii) = length(tei.plane);
 end
 
-% ei = ei_A;
-% for ii = 1:length(ei)
-%     tei = ei{ii};
-%     nPlanes_A(ii) = length(tei.plane);
-% end
+ei = ei_A;
+for ii = 1:length(ei)
+    tei = ei{ii};
+    nPlanes_A(ii) = length(tei.plane);
+end
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_C_ctrl');
-% paramMs_A = parameter_matrices('get','10_A');
+paramMs_C = parameter_matrices('get','10_CD_ctrl');
+paramMs_A = parameter_matrices('get','10_CC_ctrl');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
@@ -35,18 +35,17 @@ cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140];
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
-conditionsAndRasterTypes = [11 12 13 14 15 21 22 23 24 25 31 32 33 34 35 41 42 43 44 45]';
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
 conditionsAndRasterTypes = [11 13 21 23 31 33 41 43];
 % conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-[cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
-% [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
-perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-% perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+[cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
+[cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_A',{paramMs_A,selC});
+perc_cells_C = parameter_matrices_ctrl('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A = parameter_matrices_ctrl('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
-perc_cells_C_n = parameter_matrices('print numbers','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-% perc_cells_A_n = parameter_matrices('print numbers','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+perc_cells_C_n = parameter_matrices_ctrl('print numbers','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A_n = parameter_matrices_ctrl('print numbers','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
 all_conds = []; all_rts = [];
 for rr = 1:size(pMs_C,1)
@@ -71,8 +70,18 @@ if runthis
     end
     cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
     eval(cmdTxt);
-    dataT = dataT_C;%[dataT_C;dataT_A]
+    data = perc_cells_A;
+    cmdTxt = sprintf('dataT_A = table(');
+    for ii = 1:(size(data,2)-1)
+        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
+    end
+    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
+    eval(cmdTxt);
+    dataT = [dataT_C;dataT_A]
     dataT.Properties.VariableNames = varNames;
+    dataT = [table([ones(length(ei_C),1);2*ones(length(ei_A),1)]) dataT];
+    dataT.Properties.VariableNames{1} = 'Group';
+    dataT.Group = categorical(dataT.Group)
     
     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
 %     colVar1 = [1 2 3 4];

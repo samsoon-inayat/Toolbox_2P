@@ -44,10 +44,13 @@ for ii = 1:length(uaids)
 end
 n = 0;
 % writetable(Tf,'allData.xls');
-uaids1 = uaids([1 3:length(uaids)]);
+uaids1 = uaids;%([1 3:length(uaids)]);
 % uaids1(uaids1 == 183745) = [];
 Tr = [];
 for ii = 1:length(uaids1)
+    if ii == 2
+        n = 0;
+    end
     animalID = uaids1(ii);
     subT = T(animalID == animalIDs,:);
     datesHere = convertToDate(subT{:,2});
