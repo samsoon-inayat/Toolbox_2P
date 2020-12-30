@@ -14,9 +14,10 @@ selRecs10 = [4   8    12    15    16    17    18    19    20    21    22    24  
 % selRecs15 = [1 2 4 6 8 12 16];
 ET10_C = T10.T(selRecs10,:); %ET15_C = T15.T(selRecs15,:); 
 ET10_CC = ET10_C([6 7 9 11 12],:);
-ET10_CC1 = ET10_C([4 5],:);
+ET10_CC1 = ET10_C([4 5 13],:);
 ET10_CC1{1,7} = {'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data\OLD\174374\2019-02-12\1_002'};
 ET10_CC1{2,7} = {'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data\OLD\173706\2019-02-08\1'};
+ET10_CC1{3,7} = {'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data\OLD\001432\2020-05-02\1_001'};
 ET10_CD = ET10_C([1 2 3],:);
 
 % T10_AD = load('T_10_All_AD.mat');
