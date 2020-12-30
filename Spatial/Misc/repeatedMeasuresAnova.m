@@ -20,7 +20,7 @@ out.ranova = rm.ranova('WithinModel',rm.WithinModel);
 %*********************
 all_factors = [between_factors within_factors];
 [est_margmean,group_stats] = get_est_margmean_and_group_stats(rm,all_factors);
-out.gourp_stats = group_stats;
+out.group_stats = group_stats;
 out.est_marginal_means = est_margmean;
 
 %% do all mulitple comparisons
