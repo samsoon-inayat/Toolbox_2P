@@ -37,7 +37,7 @@ cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140];
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
 % conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
 conditionsAndRasterTypes = [11 13 21 23 31 33 41 43];
-% conditionsAndRasterTypes = [11 21 31 41];
+conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
 [cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_A',{paramMs_A,selC});
@@ -85,20 +85,20 @@ if runthis
     
     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
 %     colVar1 = [1 2 3 4];
-%     within = table(colVar1');
-    within = table(colVar1',colVar2');
-%     within.Properties.VariableNames = {'Condition'};
-    within.Properties.VariableNames = {'Condition','Raster'};
+    within = table(colVar1');
+%     within = table(colVar1',colVar2');
+    within.Properties.VariableNames = {'Condition'};
+%     within.Properties.VariableNames = {'Condition','Raster'};
     within.Condition = categorical(within.Condition);
-    within.Raster = categorical(within.Raster);
+%     within.Raster = categorical(within.Raster);
     ra = repeatedMeasuresAnova(dataT,within);
 
     mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-    xdata = [1 2 3 4 5 6 7 8];
+    xdata = [1:8];
 %     xdata = [1 2 3 4];
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.25 1],'color','w');
     hold on;
     tcolors ={colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
