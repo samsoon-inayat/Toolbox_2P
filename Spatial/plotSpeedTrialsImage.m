@@ -2,10 +2,10 @@ function plotTrialsImage(b,markers1,markers2,fn)
 %%
 n = 0;
 %%
-ei = evalin('base','ei10');
+ei = evalin('base','ei10_A');
 % ei = ei([1:4 9]);
 mData = evalin('base','mData');
-ii = 2; cc = 4; selAnimal = ii;
+ii = 4; cc = 4; selAnimal = ii;
 b = ei{ii}.b;
 markers1i = ei{ii}.plane{1}.contexts(cc).markers.air_onsets;
 markers2i = ei{ii}.plane{1}.contexts(cc).markers.air_offsets;
