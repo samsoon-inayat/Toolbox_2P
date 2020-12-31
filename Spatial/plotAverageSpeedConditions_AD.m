@@ -2,7 +2,7 @@ function plotAverageSpeedConditions(b,markers1,markers2,fn)
 %%
 n = 0;
 %%
-ei_C = evalin('base','ei10_C');
+ei_C = evalin('base','ei10_C1');
 ei_A = evalin('base','ei10_A');
 ei = ei_C;
 

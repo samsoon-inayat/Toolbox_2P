@@ -2,8 +2,8 @@ function plotTimeToOnsetOfMovementAfterAirPuff(b,markers1,markers2,fn)
 %%
 n = 0;
 %%
-ei = evalin('base','ei10');
-ei = ei([1:4 9]);
+ei = evalin('base','ei10_A');
+% ei = ei([1:4 9]);
 
 speed_threshold = 1;
 
