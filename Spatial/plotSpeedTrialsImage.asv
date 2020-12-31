@@ -39,7 +39,7 @@ it = t{1}(1:mlsp);
 % ff = makeFigureWindow__one_axes_only(5,[6 4 5 5],[0.1 0.012 0.85 0.99]);
 figure(101);clf;
 set(gcf,'units','inches');
-set(gcf,'Position',[12 4 1 1]);
+set(gcf,'Position',[15 4 1 1]);
 set(gcf,'color','w');
 % for ii = 1:5
 %     aisp(:,:,ii) = ei{ii}.plane{1}.contexts(1).rasters.airD.speed;
@@ -61,16 +61,9 @@ txt = cellstr(num2str(ceil(xtt)'));
 
 % axis equal
 set(gca,'Ydir','normal','XTick',xt,'XTickLabel',txt,'FontSize',6,'FontWeight','Bold','TickDir','out','linewidth',1);
-if cc == 1
-    h = ylabel('Trials'); changePosition(h,[6000 0 0]);
-end
+h = ylabel('Trials'); changePosition(h,[6000 0 0]);
 h = xlabel('Time (sec)');changePosition(h,[0 0.3 0]);
-if cc == 4
-    text(length(it)+50000,1,'Speed (cm/sec)','rotation',90,'FontSize',5);
-end
-if cc>1
-    set(gca,'Ytick',[]);
-end
+text(length(it)+50000,1,'Speed (cm/sec)','rotation',90,'FontSize',5);
 % n = 0;
 hold on;
 for ii = 1:length(markers1)
@@ -85,7 +78,9 @@ changePosition(gca,[0.07 0.08 0 0]);
 % annotation('textarrow',[x1 x2],[y1 y2],'String','Air offset','HeadLength',3,'HeadWidth',3,'FontSize',5,'color','r')
 hc = putColorBar(gca,[-0.01 0.09 0 -0.2],[min(isp(:)) max(isp(:))],5,'text_margins',[0.1 0.15]);
 colormap parula;
-
+if cc > 1
+    ylabel(''
+end
 save_pdf(gcf,mData.pdf_folder,sprintf('speedTrialsImage_%d.pdf',cc),600);
 return;
 
