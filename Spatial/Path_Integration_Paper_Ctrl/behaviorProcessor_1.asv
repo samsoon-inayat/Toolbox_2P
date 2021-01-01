@@ -4,6 +4,17 @@ numberOfTrials = findNumberOfTrials(temp);
 [rr,cc] = find(numberOfTrials < 20);
 
 ei1 = temp.bs;
+for rr = 1:size(ei1,1)
+    for cc = 1:size(ei1,2)
+        this_b = ei1{rr,cc};
+        if isempty(this_b)
+            continue;
+        end
+        this_b.animal_id = temp.animalIDs(rr);
+        this_b.belt_length = temp.belt_lengths(rr);
+        ei1{rr,cc} = this_b;
+    end
+end
 mData = evalin('base','mData');
 colors = mData.colors;
 
@@ -19,7 +30,7 @@ aids = temp.animalIDs(selRows);
 % td = temp.training_days(selRows,selColsAll);
 ii = 1;
 moas = NaN(size(ei));
-moasi = moas; mott = moas; motd = moas;
+moasi = moas; mott = moas; motd = moas; maxtd = moas;
 pa7 = moas;
 for iii = 1:size(ei,1)
     if iii == 2
@@ -267,8 +278,8 @@ set(gca,'xlim',[0.25 3.75],'ylim',[0 maxY+3],'FontSize',6,'FontWeight','Bold','T
 xticks = xdata; xticklabels = {'Day1','Day2','Day3'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 % xtickangle(30)
-changePosition(gca,[0.1 0.02 -0.15 -0.011])
-put_axes_labels(gca,{[],[0 0 0]},{{'Trial Distance (cm)'},[0 0 0]});
+changePosition(gca,[0.2 0.02 -0.15 -0.011])
+put_axes_labels(gca,{[],[0 0 0]},{{'Trial Distance','(% of belt length)'},[0 0 0]});
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_trial_distance.pdf',600);
 return;
@@ -376,6 +387,7 @@ for ii = 1:length(ei)
     mas(ii) = mean(as{ii}); 
     mtt(ii) = mean(tt{ii}); 
     mtd(ii) = mean(td{ii});
+    maxtd(ii) = max(td{ii});
     mml(ii) = mean(ml{ii});
     semas(ii) = std(as{ii})/sqrt(lenT(ii)); 
     semtt(ii) = std(tt{ii})/sqrt(lenT(ii)); 
@@ -392,15 +404,13 @@ for ii = 1:length(ei)
     lenTd(ii) = length(asd{ii});
     masd(ii) = mean(asd{ii});
     semasd(ii) = std(asd{ii})/sqrt(lenTd(ii));
-    
-    
     n = 0;
 end
 out.asT = as; out.lenT = lenT; out.masT = mas; out.semasT = semas;
 out.asIT = as1; out.lenIT = lenT1; out.masIT = mas1; out.semasIT = semas1;
 out.masD = masd; out.semasD = semasd;
 out.percentAbove7 = percentAbove7; out.trial_times = tt; out.trial_dist = td;
-out.mttT = mtt; out.mtdT = mtd; out.semttT = semtt; out.semtdT = semtd;
+out.mttT = mtt; out.maxtdT = maxtd; out.mtdT = mtd; out.semttT = semtt; out.semtdT = semtd;
 out.mlT = ml; out.mmlT = mml; out.semmlT = semml;
 n = 0;
 
@@ -436,10 +446,11 @@ end
 %     return;
 % end
 as = [];
+BL = b.belt_length;
 for ii = 1:length(b.air_puff_r)
     speeds = b.fSpeed(b.air_puff_r(ii):b.air_puff_f(ii));
     trial_time(ii) = b.ts(b.air_puff_f(ii)) - b.ts(b.air_puff_r(ii));
-    trial_dist(ii) = b.dist(b.air_puff_f(ii)) - b.dist(b.air_puff_r(ii));
+    trial_dist(ii) = 100*(b.dist(b.air_puff_f(ii)) - b.dist(b.air_puff_r(ii)))/BL;
     if sum(speeds<0) > 0
         speeds(speeds < 0) = NaN;
 %         speeds = fillmissing(speeds,'linear',2,'EndValues','nearest');

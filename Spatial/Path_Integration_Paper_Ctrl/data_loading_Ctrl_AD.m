@@ -70,6 +70,7 @@ try
     ei10_C1 = loadContextsResponses_ctrl(ei10_C1,[1 1],[0 0 0]);
     ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[0 0 0]);
     training_data_C1 = behaviorProcessor;
+    training_data_C1.belt_lengths = [150 142 142 142 142 142 150 150 150 150 150]';
 %     training_data_A = behaviorProcessor_AD;
 
     parameter_matrices_ctrl('calculate','10_CD_Ctrl',ei10_C);
