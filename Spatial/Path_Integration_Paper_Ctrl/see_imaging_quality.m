@@ -13,20 +13,22 @@ selAnimals_A = 1:length(ei_A)
 figure(100);clf;
 plotNums = (reshape(1:10,2,5))';
 for ii = 1:10
-    subplot(2,5,ii)
+%     subplot(2,5,ii)
+figure(ii);clf;plot(0,0);
     if ii <=5
         try
         cell_list = ei_C{ii}.plane{1}.tP.iscell(:,1); cell_list(isnan(cell_list)) = 0;
         catch
             continue;
         end
+        
         showCells(gca,ei_C{ii},1,[]);
 %         showCells(gca,ei_C{ii},1,1:length(cell_list));
-        title(ii);
+        title(ei_C{ii}.recordingFolder);
     else
         cell_list = ei_A{ii-5}.plane{1}.tP.iscell(:,1); cell_list(isnan(cell_list)) = 0;
         showCells(gca,ei_A{ii-5},1,[]);
 %         showCells(gca,ei_A{ii-5},1,1:length(cell_list));
-        title(ii);
+        title(ei_C{ii}.recordingFolder);
     end
 end

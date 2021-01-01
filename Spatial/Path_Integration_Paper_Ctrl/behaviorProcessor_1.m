@@ -137,8 +137,10 @@ end
 %%
 runthis = 1;
 if runthis
-this_moas = moas([1 5:11],1:3); this_moas(3,:) = moas(6,[2 3 4]);
-this_moasi = moasi([1 5:11],1:3); this_moasi(3,:) = moasi(6,[2 3 4]);
+this_moas = get_sel_values(moas,[1 3:11],selColsAll);
+this_moasi = get_sel_values(moasi,[1 3:11],selColsAll);
+% this_moas = moas([1 5:11],1:3); this_moas(3,:) = moas(6,[2 3 4]);
+% this_moasi = moasi([1 5:11],1:3); this_moasi(3,:) = moasi(6,[2 3 4]);
 for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
@@ -477,4 +479,10 @@ for ii = 1:size(bs,1)
         end
         numberOfTrials(ii,jj) = length(thisb.air_puff_r);
     end
+end
+
+function vals = get_sel_values(var,selrows,selcols)
+for ii = 1:length(selrows)
+    iii = selrows(ii);
+    vals(ii,:) = var(iii,selcols(iii,:));
 end
