@@ -75,7 +75,7 @@ if runthis
     ff = makeFigureWindow__one_axes_only(5,[10 4 2 1],[0.19 0.2 0.79 0.75]);
     axes(ff.ha);hold on;
     for ii = 1:size(pa7,1)
-        if ismember(ii,[2:4])
+        if ismember(ii,[2])
             continue;
         end
         cols_to_pick = ~isnan(num_trials(ii,:));
@@ -238,8 +238,8 @@ end
 %%
 runthis = 1;
 if runthis
-this_moas = motd([1 5:11],1:3); this_moas(3,:) = motd(6,[2 3 4]);
-
+% this_moas = motd([1 5:11],1:3); this_moas(3,:) = motd(6,[2 3 4]);
+this_moas = get_sel_values(motd,[1 3:11],selColsAll);
 for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
@@ -277,7 +277,8 @@ end
 %%
 runthis = 1;
 if runthis
-this_moas = mott([1 5:11],1:3); this_moas(3,:) = mott(6,[2 3 4]);
+% this_moas = mott([1 5:11],1:3); this_moas(3,:) = mott(6,[2 3 4]);
+this_moas = get_sel_values(mott,[1 3:11],selColsAll);
 for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
@@ -315,7 +316,8 @@ end
 %%
 runthis = 1;
 if runthis
-this_moas = moml([1 5:11],1:3); this_moas(3,:) = moml(6,[2 3 4]);
+% this_moas = moml([1 5:11],1:3); this_moas(3,:) = moml(6,[2 3 4]);
+this_moas = get_sel_values(moml,[1 3:11],selColsAll);
 for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
