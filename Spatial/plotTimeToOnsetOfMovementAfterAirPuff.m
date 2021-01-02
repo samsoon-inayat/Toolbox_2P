@@ -6,7 +6,7 @@ ei1 = evalin('base','ei10_A');
 ei2 = evalin('base','ei10_C1');
 ei3 = evalin('base','ei10_C');
 % ei = [ei3 ei1(2:5) ei2([1 2 3])];
-ei = [ei3 ei1(1:5) ei2([1 3])];
+ei = [ei3 ei1(1:5) ei2([3])];
 
 speed_threshold = 0;
 
