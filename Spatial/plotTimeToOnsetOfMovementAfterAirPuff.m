@@ -4,8 +4,9 @@ n = 0;
 %%
 ei1 = evalin('base','ei10_A');
 ei2 = evalin('base','ei10_C1');
-ei = [ei1(1:5) ei2([1 3])];
-ei{1} = ei2{2};
+ei3 = evalin('base','ei10_C');
+% ei = [ei3 ei1(2:5) ei2([1 2 3])];
+ei = [ei3 ei1(1:5) ei2([1 3])];
 
 speed_threshold = 0;
 
@@ -42,7 +43,7 @@ for an = 1:length(ei)
         timeToCompleteC(an,cc) = mean(timeToCompleteT);
     end
 end
-
+n=0;
 %%
 if 1
 moas = duration_onset_moveC;
@@ -56,18 +57,15 @@ within = table([1 2 3 4]');
 within.Properties.VariableNames = {'Condition'};
 within.Condition = categorical(within.Condition);
 
-% writetable(between,'Training_Data.xls');
-rm = fitrm(dataT,'Trials_Cond1,Trials_Cond2,Trials_Cond3,Trials_Cond4~1','WithinDesign',within,'WithinModel','Condition');
-rtable = ranova(rm,'WithinModel',rm.WithinModel);
-mauchlytbl = mauchly(rm);
-% multcompare(rm,'Day','ComparisonType','bonferroni')
-mcTI = find_sig_mctbl(multcompare(rm,'Condition','ComparisonType','bonferroni'));
+ra = repeatedMeasuresAnova(dataT,within);
 
-[mVar,semVar] = findMeanAndStandardError(moas);
-combs = nchoosek(1:8,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
+mVar = ra.est_marginal_means.Mean;
+semVar = ra.est_marginal_means.Formula_StdErr;
+combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+% xdata = [1 2 3]; maxY = 50;
 
 xdata = [1:1.15:6]; xdata = xdata(1:4);
-maxY = 3;
+maxY = 1;
 colors = mData.colors;
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1 1],'color','w');
 hold on;
@@ -96,18 +94,14 @@ within = table([1 2 3 4]');
 within.Properties.VariableNames = {'Condition'};
 within.Condition = categorical(within.Condition);
 
-% writetable(between,'Training_Data.xls');
-rm = fitrm(dataT,'Trials_Cond1,Trials_Cond2,Trials_Cond3,Trials_Cond4~1','WithinDesign',within,'WithinModel','Condition');
-rtable = ranova(rm,'WithinModel',rm.WithinModel);
-mauchlytbl = mauchly(rm);
-% multcompare(rm,'Day','ComparisonType','bonferroni')
-mcTI = find_sig_mctbl(multcompare(rm,'Condition','ComparisonType','bonferroni'));
+ra = repeatedMeasuresAnova(dataT,within);
 
-[mVar,semVar] = findMeanAndStandardError(moas);
-combs = nchoosek(1:8,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
+mVar = ra.est_marginal_means.Mean;
+semVar = ra.est_marginal_means.Formula_StdErr;
+combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
 
 xdata = [1:1.15:6]; xdata = xdata(1:4);
-maxY = 25;
+maxY = 15;
 colors = mData.colors;
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1 1],'color','w');
 hold on;
