@@ -1,20 +1,20 @@
 function figure1_Distributions
 
-protocol_C = '10_C';
+% protocol_C = '10_C';
 % protocol_A = '10_A';
 ei_C = evalin('base','ei10_C');
-% ei_A = evalin('base','ei10_A');
+ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s',protocol_C));
+% ET_C = evalin('base',sprintf('ET%s',protocol_C));
 % ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
-% selAnimals_A = 1:length(ei_A)
+selAnimals_A = 1:length(ei_A)
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_C');
-% paramMs_A = parameter_matrices('get','10_A');
+paramMs_C = parameter_matrices('get','10_CD_Ctrl');
+paramMs_A = parameter_matrices('get','10_CC_Ctrl');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
@@ -43,22 +43,22 @@ for rr = 1:size(pMs_C,1)
         end
     end
 end
-% for rr = 1:size(pMs_A,1)
-%     for cc = 1:size(pMs_A,2)
-%         tcond = conditionsAndRasterTypes(rr,cc);
-%         nds = dec2base(tcond,10) - '0';
-%         for an = 1:length(selAnimals_A)
-%             zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
-%             a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
-%             gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
-%         end
-%     end
-% end
+for rr = 1:size(pMs_A,1)
+    for cc = 1:size(pMs_A,2)
+        tcond = conditionsAndRasterTypes(rr,cc);
+        nds = dec2base(tcond,10) - '0';
+        for an = 1:length(selAnimals_A)
+            zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
+            a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
+            gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
+        end
+    end
+end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
-% var_oi_A = squeeze(zMIs_A);
+var_oi_A = squeeze(zMIs_A);
 zMIs = squeeze(a_zMIs_C);
 var_oi_C = squeeze(zMIs_C);
-gAllVals = gAllVals_C;
+gAllVals = [gAllVals_C ;
 paramMs = paramMs_C;
 n = 0;
 %%

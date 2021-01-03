@@ -49,6 +49,8 @@ if ~isempty(strfind(protocol,'10')) && iscell(aei)
                     thisVarDH = varNamesDH{vi};
                     cmdTxt = sprintf('[%s cns areCells] = getParamValues(''%s'',tei,planeNumbers,contextNumber,stimMarker,rasterType,selCells,maxDistTime);',thisVarDH,thisVar);
                     eval(cmdTxt);
+                    cmdTxt = sprintf('%s(%s == Inf) = NaN;',thisVarDH,thisVarDH);
+                    eval(cmdTxt)
                     cmdTxt = sprintf('%s_c(ci,si,:) = %s;',thisVarDH,thisVarDH);
                     eval(cmdTxt);
                 end

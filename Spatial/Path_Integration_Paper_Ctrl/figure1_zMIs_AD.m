@@ -3,18 +3,18 @@ function figure1_number_of_PCs
 protocol_C = '10_C';
 % protocol_A = '10_A';
 ei_C = evalin('base','ei10_C');
-% ei_A = evalin('base','ei10_A');
+ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ET_C = evalin('base',sprintf('ET%s',protocol_C));
 % ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
-% selAnimals_A = 1:length(ei_A)
+selAnimals_A = 1:length(ei_A)
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_C');
-% paramMs_A = parameter_matrices('get','10_A');
+paramMs_C = parameter_matrices('get','10_CD_Ctrl');
+paramMs_A = parameter_matrices('get','10_CC_Ctrl');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
@@ -23,7 +23,7 @@ cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th
 conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
-% [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
+[cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
 % perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
 % perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
@@ -43,19 +43,19 @@ for rr = 1:size(pMs_C,1)
         end
     end
 end
-% for rr = 1:size(pMs_A,1)
-%     for cc = 1:size(pMs_A,2)
-%         tcond = conditionsAndRasterTypes(rr,cc);
-%         nds = dec2base(tcond,10) - '0';
-%         for an = 1:length(selAnimals_A)
-%             zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
-%             a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
-%             gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
-%         end
-%     end
-% end
+for rr = 1:size(pMs_A,1)
+    for cc = 1:size(pMs_A,2)
+        tcond = conditionsAndRasterTypes(rr,cc);
+        nds = dec2base(tcond,10) - '0';
+        for an = 1:length(selAnimals_A)
+            zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
+            a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
+            gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
+        end
+    end
+end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
-% var_oi_A = squeeze(zMIs_A);
+var_oi_A = squeeze(zMIs_A);
 var_oi_C = squeeze(zMIs_C);
 n = 0;
 %%
@@ -69,15 +69,19 @@ if runthis
     end
     cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
     eval(cmdTxt);
-%     data = var_oi_A;
-%     cmdTxt = sprintf('dataT_A = table(');
-%     for ii = 1:(size(data,2)-1)
-%         cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
-%     end
-%     cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
-%     eval(cmdTxt);
-    dataT = [dataT_C]
+    data = var_oi_A;
+    cmdTxt = sprintf('dataT_A = table(');
+    for ii = 1:(size(data,2)-1)
+        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
+    end
+    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
+    eval(cmdTxt);
+    dataT = [dataT_C;dataT_A]
     dataT.Properties.VariableNames = varNames;
+    dataT = [table([ones(length(ei_C),1);2*ones(length(ei_A),1)]) dataT];
+    dataT.Properties.VariableNames{1} = 'Group';
+    dataT.Group = categorical(dataT.Group)
+    
     colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
     within = table(colVar1');
     within.Properties.VariableNames = {'Condition'};
@@ -90,16 +94,17 @@ if runthis
     % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
     % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 
-    xdata = [1 2 3 4]; maxY = 10;
+    xdata = [1 2 3 4 6:9]; maxY = 10;
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
     hold on;
-    tcolors = {colors{1};colors{2};colors{3};colors{4};};
+%     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
+    tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4};};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'maxY',maxY,'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-    for ii = 1:length(hbs)
-        set(hbs(ii),'facecolor',tcolors{ii},'edgecolor',tcolors{ii});
+    for ii = 5:length(hbs)
+    set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');

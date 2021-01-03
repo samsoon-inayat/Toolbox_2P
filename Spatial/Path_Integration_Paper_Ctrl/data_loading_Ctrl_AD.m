@@ -69,13 +69,20 @@ try
     ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[0 0 0]);
     ei10_C1 = loadContextsResponses_ctrl(ei10_C1,[1 1],[0 0 0]);
     ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[0 0 0]);
+    ei_comb = [ei10_C ei10_A];
     training_data_C1 = behaviorProcessor;
     training_data_C1.belt_lengths = [150 142 142 142 142 142 150 150 150 150 150]';
+    weight_day1 = [52.1 NaN NaN NaN 33.7 30.9 26.8 34.5 34.6 31.6 35.8]';
+    weight_day2 = [52.8 NaN NaN NaN 33.3 30.4 26.6 34.2 34.5 31.3 35.4]';
+    weight_day3 = [51.6 NaN NaN NaN 33.3 30.5 26.7 33.7 33.6 30.7 35.3]';
+    training_data_C1.weight = [weight_day1 weight_day2 weight_day3];
+    
 %     training_data_A = behaviorProcessor_AD;
 
     parameter_matrices_ctrl('calculate','10_CD_Ctrl',ei10_C);
     parameter_matrices_ctrl('calculate','10_CD_Ctrl1',ei10_C1);
     parameter_matrices_ctrl('calculate','10_CC_Ctrl',ei10_A);
+    parameter_matrices_ctrl('calculate','10_C_Comb',ei_comb);
 %     parameter_matrices('calculate','15_C',ei15_C);
 %     parameter_matrices('calculate','10_A',ei10_A);
 %     parameter_matrices('calculate','15_A',ei15_A);

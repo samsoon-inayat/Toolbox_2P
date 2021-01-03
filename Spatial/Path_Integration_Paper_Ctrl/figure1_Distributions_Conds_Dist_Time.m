@@ -1,19 +1,20 @@
 function figure1_Distributions
+rsel = 1
+ei_names = {'ei10_C','ei10_A','ei_comb'};
+param_names = {'10_CD_Ctrl','10_CC_Ctrl','10_C_Comb'};
 
-protocol_C = '10_C';
-% protocol_A = '10_A';
-ei_C = evalin('base','ei10_C');
+ei_C = evalin('base',sprintf('%s',ei_names{rsel}));
 % ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s',protocol_C));
-% ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
 % selAnimals_A = 1:length(ei_A)
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_C');
+paramMs_C = parameter_matrices('get',sprintf('%s',param_names{rsel}));
+% paramMs_C = parameter_matrices('get','10_CD_Ctrl');
+
 % paramMs_A = parameter_matrices('get','10_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
