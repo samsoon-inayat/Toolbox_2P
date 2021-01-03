@@ -121,12 +121,16 @@ thisCols_all = mData.colors;
     selRowi = 5;
 for selRowi = 1:11
     selRowi
+    these_cols = selColsAll(selRowi,:)
     ass = as{selRowi};
     ff = makeFigureWindow__one_axes_only(5,[10 4 1.25 1.25],[0.19 0.2 0.79 0.75]);
     axes(ff.ha);hold on;
 %     ass = as1{selRowi};
-    for ii = 1:length(ass)
-        this = ass{ii};
+    for ii = 1:length(these_cols)
+        if isnan(these_cols(ii))
+            continue;
+        end
+        this = ass{these_cols(ii)};
         plot(1:length(this),this,'linewidth',0.5,'color',thisCols_all{ii});
         lenTs(ii) = length(this);
     end
@@ -135,14 +139,14 @@ for selRowi = 1:11
     changePosition(gca,[0.03 0.09 -0.03 -0.1])
     put_axes_labels(gca,{'Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
     legs = [];
-    for ii = 1:length(ass)
+    for ii = 1:length(these_cols)
         legs{ii} = sprintf('Day %1d',ii);
     end
     legs{ii+1} = [5 3 30 4];
     putLegendH(ff.ha,legs,'colors',mData.colors,'sigR',{[],'anova',[],5});
     legs = {sprintf('Animal %d',temp.animalIDs(selRows(selRowi))),[22 0 25 4]};
 %     putLegend(ff.ha,legs,'colors',{'k'});
-    title(sprintf('Animal %d',temp.animalIDs(selRows(selRowi))));
+%     title(sprintf('Animal %d',temp.animalIDs(selRows(selRowi))));
     changePosition(gca,[0 -0.05 0 0]);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_Trials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
 end
@@ -411,7 +415,8 @@ end
 runthis = 1;
 if runthis
 % this_moas = moml([1 5:11],1:3); this_moas(3,:) = moml(6,[2 3 4]);
-this_moas = get_sel_values(training_data_C1.weight,[1 5:11],repmat([1 2 3],11,1));
+this_moas = get_sel_values(temp.weight,[1 5:11],repmat([1 2 3],11,1));
+this_moas = 100 * this_moas./this_moas(:,1);
 for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
@@ -432,15 +437,15 @@ hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'co
 hold on;
 tcolors = {colors{1};colors{2};colors{3}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 
-set(gca,'xlim',[0.25 3.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+set(gca,'xlim',[0.25 3.75],'ylim',[95 maxY-10],'FontSize',6,'FontWeight','Bold','TickDir','out');
 xticks = xdata; xticklabels = {'Day1','Day2','Day3'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 % xtickangle(30)
-changePosition(gca,[0.12 0.02 -0.15 -0.011])
-put_axes_labels(gca,{[],[0 0 0]},{{'Weight (gms)'},[0 0 0]});
+changePosition(gca,[0.2 0.02 -0.15 -0.011])
+put_axes_labels(gca,{[],[0 0 0]},{{'Percent change','in weight'},[0 0 0]});
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_weight.pdf',600);
 return;
