@@ -1,5 +1,5 @@
 function figure1_Distributions
-rsel = 1
+rsel = 2
 ei_names = {'ei10_C','ei10_A','ei_comb'};
 param_names = {'10_CD_Ctrl','10_CC_Ctrl','10_C_Comb'};
 
@@ -22,6 +22,7 @@ paramMs_C = parameter_matrices('get',sprintf('%s',param_names{rsel}));
 % cellsOrNot = 1; planeNumber = 1; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 21 22 31 32 41 42];
+% conditionsAndRasterTypes = [11 15 21 25 31 35 41 45];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
 % [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
@@ -69,21 +70,21 @@ if runthis
     minBin = min(gAllVals);
     maxBin = 15;%max(gAllVals);
     incr = (maxBin-minBin)/100;
-    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 2.5 1],'color','w');
+    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[4 4 1.5 1],'color','w');
     hold on;
-    tcolors ={colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
-    [ha,hb,hca,sigR] = plotDistributions(data,'colors',tcolors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+    [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
     hold on;
     legs = [];
     ylim([0 100]);xlim([-3 7]);
     xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
-    legs = {'C1','C2','C3','C4'};
+    legs = {'C1','C2'};%,'C3','C4'};
     legs{5} = [xlims(1)+dx/1.5 dx/30 ylims(1)+dy/1.75 dy/7];
     putLegend(ha,legs,'colors',colors,'sigR',{[],'',sigColor,6});
     axes(ha);
-    h = xlabel('Mutual Information Z-Score (zMI)');%changePosition(h,[0 -dy/3 0]);
-    h = ylabel('Percentage');changePosition(h,[-0 0 0]);
-    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.01 -0.05 -0.05]);
+    h = xlabel({'Mutual Information','Z-Score (zMI)'});%changePosition(h,[0 -dy/3 0]);
+    h = ylabel('Percentage');changePosition(h,[0.3 0 0]);
+    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');
+    changePosition(ha,[0.07 0.01 -0.016 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI %d',all_conds(1)),600);
     
     %%

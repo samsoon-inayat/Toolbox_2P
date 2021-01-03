@@ -1,26 +1,26 @@
 function figure1_Distributions
 
-protocol_C = '10_C';
-% protocol_A = '10_A';
-ei_C = evalin('base','ei10_C');
+rsel = 2
+ei_names = {'ei10_C','ei10_A','ei_comb'};
+param_names = {'10_CD_Ctrl','10_CC_Ctrl','10_C_Comb'};
+
+ei_C = evalin('base',sprintf('%s',ei_names{rsel}));
 % ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s',protocol_C));
-% ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
 % selAnimals_A = 1:length(ei_A)
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_C');
+paramMs_C = parameter_matrices('get',sprintf('%s',param_names{rsel}));
 % paramMs_A = parameter_matrices('get','10_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-conditionsAndRasterTypes = [11 21 31 41];
+conditionsAndRasterTypes = [11 12];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
 % [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
@@ -68,21 +68,22 @@ if runthis
     minBin = min(gAllVals);
     maxBin = 15;%max(gAllVals);
     incr = (maxBin-minBin)/100;
-    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 1.75 1],'color','w');
+    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[4 4 1.5 1],'color','w');
     hold on;
     [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
     hold on;
     legs = [];
     ylim([0 100]);xlim([-3 7]);
     xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
-    legs = {'C1','C2','C3','C4'};
+    legs = {'C1','C2'};%,'C3','C4'};
     legs{5} = [xlims(1)+dx/1.5 dx/30 ylims(1)+dy/1.75 dy/7];
     putLegend(ha,legs,'colors',colors,'sigR',{[],'',sigColor,6});
     axes(ha);
-    h = xlabel('Mutual Information Z-Score (zMI)');%changePosition(h,[0 -dy/3 0]);
-    h = ylabel('Percentage');changePosition(h,[-0 0 0]);
-    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.01 -0.05 -0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI %d',all_conds(1)),600);
+    h = xlabel({'Mutual Information','Z-Score (zMI)'});%changePosition(h,[0 -dy/3 0]);
+    h = ylabel('Percentage');changePosition(h,[0.3 0 0]);
+    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');
+    changePosition(ha,[0.07 0.01 -0.016 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI 1 and 2',all_conds(1)),600);
     
     %%
     numCols = length(all_rts);
@@ -95,7 +96,7 @@ if runthis
     eval(cmdTxt);
     dataT = [dataT_C]
     dataT.Properties.VariableNames = varNames;
-    colVar1 = [1 2 3 4];%[ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+    colVar1 = [1 2];%[ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
     within = table(colVar1');
     within.Properties.VariableNames = {'Condition'};
     within.Condition = categorical(within.Condition);
@@ -105,7 +106,7 @@ if runthis
 %     [h,p] = ttest(dataT{:,1},dataT{:,2});
     mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-    xdata = [1 2 3 4]; maxY = 10;
+    xdata = [1 2]; maxY = 10;
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.2 1],'color','w');
     hold on;
