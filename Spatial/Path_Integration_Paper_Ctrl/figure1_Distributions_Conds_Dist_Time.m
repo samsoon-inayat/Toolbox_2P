@@ -1,5 +1,5 @@
 function figure1_Distributions
-rsel = 2
+rsel = 1
 ei_names = {'ei10_C','ei10_A','ei_comb'};
 param_names = {'10_CD_Ctrl','10_CC_Ctrl','10_C_Comb'};
 

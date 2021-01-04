@@ -56,10 +56,10 @@ for rr = 1:size(pMs_A,1)
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
 var_oi_A = squeeze(zMIs_A);
-zMIs = squeeze(a_zMIs_A);
+zMIs = squeeze(a_zMIs_C);
 var_oi_C = squeeze(zMIs_C);
-gAllVals = [gAllVals_A];
-paramMs = paramMs_A;
+gAllVals = [gAllVals_C];
+paramMs = paramMs_C;
 n = 0;
 %%
 runthis = 1;
@@ -80,7 +80,7 @@ if runthis
             legs{ii} = sprintf('%s-%s',paramMs.stimMarkers{ii},paramMs.rasterTypes{ii}(1));
         end
     end
-    ylim([0 100]);xlim([-3 8]);
+    ylim([0 100]);xlim([-3 15]);
     xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
     legs{ii+1} = [xlims(1)+dx/3 dx/30 ylims(1)+dy/3 dy/5];
     legs{1} = 'C1-AD (Air-Dist)'; legs{2} = 'C1-AT (Air-Time)'
