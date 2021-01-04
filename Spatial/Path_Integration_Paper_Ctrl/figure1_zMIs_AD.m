@@ -96,7 +96,7 @@ if runthis
 
     xdata = [1 2 3 4 6:9]; maxY = 10;
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
     hold on;
 %     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4};};
@@ -110,7 +110,7 @@ if runthis
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata(1:end); xticklabels = {'C1','C2','C3','C4'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    changePosition(gca,[0.02 0.03 0.02 -0.11]);
+    changePosition(gca,[0.03 0.03 0.04 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{'Average zMI',[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph',mfilename),600);

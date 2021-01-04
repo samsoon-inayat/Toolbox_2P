@@ -30,8 +30,8 @@ paramMs_A = parameter_matrices('get','10_CC_ctrl');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
@@ -39,13 +39,13 @@ cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th
 conditionsAndRasterTypes = [11 13 21 23 31 33 41 43];
 conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-[cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_CD_ctrl',{paramMs_C,selC});
-[cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_CC_ctrl',{paramMs_A,selC});
-perc_cells_C = parameter_matrices_ctrl('print','10_CD_ctrl',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A = parameter_matrices_ctrl('print','10_CC_ctrl',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+[cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
+[cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_A',{paramMs_A,selC});
+perc_cells_C = parameter_matrices_ctrl('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A = parameter_matrices_ctrl('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
-perc_cells_C_n = parameter_matrices_ctrl('print numbers','10_CD_ctrl',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A_n = parameter_matrices_ctrl('print numbers','10_CC_ctrl',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+perc_cells_C_n = parameter_matrices_ctrl('print numbers','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A_n = parameter_matrices_ctrl('print numbers','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
 all_conds = []; all_rts = [];
 for rr = 1:size(pMs_C,1)

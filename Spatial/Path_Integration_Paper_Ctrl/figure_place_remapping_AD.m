@@ -3,22 +3,22 @@ function figure_place_remapping_AD(fn,allRs,ccs)
 protocol_C = '10_C';
 % protocol_A = '10_A';
 ei_C = evalin('base','ei10_C');
-% ei_A = evalin('base','ei10_A');
+ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s',protocol_C));
+% ET_C = evalin('base',sprintf('ET%s',protocol_C));
 % ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
-% selAnimals_A = 1:length(ei_A)
+selAnimals_A = 1:length(ei_A)
 
 % in the following variable all the measurements are in the matrices form
 % for each variable colums indicate raster and stim marker types specified 
 % the rows indicate condition numbers.
-paramMs_C = parameter_matrices_ctrl('get','10_C_ctrl');
+paramMs_C = parameter_matrices_ctrl('get','10_CD_Ctrl');
 % paramMs_A = parameter_matrices('get','10_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 5; fwids = [1 120]; fcens = [0 140]; rs_th = 0.9;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.7;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 included_cells = 'All';
 conditionsAndRasterTypes = [11;21;31;41];

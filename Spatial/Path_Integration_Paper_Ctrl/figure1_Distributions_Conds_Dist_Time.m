@@ -1,33 +1,25 @@
 function figure1_Distributions
 rsel = 1
 ei_names = {'ei10_C','ei10_A','ei_comb'};
+ET_names = {'ET10_CD','ET10_CC','ET10_Comb'};
 param_names = {'10_CD_Ctrl','10_CC_Ctrl','10_C_Comb'};
 
-ei_C = evalin('base',sprintf('%s',ei_names{rsel}));
-% ei_A = evalin('base','ei10_A');
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-selAnimals_C = 1:length(ei_C)
-% selAnimals_A = 1:length(ei_A)
-
-% in the following variable all the measurements are in the matrices form
-% for each variable colums indicate raster and stim marker types specified 
-% the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get',sprintf('%s',param_names{rsel}));
-% paramMs_C = parameter_matrices('get','10_CD_Ctrl');
-
-% paramMs_A = parameter_matrices('get','10_A');
-% after getting all matrics, we can apply selection criteria to select a
-% subgroup of cells
-% here is the selection criteria in make_selC_structure function
-% cellsOrNot = 1; planeNumber = 1; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 21 22 31 32 41 42];
-% conditionsAndRasterTypes = [11 15 21 25 31 35 41 45];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-[cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
-% [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
-% perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-% perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+for ii = 1:length(ei_names)
+    rsel = ii;
+    all_ETs{ii} = evalin('base',ET_names{ii});
+    all_eis{ii} = evalin('base',sprintf('%s',ei_names{rsel}));
+    all_paramMs{ii} = parameter_matrices_ctrl('get',sprintf('%s',param_names{rsel}));
+    [all_cpMs{ii},all_pMs{ii}] = parameter_matrices_ctrl('select',sprintf('%s',param_names{rsel}),{all_paramMs{ii},selC});
+    all_selAnimals{ii} = 1:length(all_eis{ii})
+    all_perc_cells{ii} = parameter_matrices('print',sprintf('%s',param_names{rsel}),{all_cpMs{ii},all_pMs{ii},all_ETs{ii},all_selAnimals{ii}});
+end
+
+pMs_C = all_pMs{1}; pMs_A = all_pMs{2};
+paramMs_C = all_paramMs{1}; paramMs_A = all_paramMs{2};
+selAnimals_C = all_selAnimals{1}; selAnimals_A = all_selAnimals{2};
 
 all_conds = []; all_rts = [];
 gAllVals_C = []; gAllVals_A = [];
@@ -45,17 +37,17 @@ for rr = 1:size(pMs_C,1)
         end
     end
 end
-% for rr = 1:size(pMs_A,1)
-%     for cc = 1:size(pMs_A,2)
-%         tcond = conditionsAndRasterTypes(rr,cc);
-%         nds = dec2base(tcond,10) - '0';
-%         for an = 1:length(selAnimals_A)
-%             zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
-%             a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
-%             gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
-%         end
-%     end
-% end
+for rr = 1:size(pMs_A,1)
+    for cc = 1:size(pMs_A,2)
+        tcond = conditionsAndRasterTypes(rr,cc);
+        nds = dec2base(tcond,10) - '0';
+        for an = 1:length(selAnimals_A)
+            zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
+            a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
+            gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
+        end
+    end
+end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
 % var_oi_A = squeeze(zMIs_A);
 zMIs = squeeze(a_zMIs_C);
