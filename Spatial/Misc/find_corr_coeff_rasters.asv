@@ -22,7 +22,6 @@ for rr = 1:size(pMs_C,1)
             this_mean_rasters = squeeze(nanmean(temp_rasters(trials,:,:),1))';
             mean_rasters_C{an,cc} = this_mean_rasters;
             [temp ~] = getParamValues('',tei,selC.plane_number,conditionNumber,stimMarker,rasterType,cns(selCells,2:3),maxDistTime);
-            xs{an,cc} = temp.xs;
         end
     end
 end
@@ -58,8 +57,7 @@ for an = 1:length(selAnimals_C)
     all_ccs_C(an) = {ccs};
     mean_over_cells_C(an,:) = nanmean(ccs,2)';
 end
-out.all_css = all_ccs_C;
+out.all_css_C = all_ccs_C;
 out.gAllVals = gAllVals;
 out.mean_over_cells = mean_over_cells_C;
-out.mean_rasters = mean_rasters_C;
-out.xs = xs;
+out.mean_rasters_C = mean_rasters_C;

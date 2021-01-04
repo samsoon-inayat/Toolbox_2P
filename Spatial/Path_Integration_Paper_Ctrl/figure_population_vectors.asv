@@ -2,7 +2,7 @@ function figure_population_vectors(fn,allRs,ccs)
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 2; fwids = [1 120]; fcens = [0 150]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 2; fwids = [1 120]; fcens = [0 150]; rs_th = 0.7;
 conditionsAndRasterTypes = [11;21;31;41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 out = read_data_from_base_workspace(selC)
@@ -15,21 +15,21 @@ selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
 perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 
 trials = 3:10;
-out_C = get_mean_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,'',trials);
-out_A = get_mean_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,'',trials);
+out_C = find_corr_coeff_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,'',trials);
+out_A = find_corr_coeff_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,'',trials);
 
 n = 0;
 
 %%
-sel_out = out_A;
-paramMs = paramMs_A;
-an = 5;
-% [~,~,cellNums] = findPopulationVectorPlot(sel_out.mean_rasters{an,1},[]);
+sel_out = out_C;
+paramMs = paramMs_C;
+an = 1 ;
+[~,~,cellNums] = findPopulationVectorPlot(sel_out.mean_rasters{an,1},[]);
 for ii = 1:length(conditionsAndRasterTypes)
     tcond = abs(conditionsAndRasterTypes(ii));
     Ndigits = dec2base(tcond,10) - '0';
     mRsi = sel_out.mean_rasters{an,ii};
-    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,[]);
+    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi,cellNums);
     time_xs{ii} = sel_out.xs{an,ii};
     raster_labels{ii} = sprintf('Cond - %d, Rast - %d',Ndigits(1),Ndigits(2));
     theseRasterTypes{ii} = paramMs.rasterTypes{Ndigits(2)};
