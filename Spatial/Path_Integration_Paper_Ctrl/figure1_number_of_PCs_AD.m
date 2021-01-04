@@ -37,9 +37,60 @@ for rr = 1:size(pMs_C,1)
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
 n = 0;
+
+% first single and second double comparison across groups
+runthis = [0 1];
 %%
-runthis = 1;
-if runthis
+if runthis(1);
+    numCols = length(all_rts);
+    data = perc_cells_C;
+    cmdTxt = sprintf('dataT = table(');
+    for ii = 1:(size(data,2)-1)
+        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
+    end
+    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
+    eval(cmdTxt);
+    dataT.Properties.VariableNames = varNames;
+    
+    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+%     colVar1 = [1 2 3 4];
+    within = table(colVar1');
+%     within = table(colVar1',colVar2');
+    within.Properties.VariableNames = {'Condition'};
+%     within.Properties.VariableNames = {'Condition','Raster'};
+    within.Condition = categorical(within.Condition);
+%     within.Raster = categorical(within.Raster);
+    ra = repeatedMeasuresAnova(dataT,within);
+
+    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    xdata = [1:4];
+%     xdata = [1 2 3 4];
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.25 1],'color','w');
+    hold on;
+    tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = 5:length(hbs)
+        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'C1-AD','C2-AD','C3-AD','C4-AD','C1-AD','C2-AD','C3-AD','C4-AD'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[0.04 0.03 0.02 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
+
+    save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_contexts_10',600);
+return;
+end
+
+
+%%
+if runthis(2)
     numCols = length(all_rts);
     data = perc_cells_C;
     cmdTxt = sprintf('dataT_C = table(');

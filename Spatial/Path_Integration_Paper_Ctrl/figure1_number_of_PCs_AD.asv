@@ -2,6 +2,7 @@ function figure1_number_of_PCs
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
 conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 out = read_data_from_base_workspace(selC)
@@ -24,15 +25,6 @@ for ii = 1:length(ei)
     nPlanes_A(ii) = length(tei.plane);
 end
 
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-[cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_CD_ctrl',{paramMs_C,selC});
-[cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_CC_ctrl',{paramMs_A,selC});
-perc_cells_C = parameter_matrices_ctrl('print','10_CD_ctrl',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A = parameter_matrices_ctrl('print','10_CC_ctrl',{cpMs_A,pMs_A,ET_A,selAnimals_A});
-
-perc_cells_C_n = parameter_matrices_ctrl('print numbers','10_CD_ctrl',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A_n = parameter_matrices_ctrl('print numbers','10_CC_ctrl',{cpMs_A,pMs_A,ET_A,selAnimals_A});
-
 all_conds = []; all_rts = [];
 for rr = 1:size(pMs_C,1)
     for cc = 1:size(pMs_C,2)
@@ -45,9 +37,65 @@ for rr = 1:size(pMs_C,1)
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
 n = 0;
+
+% first single and second double comparison across groups
+runthis = [1 1];
 %%
-runthis = 1;
-if runthis
+if runthis(1);
+    numCols = length(all_rts);
+    data = perc_cells_A;
+    cmdTxt = sprintf('dataT = table(');
+    for ii = 1:(size(data,2)-1)
+        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
+    end
+    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
+    eval(cmdTxt);
+    data = perc_cells_A;
+    cmdTxt = sprintf('dataT_A = table(');
+    for ii = 1:(size(data,2)-1)
+        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
+    end
+    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
+    eval(cmdTxt);
+    dataT = [dataT_C]
+    dataT.Properties.VariableNames = varNames;
+    dataT = [table([ones(length(ei_C),1);2*ones(length(ei_A),1)]) dataT];
+    dataT.Properties.VariableNames{1} = 'Group';
+    dataT.Group = categorical(dataT.Group)
+    
+    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+%     colVar1 = [1 2 3 4];
+    within = table(colVar1');
+%     within = table(colVar1',colVar2');
+    within.Properties.VariableNames = {'Condition'};
+%     within.Properties.VariableNames = {'Condition','Raster'};
+    within.Condition = categorical(within.Condition);
+%     within.Raster = categorical(within.Raster);
+    ra = repeatedMeasuresAnova(dataT,within);
+
+    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+
+hf = figure(10030);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 5 5 3.5],'color','w');
+hold on;
+xdatas = {[1 2 3 4],[5 6 7]};
+hs = sigR.anova.multcompare.h; ps = sigR.anova.multcompare.p;
+plotBarsWithSigLines(sigR.means,sigR.sems,sigR.combs,[hs ps],'colors',colors,'sigColor',sigColor,...
+    'maxY',30,'ySpacing',1.5,'sigTestName','ANOVA','sigLineWidth',0.25,'BaseValue',0.001,...
+    'xdata',xdatas{1},'sigFontSize',12,'sigAsteriskFontSize',17);
+xlabel('Condition'); ylabel('Percentage of Cells');
+% legs = {'Context 1','Context 2','Context 3',[11 0.25 0.27 0.025]};
+% putLegend(gca,legs,'colors',colors,'sigR',{[],'ks',sigColor,10});
+set(gca,'XTick',[1:4]);
+set(gca,'FontSize',mData.axes_font_size+4,'FontWeight','Bold','TickDir','out');changePosition(gca,[-0.01 0.01 0.06 -0.01]);
+% text(1,0.29,'Light Responsive and Place Cells','FontSize',mData.axes_font_size,'FontWeight','Bold');
+save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_contexts_10',600);
+return;
+end
+
+
+%%
+if runthis(2)
     numCols = length(all_rts);
     data = perc_cells_C;
     cmdTxt = sprintf('dataT_C = table(');
