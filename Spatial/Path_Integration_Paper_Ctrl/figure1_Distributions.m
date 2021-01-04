@@ -90,10 +90,10 @@ if runthis
         putLegend(ha,legs,'colors',colors,'sigR',{[],'',sigColor,7});
     end
     axes(ha);
-    h = xlabel({'Mutual Information','Z-Score (zMI)'});%changePosition(h,[0 -dy/3 0]);
-%     h = xlabel('Mutual Information Z-Score (zMI)');%changePosition(h,[0 -dy/3 0]);
+%     h = xlabel({'Mutual Information','Z-Score (zMI)'});%changePosition(h,[0 -dy/3 0]);
+    h = xlabel('Mutual Information Z-Score (zMI)');changePosition(h,[-0.9 dy/25 0]);
     h = ylabel('Percentage');changePosition(h,[0.3 0 0]);
-    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.01 -0.05 -0.05]);
+    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.13 -0.05 -0.15]);
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI %d _2',all_conds(1)),600);
     
     %%
