@@ -1,25 +1,17 @@
 function figure1_Distributions
-rsel = 1
-ei_names = {'ei10_C','ei10_A','ei_comb'};
-ET_names = {'ET10_CD','ET10_CC','ET10_Comb'};
-param_names = {'10_CD_Ctrl','10_CC_Ctrl','10_C_Comb'};
+
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+
 
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 21 22 31 32 41 42];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-for ii = 1:length(ei_names)
-    rsel = ii;
-    all_ETs{ii} = evalin('base',ET_names{ii});
-    all_eis{ii} = evalin('base',sprintf('%s',ei_names{rsel}));
-    all_paramMs{ii} = parameter_matrices_ctrl('get',sprintf('%s',param_names{rsel}));
-    [all_cpMs{ii},all_pMs{ii}] = parameter_matrices_ctrl('select',sprintf('%s',param_names{rsel}),{all_paramMs{ii},selC});
-    all_selAnimals{ii} = 1:length(all_eis{ii})
-    all_perc_cells{ii} = parameter_matrices('print',sprintf('%s',param_names{rsel}),{all_cpMs{ii},all_pMs{ii},all_ETs{ii},all_selAnimals{ii}});
-end
 
-pMs_C = all_pMs{1}; pMs_A = all_pMs{2};
-paramMs_C = all_paramMs{1}; paramMs_A = all_paramMs{2};
-selAnimals_C = all_selAnimals{1}; selAnimals_A = all_selAnimals{2};
+out = read_data_from_base_workspace(selC)
+
+pMs_C = out.pMs{1}; pMs_A = out.pMs{2};
+paramMs_C = out.paramMs{1}; paramMs_A = out.paramMs{2};
+selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
 
 all_conds = []; all_rts = [];
 gAllVals_C = []; gAllVals_A = [];

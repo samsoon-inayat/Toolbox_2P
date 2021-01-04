@@ -1,14 +1,16 @@
 function figure1_number_of_PCs
 
-protocol_C = '10_C';
-protocol_A = '10_A';
-ei_C = evalin('base','ei10_C');
-ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s','10_CD'));
-ET_A = evalin('base',sprintf('ET%s','10_CC'));
-selAnimals_C = 1:length(ei_C)
-selAnimals_A = 1:length(ei_A)
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+conditionsAndRasterTypes = [11 21 31 41];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+out = read_data_from_base_workspace(selC)
+
+ei_C = out.eis{1}; ei_A = out.eis{2};
+pMs_C = out.pMs{1}; pMs_A = out.pMs{2};
+paramMs_C = out.paramMs{1}; paramMs_A = out.paramMs{2};
+selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
+perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 
 ei = ei_C;
 for ii = 1:length(ei)
@@ -22,30 +24,14 @@ for ii = 1:length(ei)
     nPlanes_A(ii) = length(tei.plane);
 end
 
-% in the following variable all the measurements are in the matrices form
-% for each variable colums indicate raster and stim marker types specified 
-% the rows indicate condition numbers.
-paramMs_C = parameter_matrices('get','10_CD_ctrl');
-paramMs_A = parameter_matrices('get','10_CC_ctrl');
-% after getting all matrics, we can apply selection criteria to select a
-% subgroup of cells
-% here is the selection criteria in make_selC_structure function
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
-% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
-% conditionsAndRasterTypes = [11 13 21 23 31 33 41 43]';
-conditionsAndRasterTypes = [11 13 21 23 31 33 41 43];
-conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-[cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
-[cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_A',{paramMs_A,selC});
-perc_cells_C = parameter_matrices_ctrl('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A = parameter_matrices_ctrl('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+[cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_CD_ctrl',{paramMs_C,selC});
+[cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_CC_ctrl',{paramMs_A,selC});
+perc_cells_C = parameter_matrices_ctrl('print','10_CD_ctrl',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A = parameter_matrices_ctrl('print','10_CC_ctrl',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
-perc_cells_C_n = parameter_matrices_ctrl('print numbers','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-perc_cells_A_n = parameter_matrices_ctrl('print numbers','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
+perc_cells_C_n = parameter_matrices_ctrl('print numbers','10_CD_ctrl',{cpMs_C,pMs_C,ET_C,selAnimals_C});
+perc_cells_A_n = parameter_matrices_ctrl('print numbers','10_CC_ctrl',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
 all_conds = []; all_rts = [];
 for rr = 1:size(pMs_C,1)
