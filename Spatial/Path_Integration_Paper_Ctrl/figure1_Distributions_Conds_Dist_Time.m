@@ -132,6 +132,6 @@ if runthis
     xtickangle(30)
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     changePosition(gca,[0.04 0.03 -0.15 -0.11]);
-    put_axes_labels(gca,{[],[0 0 0]},{'Average zMI',[0 0 0]});
+    put_axes_labels(gca,{[],[0 0 0]},{'zMI',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph',mfilename),600);
 end
