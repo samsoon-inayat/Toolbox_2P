@@ -23,7 +23,7 @@ cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th
 conditionsAndRasterTypes = [11 12];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
-% [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
+[cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
 % perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
 % perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
 
@@ -56,10 +56,10 @@ for rr = 1:size(pMs_A,1)
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
 var_oi_A = squeeze(zMIs_A);
-zMIs = squeeze(a_zMIs_C);
+zMIs = squeeze(a_zMIs_A);
 var_oi_C = squeeze(zMIs_C);
-gAllVals = [gAllVals_C ;
-paramMs = paramMs_C;
+gAllVals = [gAllVals_A];
+paramMs = paramMs_A;
 n = 0;
 %%
 runthis = 1;
@@ -68,7 +68,7 @@ if runthis
     minBin = min(gAllVals);
     maxBin = 15;%max(gAllVals);
     incr = (maxBin-minBin)/100;
-    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 1.75 1],'color','w');
+    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 1.5 1],'color','w');
     hold on;
     [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
     hold on;
@@ -80,9 +80,9 @@ if runthis
             legs{ii} = sprintf('%s-%s',paramMs.stimMarkers{ii},paramMs.rasterTypes{ii}(1));
         end
     end
-    ylim([0 100]);xlim([-3 7]);
+    ylim([0 100]);xlim([-3 8]);
     xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
-    legs{ii+1} = [xlims(1)+dx/2.5 dx/30 ylims(1)+dy/3 dy/5];
+    legs{ii+1} = [xlims(1)+dx/3 dx/30 ylims(1)+dy/3 dy/5];
     legs{1} = 'C1-AD (Air-Dist)'; legs{2} = 'C1-AT (Air-Time)'
     if size(data,2) > 2
         putLegend(ha,legs,'colors',colors,'sigR',{sigR,'ranova',sigColor,6});
@@ -90,10 +90,11 @@ if runthis
         putLegend(ha,legs,'colors',colors,'sigR',{[],'',sigColor,7});
     end
     axes(ha);
-    h = xlabel('Mutual Information Z-Score (zMI)');%changePosition(h,[0 -dy/3 0]);
-    h = ylabel('Percentage');changePosition(h,[-0 0 0]);
+    h = xlabel({'Mutual Information','Z-Score (zMI)'});%changePosition(h,[0 -dy/3 0]);
+%     h = xlabel('Mutual Information Z-Score (zMI)');%changePosition(h,[0 -dy/3 0]);
+    h = ylabel('Percentage');changePosition(h,[0.3 0 0]);
     set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.01 -0.05 -0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI %d',all_conds(1)),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI %d _2',all_conds(1)),600);
     
     %%
     numCols = length(all_rts);

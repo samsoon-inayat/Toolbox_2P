@@ -75,7 +75,7 @@ if runthis
     legs = [];
     ylim([0 100]);xlim([-3 7]);
     xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
-    legs = {'C1','C2'};%,'C3','C4'};
+    legs = {'Dist (C1-AD)','Time (C1-AT)'};%,'C3','C4'};
     legs{5} = [xlims(1)+dx/1.5 dx/30 ylims(1)+dy/1.75 dy/7];
     putLegend(ha,legs,'colors',colors,'sigR',{[],'',sigColor,6});
     axes(ha);
