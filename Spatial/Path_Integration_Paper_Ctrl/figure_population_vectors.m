@@ -2,7 +2,7 @@ function figure_population_vectors(fn,allRs,ccs)
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 2; fwids = [1 120]; fcens = [0 150]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.4;
 conditionsAndRasterTypes = [11;21;31;41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 out = read_data_from_base_workspace(selC)
@@ -21,9 +21,9 @@ out_A = get_mean_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterT
 n = 0;
 
 %%
-sel_out = out_A;
-paramMs = paramMs_A;
-an = 5;
+sel_out = out_C;
+paramMs = paramMs_C;
+an = 3;
 % [~,~,cellNums] = findPopulationVectorPlot(sel_out.mean_rasters{an,1},[]);
 for ii = 1:length(conditionsAndRasterTypes)
     tcond = abs(conditionsAndRasterTypes(ii));

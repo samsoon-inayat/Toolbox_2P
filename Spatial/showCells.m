@@ -31,7 +31,7 @@ if ~iscell(selCells)
 %             if selCells(cc) == 22
 %                 text(mx-60,my-20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
 %             else
-%                 text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
+                text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
 %             end
 %         end
         plot(cellX,cellY,'.','color','r');

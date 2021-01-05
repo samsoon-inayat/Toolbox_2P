@@ -44,7 +44,7 @@ coiSI =  coiSI(centers > 120 & centers < 150)';
 % plot_trial_correlation(dataC,coiSI);return;
 % plotRasters(dataC,coiSI);return
 ccsi = [200 46 152 37 22]; % animal 1 plane 1
-ccsi = [10 182 77 18 160]; % animal 1 plane 1
+ccsi = [48 93 77 18 4]; % animal 1 plane 1
 n=0;
 %%
 runthis = 1;
@@ -209,7 +209,7 @@ end
 
 
 %%
-runthis = 0
+runthis = 1
 if runthis
 % ccsi = [19 85 127 129 126 128];
 numberOfRows = 2;
@@ -309,7 +309,8 @@ traceTime = b.ts(tei.plane{pl}.b.frames_f(1:lengthSigs));
 for cc = 1:length(ccsi)
     tsp = spSigAll{ccsi(cc)}';
     alltsp(cc,:) = tsp;
-    caSig = caSigAll{ccsi(cc)}';
+    caSig1 = caSigAll{ccsi(cc)}';
+    caSig = signals(ccsi(cc),:);
     allcaSig(cc,:) = caSig;
     sCaSig = caSigAll{ccsi(cc)}';
     allsCaSig(cc,:) = sCaSig;
@@ -323,7 +324,7 @@ maxCaSig = max(maxSCaSig);
 % endTimeFrame = b.frames_f(find(traceTime<550,1','last'));
 
 xStart = traceTime(find(traceTime>3,1,'first'));
-xEnd = traceTime(find(traceTime<275,1','last'));
+xEnd = traceTime(find(traceTime<210,1','last'));
 xlims = [xStart xEnd];
 timeLength = 0.0833*24;
 air_puff_raw = b.air_puff_raw;
@@ -434,6 +435,7 @@ end
 % showCells(102,ei,ccsi);
 h = figure(102);clf;plot(0,0);
 % ccsi = [19 85 127 129];
+ccsi = [48 93 77 18 4]; % animal 1 plane 1
 cellList = ccsi;
 showCells(gca,tei,pl,cellList)
 set(h,'units','inches');
