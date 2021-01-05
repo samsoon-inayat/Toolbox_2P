@@ -1,6 +1,6 @@
 function showCells(ha,ei,pl,selCells)
 
-FS = 8;
+FS = 7;
 micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;
 xrange = ei.plane{pl}.tP.ops.xrange;
 yrange = ei.plane{pl}.tP.ops.yrange;
@@ -11,7 +11,7 @@ if isempty(ha)
     ha = gca;
 end
 axes(ha);
-% imagesc(mimg,[min(mimg(:)) max(mimg(:))]);
+imagesc(mimg,[min(mimg(:)) max(mimg(:))]);
 maskZ = zeros(size(mimg));
 colormap gray;
 axis equal;
@@ -28,12 +28,13 @@ if ~iscell(selCells)
         mask = mask';
         allmask(mask==1) = 1;
     end
-    img = mimg + max(mimg(:))*(0.8*allmask);
-    imagesc(img,[min(img(:)) max(img(:))]);hold on;
+    img = mimg + max(mimg(:))*allmask;
     for cc = 1:length(ccs)
         stat =  ei.plane{pl}.tP.stat(ccs(cc));
-        cellX = double(stat{1}.xpix);% + double(min(xrange));
-        cellY = double(stat{1}.ypix);% + double(min(yrange));
+        cellX = double(stat{1}.ypix);% + double(min(xrange));
+        cellY = double(stat{1}.xpix);% + double(min(yrange));
+        BW = poly2mask(cellX,cellY,size(mimg,1),size(mimg,2));
+        footprint = stat{1}.footprint;
         mx = min(cellX);
         my = max(cellY);
 %         if selCells(cc) == 46
@@ -42,10 +43,10 @@ if ~iscell(selCells)
 %             if selCells(cc) == 22
 %                 text(mx-60,my-20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
 %             else
-                text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS+3,'FontWeight','Bold');  
+                text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
 %             end
 %         end
-%         scatter(cellX,cellY,'.r');
+        scatter(cellX,cellY,'.r');
 %         plot(cellX,cellY,'.','color','r');
     end
 else

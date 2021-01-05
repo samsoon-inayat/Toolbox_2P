@@ -6,7 +6,7 @@ addRequired(p,'positionShift',@isnumeric);
 addRequired(p,'minmax');
 addRequired(p,'fs',@isnumeric);
 addOptional(p,'location','eastoutside',@ischar);
-addOptional(p,'text_margins',[0.3 0.125],@isnumeric);
+addOptional(p,'text_margins',[0.3 0.125 0.3 0.125],@isnumeric);
 parse(p,hai,positionShift,minmax,fs,varargin{:});
 
 location = p.Results.location;
@@ -38,6 +38,7 @@ end
 caxis(minmax);
 xlims = xlim;
 xincr = text_margins(1); yincr = text_margins(2);
+xincr1 = text_margins(3); yincr1 = text_margins(4);
 if strcmp(location,'northoutside')
     if minmax(1) > 10
         minmax(1) = round(minmax(1));
@@ -56,12 +57,12 @@ if strcmp(location,'northoutside')
     end
     if abs(minmax(2)) > 10
         if minmax(2) < 0
-            text(xlims(2)+xincr,1+yincr,minmaxtextN{2},'FontSize',fs);
+            text(xlims(2)+xincr1,1+yincr1,minmaxtextN{2},'FontSize',fs);
         else
-            text(xlims(2)+xincr,1+yincr,minmaxtextP{2},'FontSize',fs);
+            text(xlims(2)+xincr1,1+yincr1,minmaxtextP{2},'FontSize',fs);
         end
     else
-        text(xlims(2)+xincr,1+yincr,minmaxtextF{2},'FontSize',fs);
+        text(xlims(2)+xincr1,1+yincr1,minmaxtextF{2},'FontSize',fs);
     end
     axis off; box off;
     set(hc,'Ticks',minmax,'TickLabels',{});
@@ -84,12 +85,12 @@ if strcmp(location,'eastoutside')
     end
     if abs(minmax(2)) > 10
         if minmax(2) < 0
-            text(xlims(2)+xincr,1+yincr,minmaxtextN{2},'FontSize',fs);
+            text(xlims(2)+xincr1,1+yincr1,minmaxtextN{2},'FontSize',fs);
         else
-            text(xlims(2)+xincr,1+yincr,minmaxtextP{2},'FontSize',fs);
+            text(xlims(2)+xincr1,1+yincr1,minmaxtextP{2},'FontSize',fs);
         end
     else
-        text(xlims(2)+xincr,1+yincr,minmaxtextF{2},'FontSize',fs);
+        text(xlims(2)+xincr1,1+yincr1,minmaxtextF{2},'FontSize',fs);
     end
     axis off; box off;
     set(hc,'Ticks',minmax,'TickLabels',{});

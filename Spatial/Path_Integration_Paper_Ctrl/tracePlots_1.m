@@ -44,7 +44,7 @@ coiSI =  coiSI(centers > 110 & centers < 140)';
 % plot_trial_correlation(dataC,coiSI);return;
 % plotRasters(dataC,coiSI);return
 ccsi = [200 46 152 37 22]; % animal 1 plane 1
-ccsi = [3 7 93 18 24];% 51]; % animal 1 plane 1
+ccsi = [3 7 19 18 24];% 51]; % animal 1 plane 1
 n=0;
 
 %%
@@ -63,7 +63,7 @@ save_pdf(h,mData.pdf_folder,sprintf('cellsAvgImg.pdf'),600);
 return;
 end
 %%
-runthis = 0;
+runthis = 1;
 if runthis
     
 cellList = ccsi;
@@ -147,7 +147,7 @@ for rr = 1:2
         
         if cc == 4 && rr == 1
             hca = gca;
-            hc = putColorBar(hca,[0.05 0.01 -0.05 0],{'0','Max FR'},6,'northoutside',[0.15 0.2]);
+            hc = putColorBar(hca,[0.05 0.01 -0.05 0],{'0','Max FR'},6,'northoutside',[0.15 0.2 0.05 0.2]);
 %             set(hc,'Orientation','horizontal');
             
 %             pos = get(gca,'Position');
