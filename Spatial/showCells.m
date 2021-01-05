@@ -57,13 +57,14 @@ end
 
 nPixels = round(50/micronsPerPixel);
 
-scaleBarS = 500 - nPixels; scaleBarE = scaleBarS + nPixels;
-scaleBarY = 510 - 10;
-plot([scaleBarS scaleBarE],[scaleBarY scaleBarY],'c','linewidth',2);
+scaleBarS = xrange(2)- 20 - nPixels; scaleBarE = scaleBarS + nPixels;
+scaleBarY = yrange(2) - 30;
+plot([scaleBarS,scaleBarE],[scaleBarY,scaleBarY],'c','linewidth',3);
+
 % text(scaleBarS,scaleBarY-20,sprintf('%.0f um',(scaleBarE - scaleBarS)*micronsPerPixel),'color','r','FontSize',14,'FontWeight','Bold');
 if iscell(selCells)
     title(tcColors');
 else
-    title(ei.recordingFolder)
+%     title(ei.recordingFolder)
 end
-% xlim([200 900]); ylim([200 900]);
+xlim(xrange); ylim(yrange);
