@@ -1,6 +1,6 @@
 function out =  find_MI_1(thispFolder,contextNumber,stimMarker,rasters,thisRasterType,trials,ow)
 
-fileName = makeName(sprintf('info_metrics_1_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
+fileName = makeName(sprintf('info_metrics_2_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
 if exist(fileName,'file') && ow == 0
     out = load(fileName);
     return;

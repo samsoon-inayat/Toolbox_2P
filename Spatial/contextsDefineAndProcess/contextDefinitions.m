@@ -29,8 +29,8 @@ allContexts.typesOfRasters = {{'dist';'time'};{'dist';'time'};{'dist';'time'};'t
     {'dist';'time'};'time';'time';'time';'time';'time';'time';'time';'time';'time';...
     'time';'time';'time';'time';'time';'time';'time';'time';'time'};
 
-allContexts.rasterFunctions = {'find_MI';'getFits_myGaussFit';'fractalDim';'find_MI_1';'getFits_myGaussFit_1';'fractalDim_1'};
-allContexts.varNames = {'info_metrics';'gauss_fit_on_mean';'fractal_dim';'info_metrics_1';'gauss_fit_on_mean_1';'fractal_dim_1'};
+allContexts.rasterFunctions = {'find_MI';'getFits_myGaussFit';'fractalDim';'find_MI_1';'getFits_myGaussFit_1';'fractalDim_1';'find_MI_2';'getFits_myGaussFit_2';'fractalDim_2'};
+allContexts.varNames = {'info_metrics';'gauss_fit_on_mean';'fractal_dim';'info_metrics_1';'gauss_fit_on_mean_1';'fractal_dim_1';'info_metrics_2';'gauss_fit_on_mean_2';'fractal_dim_2'};
 
 
 

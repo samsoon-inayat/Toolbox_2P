@@ -53,17 +53,16 @@ for aa = 1:length(ei)
                     end
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
                     rasters = getRasters_fixed_bin_width_ctrl(tei,pp,markersOn,markersOff,thisRasterType);
-                    if length(unique(rasters.lastBin)) > 1
-                        n= 0;
-                    end
-                    trials = 4:size(rasters.sp_rasters,1);
-                    rasters = findRasterProperties_ctrl1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owrp);
-                    if strcmp(thisRasterType,'dist')
-                        cmdTxt = sprintf('contexts(contextNumber).rasters.%sD = rasters;',thisStimMarker); eval(cmdTxt);
-                    end
-                   if strcmp(thisRasterType,'time')
-                        cmdTxt = sprintf('contexts(contextNumber).rasters.%sT = rasters;',thisStimMarker); eval(cmdTxt);
-                    end 
+                    if unique(rasters.lastBin)
+                    n= 0;
+%                     trials = 4:size(rasters.sp_rasters,1);
+%                     rasters = findRasterProperties_ctrl(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owrp);
+%                     if strcmp(thisRasterType,'dist')
+%                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sD = rasters;',thisStimMarker); eval(cmdTxt);
+%                     end
+%                    if strcmp(thisRasterType,'time')
+%                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sT = rasters;',thisStimMarker); eval(cmdTxt);
+%                     end 
                 end
             end
         end

@@ -66,10 +66,11 @@ try
         ei10_A(ii) = getData_py(f,ET10_CC(ii,:));
     end
 
-    ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[0 0 0]);
-    ei10_C1 = loadContextsResponses_ctrl(ei10_C1,[1 1],[0 0 0]);
-    ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[0 0 0]);
+    ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[1 1 1]);
+    ei10_C1 = loadContextsResponses_ctrl(ei10_C1,[1 1],[1 1 1]);
+    ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[1 1 1]);
     ei_comb = [ei10_C ei10_A];
+    ei_150 = ei10_A(2:5);
     training_data_C1 = behaviorProcessor;
     training_data_C1.belt_lengths = [150 142 142 142 142 142 150 150 150 150 150]';
     weight_day1 = [52.1 NaN NaN NaN 33.7 30.9 26.8 34.5 34.6 31.6 35.8]';
@@ -83,6 +84,7 @@ try
     parameter_matrices_ctrl('calculate','10_CD_Ctrl1',ei10_C1);
     parameter_matrices_ctrl('calculate','10_CC_Ctrl',ei10_A);
     parameter_matrices_ctrl('calculate','10_C_Comb',ei_comb);
+    parameter_matrices_ctrl('calculate','10_C_150',ei_150);
 %     parameter_matrices('calculate','15_C',ei15_C);
 %     parameter_matrices('calculate','10_A',ei10_A);
 %     parameter_matrices('calculate','15_A',ei15_A);

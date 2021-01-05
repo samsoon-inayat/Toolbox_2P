@@ -42,7 +42,7 @@ if ~iscell(selCells)
 %             if selCells(cc) == 22
 %                 text(mx-60,my-20,num2str(selCells(cc)),'color','c','fontsize',FS+2,'FontWeight','Normal');  
 %             else
-                text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS+3,'FontWeight','Bold');  
+                text(mx-10,my+20,num2str(selCells(cc)),'color','c','fontsize',FS,'FontWeight','Bold');  
 %             end
 %         end
 %         scatter(cellX,cellY,'.r');

@@ -128,7 +128,7 @@ for rr = 1:2
 %                     changePosition(hx,[-50 0 0]);                    
 %                 end
         else
-            xticks = [1:50:size(thisRaster,2)];
+            xticks = [1:10:size(thisRaster,2)];
             set(gca,'XTick',xticks,'XTickLabels',A.xs(xticks));
             
                 hx = xlabel('Time (sec)');
@@ -148,20 +148,7 @@ for rr = 1:2
         if cc == 4 && rr == 1
             hca = gca;
             hc = putColorBar(hca,[0.05 0.01 -0.05 0],{'0','Max FR'},6,'northoutside',[0.15 0.2 0.05 0.2]);
-%             set(hc,'Orientation','horizontal');
-            
-%             pos = get(gca,'Position');
-%             h = axes('Position',pos);
-% %             changePosition(h,[0.01 0.22 0.02 -0.1]);
-%             hc = colorbar('north'); axis off
-%             set(hc,'YTick',[],'linewidth',0.01,'box','off');
-%             changePosition(hc,[0 0 0 -0.01]);
-%             ylims = ylim;
-%             xlims = xlim;
-%             text(xlims(1)+0.15,ylims(2)+0.05,'0','FontSize',4.5);
-%             text(xlims(2)+0.4,ylims(2)+0.05,'Max FR','FontSize',4.5);
         end
-        
     end
 end
 figure(105);colormap jet;
