@@ -1,8 +1,6 @@
 function figure1_Distributions_Conds_Dist_Time
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-
-
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 12 21 22 31 32 41 42];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
@@ -62,10 +60,10 @@ var_oi_C = squeeze(zMIs_C);
 gAllVals = gAllVals_C;
 paramMs = paramMs_C;
 
-zMIs = squeeze(a_zMIs_A);
-var_oi_C = squeeze(zMIs_A);
-gAllVals = gAllVals_A;
-paramMs = paramMs_A;
+% zMIs = squeeze(a_zMIs_A);
+% var_oi_C = squeeze(zMIs_A);
+% gAllVals = gAllVals_A;
+% paramMs = paramMs_A;
 % large_values
 n = 0;
 %%

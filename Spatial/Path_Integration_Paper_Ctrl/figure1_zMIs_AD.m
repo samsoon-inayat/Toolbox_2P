@@ -103,37 +103,3 @@ if runthis
 return;
 end
 
-%%
-runthis = 1;
-if runthis
-    data_C = squeeze(a_zMIs_C);
-    data_A = squeeze(a_zMIs_A);
-    ii = 4; data = [data_C(:,ii) data_A(:,ii)];
-    minBin = min([gAllVals_C;gAllVals_A]);
-    maxBin = 15;%max(gAllVals);
-    incr = (maxBin-minBin)/100;
-    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 2 1.5],'color','w');
-    hold on;
-    [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
-    hold on;
-    legs = {sprintf('%s-C',varNames{ii}),sprintf('%s-A',varNames{ii})};
-%     paramMs = paramMs_A;
-%     for ii = 1:length(varNames)
-%         if ii == 1
-%             legs{ii} = sprintf('%s-%s (N = %d)',paramMs.stimMarkers{ii},paramMs.rasterTypes{ii}(1),size(data,1));
-%         else
-%             legs{ii} = sprintf('%s-%s',paramMs.stimMarkers{ii},paramMs.rasterTypes{ii}(1));
-%         end
-%     end
-    ylim([0 110]);
-    xlim([-3 12])
-    xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
-    legs{length(legs)+1} = [xlims(1)+dx/1.5 dx/30 ylims(1)+dy/3 dy/15];
-    putLegend(ha,legs,'colors',colors);
-    axes(ha);
-    h = xlabel('Mutual Information Z-Score');%changePosition(h,[0 -dy/3 0]);
-    h = ylabel('Percentage');changePosition(h,[-0.1 0 0]);
-    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.01 -0.05 -0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI %d',ii),600);
-return;
-end
