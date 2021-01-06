@@ -228,14 +228,15 @@ catch
             binNum = floor(maxDistTime(2)/binwidth);
         end
         data.rasters = data.sp_rasters_nan_corrected(:,1:binNum,:); % 21 corresponding to 6 secs
+%         data.rasters = data.sp_rasters1;
     end
     return;
 end
 [rs,coeffs] = getMRFS_vals(mrfs);
 data.gauss_fit_on_mean.rs = rs;
-[rst,coeffst] = getMRFS_vals_Trials(mrfs);
-data.gauss_fit_on_mean.rst = rst;
-data.gauss_fit_on_mean.coeffst = coeffst;
+% [rst,coeffst] = getMRFS_vals_Trials(mrfs);
+% data.gauss_fit_on_mean.rst = rst;
+% data.gauss_fit_on_mean.coeffst = coeffst;
 A = coeffs(:,1);
 mu = coeffs(:,2);
 sigma = coeffs(:,3);

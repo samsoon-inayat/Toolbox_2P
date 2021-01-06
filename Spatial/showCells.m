@@ -1,4 +1,4 @@
-function showCells(ha,ei,pl,selCells)
+function showCells(ha,ei,pl,selCells,perc)
 
 FS = 8;
 micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;
@@ -28,8 +28,13 @@ if ~iscell(selCells)
         mask = mask';
         allmask(mask==1) = 1;
     end
-    img = mimg + max(mimg(:))*(0.8*allmask);
-    imagesc(img,[min(img(:)) max(img(:))]);hold on;
+    img3 = cat(3,mimg,mimg,mimg);
+    ch = 2;
+    rch = img3(:,:,ch);
+    rch = rch + max(rch(:))*(perc(1)*allmask);
+    img3(:,:,ch) = rch;
+    img2 = img3(:,:,setdiff([1 2 3],ch));
+    imagesc(img3,[min(img2(:)) 	perc(2)*max(img2(:))]);hold on;
     for cc = 1:length(ccs)
         stat =  ei.plane{pl}.tP.stat(ccs(cc));
         cellX = double(stat{1}.xpix);% + double(min(xrange));
@@ -70,7 +75,7 @@ end
 nPixels = round(50/micronsPerPixel);
 
 scaleBarS = xrange(2)- 20 - nPixels; scaleBarE = scaleBarS + nPixels;
-scaleBarY = yrange(2) - 30;
+scaleBarY = yrange(1) + 30;
 plot([scaleBarS,scaleBarE],[scaleBarY,scaleBarY],'c','linewidth',3);
 
 % text(scaleBarS,scaleBarY-20,sprintf('%.0f um',(scaleBarE - scaleBarS)*micronsPerPixel),'color','r','FontSize',14,'FontWeight','Bold');

@@ -48,14 +48,14 @@ ccsi = [3 7 19 18 24];% 51]; % animal 1 plane 1
 n=0;
 
 %%
-if 0
+if 1
 % showCells(102,ei,ccsi);
 % close(figure(102))
 h = figure(102);clf;plot(0,0);
 % ccsi = [19 85 127 129];
 % ccsi = [48 93 77 18 4]; % animal 1 plane 1
 cellList = ccsi;
-showCells(gca,tei,pl,cellList)
+showCells(gca,tei,pl,cellList,[10 1])
 set(h,'units','inches');
 set(h,'Position',[10 4 1.5 1.5]);
 changePosition(gca,[-0.165 -0.167 0.267 0.27]);
@@ -99,14 +99,17 @@ for rr = 1:2
         cn = cellList(cc);
         axes(ff.h_axes(rr,cc));
         A = dataC{rr};
-        thisRaster = A.rasters(:,:,cn);
+%         thisRaster = A.rasters(:,:,cn);
+        thisRaster = A.sp_rasters1(:,:,cn);
         mSig = nanmean(thisRaster);
 %         ft = fittype(A.formula);
         xs = 1:size(A.rasters,2);
 %         coeff = A.coeff(:,cn);
         fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
         imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
-        plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1.5,'color','r');
+        if rr ==1 
+            plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1.5,'color','r');
+        end
         box off;
         if rr == 1
         text(size(thisRaster,2)+size(thisRaster,2)/20,0,sprintf('Max FR %d - zMI = %.2f - Rs = %.2f',round(max(thisRaster(:))),A.SI(cn),...
@@ -129,7 +132,12 @@ for rr = 1:2
 %                 end
         else
             xticks = [1:10:size(thisRaster,2)];
-            set(gca,'XTick',xticks,'XTickLabels',A.xs(xticks));
+            xs = 0:0.2:100;
+            set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
+            for bb = 1:length(A.lastBin)
+                xvalbin = A.lastBin(bb)-1;
+                plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'r','linewidth',1.5);
+            end
             
                 hx = xlabel('Time (sec)');
 %                     changePosition(hx,[-20 0 0]);                    
@@ -151,7 +159,7 @@ for rr = 1:2
         end
     end
 end
-figure(105);colormap jet;
+figure(105);colormap parula;
 fileName = fullfile(mData.pdf_folder,sprintf('rasters.pdf'));
 save_pdf(gcf,mData.pdf_folder,sprintf('rasters.pdf'),600);
 % close(gcf);

@@ -1,4 +1,4 @@
-function figure1_Distributions
+function figure1_Distributions_Conds_Dist_Time
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 
@@ -23,18 +23,33 @@ for rr = 1:size(pMs_C,1)
         all_conds = [all_conds nds(1)]; all_rts = [all_rts nds(2)];
         xticklabels{cc,rr} = sprintf('%s-%s',paramMs_C.stimMarkers{nds(2)},paramMs_C.rasterTypes{nds(2)}(1));
         for an = 1:length(selAnimals_C)
+            temp = squeeze(pMs_C{rr,cc}.all_zMIs{selAnimals_C(an)}(nds(1),nds(2),:));
+            if sum(temp>100) > 0
+                temp(temp>100) = NaN;
+                large_values = large_values + 1;
+                disp('there were large values');
+                n = 0;
+            end
             zMIs_C(an,rr,cc) = nanmean(squeeze(pMs_C{rr,cc}.all_zMIs{selAnimals_C(an)}(nds(1),nds(2),:)));
             a_zMIs_C{an,rr,cc} = squeeze(pMs_C{rr,cc}.all_zMIs{selAnimals_C(an)}(nds(1),nds(2),:));
             gAllVals_C = [gAllVals_C;a_zMIs_C{an,rr,cc}];
         end
     end
 end
+large_values = 1;
 for rr = 1:size(pMs_A,1)
     for cc = 1:size(pMs_A,2)
         tcond = conditionsAndRasterTypes(rr,cc);
         nds = dec2base(tcond,10) - '0';
         for an = 1:length(selAnimals_A)
-            zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
+            temp = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
+            if sum(temp>100) > 0
+                temp(temp>100) = NaN;
+                large_values = large_values + 1;
+                disp('there were large values');
+                n = 0;
+            end
+            zMIs_A(an,rr,cc) = nanmean(temp);%nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
             a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
             gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
         end
@@ -46,6 +61,12 @@ zMIs = squeeze(a_zMIs_C);
 var_oi_C = squeeze(zMIs_C);
 gAllVals = gAllVals_C;
 paramMs = paramMs_C;
+
+zMIs = squeeze(a_zMIs_A);
+var_oi_C = squeeze(zMIs_A);
+gAllVals = gAllVals_A;
+paramMs = paramMs_A;
+% large_values
 n = 0;
 %%
 runthis = 1;

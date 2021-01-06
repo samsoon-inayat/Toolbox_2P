@@ -16,6 +16,8 @@ rasters.duration1 = dur1;
 if size(Rs,2) == 1
     rasters.sp_rasters_nan_corrected = Rs;
     rasters.duration_nan_corrected = dur;
+    rasters.sp_rasters_nan_corrected1 = Rs1;
+    rasters.duration_nan_corrected1 = dur1;
     return;
 end
 n = 0;

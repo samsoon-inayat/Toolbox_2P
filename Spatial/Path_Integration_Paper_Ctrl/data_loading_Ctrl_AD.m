@@ -19,6 +19,7 @@ ET10_CC1{1,7} = {'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\
 ET10_CC1{2,7} = {'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data\OLD\173706\2019-02-08\1'};
 ET10_CC1{3,7} = {'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data\OLD\001432\2020-05-02\1_001'};
 ET10_CD = ET10_C([1 2 3],:);
+ET10_Comb = [ET10_CD;ET10_CC];
 
 % T10_AD = load('T_10_All_AD.mat');
 % T15_AD = load('T_15_All_AD.mat');
@@ -58,16 +59,16 @@ try
         ei10_C(ii) = getData_py(f,ET10_CD(ii,:));
     end
     
-    for ii = 1:size(ET10_CC1,1)
-        ei10_C1(ii) = getData_py(f,ET10_CC1(ii,:));
-    end
+%     for ii = 1:size(ET10_CC1,1)
+%         ei10_C1(ii) = getData_py(f,ET10_CC1(ii,:));
+%     end
 
     for ii = 1:size(ET10_CC,1)
         ei10_A(ii) = getData_py(f,ET10_CC(ii,:));
     end
 
     ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[1 1 1]);
-    ei10_C1 = loadContextsResponses_ctrl(ei10_C1,[1 1],[1 1 1]);
+%     ei10_C1 = loadContextsResponses_ctrl(ei10_C1,[1 1],[1 1 1]);
     ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[1 1 1]);
     ei_comb = [ei10_C ei10_A];
     ei_150 = ei10_A(2:5);
@@ -81,7 +82,7 @@ try
 %     training_data_A = behaviorProcessor_AD;
 
     parameter_matrices_ctrl('calculate','10_CD_Ctrl',ei10_C);
-    parameter_matrices_ctrl('calculate','10_CD_Ctrl1',ei10_C1);
+%     parameter_matrices_ctrl('calculate','10_CD_Ctrl1',ei10_C1);
     parameter_matrices_ctrl('calculate','10_CC_Ctrl',ei10_A);
     parameter_matrices_ctrl('calculate','10_C_Comb',ei_comb);
     parameter_matrices_ctrl('calculate','10_C_150',ei_150);

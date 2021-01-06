@@ -50,7 +50,14 @@ if ~isempty(strfind(protocol,'10')) && iscell(aei)
                     cmdTxt = sprintf('[%s cns areCells] = getParamValues(''%s'',tei,planeNumbers,contextNumber,stimMarker,rasterType,selCells,maxDistTime);',thisVarDH,thisVar);
                     eval(cmdTxt);
                     cmdTxt = sprintf('%s(%s == Inf) = NaN;',thisVarDH,thisVarDH);
-                    eval(cmdTxt)
+                    eval(cmdTxt);
+                    if strcmp(thisVarDH,'zMIs')
+%                         if sum(zMIs>100) > 0
+%                             n = 0;
+%                         end
+                        cmdTxt = sprintf('%s(%s > 100) = NaN;',thisVarDH,thisVarDH);
+                        eval(cmdTxt);
+                    end
                     cmdTxt = sprintf('%s_c(ci,si,:) = %s;',thisVarDH,thisVarDH);
                     eval(cmdTxt);
                 end
