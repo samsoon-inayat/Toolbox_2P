@@ -48,7 +48,7 @@ ccsi = [3 7 19 18 24];% 51]; % animal 1 plane 1
 n=0;
 
 %%
-if 1
+if 0
 % showCells(102,ei,ccsi);
 % close(figure(102))
 h = figure(102);clf;plot(0,0);
@@ -115,8 +115,7 @@ for rr = 1:2
         text(size(thisRaster,2)+size(thisRaster,2)/20,0,sprintf('Max FR %d - zMI = %.2f - Rs = %.2f',round(max(thisRaster(:))),A.SI(cn),...
             A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',4,'color','k','rotation',90);
         else
-       text(size(thisRaster,2)+size(thisRaster,2)/15,0,sprintf('Max FR %d - zMI = %.2f - Rs = %.2f',round(max(thisRaster(:))),A.SI(cn),...
-            A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',4,'color','k','rotation',90);
+       text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR %d - zMI = %.2f',round(max(thisRaster(:))),A.SI(cn)),'FontSize',4,'color','k','rotation',90);
         end
         if rr == 1
             text(size(thisRaster,1)/2,size(thisRaster,1)+1.25,sprintf('Cell %d',cn),'FontSize',6,'color','k');
