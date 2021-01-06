@@ -95,44 +95,5 @@ if runthis
     h = ylabel('Percentage');changePosition(h,[0.3 0 0]);
     set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.13 -0.05 -0.15]);
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution Of zMI %d _2',all_conds(1)),600);
-    
-    %%
-    numCols = length(all_rts);
-    data = var_oi_C;
-    cmdTxt = sprintf('dataT_C = table(');
-    for ii = 1:(size(data,2)-1)
-        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
-    end
-    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
-    eval(cmdTxt);
-    dataT = [dataT_C]
-    dataT.Properties.VariableNames = varNames;
-    colVar1 = all_rts;%[ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
-    within = table(colVar1');
-    within.Properties.VariableNames = {'Condition'};
-    within.Condition = categorical(within.Condition);
-    ra = repeatedMeasuresAnova(dataT,within);
-    
-%%
-%     [h,p] = ttest(dataT{:,1},dataT{:,2});
-    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
-    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-    xdata = [0.5 1.15]; maxY = 10;
-    colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.2 1],'color','w');
-    hold on;
-    tcolors = {colors{1};colors{2};colors{3};colors{4};};
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.3,'sigLinesStartYFactor',0.1);
-    for ii = 1:length(hbs)
-        set(hbs(ii),'facecolor',tcolors{ii},'edgecolor',tcolors{ii});
-    end
-    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    set(gca,'xlim',[0.25 xdata(end)+0.35],'ylim',[00 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end); xticklabels = {'Air-Dist','Air-Time','C1-R3','C1-R4'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    changePosition(gca,[0.04 0.03 -0.15 -0.11]);
-    put_axes_labels(gca,{[],[0 0 0]},{'Average zMI',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph',mfilename),600);
+   
 end
