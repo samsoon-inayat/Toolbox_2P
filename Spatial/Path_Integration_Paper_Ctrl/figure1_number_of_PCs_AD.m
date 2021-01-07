@@ -2,8 +2,9 @@ function figure1_number_of_PCs
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 2; fwids = [1 120]; fcens = [0 140]; rs_th = 0.7;
-conditionsAndRasterTypes = [11 21 31 41];
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+conditionsAndRasterTypes = [11;21;31;41];
+% conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 out = read_data_from_base_workspace(selC)
 
@@ -39,9 +40,9 @@ all_conds = unique(all_conds); all_rts = unique(all_rts);
 n = 0;
 
 % first single and second double comparison across groups
-runthis = [0 1];
+runthis = [0 1 1];
 %%
-if runthis(1);
+if runthis(1)
     numCols = length(all_rts);
     data = perc_cells_C;
     cmdTxt = sprintf('dataT = table(');
@@ -124,10 +125,44 @@ if runthis(2)
 
     mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-    xdata = [1:8];
+     xdata = [1 2 3 4 6:9]; 
 %     xdata = [1 2 3 4];
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.25 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2 1],'color','w');
+    hold on;
+    tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = 5:length(hbs)
+        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'C1-AD','C2-AD','C3-AD','C4-AD','C1-AD','C2-AD','C3-AD','C4-AD'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[0.075 0.0 0 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Percentage of','spatially tuned cells'},[0 -5 0]});
+    
+    save_pdf(hf,mData.pdf_folder,sprintf('Percentage of PCs'),600);
+return;
+end
+
+
+%%
+if runthis(3)
+    cpMs_C = out.cpMs{1}; cpMs_A = out.cpMs{2};
+    perc_cells_or_C = 100*cpMs_C.numCells./cpMs_C.areCells;
+    perc_cells_or_A = 100*cpMs_A.numCells./cpMs_A.areCells;
+    [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
+    
+    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(3) std(perc_cells_or_A)/sqrt(5)];
+    combs = [1 2]; %p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    xdata = [1:2];
+%     xdata = [1 2 3 4];
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
     tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -138,117 +173,12 @@ if runthis(2)
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = {'C1-AD','C2-AD','C3-AD','C4-AD','C1-AD','C2-AD','C3-AD','C4-AD'};
+    xticks = xdata(1:end)+0; xticklabels = {'CRTG','CPTG'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
-    changePosition(gca,[0.04 0.03 0.02 -0.11]);
-    put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
+    changePosition(gca,[0.17 0 -0.4 -0.09]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Overall percentage of','spatially tuned cells'},[0 -5 0]});
     
-    save_pdf(hf,mData.pdf_folder,sprintf('Percentage of PCs'),600);
-return;
-end
-
-
-%%
-runthis = 0;
-if runthis
-pcsC = [];
-for kk = 1:4
-    for jj = 1:length(selAnimals)
-        pcsC(jj,kk) = 100*sum(distD{jj,kk})/length(distD{jj,kk});
-    end
-end
-
-sigR = significanceTesting(pcsC);
-
-hf = figure(10030);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 5 5 3.5],'color','w');
-hold on;
-xdatas = {[1 2 3 4],[5 6 7]};
-hs = sigR.anova.multcompare.h; ps = sigR.anova.multcompare.p;
-plotBarsWithSigLines(sigR.means,sigR.sems,sigR.combs,[hs ps],'colors',colors,'sigColor',sigColor,...
-    'maxY',30,'ySpacing',1.5,'sigTestName','ANOVA','sigLineWidth',0.25,'BaseValue',0.001,...
-    'xdata',xdatas{1},'sigFontSize',12,'sigAsteriskFontSize',17);
-xlabel('Condition'); ylabel('Percentage of Cells');
-% legs = {'Context 1','Context 2','Context 3',[11 0.25 0.27 0.025]};
-% putLegend(gca,legs,'colors',colors,'sigR',{[],'ks',sigColor,10});
-set(gca,'XTick',[1:4]);
-set(gca,'FontSize',mData.axes_font_size+4,'FontWeight','Bold','TickDir','out');changePosition(gca,[-0.01 0.01 0.06 -0.01]);
-% text(1,0.29,'Light Responsive and Place Cells','FontSize',mData.axes_font_size,'FontWeight','Bold');
-save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_contexts_10',600);
-return;
-end
-
-%%
-runthis = 0;
-if runthis
-theData = [];
-for jj = 1:3
-    theData{jj} = remained(:,jj+1);
-end
-sigR = significanceTesting(theData);
-hf = figure(1005);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 5 1.5 2.5],'color','w');
-hold on;
-xdatas = {[1 2 3],[5 6 7]};
-hs = sigR.anova.multcompare.h; ps = sigR.anova.multcompare.p;
-plotBarsWithSigLines(sigR.means,sigR.sems,sigR.combs,[hs ps],'colors',colors,'sigColor',sigColor,...
-    'maxY',120,'ySpacing',1.5,'sigTestName','ANOVA','sigLineWidth',0.25,'BaseValue',0.001,...
-    'xdata',xdatas{1},'sigFontSize',9,'sigAsteriskFontSize',15);
-xlabel('Contexts'); ylabel('Percentage of Cells');
-% legs = {'Context 1','Context 2','Context 3',[11 0.25 0.27 0.025]};
-% putLegend(gca,legs,'colors',colors,'sigR',{[],'ks',sigColor,10});
-set(gca,'XTick',[1:4]);xlim([0 5]);
-set(gca,'FontSize',mData.axes_font_size,'FontWeight','Bold','TickDir','out');changePosition(gca,[-0.01 0.01 0.06 -0.01]);
-% text(1,0.29,'Light Responsive and Place Cells','FontSize',mData.axes_font_size,'FontWeight','Bold');
-save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_Remained_contexts_10',600);
-return;
-end
-
-%%
-runthis = 0;
-if runthis
-theData = [];
-for jj = 1:3
-    theData{jj} = disrupted(:,jj+1);
-end
-sigR = significanceTesting(theData);
-hf = figure(1006);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 5 1.5 2.5],'color','w');
-hold on;
-xdatas = {[1 2 3],[5 6 7]};
-hs = sigR.anova.multcompare.h; ps = sigR.anova.multcompare.p;
-plotBarsWithSigLines(sigR.means,sigR.sems,sigR.combs,[hs ps],'colors',colors,'sigColor',sigColor,...
-    'maxY',120,'ySpacing',1.5,'sigTestName','ANOVA','sigLineWidth',0.25,'BaseValue',0.001,...
-    'xdata',xdatas{1},'sigFontSize',9,'sigAsteriskFontSize',15);
-xlabel('Contexts'); ylabel('Percentage of Cells');
-% legs = {'Context 1','Context 2','Context 3',[11 0.25 0.27 0.025]};
-% putLegend(gca,legs,'colors',colors,'sigR',{[],'ks',sigColor,10});
-set(gca,'XTick',[1:4]);xlim([0 5])
-set(gca,'FontSize',mData.axes_font_size,'FontWeight','Bold','TickDir','out');changePosition(gca,[-0.01 0.01 0.06 -0.01]);
-% text(1,0.29,'Light Responsive and Place Cells','FontSize',mData.axes_font_size,'FontWeight','Bold');
-save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_Disrupted_contexts_10',600);
-return;
-end
-
-%%
-runthis = 1;
-if runthis
-theData = [];
-for jj = 1:3
-    theData{jj} = newones(:,jj+1);
-end
-sigR = significanceTesting(theData);
-hf = figure(1007);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 5 1.5 2.5],'color','w');
-hold on;
-xdatas = {[2 3 4],[5 6 7]};
-hs = sigR.anova.multcompare.h; ps = sigR.anova.multcompare.p;
-plotBarsWithSigLines(sigR.means,sigR.sems,sigR.combs,[hs ps],'colors',colors(2:end),'sigColor',sigColor,...
-    'maxY',120,'ySpacing',1.5,'sigTestName','ANOVA','sigLineWidth',0.25,'BaseValue',0.001,...
-    'xdata',xdatas{1},'sigFontSize',9,'sigAsteriskFontSize',15);
-xlabel('Contexts'); ylabel('Percentage of Cells');
-% legs = {'Context 1','Context 2','Context 3',[11 0.25 0.27 0.025]};
-% putLegend(gca,legs,'colors',colors,'sigR',{[],'ks',sigColor,10});
-set(gca,'XTick',[1:4],'XTickLabel',num2cell(1:4'));
-set(gca,'FontSize',mData.axes_font_size,'FontWeight','Bold','TickDir','out');changePosition(gca,[-0.01 0.01 0.06 -0.01]);
-% text(1,0.29,'Light Responsive and Place Cells','FontSize',mData.axes_font_size,'FontWeight','Bold');
-save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_NewOnes_contexts_10',600);
+    save_pdf(hf,mData.pdf_folder,sprintf('Percentage of Unique PCs'),600);
 return;
 end

@@ -1,6 +1,6 @@
 function figure1_Distributions
 
-rsel = 2
+rsel = 1
 ei_names = {'ei10_C','ei10_A','ei_comb'};
 param_names = {'10_CD_Ctrl','10_CC_Ctrl','10_C_Comb'};
 
@@ -68,7 +68,7 @@ if runthis
     minBin = min(gAllVals);
     maxBin = 15;%max(gAllVals);
     incr = (maxBin-minBin)/100;
-    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[4 4 1.5 1],'color','w');
+    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[4 4 1.25 1],'color','w');
     hold on;
     [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
     hold on;

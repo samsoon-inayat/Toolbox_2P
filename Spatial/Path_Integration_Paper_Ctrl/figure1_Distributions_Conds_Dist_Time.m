@@ -60,10 +60,10 @@ var_oi_C = squeeze(zMIs_C);
 gAllVals = gAllVals_C;
 paramMs = paramMs_C;
 
-% zMIs = squeeze(a_zMIs_A);
-% var_oi_C = squeeze(zMIs_A);
-% gAllVals = gAllVals_A;
-% paramMs = paramMs_A;
+zMIs = squeeze(a_zMIs_A);
+var_oi_C = squeeze(zMIs_A);
+gAllVals = gAllVals_A;
+paramMs = paramMs_A;
 % large_values
 n = 0;
 %%

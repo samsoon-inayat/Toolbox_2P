@@ -35,7 +35,7 @@ colormaps = load('../MatlabCode/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 % mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%
 mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
-mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = fullfile(pwd,'PDFs_ctrl'); 
+mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; mData.pdf_folder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs'; 
 disp('Done');
 %%
 try

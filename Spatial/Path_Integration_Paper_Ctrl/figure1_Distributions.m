@@ -56,10 +56,10 @@ for rr = 1:size(pMs_A,1)
 end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
 % var_oi_A = squeeze(zMIs_A);
-zMIs = squeeze(a_zMIs_A);
+zMIs = squeeze(a_zMIs_C);
 % var_oi_C = squeeze(zMIs_C);
-gAllVals = [gAllVals_A];
-paramMs = paramMs_A;
+gAllVals = [gAllVals_C];
+paramMs = paramMs_C;
 n = 0;
 %%
 runthis = 1;
