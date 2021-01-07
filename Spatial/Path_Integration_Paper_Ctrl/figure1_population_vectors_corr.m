@@ -6,7 +6,7 @@ for ii = 1:4
     for an = 1:3
         corrmat = pop_corr_C.avg_C_conds{ii}(:,:,an);
         maskmat = ones(size(corrmat));
-        maskmattril = tril(maskmat,-1) & ~tril(maskmat,-2);
+        maskmattril = tril(maskmat,-20);% & ~tril(maskmat,-2);
         avgpc_C(an,ii) = nanmean(corrmat(maskmattril==1));
     end
 end
@@ -60,13 +60,13 @@ n= 0;
     hold on;
     tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+        'ySpacing',0.001,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0);
     for ii = 5:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[-0.15 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata(1:end)+0; xticklabels = {'C1-AD','C2-AD','C3-AD','C4-AD','C1-AD','C2-AD','C3-AD','C4-AD'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
