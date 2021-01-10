@@ -1,109 +1,149 @@
 function figure_place_remapping_AD(fn,allRs,ccs)
 
-protocol_C = '10_C';
-% protocol_A = '10_A';
-ei_C = evalin('base','ei10_C');
-ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-% ET_C = evalin('base',sprintf('ET%s',protocol_C));
-% ET_A = evalin('base',sprintf('ET%s',protocol_A));
-selAnimals_C = 1:length(ei_C)
-selAnimals_A = 1:length(ei_A)
-
-% in the following variable all the measurements are in the matrices form
-% for each variable colums indicate raster and stim marker types specified 
-% the rows indicate condition numbers.
-paramMs_C = parameter_matrices_ctrl('get','10_CD_Ctrl');
-% paramMs_A = parameter_matrices('get','10_A');
-% after getting all matrics, we can apply selection criteria to select a
-% subgroup of cells
-% here is the selection criteria in make_selC_structure function
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.7;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-included_cells = 'All';
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
 conditionsAndRasterTypes = [11;21;31;41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-[cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
-% [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
-% perc_cells_C = parameter_matrices('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});
-% perc_cells_A = parameter_matrices('print','10_A',{cpMs_A,pMs_A,ET_A,selAnimals_A});
-out_C = find_corr_coeff_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,cpMs_C);
-% out_A = find_corr_coeff_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,cpMs_A);
-n = 0;
+out = read_data_from_base_workspace(selC)
 
-%%
-if 1
-    data_C_motion = out_C.mean_over_cells;
-    data_A_motion = out_A.mean_over_cells;
-    dataT_C = array2table(data_C_motion); dataT_C.Properties.VariableNames = {'CC1','CC2','CC3'};
-    dataT_A = array2table(data_A_motion); dataT_A.Properties.VariableNames = {'CC1','CC2','CC3'};
-    groupT = table([ones(size(dataT_C,1),1);2*ones(size(dataT_A,1),1)]); groupT.Properties.VariableNames = {'Group'};
-    between = [groupT [dataT_C;dataT_A]]; between.Group = categorical(between.Group);
-    within = table([1 2 3]');
-    within.Properties.VariableNames = {'dCond'};
-    within.dCond = categorical(within.dCond);
-    rmaR = repeatedMeasuresAnova(between,within);
-    writetable(between,fullfile(mData.pdf_folder,sprintf('%s_dataT_%s.xlsx','figure_place_remapping_AD',included_cells)));
-    writetable(rmaR.ranova,fullfile(mData.pdf_folder,sprintf('%s_dataT_stats_output_%s.xlsx','figure_place_remapping_AD',included_cells)),'WriteRowNames',true);
-    
-%     findMeanAndStandardError
-    mVar = rmaR.est_marginal_means.Mean;
-    semVar = rmaR.est_marginal_means.Formula_StdErr;
-    combs = rmaR.combs;
-    p = rmaR.p; h = p<0.05;
-    xdata = [1 2 3 4 5 6]; maxY = 0.3;
-    colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
-    hold on;
-    tcolors = {colors{1};colors{2};colors{3};colors{1};colors{2};colors{3}};
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-    for ii = 4:length(hbs)
-        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+ei_C = out.eis{1}; ei_A = out.eis{2};
+pMs_C = out.pMs{1}; pMs_A = out.pMs{2};
+paramMs_C = out.paramMs{1}; paramMs_A = out.paramMs{2};
+cpMs_C = out.cpMs{1}; cpMs_A = out.cpMs{2};
+selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
+perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
+
+if 0
+    cellSel_C = ''; cellSel_A = ''; cellSel_C = cpMs_C; cellSel_A = cpMs_A;
+    a_trials = {3:10};
+    for ii = 1:length(a_trials)
+        out = get_mean_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,cellSel_C,a_trials{ii});
+        [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T,out.all_corr_an] = get_pop_vector_corr(out,conditionsAndRasterTypes,min(out.sz(:)));
+        all_out_C{ii} = out;
+        out = get_mean_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,cellSel_A,a_trials{ii});
+        [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T,out.all_corr_an] = get_pop_vector_corr(out,conditionsAndRasterTypes,49);
+        all_out_A{ii} = out;
     end
-    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+0],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end); xticklabels = {'Ctrl-12','Ctrl-23','Ctrl-34','AD-12','AD-23','AD-34'};xtickangle(45)
-    set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    changePosition(gca,[0.02 0.03 0.02 -0.11]);
-    put_axes_labels(gca,{[],[0 0 0]},{'Correlation Coeff.',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph_overall_%s','figure_place_remapping_AD',included_cells),600);
+    save('pop_corr_mat_remapping_or.mat','all_out_C','all_out_A','a_trials');
+    disp('Done');
+    return;
+else
+    temp = load('pop_corr_mat_remapping_and.mat');
+    all_out_C_and = temp.all_out_C{1};     all_out_A_and = temp.all_out_A{1}; a_trials = temp.a_trials{1};
+    temp = load('pop_corr_mat_remapping_or.mat');
+    all_out_C_or = temp.all_out_C{1};     all_out_A_or = temp.all_out_A{1}; a_trials = temp.a_trials{1};
 end
-n = 0;
 
+group = 2; andor = 1;
+
+if andor == 1
+    all_out_C = all_out_C_and;
+    all_out_A = all_out_A_and;
+else
+    all_out_C = all_out_C_or;
+    all_out_A = all_out_A_or;
+end
+
+all_CC_C = cell(4,4);
+all_CC_A = cell(4,4);
+for rr = 1:4
+    for cc = 1:4
+        thisCC = [];
+        for ii = 1:length(all_out_C.all_corr_an)
+            thisCC(:,:,ii) = all_out_C.all_corr_an{ii}{rr,cc};
+        end
+        all_CC_C{rr,cc} = nanmean(thisCC,3);
+        
+        thisCC = [];
+        for ii = 1:length(all_out_A.all_corr_an)
+            thisCC(:,:,ii) = all_out_A.all_corr_an{ii}{rr,cc};
+        end
+        all_CC_A{rr,cc} = nanmean(thisCC,3);
+    end
+end
+
+
+n = 0;
 %%
-runthis = 1;
-if runthis
-    cond = 3;
-    for ii = 1:length(out_C.all_css_C)
-        data_C(ii) = {squeeze(out_C.all_css_C{ii}(cond,:))};
+% out_CC = all_out_C.all_corr_an{3};
+% out_AA = all_out_A.all_corr_an{1};
+
+if group == 1
+    sel_out = all_CC_C;
+else
+    sel_out = all_CC_A;
+end
+
+ff = makeFigureRowsCols(107,[1 0.5 2 2],'RowsCols',[4 4],...
+    'spaceRowsCols',[0.01 0.01],'rightUpShifts',[0.03 0.1],'widthHeightAdjustment',...
+    [-20 -60]);
+gg = 1;
+set(gcf,'color','w');
+set(gcf,'Position',[1 6 4 4]);
+FS = mData.axes_font_size;
+maskdisp = triu(ones(4,4),0);
+
+for rr = 1:4
+    for cc = 1:4
+        if ~maskdisp(rr,cc)
+            delete(ff.h_axes(rr,cc));
+            continue;
+        end
+        axes(ff.h_axes(rr,cc));
+        imagesc(sel_out{rr,cc});
+%         if rr ~= 4 & cc ~=1
+            axis off
+%         end
     end
-    for ii = 1:length(out_A.all_css_C)
-        data_A(ii) = {squeeze(out_A.all_css_C{ii}(cond,:))};
-    end
-    data = [data_C' data_A'];
-    minBin = min([out_C.gAllVals out_A.gAllVals]);
-    maxBin = max([out_C.gAllVals out_A.gAllVals]);
-    incr = (maxBin-minBin)/100;
-    hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 6 2 1.5],'color','w');
-    hold on;
-    [ha,hb,hca,sigR] = plotDistributions(data,'colors',colors,'maxY',90,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
-    hold on;
-    legs = {sprintf('%s-C','CC'),sprintf('%s-A','CC')};
-%     ylim([0 10]);
-%     xlim([-3 12])
-    xlims = xlim; dx = xlims(2) - xlims(1); ylims = ylim; dy = ylims(2) - ylims(1);
-    legs{length(legs)+1} = [xlims(1)+dx/1.5 dx/30 ylims(1)+dy/3 dy/15];
-    putLegend(ha,legs,'colors',colors);
-    axes(ha);
-    h = xlabel('Pearson Correlation Coeff.');%changePosition(h,[0 -dy/3 0]);
-    h = ylabel('Percentage');changePosition(h,[-0.1 0 0]);
-    set(gca,'FontSize',axes_font_size,'FontWeight','Bold');changePosition(ha,[0.07 0.01 -0.05 -0.05]);
-    file_name = sprintf('%s_distribution CC_%s_%d','figure_place_remapping_AD',included_cells,cond);
-    save_pdf(hf,mData.pdf_folder,file_name,600);
+end
 return;
+%%
+for sii = 1:length(conditionsAndRasterTypes)
+
+    axes(ff.h_axes(2,sii));
+    dec = -0.09;
+    changePosition(gca,[0.0 0.05 dec dec]);
+    imagesc(allC{sii},[-1 1]);
+    minC(sii) = min(allC{sii}(:));
+    maxC(sii) = max(allC{sii}(:));
+    box off;
+    set(gca,'Ydir','Normal','linewidth',1,'FontSize',FS,'FontWeight','Bold');
+    if sii == 1
+        h = ylabel('Position (cm)');    changePosition(h,[-5 0 0]);
+    end
+    cols = size(P,2);
+    colsHalf = round(cols/2);
+    ts = round(time_xs{sii}(1:cols));
+    set(gca,'XTick',[]);
+    if sii == 1
+    set(gca,'YTick',[1 colsHalf cols],'YTickLabel',[ts(1)-2 ts(colsHalf) ts(cols)+2]);
+    else
+        set(gca,'YTick',[]);
+    end
+    h = xlabel('Position (cm)');%    changePosition(h,[0 0 0]);
+    cols = size(P,2);
+    colsHalf = ceil(cols/2);
+    ts = round(time_xs{sii}(1:cols));
+    set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1)-2 ts(colsHalf) ts(cols)+2]);
+    if sii == 1
+        set(gca,'YTick',[1 colsHalf cols],'YTickLabel',[ts(1)-2 ts(colsHalf) ts(cols)+2]);
+    else
+        set(gca,'YTick',[]);
+    end
 end
 
+colormap parula
+mI = min(minC);
+maxs = [1 1 1];
+for ii = 1:4
+    axes(ff.h_axes(1,ii)); caxis([0 maxs(1)]);
+    axes(ff.h_axes(2,ii)); caxis([mI maxs(2)]);
+%     axes(ff.h_axes(3,ii)); caxis([mIa maxs(3)]);
+end
+
+hc = putColorBar(ff.h_axes(1,4),[0.0 0.03 0 -0.05],[0 maxs(1)],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+hc = putColorBar(ff.h_axes(2,4),[0.0 0.03 0 -0.05],[mI maxs(2)],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+% hc = putColorBar(ff.h_axes(3,4),[0.0 0.03 0 -0.05],[mIa maxs(3)],6,'eastoutside',[0.07 0.07 0.1 0.1]);
 
 

@@ -92,13 +92,15 @@ if runthis
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end); xticklabels = {'C1-AD','C2-AD','C3-AD','C4-AD'};
+    maxY = maxY + 5 + 2;
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end); xticklabels = {'C1','C2','C3','C4'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    xtickangle(30)
-    changePosition(gca,[0.03 0.03 0.04 -0.05]);
+%     xtickangle(30)
+    changePosition(gca,[0.02 0.03 0.04 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{'zMI',[0 0 0]});
-    
+    rectangle(gca,'Position',[0.75 maxY-4 1 2],'edgecolor','k','facecolor','k');     text(1.85,maxY-4+1,'CRTG','FontSize',6);
+    rectangle(gca,'Position',[6 maxY-4 1 2],'edgecolor','k');     text(7.2,maxY-4+1,'CPTG','FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph',mfilename),600);
 return;
 end

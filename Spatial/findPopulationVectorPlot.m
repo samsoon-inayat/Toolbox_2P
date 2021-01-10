@@ -1,4 +1,4 @@
-function [ptc,CRc,cellNums] = findPopulationVectorPlot(ptc,ccs,cellNums)
+function [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccs,cellNums)
 
 
 % if ~isempty(trials)
@@ -20,4 +20,12 @@ if ~exist('cellNums','var')
 else
     ptc = ptc(cellNums,:);
 end
-CRc = corrcoef(ptc);
+% ptc = fillmissing(ptc,'linear',2,'EndValues','nearest');
+% if sum(isnan(ptc),'all')> 0
+%     n = 0;
+% end
+% GF = gausswin(3);
+% ptc = filter(GF,1,ptc,[],2);
+% [ptco,window] = smoothdata(ptc,2,'gaussian',[2 2]);
+ptco = ptc;
+CRc = corrcoef(ptco);

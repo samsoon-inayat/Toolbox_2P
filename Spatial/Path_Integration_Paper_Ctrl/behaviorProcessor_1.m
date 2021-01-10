@@ -445,7 +445,7 @@ xticks = xdata; xticklabels = {'Day1','Day2','Day3'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 % xtickangle(30)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
-put_axes_labels(gca,{[],[0 0 0]},{{'Percent change','in weight'},[0 0 0]});
+put_axes_labels(gca,{[],[0 0 0]},{{'Percentage of','weight on day 1'},[0 0 0]});
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_weight.pdf',600);
 return;

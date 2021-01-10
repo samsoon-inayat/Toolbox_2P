@@ -309,6 +309,12 @@ for an = 1:length(paraMs.all_areCells)
             if isnan(thisThreshold)
                 continue;
             end
+            if strcmp(varNamesDH{vi},'fwidths') | strcmp(varNamesDH{vi},'fcenters')
+                mean_belt_length = mean(paraMs.belt_lengths{an});
+                if thisThreshold(2) > (0.99*mean_belt_length)
+                    thisThreshold(2) = (0.99*mean_belt_length);
+                end
+            end
             cmdTxt = sprintf('tempR = squeeze(paraMs.all_%s{an}(conditionNumber,rasterType,:));',varNamesDH{vi});
             eval(cmdTxt);
             if length(thisThreshold) == 1

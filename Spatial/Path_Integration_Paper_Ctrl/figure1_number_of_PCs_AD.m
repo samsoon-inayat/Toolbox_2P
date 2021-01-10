@@ -2,7 +2,7 @@ function figure1_number_of_PCs
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3;
 conditionsAndRasterTypes = [11;21;31;41];
 % conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
@@ -138,13 +138,15 @@ if runthis(2)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    maxY = maxY + 15 + 12;
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = {'C1-AD','C2-AD','C3-AD','C4-AD','C1-AD','C2-AD','C3-AD','C4-AD'};
+    xticks = xdata(1:end)+0; xticklabels = {'C1','C2','C3','C4','C1','C2','C3','C4'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    xtickangle(30);
+%     xtickangle(30);
     changePosition(gca,[0.075 0.0 0 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Percentage of','spatially tuned cells'},[0 -5 0]});
-    
+    rectangle(gca,'Position',[0.75 maxY-20 1 19],'edgecolor','k','facecolor','k');     text(1.85,maxY-14+1,'CRTG','FontSize',6);
+    rectangle(gca,'Position',[6 maxY-20 1 19],'edgecolor','k');     text(7.2,maxY-14+1,'CPTG','FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('Percentage of PCs'),600);
 return;
 end

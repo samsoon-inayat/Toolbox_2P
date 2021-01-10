@@ -2,7 +2,7 @@ function figure_population_vectors(fn,allRs,ccs)
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
 conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 out = read_data_from_base_workspace(selC)
@@ -14,14 +14,28 @@ cpMs_C = out.cpMs{1}; cpMs_A = out.cpMs{2};
 selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
 perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 
-trials = 3:10;
-out_C = get_mean_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,'',trials);
-out_A = get_mean_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,'',trials);
-
+if 0
+    cellSel_C = ''; cellSel_A = ''; %cellSel_C = cpMs_C; cellSel_A = cpMs_A;
+    a_trials = {3:10};
+    for ii = 1:length(a_trials)
+        out = get_mean_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,cellSel_C,a_trials{ii});
+        [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T] = get_pop_vector_corr(out,conditionsAndRasterTypes,min(out.sz(:)));
+        all_out_C{ii} = out;
+        out = get_mean_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,cellSel_A,a_trials{ii});
+        [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T] = get_pop_vector_corr(out,conditionsAndRasterTypes,49);
+        all_out_A{ii} = out;
+    end
+    save('pop_corr_mat_vector.mat','all_out_C','all_out_A','a_trials');
+    disp('Done');
+    return;
+else
+    temp = load('pop_corr_mat_vector.mat');
+    all_out_C = temp.all_out_C{1};     all_out_A = temp.all_out_A{1}; a_trials = temp.a_trials{1};
+end
 n = 0;
-
+out_C = all_out_C; out_A = all_out_A;
 %%
-cccc = 2;
+cccc = 1;
 if cccc == 1
     sel_out = out_C;
     paramMs = paramMs_C;
@@ -37,39 +51,22 @@ end
 for ii = 1:length(conditionsAndRasterTypes)
     tcond = abs(conditionsAndRasterTypes(ii));
     Ndigits = dec2base(tcond,10) - '0';
-    mRsi = sel_out.mean_rasters{an,ii};
-    [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi(:,1:ncols),[]);
+    allP{ii} = sel_out.allP_an{an,ii};
+    allC{ii} = sel_out.allC_an{an,ii};
+%     mRsi = sel_out.mean_rasters{an,ii};
+%     [allP{ii},allC{ii}] = findPopulationVectorPlot(mRsi(:,1:ncols),[]);
     time_xs{ii} = sel_out.xs{an,ii}(1:ncols);
     raster_labels{ii} = sprintf('Cond - %d, Rast - %d',Ndigits(1),Ndigits(2));
     raster_labels{ii} = sprintf('Condition - %d',Ndigits(1));
     theseRasterTypes{ii} = paramMs.rasterTypes{Ndigits(2)};
 end
-
-commonZ = zeros(ncols,ncols);
-avg_C_an = repmat(commonZ,1,1,size(sel_out.sz,1));
+avg_C_conds = sel_out.avg_C_conds;
 for ii = 1:length(conditionsAndRasterTypes)
-    avg_C_conds{ii} = avg_C_an;
+    temp_c_m = nanmean(avg_C_conds{ii},3);
+    avg_C_conds{ii} = temp_c_m;
+%     avg_C_conds{ii} = imgaussfilt(temp_c_m,2);
 end
 
-
-for an = 1:size(sel_out.sz,1)
-    for ii = 1:length(conditionsAndRasterTypes)
-        tcond = abs(conditionsAndRasterTypes(ii));
-        Ndigits = dec2base(tcond,10) - '0';
-        mRsi = sel_out.mean_rasters{an,ii};
-        if size(mRsi,2) < ncols
-            cncols = size(mRsi,2);
-            mRsi(:,(cncols+1:ncols)) = nan(size(mRsi,1),length(cncols+1:ncols));
-        end
-        [allP_an{an,ii},allC_an{an,ii}] = findPopulationVectorPlot(mRsi(:,1:ncols),[]);
-        avg_C_conds{ii}(:,:,an) = allC_an{an,ii};
-    end
-end
-% save('pop_corr_A.mat','avg_C_conds');
-% save('pop_corr_C.mat','avg_C_conds');
-for ii = 1:length(conditionsAndRasterTypes)
-    avg_C_conds{ii} = nanmean(avg_C_conds{ii},3);
-end
 avg_C_an = avg_C_conds;
 n = 0;
 

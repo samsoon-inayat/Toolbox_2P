@@ -1,108 +1,120 @@
 function figure_place_field_properties(fn,allRs,ccs)
 
-protocol = '10';
-% protocol = '15';
-ei = evalin('base',sprintf('ei%s',protocol));
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET = evalin('base',sprintf('ET%s',protocol));
-selAnimals = eval(sprintf('mData.selAnimals%s',protocol));
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
+conditionsAndRasterTypes = [11;21;31;41];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+out = read_data_from_base_workspace(selC)
 
-% in the following variable all the measurements are in the matrices form
-% for each variable colums indicate raster and stim marker types specified 
-% the rows indicate condition numbers.
-paramMs = parameter_matrices('get',protocol);
-% after getting all matrics, we can apply selection criteria to select a
-% subgroup of cells
-% here is the selection criteria in make_selC_structure function
-% cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = [0 140]; fcens = [0 140]; rs_th = 0.4;
-cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 3; fwids = NaN; fcens = NaN; rs_th = 0.4;
-conditionsAndRasterTypes = [11 21 31 41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th);
-[cpMs,pMs] = parameter_matrices('select',protocol,{paramMs,selC});
-perc_cells = parameter_matrices('print',protocol,{cpMs,pMs,ET,selAnimals});
+ei_C = out.eis{1}; ei_A = out.eis{2};
+pMs_C = out.pMs{1}; pMs_A = out.pMs{2};
+paramMs_C = out.paramMs{1}; paramMs_A = out.paramMs{2};
+selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
 
-for rr = 1:size(pMs,1)
-    for cc = 1:size(pMs,2)
+param_names = {'all_zMIs','all_fFR','all_fwidths'};
+ylabels = {'zMI','Firing Rate (Hz)','Field Width (cm)'};
+
+sp = 1;
+
+all_conds = []; all_rts = [];
+gAllVals_C = []; gAllVals_A = [];
+for rr = 1:size(pMs_C,1)
+    for cc = 1:size(pMs_C,2)
         tcond = conditionsAndRasterTypes(rr,cc);
         nds = dec2base(tcond,10) - '0';
         varNames{rr,cc} = sprintf('C%dR%d',nds(1),nds(2));
-        for an = 1:length(selAnimals)
-            f_centers{an,rr,cc} = squeeze(pMs{rr,cc}.all_fcenters{selAnimals(an)}(nds(1),nds(2),:));
+        all_conds = [all_conds nds(1)]; all_rts = [all_rts nds(2)];
+        xticklabels{cc,rr} = sprintf('%s-%s',paramMs_C.stimMarkers{nds(2)},paramMs_C.rasterTypes{nds(2)}(1));
+        for an = 1:length(selAnimals_C)
+            cmdTxt = sprintf('val_mat = pMs_C{rr,cc}.%s{selAnimals_C(an)}(nds(1),nds(2),:);',param_names{sp});
+            eval(cmdTxt);
+            zMIs_C(an,rr,cc) = nanmean(squeeze(val_mat));
+            a_zMIs_C{an,rr,cc} = squeeze(val_mat);
+            gAllVals_C = [gAllVals_C;a_zMIs_C{an,rr,cc}];
         end
     end
 end
-
-bins = 0:10:145;
-for an = 1:length(selAnimals)
-    for cc = 1:length(conditionsAndRasterTypes)
-        theseCenters = f_centers{an,1,cc};
-        temp = hist(theseCenters,bins);
-        all_data(cc,:,an) = temp/sum(temp);
+for rr = 1:size(pMs_A,1)
+    for cc = 1:size(pMs_A,2)
+        tcond = conditionsAndRasterTypes(rr,cc);
+        nds = dec2base(tcond,10) - '0';
+        for an = 1:length(selAnimals_A)
+            cmdTxt = sprintf('val_mat = pMs_A{rr,cc}.%s{selAnimals_A(an)}(nds(1),nds(2),:);',param_names{sp});
+            eval(cmdTxt);
+            zMIs_A(an,rr,cc) = nanmean(squeeze(val_mat));
+            a_zMIs_A{an,rr,cc} = squeeze(val_mat);
+            gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
+        end
     end
 end
-n=0;
-
+all_conds = unique(all_conds); all_rts = unique(all_rts);
+var_oi_A = squeeze(zMIs_A);
+var_oi_C = squeeze(zMIs_C);
+n = 0;
 %%
-% perform repeated measures anova
-    numCols = size(all_data,2);    numRows = size(all_data,1);
-    ind = 1;
-    varNames = [];
-    for ii = 1:numRows
-        for jj = 1:numCols
-            varNames{ind} = sprintf('C%dTD%d',ii,jj);
-            ind = ind + 1;
-        end
-    end
-    data = [];
-    for ii = 1:size(all_data,3)
-        thisd = all_data(:,:,ii);
-        data(ii,:) = reshape(thisd',1,numRows*numCols);
-    end
-    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
-    within = table(colVar1',colVar2'); within.Properties.VariableNames = {'Condition','TrialDiff'};
-    ra = repeatedMeasuresAnova(data,varNames,within);
-    rm = ra.rm;
-    mcTI = find_sig_mctbl(multcompare(rm,'TrialDiff','By','Condition','ComparisonType','bonferroni'),6);
-    mcConds = find_sig_mctbl(multcompare(rm,'Condition','By','TrialDiff','ComparisonType','bonferroni'),6);
-    [combs,h,p] = populate_multcomp_h_p(data,within,[],mcConds);
-    [mVar semVar] = findMeanAndStandardError(data);
-    ds = descriptiveStatistics(data)
 %%
-    n = 0;
-    axdata = [1:1.5:(10*size(data,2))]; axdata = axdata(1:numCols); maxY = 1;
-    xdata = []; ixdata = []; offset = 2;
-    for ii = 1:numRows
-        if ii == 1
-            xdata = axdata;
-        else
-            ixdata(ii-1) = xdata(end) + ((axdata(1) + xdata(end) + offset) - xdata(end))/2;
-            xdata = [xdata (axdata + xdata(end) + offset)];
-        end
+runthis = 1;
+if runthis
+    numCols = length(all_rts);
+    data = var_oi_C;
+    cmdTxt = sprintf('dataT_C = table(');
+    for ii = 1:(size(data,2)-1)
+        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
     end
-    hf = figure(15);clf;set(gcf,'Units','Inches');set(gcf,'Position',[3 3 4 1.5],'color','w');
-    hold on;
-    ind = 1;
-    for ii = 1:numRows
-        for jj = 1:numCols
-            tcolors{ind} = colors{ii};
-            ind = ind + 1;
-        end
+    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
+    eval(cmdTxt);
+    data = var_oi_A;
+    cmdTxt = sprintf('dataT_A = table(');
+    for ii = 1:(size(data,2)-1)
+        cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
     end
-    hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0);
-    set(gca,'xlim',[0.25 max(xdata)+.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata; 
-    xticklabels = {'T12','T23','T34','T45','T56','T67','T78','T89','T910'};xticklabels = repmat(xticklabels,1,4);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    xtickangle(30);
-%     hbis = bar(ixdata,int_env.avg,'barWidth',0.05,'BaseValue',0.1,'ShowBaseline','off');
-%     set(hbis,'FaceColor','m','EdgeColor','m');
-%     errorbar(ixdata,int_env.avg,int_env.sem,'linestyle', 'none','CapSize',3);
-    changePosition(gca,[0.1 0.02 -0.03 -0.011])
-    put_axes_labels(gca,{[],[0 0 0]},{{'Percent cell_seq _shift','(z-score)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('cell_seq'),600);
+    cmdTxt = sprintf('%sdata(:,size(data,2)));',cmdTxt);
+    eval(cmdTxt);
+    dataT = [dataT_C;dataT_A]
+    dataT.Properties.VariableNames = varNames;
+    dataT = [table([ones(length(ei_C),1);2*ones(length(ei_A),1)]) dataT];
+    dataT.Properties.VariableNames{1} = 'Group';
+    dataT.Group = categorical(dataT.Group)
     
+    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+    within = table(colVar1');
+    within.Properties.VariableNames = {'Condition'};
+    within.Condition = categorical(within.Condition);
+    ra = repeatedMeasuresAnova(dataT,within);
+%%
+    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+%     row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcGroup{1,6}; h(ii) = 1; 
+    % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
+    % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
+
+    xdata = [1 2 3 4 6:9]; maxY = 10;
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2 1],'color','w');
+    hold on;
+%     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
+    tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4};};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'maxY',maxY,'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = 5:length(hbs)
+    set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    maxY = maxY + 5 + 2;
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end); xticklabels = {'C1','C2','C3','C4'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+%     xtickangle(30)
+    changePosition(gca,[0.03 0.03 0.04 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{ylabels{sp},[0 0 0]});
+    rectangle(gca,'Position',[0.75 maxY-3 1 1.25],'edgecolor','k','facecolor','k');     text(1.85,maxY-3+1,'CRTG','FontSize',6);
+    rectangle(gca,'Position',[6 maxY-3 1 1.25],'edgecolor','k');     text(7.2,maxY-3+1,'CPTG','FontSize',6);
+    save_pdf(hf,mData.pdf_folder,sprintf('props_bargraph_%s',ylabels{sp}(1:3)),600);
+return;
+end
+
 
 
 %% scatter place field widths vs centers
