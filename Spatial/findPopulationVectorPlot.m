@@ -28,4 +28,4 @@ end
 % ptc = filter(GF,1,ptc,[],2);
 % [ptco,window] = smoothdata(ptc,2,'gaussian',[2 2]);
 ptco = ptc;
-CRc = corrcoef(ptco);
+CRc = corr(ptco);

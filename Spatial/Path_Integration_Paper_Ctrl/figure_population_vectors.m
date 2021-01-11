@@ -33,13 +33,13 @@ else
     all_out_C = temp.all_out_C{1};     all_out_A = temp.all_out_A{1}; a_trials = temp.a_trials{1};
 end
 n = 0;
-out_C = all_out_C; out_A = all_out_A;
+out_C = all_out_C{1}; out_A = all_out_A{1};
 %%
 cccc = 1;
 if cccc == 1
     sel_out = out_C;
     paramMs = paramMs_C;
-    an = 3;
+    an = 1;
     ncols = min(sel_out.sz(:));
 else
     sel_out = out_A;

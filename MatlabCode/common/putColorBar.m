@@ -14,6 +14,7 @@ text_margins = p.Results.text_margins;
 
 pos = get(hai,'Position');
 ha = axes('Position',pos,'Visible','off');
+axis off;
 hc = colorbar('location',location);
 set(hc,'EdgeColor','none');
 changePosition(ha,positionShift);

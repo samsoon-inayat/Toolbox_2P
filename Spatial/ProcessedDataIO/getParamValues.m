@@ -250,7 +250,7 @@ data.place_field_properties.amp = as;
 if strcmp(rasterType,'dist')
     data.place_field_properties.centers = (bs * binwidth)';
 %     data.centers = (bs * binwidth)';
-    if maxDistTime == Inf
+    if maxDistTime(1) == Inf
         binNum = size(data.sp_rasters_nan_corrected,2);
     else
         binNum = floor(maxDistTime(1)/binwidth);
@@ -260,7 +260,7 @@ if strcmp(rasterType,'dist')
 else
 %     data.centers = (bs * binwidth)';
     data.place_field_properties.centers = (bs * binwidth)';
-    if maxDistTime == Inf
+    if maxDistTime(2) == Inf
         binNum = size(data.sp_rasters_nan_corrected,2);
     else
         binNum = floor(maxDistTime(2)/binwidth);
