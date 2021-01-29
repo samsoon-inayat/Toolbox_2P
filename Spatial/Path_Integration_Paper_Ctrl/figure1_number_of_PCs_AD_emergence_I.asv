@@ -1,10 +1,10 @@
-function figure1_number_of_PCs_AD_emergence
+function figure1_number_of_PCs_AD_emergence_I
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3;
 conditionsAndRasterTypes = [11 21 31 41];
-conditionsAndRasterTypes = [11 -41];
+% conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 out = read_data_from_base_workspace(selC)
 
@@ -20,24 +20,25 @@ for ii = 1:4
 end
 
 for rr = 1:4
-    for cc = 1:4
-        % common cells
-        cmdTxt = sprintf('conditionsAndRasterTypes = [%d1 %d1];',rr,cc); eval(cmdTxt);
-        selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-        out = read_data_from_base_workspace(selC);
-        common_cells_C(rr,cc,:) = out.cpMs{1}.numCells; common_cells_A(rr,cc,:) = out.cpMs{2}.numCells;
-        
-        % new cells
-        cmdTxt = sprintf('conditionsAndRasterTypes = [-%d1 %d1];',rr,cc); eval(cmdTxt);
-        selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-        out = read_data_from_base_workspace(selC);
-        new_cells_C(rr,cc,:) = out.cpMs{1}.numCells; new_cells_A(rr,cc,:) = out.cpMs{2}.numCells;
-        
-        % disrupted cells
-        cmdTxt = sprintf('conditionsAndRasterTypes = [%d1 -%d1];',rr,cc); eval(cmdTxt);
-        selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
-        out = read_data_from_base_workspace(selC);
-        disrupted_cells_C(rr,cc,:) = out.cpMs{1}.numCells; disrupted_cells_A(rr,cc,:) = out.cpMs{2}.numCells;
+    % common cells
+    cmdTxt = sprintf('conditionsAndRasterTypes = [%d5];',rr); eval(cmdTxt);
+    cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = NaN; fcens = NaN; rs_th = NaN;
+    selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+    out = read_data_from_base_workspace(selC);
+    temp5_C = out.pMs{1}{1}.cellSel; temp5_A = out.pMs{2}{1}.cellSel;
+    
+    cmdTxt = sprintf('conditionsAndRasterTypes = [%d1];',rr); eval(cmdTxt);
+    cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3;
+    selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+    out = read_data_from_base_workspace(selC);
+    temp1_C = out.pMs{1}{1}.cellSel; temp1_A = out.pMs{2}{1}.cellSel;
+    
+    for an = 1:length(temp1_C)
+        c_C(an,rr) = 100*sum(temp5_C{an} & temp1_C{an})/num_cells_C;
+    end
+    
+    for an = 1:length(temp1_A)
+        c_A(an,rr) = sum(temp5_A{an} & temp1_A{an});
     end
 end
 n = 0;
@@ -45,9 +46,9 @@ n = 0;
 for an = 1:size(common_cells_C,3)
     for rr = 1:4
         for cc = 1:4
-            perc_common_cells_C(rr,cc,an) = 100*common_cells_C(rr,cc,an)/num_cells_C(an,rr);
-            perc_new_cells_C(rr,cc,an) = 100*new_cells_C(rr,cc,an)/num_cells_C(an,cc);
-            perc_disrupted_cells_C(rr,cc,an) = 100*disrupted_cells_C(rr,cc,an)/num_cells_C(an,rr);
+            perc_common_cells_C(rr,cc,an) = common_cells_C(rr,cc,an)/num_cells_C(an,rr);
+            perc_new_cells_C(rr,cc,an) = new_cells_C(rr,cc,an)/num_cells_C(an,cc);
+            perc_disrupted_cells_C(rr,cc,an) = disrupted_cells_C(rr,cc,an)/num_cells_C(an,rr);
         end
     end
 end
@@ -63,9 +64,9 @@ end
 for an = 1:size(common_cells_A,3)
     for rr = 1:4
         for cc = 1:4
-            perc_common_cells_A(rr,cc,an) = 100*common_cells_A(rr,cc,an)/num_cells_A(an,rr);
-            perc_new_cells_A(rr,cc,an) = 100*new_cells_A(rr,cc,an)/num_cells_A(an,cc);
-            perc_disrupted_cells_A(rr,cc,an) = 100*disrupted_cells_A(rr,cc,an)/num_cells_A(an,rr);
+            perc_common_cells_A(rr,cc,an) = common_cells_A(rr,cc,an)/num_cells_A(an,rr);
+            perc_new_cells_A(rr,cc,an) = new_cells_A(rr,cc,an)/num_cells_A(an,cc);
+            perc_disrupted_cells_A(rr,cc,an) = disrupted_cells_A(rr,cc,an)/num_cells_A(an,rr);
         end
     end
 end
@@ -129,7 +130,7 @@ if 1
     hold on;
     tcolors ={colors{1};colors{2};colors{3};colors{1};colors{2};colors{3};};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
     for ii = 4:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});

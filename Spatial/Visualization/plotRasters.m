@@ -93,7 +93,7 @@ else
                 xs = 1:size(A.rasters,2);
                 uxs = linspace(1,length(xs),length(xs)*10);
 %                 coeff = A.coeff(:,cn);
-                imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);hold on;
+                imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);colorbar;hold on;
                 try
                     fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
                     plot(xs,size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1.5,'color','r');

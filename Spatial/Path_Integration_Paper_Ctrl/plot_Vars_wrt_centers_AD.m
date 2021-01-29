@@ -22,8 +22,8 @@ paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 % here is the selection criteria in make_selC_structure function
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','Field Width','RS',{'Percentage of','spatially tuned cells'}};
-y_spacings = [10,20,20,0.7,10];
-svn = 2; %gcn = 3
+y_spacings = [10,2,20,0.7,10];
+svn = 1; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
@@ -31,12 +31,12 @@ if svn == 5
 else
     selected_variable = all_variables{svn};
     selected_variable_f = selected_variable;
-    number_of_bins = 2;
+    number_of_bins = 1;
 end
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.4;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = [0.1 5000];
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = [0.1 5000];
 conditionsAndRasterTypes = [11 21 31 41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 [cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
 [cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_A',{paramMs_A,selC});
 perc_cells_C = parameter_matrices_ctrl('print','10_C',{cpMs_C,pMs_C,ET_C,selAnimals_C});

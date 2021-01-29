@@ -1,17 +1,17 @@
-function tracePlots (ei)
+function tracePlots_1_A (ei)
 %%
 cellNums = load('temp.mat');
-ei = evalin('base','ei10_C');
+ei = evalin('base','ei10_A');
 % data = evalin('base','data');
 % dataB = evalin('base','datab');
 % dataAOn = evalin('base','dataAOn010');
 % dataAOff= evalin('base','dataAOff010');
 mData = evalin('base','mData');
-selAnimals = 1; pl = 1;
+selAnimals = 5; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
-conditionNumber = 4;
+conditionNumber = 1;
 contextNumber = [conditionNumber conditionNumber];
 stimMarkers = {'air','air'};
 rasterTypes = {'dist','time'};
@@ -24,15 +24,15 @@ for ss = 1:length(stimMarkers)
     for jj = 1:length(selAnimals)
         [tempVals cns ACs] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
 %         [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
-%         [placeCells5] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
+        [placeCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
     end
     dataC{ss} = tempVals;
 end
 n = 0;
 A = dataC{1}; B = dataC{2}; %C = dataC{3}; %D = dataC{4};
 % rasters = A;
-% PCs = ACs & placeCells5;
-PCs = ACs;% & clus;
+PCs = ACs & placeCells;
+% PCs = ACs;% & clus;
 coiSI = find(PCs);
 sum(PCs)/length(PCs);
 [~,inds] = sort([A.place_field_properties.centers(coiSI)']);
@@ -40,17 +40,17 @@ coiSI = coiSI(inds);
 centers = A.place_field_properties.centers(coiSI);
 [coiSI(inds) A.place_field_properties.centers(coiSI(inds))' A.place_field_properties.pws(coiSI(inds))'];
 
-coiSI =  coiSI(centers > 110 & centers < 140)';
+% coiSI =  coiSI(centers > 25 & centers < 80)';
 % coiSI =  coiSI(centers > 40)';
 
 % plot_trial_correlation(dataC,coiSI);return;
 % plotRasters(dataC,coiSI);return
-ccsi = [200 46 152 37 22]; % animal 1 plane 1
-ccsi = [3 7 19 18 181];% 51]; % animal 1 plane 1
+ccsi = [132 374 59 18 181];% 51]; % animal 1 plane 1
+ccsi = [137 202 53 18 186];% 51]; % animal 1 plane 1
 n=0;
 
 %%
-if 0
+if 1
 % showCells(102,ei,ccsi);
 % close(figure(102))
 h = figure(102);clf;plot(0,0);

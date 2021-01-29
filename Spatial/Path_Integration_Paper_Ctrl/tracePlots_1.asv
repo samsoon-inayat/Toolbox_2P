@@ -1,6 +1,5 @@
 function tracePlots (ei)
 %%
-cellNums = load('temp.mat');
 ei = evalin('base','ei10_C');
 % data = evalin('base','data');
 % dataB = evalin('base','datab');
@@ -11,8 +10,7 @@ selAnimals = 1; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
-conditionNumber = 4;
-contextNumber = [conditionNumber conditionNumber];
+contextNumber = [4 4];
 stimMarkers = {'air','air'};
 rasterTypes = {'dist','time'};
 n = 0;
@@ -46,7 +44,7 @@ coiSI =  coiSI(centers > 110 & centers < 140)';
 % plot_trial_correlation(dataC,coiSI);return;
 % plotRasters(dataC,coiSI);return
 ccsi = [200 46 152 37 22]; % animal 1 plane 1
-ccsi = [3 7 19 18 181];% 51]; % animal 1 plane 1
+ccsi = [3 7 19 18 24];% 51]; % animal 1 plane 1
 n=0;
 
 %%
@@ -261,7 +259,7 @@ return;
 end
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis
     
 cellList = ccsi;
@@ -275,11 +273,11 @@ indices = NaN(1,(numberOfGroups*graphsOnOneFigure));
 indices(1:numberOfData) = 1:numberOfData;
 groupIndices = reshape(indices,numberOfRows,numberOfCols,numberOfGroups);
 ff = makeFigureRowsCols(105,[0.5 0.5 4 1],'RowsCols',[numberOfRows numberOfCols],...
-    'spaceRowsCols',[0.17 0.04],'rightUpShifts',[0.1 0.15],'widthHeightAdjustment',...
-    [-60 -220]);
+    'spaceRowsCols',[0.2 0.05],'rightUpShifts',[0.052 0.12],'widthHeightAdjustment',...
+    [-70 -200]);
 gg = 1;
 set(gcf,'color','w');
-set(gcf,'Position',[5 6 3.45 1.95]);
+set(gcf,'Position',[5 6 3.5 2]);
 for rr = 1:2
     for cc = 1:5
         cn = cellList(cc);
@@ -292,7 +290,6 @@ for rr = 1:2
 end
 minmin = min(minRasters(:));
 maxmax = max(maxRasters(:));
-mean_color = [0.85 0.85 0.85];
 for cc = 1:5
     cn = cellList(cc);
     axes(ff.h_axes(1,cc));
@@ -303,32 +300,29 @@ for cc = 1:5
     fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
     imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
     box off;
-    plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.25,'color',mean_color);
-    text(size(thisRaster,2)+size(thisRaster,2)/15,0.5,sprintf('MFR = %d , zMI = %.2f',round(max(thisRaster(:))),A.SI(cn)),'FontSize',4,'color','k','rotation',90);
-    text(size(thisRaster,1)/2,size(thisRaster,1)+1.5,sprintf('Cell %d',cn),'FontSize',6,'color','k');
-    set(gca,'FontSize',5,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
+    plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color',[0]);
+%     text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR %d - zMI = %.2f',round(max(thisRaster(:))),A.SI(cn)),'FontSize',4,'color','k','rotation',90);
+%     text(size(thisRaster,1)/2,size(thisRaster,1)+1.25,sprintf('Cell %d',cn),'FontSize',6,'color','k');
+    set(gca,'FontSize',6,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
     xticks = [1:10:size(thisRaster,2)];
     xs = 0:0.2:100;
     set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
     for bb = 1:length(A.lastBin)
         xvalbin = A.lastBin(bb)-1;
-        plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'r','linewidth',0.5);
+        plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'r','linewidth',1);
     end
     hx = xlabel('Time (sec)');
-    if cc >1
-        set(gca,'YTick',[]);
+    if cc == 4
+        hca = gca;
+        hc = putColorBar(hca,[0.05 0.01 -0.05 0],{'0','Max FR'},6,'northoutside',[0.15 0.2 0.05 0.2]);
     end
     if cc == 1
         set(gca,'YTick',[1 5 10]);
-        h = ylabel({'Air-Time (AT)','Trials'});
-        text(-5,13.5,sprintf('Condition %d',contextNumber(1)),'FontSize',6,'color','k','FontWeight','Bold');
+        h = ylabel('Trials');
     end
-    if cc == 5
-        hca = gca;
-        hc = putColorBar(hca,[0.01 0.01 -0.05 0],{'0','MFR'},5,'northoutside',[0.25 0.3 0.1 0.3]);
+    if cc >1
+        set(gca,'YTick',[]);
     end
-    
-
     
     axes(ff.h_axes(2,cc));
     A = dataC{1};
@@ -338,32 +332,27 @@ for cc = 1:5
     fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
     imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
     box off;
-    if  cc == 4
-        plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
-        text(size(thisRaster,1)/2,size(thisRaster,1)+1.25,sprintf('Rs = %.2f',A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',4,'color','k');
-    end
-    plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.25,'color',mean_color);
-%     text(size(thisRaster,2)+size(thisRaster,2)/20,0,sprintf('MFR %d - zMI = %.2f - Rs = %.2f',round(max(thisRaster(:))),A.SI(cn),...
+%     plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
+    plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
+%     text(size(thisRaster,2)+size(thisRaster,2)/20,0,sprintf('Max FR %d - zMI = %.2f - Rs = %.2f',round(max(thisRaster(:))),A.SI(cn),...
 %     A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',4,'color','k','rotation',90);
-    text(size(thisRaster,2)+size(thisRaster,2)/15,0.5,sprintf('MFR = %d , zMI = %.2f',round(max(thisRaster(:))),A.SI(cn)),'FontSize',4,'color','k','rotation',90);
-    set(gca,'FontSize',5,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
-    xticks = [1  round(size(thisRaster,2)/2) size(thisRaster,2)];
-    xsd = 0:3:1000; xsd = xsd(1:size(thisRaster,2));
-    set(gca,'XTick',xticks,'XTickLabels',xsd(xticks));
+    set(gca,'FontSize',6,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
+    xticks = [1:20:size(thisRaster,2)];
+    set(gca,'XTick',xticks,'XTickLabels',A.xs(xticks));
     hx = xlabel('Position (cm)');
     if cc >1
         set(gca,'YTick',[]);
     end
     if cc == 1
         set(gca,'YTick',[1 5 10]);
-        h = ylabel({'Air-Distance (AD)','Trials'});
+        h = ylabel('Trials');
     end
     
 end
 
 figure(105);colormap parula;
 fileName = fullfile(mData.pdf_folder,sprintf('rasters.pdf'));
-save_pdf(gcf,mData.pdf_folder,sprintf('rasters_%d.pdf',contextNumber(1)),600);
+save_pdf(gcf,mData.pdf_folder,sprintf('rasters.pdf'),600);
 return;
 end
 
@@ -372,7 +361,7 @@ runthis = 1;
 if runthis
 ff = makeFigureRowsCols(100,[1 5 5.4 1.5],'RowsCols',[(length(ccsi))+1 1],'spaceRowsCols',[-0.009 0.0009],...
     'rightUpShifts',[0.04 0.02],'widthHeightAdjustment',[-70 7]);
-set(gcf,'Position',[10 8 4.8 1]);
+set(gcf,'Position',[10 8 3.5 1]);
 set(gcf,'color','w');
 spSigAll = tei.plane{pl}.tP.deconv.spSigAll;
 caSigAll = tei.plane{pl}.tP.deconv.caSigAll;
@@ -397,13 +386,11 @@ maxCaSig = max(maxSCaSig);
 
 % startTimeFrame = b.frames_f(find(traceTime>300,1,'first'));
 % endTimeFrame = b.frames_f(find(traceTime<550,1','last'));
-condN = 4
+condN = 1
 onsets = tei.plane{pl}.contexts(condN).markers.air_onsets;
-% onsets1 = tei.plane{pl}.contexts(condN+1).markers.air_onsets;
 offsets = tei.plane{pl}.contexts(condN).markers.air_offsets;
-% offsets1 = tei.plane{pl}.contexts(condN+1).markers.air_offsets;
-xStart = traceTime(find(traceTime>(b.ts(onsets(1))-5),1,'first'));
-xEnd = traceTime(find(traceTime<(b.ts(offsets(end))+5),1','last'));
+xStart = traceTime(find(traceTime>(b.ts(onsets(1))-2),1,'first'));
+xEnd = traceTime(find(traceTime<(b.ts(offsets(end))+2),1','last'));
 xlims = [xStart xEnd];
 timeLength = 0.0833*24;
 air_puff_raw = b.air_puff_raw;
@@ -448,8 +435,8 @@ while cc<=length(ccsi)+1
         sdfxs = xEnd - 146; 
         sdfxe = sdfxs + timeLength; sdfys = max(b.fSpeed)/2; sdfye = sdfys + max(b.fSpeed)/4;
         plot([sdfxs sdfxs],[sdfys-10 sdfye-10],'k','linewidth',0.5);
-        text(xStart+30.5,sdfys+10,sprintf('Speed'),'FontSize',4.5);
-        text(sdfxs-(0.1*100),sdfye+4,sprintf('%d cm/sec',round(max(b.fSpeed)/4)),'fontsize',4.5);
+        text(xStart+28.5,sdfys+10,sprintf('Speed'),'FontSize',4.5);
+        text(sdfxs-(0.15*100),sdfye+4,sprintf('%d cm/sec',round(max(b.fSpeed)/4)),'fontsize',4.5);
 %         text(sdfxs+(0.015*60),sdfye-15,sprintf('%d cm/sec',round(max(b.fSpeed)/4)),'fontsize',4.5);
     end
 %     ylim([min(caSig) max(caSig)]);
@@ -466,7 +453,7 @@ while cc<=length(ccsi)+1
         sdfxe = sdfxs + timeLength; sdfys = maxCaSig/2.5; sdfye = sdfys + 100;
         plot([sdfxs sdfxe],[sdfys sdfys],'k','linewidth',0.5);
         plot([sdfxe sdfxe],[sdfys sdfye],'k','linewidth',0.5);
-        text(sdfxs-(0.15*60),sdfys + 60,sprintf('%dsecs',ceil(timeLength)),'fontsize',4);
+        text(sdfxs-(0.2*60),sdfys + 60,sprintf('%dsecs',ceil(timeLength)),'fontsize',4);
         text(sdfxe+(0.05*20),sdfys + 60,'100% DF/F (25 A.U. Firing Rate)','fontsize',4);
     end
     n = 0;

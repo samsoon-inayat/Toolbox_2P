@@ -5,8 +5,8 @@ protocol_A = '10_A';
 ei_C = evalin('base','ei10_C');
 ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s',protocol_C));
-ET_A = evalin('base',sprintf('ET%s',protocol_A));
+% ET_C = evalin('base',sprintf('ET%s',protocol_C));
+% ET_A = evalin('base',sprintf('ET%s',protocol_A));
 selAnimals_C = 1:length(ei_C)
 selAnimals_A = 1:length(ei_A)
 n = 0;

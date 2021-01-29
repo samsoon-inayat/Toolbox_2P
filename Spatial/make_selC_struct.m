@@ -1,4 +1,4 @@
-function selC = make_selC_struct(areCells,planeNumber,conditionsAndRasterTypes,zMI_threshold,fwidth_limits,fcenter_limits,frs_threshold,HaFD_th,HiFD_th)
+function selC = make_selC_struct(areCells,planeNumber,conditionsAndRasterTypes,zMI_threshold,fwidth_limits,fcenter_limits,frs_threshold,HaFD_th,HiFD_th,FR)
 
 selC.areCells = areCells; % to see if it is identified as cell by Suite2P
 selC.plane_number = planeNumber; % to select a particular plane to analyze
@@ -9,3 +9,4 @@ selC.fcenter_limits = fcenter_limits; % to select field center locations to be i
 selC.frs_threshold = frs_threshold; % to select a threshold to be put on fitting r-square value
 selC.HaFD_threshold = HaFD_th;
 selC.HiFD_threshold = HiFD_th;
+selC.FR_threshold = FR;

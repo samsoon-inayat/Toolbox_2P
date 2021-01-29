@@ -1,17 +1,17 @@
-function tracePlots (ei)
+function tracePlots_1_A (ei)
 %%
 cellNums = load('temp.mat');
-ei = evalin('base','ei10_C');
+ei = evalin('base','ei10_A');
 % data = evalin('base','data');
 % dataB = evalin('base','datab');
 % dataAOn = evalin('base','dataAOn010');
 % dataAOff= evalin('base','dataAOff010');
 mData = evalin('base','mData');
-selAnimals = 1; pl = 1;
+selAnimals = 4; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
-conditionNumber = 4;
+conditionNumber = 1;
 contextNumber = [conditionNumber conditionNumber];
 stimMarkers = {'air','air'};
 rasterTypes = {'dist','time'};
@@ -40,7 +40,7 @@ coiSI = coiSI(inds);
 centers = A.place_field_properties.centers(coiSI);
 [coiSI(inds) A.place_field_properties.centers(coiSI(inds))' A.place_field_properties.pws(coiSI(inds))'];
 
-coiSI =  coiSI(centers > 110 & centers < 140)';
+coiSI =  coiSI(centers > 0 & centers < 40)';
 % coiSI =  coiSI(centers > 40)';
 
 % plot_trial_correlation(dataC,coiSI);return;

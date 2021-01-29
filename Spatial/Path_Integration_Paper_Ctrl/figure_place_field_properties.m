@@ -1,10 +1,10 @@
 function figure_place_field_properties(fn,allRs,ccs)
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = [0.1 5000];
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = [0.1 5000];
 conditionsAndRasterTypes = [11;21;31;41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 out = read_data_from_base_workspace(selC)
 
 ei_C = out.eis{1}; ei_A = out.eis{2};
@@ -15,7 +15,7 @@ selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
 param_names = {'all_zMIs','all_fFR','all_fwidths'};
 ylabels = {'zMI','Firing Rate (Hz)','Field Width (cm)'};
 
-sp = 1;
+sp = 2;
 
 all_conds = []; all_rts = [];
 gAllVals_C = []; gAllVals_A = [];

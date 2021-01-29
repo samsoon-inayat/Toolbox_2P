@@ -281,7 +281,7 @@ for an = 1:length(cellLists{1})
 end
 
 function cellList = getCellList(paraMs,selC,varNamesDH,conditionNumber,rasterType)
-thresholdVars = {'zMI_threshold','','fwidth_limits','fcenter_limits','frs_threshold','HaFD_threshold','HiFD_threshold'};
+thresholdVars = {'zMI_threshold','FR_threshold','fwidth_limits','fcenter_limits','frs_threshold','HaFD_threshold','HiFD_threshold'};
 for an = 1:length(paraMs.all_areCells)
         cellSel1s = logical(ones(size(paraMs.all_areCells{an})));
         if isempty(cellSel1s)
@@ -328,17 +328,22 @@ for an = 1:length(paraMs.all_areCells)
 end
     
 function out = getVals(paraMs,cellList,varNamesDH)
+varNamesDH{1+length(varNamesDH)} = 'cns';
 for an = 1:length(paraMs.all_areCells)
     for vi = 1:length(varNamesDH)
         thisVarDH = varNamesDH{vi};
-        cmdTxt = sprintf('out.all_%s{an} = paraMs.all_%s{an}(:,:,cellList{an});',thisVarDH,thisVarDH);
-        eval(cmdTxt);
+        if strcmp(thisVarDH,'cns')
+            cmdTxt = sprintf('out.all_%s{an} = paraMs.all_%s{an}(cellList{an},:);',thisVarDH,thisVarDH);
+            eval(cmdTxt);
+        else
+            cmdTxt = sprintf('out.all_%s{an} = paraMs.all_%s{an}(:,:,cellList{an});',thisVarDH,thisVarDH);
+            eval(cmdTxt);
+        end
     end
     out.numCells(an) = sum(cellList{an});
     out.areCells(an) = sum(paraMs.all_areCells{an});
     out.perc(an) = 100*sum(cellList{an})/out.areCells(an);
     out.perc_of_rois(an) = 100*sum(cellList{an})/length(cellList{an});
     out.numROIs(an) = length(cellList{an});
-    
 end
 out.cellSel = cellList;
