@@ -286,7 +286,7 @@ if strcmp(lower(markerType),'airoffsets010')
 end
 
 
-if strcmp(lower(markerType),'motiononsets22') & isnan(trials)
+if strcmp(lower(markerType),'motiononsets22') & ~isnan(trials)
     spSig = ei.b.fSpeed;
     onsets = ei.b.air_puff_r - round(1e6 * 1/ei.b.si);
     offsets = ei.b.air_puff_f + round(1e6 * 1/ei.b.si);
@@ -323,7 +323,7 @@ if strcmp(lower(markerType),'motiononsets22') & isnan(trials)
     n=0;
 end
 
-if strcmp(lower(markerType),'motionoffsets22') & isnan(trials)
+if strcmp(lower(markerType),'motionoffsets22') & ~isnan(trials)
     spSig = ei.b.fSpeed;
     onsets = ei.b.air_puff_r - round(1e6 * 1/ei.b.si);
     offsets = ei.b.air_puff_f + round(1e6 * 1/ei.b.si);;
@@ -475,6 +475,7 @@ if sum(markersOn < 0) > 0 | sum(markersOff < 0) > 0
     n = 0;
 end
 b = ei.b;
+try
 inds = [];
 for ii = 1:length(markersOn)
     st = markersOn(ii);
@@ -486,7 +487,8 @@ for ii = 1:length(markersOn)
 end
 markersOn(inds) = [];
 markersOff(inds) = [];
-
+catch
+end
 if length(markersOn) ~= length(markersOff)
     if length(markersOn) > length(markersOff)
         markersOn(end) = [];

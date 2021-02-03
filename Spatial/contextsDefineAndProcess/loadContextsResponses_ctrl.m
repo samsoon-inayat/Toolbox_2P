@@ -13,12 +13,13 @@ for aa = 1:length(ei)
         tei.ops1 = tei.plane{pp}.tP.ops;
         tei.tP = tei.plane{pp}.tP;
         tplane = tei.plane{pp};
-        fileName = makeName('contexts.mat',thispFolder);
-        temp = load(fileName);
+%         fileName = makeName('contexts.mat',thispFolder);
+%         temp = load(fileName);
         if ~isfield(tplane,'contexts')
-            fileName = makeName('contexts_trials_markers.mat',thispFolder);
-            S = load(fileName);
-            contexts = S.contexts;
+            contexts = getContexts({ptei});
+%             fileName = makeName('contexts_trials_markers.mat',thispFolder);
+%             S = load(fileName);
+%             contexts = S.contexts;
         else
             contexts = tplane.contexts;
         end
@@ -68,7 +69,7 @@ for aa = 1:length(ei)
             end
         end
         ptei.plane{pp}.contexts = contexts;
-        ptei.b.belt_length = temp.belt_length;
+%         ptei.b.belt_length = temp.belt_length;
     end
     ei{aa} = ptei;
 end

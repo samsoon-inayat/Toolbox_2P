@@ -1,4 +1,4 @@
-function good = defineContexts_10(ei,ow)
+function good = defineContexts_10_first_two_animals(ei,ow)
 
 if ~exist('ei','var')
     ei = evalin('base','ei([1])');

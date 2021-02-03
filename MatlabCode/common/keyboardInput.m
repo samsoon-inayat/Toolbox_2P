@@ -29,7 +29,7 @@ if occ > ccLims(2)
     occ = ccLims(2);
 end
 
-if keyVal == 27 % down arrow
+if keyVal == 27 % Esc
     occ = -1;
 end
 

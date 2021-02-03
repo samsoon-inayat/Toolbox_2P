@@ -3,7 +3,7 @@ function rasters =  getRasters_fixed_bin_width_ctrl(ei,pp,onsets,offsets,rasterT
 if strcmp(rasterType,'time')
     binWidth = 0.2; % unit of bin width is sec
     bins = 0:binWidth:50;
-    maxbins = 75;
+    maxbins = 1000;
 end
 if strcmp(rasterType,'dist')
     binWidth = 3; % unit of bin width is cm

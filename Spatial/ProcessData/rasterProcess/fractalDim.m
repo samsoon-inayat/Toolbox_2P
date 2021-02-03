@@ -30,18 +30,9 @@ end
 close(hWaitBar);
 save(fileName,'-struct','out','-v7.3');
 
-function fd = findHaFD(raster,trials)
-% raster = raster(trials,:);
-raster(isnan(raster)) = 0;
-bw = imbinarize(raster(trials,:));
-fd = BoxCountfracDim(bw);
 
-function fd = findHiFD(raster,trials)
-% raster = raster(trials,:);
-raster(isnan(raster)) = 0;
-rasterg = mat2gray(raster(trials,:));
-rraster = reshape(rasterg',1,numel(rasterg));
-fd = Higuchi_FD(rraster,20);
+
+
 
 
 
