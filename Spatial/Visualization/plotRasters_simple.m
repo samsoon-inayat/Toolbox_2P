@@ -48,7 +48,9 @@ while 1
             thisRaster = rasters(:,:,cn);
             mSig = nanmean(thisRaster);
             axes(ff.h_axes(rr,cc));
-            imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);colorbar;hold on;
+            mtr = 1;%mode(thisRaster(thisRaster(:)>0));
+            imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
+            colorbar;hold on;
             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
             title(sprintf('%d',cn));
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));

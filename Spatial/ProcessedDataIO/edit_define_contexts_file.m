@@ -1,4 +1,8 @@
-function edit_define_contexts_file(ei,bp)
+function edit_define_contexts_file(ei,dcfilename,bp)
+if ~exist('dcfilename','var')
+	dcfilename = 'define_contexts.m';
+end
+
 if ~exist('bp','var')
     bp = 0;
 end

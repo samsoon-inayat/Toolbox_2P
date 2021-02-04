@@ -1,25 +1,13 @@
-function contexts = defineContexts(ei,ow)
+function contexts = defineContexts(ei,dcfilename)
 
-% if ~exist('ei','var')
-%     ei = evalin('base','ei([1])');
-% end
-% 
-% if ~exist('ow','var')
-%     ow = 0;
-% end
-% 
-% 
-% thispFolder = ei{1}.plane{1}.folder;
-% fileName = fullfile(thispFolder,'contexts.mat');
-% if exist(fileName,'file') && ow == 0
-%     disp('Found existing file ... if you want to run edit code to disable this check');
-%     good = 0;
-%     return;
-% end
+
+if ~exist('dcfilename','var')
+    dcfilename = 'define_contexts.m';
+end
 
 allContexts = contextDefinitions;
 
-cvs = get_define_contexts_file(ei);
+cvs = get_define_contexts_file(ei,dcfilename);
 fields = fieldnames(cvs);
 for ii = 1:length(fields)
     cmdTxt = sprintf('%s = cvs.%s;',fields{ii},fields{ii}); eval(cmdTxt);

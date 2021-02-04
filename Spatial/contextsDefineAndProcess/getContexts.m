@@ -1,4 +1,4 @@
-function contexts = getContexts(ei)
+function contexts = getContexts(ei,dcfilename)
 
 %% old development notes
 % There are three or four contexts
@@ -9,12 +9,17 @@ function contexts = getContexts(ei)
 % offset, belt markers and motion onsets and offsets
 
 %%
+
+if ~exist('dcfilename','var')
+    dcfilename = 'define_contexts.m';
+end
+
 plotFlag = 0;
 allContexts = contextDefinitions;
 
 aa = 1
 tei = ei{aa};
-contexts = defineContexts(tei);
+contexts = defineContexts(tei,dcfilename);
 [motion.markersOn,motion.markersOff] = getMarkers(tei,NaN,NaN,'motion');
 [motionI.markersOn,motionI.markersOff] = getMarkers(tei,NaN,NaN,'motionI',motion);
 for ii = 1:length(contexts) % process all contexts

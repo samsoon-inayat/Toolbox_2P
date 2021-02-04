@@ -29,6 +29,15 @@ if strcmp(lower(markerType),'air44')
     markersOff = toffsets;
 end
 
+if strcmp(lower(markerType),'air33')
+    onsets = ei.b.air_puff_r(trials);
+    offsets = ei.b.air_puff_f(trials);
+    toffsets = offsets + round(1e6 * 3/ei.b.si);
+    tonsets = onsets - round(1e6 * 3/ei.b.si);
+    markersOn = tonsets;
+    markersOff = toffsets;
+end
+
 if strcmp(lower(markerType),'light')
 %     if size(trials,1) > 1
 %         trials = trials(2,:);
