@@ -1,4 +1,15 @@
-function out = findResponsiveRasters(rasters,ci)
+function out = findResponsiveRasters(rasters,Dur,ci)
+p = NaN(size(rasters,3),1); p1 = p; p2 = p;
+MIs = p;
+if isempty(ci)
+    parfor ii = 1:size(rasters,3)
+        thisRaster = rasters(:,:,ii);
+%         MIs(ii) = info_metrics_S_onlyMI_2(thisRaster,[],4,Dur,0);
+        MIs(ii) = info_metrics_zMI(thisRaster,[],4,Dur,50);
+    end
+    out.MIs = MIs;
+    return;
+end
 
 if size(ci,2) == 3
 group = [];
@@ -6,12 +17,18 @@ for ii = 1:size(ci,2)
     group = [group ii*ones(1,length(ci(1,ii):ci(2,ii)))];
 end
 % group = [ones(1,length(ci(1):ci(2))) (2*ones(1,(size(rasters,2)-ci)))];
+p = NaN(size(rasters,3),1); p1 = p; p2 = p;
+MIs = p;
 parfor ii = 1:size(rasters,3)
     thisRaster = rasters(:,:,ii);
+    MIs(ii) = info_metrics_S_onlyMI_2(thisRaster,[],4,Dur,0);
     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
+    try
     [mc,mm,mh,mgnames] = multcompare(stats,'CType','bonferroni','Display','off');
     p1(ii) = mc(1,6);
     p2(ii) = mc(3,6);
+    catch
+    end
 %     if stats.means(1) < stats.means(2)
 %         exin(ii) = 1;
 %     end
@@ -37,8 +54,9 @@ parfor ii = 1:size(rasters,3)
 %     end
 end
 out.p = p;
-out.ps = [p1' p2'];
+out.ps = [p1 p2];
 out.h = p<0.05;
+out.MIs = MIs;
 % out.exin = exin;
 % out.fd1 = fd1;
 % out.fd2 = fd2;

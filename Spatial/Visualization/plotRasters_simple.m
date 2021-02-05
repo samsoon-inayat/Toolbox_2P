@@ -45,7 +45,9 @@ while 1
             end
             set(ff.h_axes(rr,cc),'visible','on');
             cn = ccs(cni);
-            thisRaster = rasters(:,:,cn);
+            Rs = rasters;
+            thisRaster = Rs.rasters(:,:,cn);
+            mdata = Rs.mdata;
             mSig = nanmean(thisRaster);
             axes(ff.h_axes(rr,cc));
             mtr = 1;%mode(thisRaster(thisRaster(:)>0));
@@ -57,9 +59,9 @@ while 1
             box off;
             set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
             if ~isempty(mdata)
-            plot([mdata.cis(1) mdata.cis(1)],[0 16],'linewidth',1.5,'color','r');
-            plot([mdata.cis(2) mdata.cis(2)],[0 16],'linewidth',1.5,'color','m');
-end
+                plot([mdata.cis(1) mdata.cis(1)],[0 16],'linewidth',1.5,'color','r');
+                plot([mdata.cis(2) mdata.cis(2)],[0 16],'linewidth',1.5,'color','m');
+            end
 %             xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
 %             set(gca,'XTick',xticks,'XTickLabels',mdata.xs(xticks));
         end

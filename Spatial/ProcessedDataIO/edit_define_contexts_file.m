@@ -9,10 +9,15 @@ end
 if bp
     behaviorPlot({ei});
 end
-fileName = fullfile(ei.recordingFolder,'define_contexts.m');
+fileName = fullfile(ei.recordingFolder,dcfilename);
 
 if ~exist(fileName,'File')
-    copyfile('define_contexts.m',fileName);
+    if strcmp(dcfilename,'define_contexts.m')
+        copyfile('define_contexts.m',fileName);
+    else
+        fileName1 = fullfile(ei.recordingFolder,'define_contexts.m');
+        copyfile(fileName1,fileName);
+    end
 end
 
 edit(fileName);

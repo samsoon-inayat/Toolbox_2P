@@ -20,7 +20,7 @@ for an = 1:size(sel_out.sz,1)
         end
         [allP_an{an,ii},corrV,cell_nums{an,ii}] = findPopulationVectorPlot(mRs_trimmed{an,ii},[]);
         corrV = fillmissing(corrV,'linear',2,'EndValues','nearest');
-        corrV = fillmissing(corrV,'linear',1,'EndValues','nearest');
+%         corrV = fillmissing(corrV,'linear',1,'EndValues','nearest');
         allC_an{an,ii} = corrV;
         avg_C_conds{ii}(:,:,an) = allC_an{an,ii};
     end

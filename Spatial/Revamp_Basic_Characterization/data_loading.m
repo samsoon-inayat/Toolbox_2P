@@ -1,26 +1,11 @@
-% function post_processing
-reload = 0;
-%% load data table
-if reload
-%     add_to_path
-    clear all
-    clc
-    [f,cName] = getFolders;
-    load('T16.mat');
-    animal_ids = cell2mat(T{:,1});
-    ow = 0;
-%     ei = getData(f,T([3 7 11 13 15 16 18 20 21],:));
-    ei = getData_py(f,T(1,:));
-%     eip2 = getData_py(f,T([17 19],:));
-    disp('Done');
+for ii = 1:60
+    pause(1);
 end
-
-binWidths = [0.1,1.5];
-ei1 = load_contexts_responses(ei,'define_contexts_1.m',binWidths);
-
-ei1 = find_raster_properties(ei1);
-
+clear all
+% add_to_path
+% clc
 %%
+[f,cName] = getFolders;
 colormaps = load('../MatlabCode/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 % mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%
@@ -30,3 +15,18 @@ Uleth_one_drive = 'G:\OneDrives\OneDrive - University of Lethbridge';
 mData.pdf_folder = [Uleth_one_drive '\PDFs']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedData\Matlab'];
 disp('Done');
+%% protocol 10
+temp = load('T_10_All.mat');
+T10 = temp.T;
+selRecs10 = [8 9 10 11];
+ET10 = T10(selRecs10,:);
+data10 = getData_py(f,ET10(4,:));
+binWidths = [0.2,1.5];
+data10_1 = load_contexts_responses(data10,'define_contexts_1.m',binWidths);
+disp('done')
+%% Protocol 15
+temp = load('T_15_All.mat');
+T15 = temp.T;
+d15 = getData_py(f,T15(8,:));
+binWidths = [0.2,1.5];
+d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);

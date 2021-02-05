@@ -18,7 +18,13 @@ if ~exist('cellNums','var')
     [~,cellNums] = sort(peakPos);
     ptc = ptc(cellNums,:);
 else
-    ptc = ptc(cellNums,:);
+    if isempty(cellNums)
+        [~,peakPos] = max(ptc,[],2);
+        [~,cellNums] = sort(peakPos);
+        ptc = ptc(cellNums,:);
+    else
+        ptc = ptc(cellNums,:);
+    end
 end
 % ptc = fillmissing(ptc,'linear',2,'EndValues','nearest');
 % if sum(isnan(ptc),'all')> 0

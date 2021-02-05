@@ -44,7 +44,7 @@ meanRsRemap = calc_mean_rasters(rasters([4 6 8],1),1:10);
 %%
 ind = 4;
 ccs = rasters{ind}.resp.MIs > 3;
-% ccs = rasters{2}.resp.p < 0.05;
+ccs = rasters{2}.resp.p < 0.05;
 sum(ccs)
 % [popVs,pos_corr,cell_corr] = calc_pop_vector_corr(meanRs,ccs,[1,2]);
 [popVsR,pos_corrR,cell_corrR] = calc_pop_vector_corr(meanRsRemap',ccs,[]);
@@ -53,11 +53,11 @@ sel_popVs = [1 2 4 6 8 9 10];
 plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
 n= 0 ;
 %%
-indr = 2;
+indr = 6;
 Rsr = rasters{indr};
 Rsp = rasters{2};
-ccs = Rsr.resp.p < 0.05;
-% ccs = Rsr.resp.MIs > 3;
+% ccs = Rsr.resp.p < 0.05;
+ccs = Rsr.resp.MIs > ;
 sum(ccs)
 [popVs,~,~] = calc_pop_vector_corr(meanRs,ccs,[indr,1]);
 sel_popVs = [1 2 4 6 8 9 10];

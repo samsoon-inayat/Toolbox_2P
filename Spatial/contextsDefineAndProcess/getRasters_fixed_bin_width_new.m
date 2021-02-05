@@ -11,13 +11,14 @@ if strcmp(rasterType,'dist')
     maxbins = 200;
 end
 
-ccs = 1:length(ei.tP.deconv.spSigAll);
+ccs = find(ei.tP.iscell(:,1));%    1:length(ei.tP.deconv.spSigAll);
 b = ei.b;
 b.frames_f = ei.plane{pp}.b.frames_f;
 b.frameRate = ei.thorExp.frameRate;
 spSigAll = zeros(length(ccs),length(ei.deconv.spSigAll{1}));
 for ii = 1:length(ccs)
-    spSigAll(ii,:) = ei.deconv.spSigAll{ii}';
+    cellNum = ccs(ii);
+    spSigAll(ii,:) = ei.deconv.spSigAll{cellNum}';
 end
 rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,maxbins,rasterType);
 rasters.onsets = onsets; 

@@ -1,4 +1,4 @@
-function plotRasters_multi(rasters,ccs,mdata)
+function plotRasters_multi(rasters,ccs,amdata)
 if isempty(ccs)
     ccs = 1:size(rasters,3);
 end
@@ -32,12 +32,15 @@ while 1
             end
             set(ff.h_axes(rr,cc),'visible','on');
             cn = ccs(cni);
-            thisRaster = rasters{rr}(:,:,cn);
+            Rs = rasters{rr};
+            thisRaster = Rs.rasters(:,:,cn);
+            mdata = Rs.mdata;
             mSig = nanmean(thisRaster);
             axes(ff.h_axes(rr,cc));
-            imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);colorbar;hold on;
+            mtr = 1;%mode(thisRaster(thisRaster(:)>nanmean(thisRaster(:))));
+            imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);colorbar;hold on;
             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
-            title(sprintf('%d',cn));
+            title(sprintf('%d - %s',cn,Rs.title));
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));
             box off;
             set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
