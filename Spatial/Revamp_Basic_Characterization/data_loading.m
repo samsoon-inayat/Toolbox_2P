@@ -12,6 +12,7 @@ colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; 
 Uleth_one_drive = 'G:\OneDrives\OneDrive - University of Lethbridge';
+Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge';
 mData.pdf_folder = [Uleth_one_drive '\PDFs']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedData\Matlab'];
 disp('Done');
@@ -27,6 +28,7 @@ disp('done')
 %% Protocol 15
 temp = load('T_15_All.mat');
 T15 = temp.T;
-d15 = getData_py(f,T15(8,:));
+sel15 = [2 4 6 8 12];
+d15 = getData_py(f,T15(sel15,:));
 binWidths = [0.2,1.5];
 d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
