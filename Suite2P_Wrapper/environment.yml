@@ -1,0 +1,23 @@
+name: suite2p
+dependencies:
+  - python>=3.7
+  - pip
+  - mkl_fft=1.0.10
+  - mkl=2019.3
+  - numpy>=1.16
+  - numba>=0.43.1
+  - matplotlib
+  - scipy
+  - h5py
+  - scikit-learn
+  - pyqt
+  - pip:
+    - natsort
+    - rastermap>0.1.0
+    - tifffile
+    - scanimage-tiff-reader>=1.4.1
+    - pyqtgraph
+    - importlib-metadata
+    - paramiko
+    - pynwb
+    - suite2p

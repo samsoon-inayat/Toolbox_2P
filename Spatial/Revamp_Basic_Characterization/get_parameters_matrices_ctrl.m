@@ -1,6 +1,8 @@
 function [out,all_out] = get_parameters_matrices_ctrl(protocol,aei,selAnimals)
 
-fileName = fullfile(pwd,'matFiles',sprintf('parameters_matrics_%s.mat',protocol));
+mData = evalin('base','mData');
+
+fileName = fullfile(mData.pd_folder,'matFiles',sprintf('parameters_matrics_%s.mat',protocol));
 
 if nargin == 1
     out = load(fileName);
@@ -88,7 +90,7 @@ if ~isempty(strfind(protocol,'15')) && iscell(aei)
     selAnimals = 1:length(aei);
     selCells = 'All';
     planeNumbers = 'All';
-    maxDistTime = [145 15];
+    maxDistTime = [Inf Inf];
 
     stimMarkers = {'air','air','belt','belt','airI'};
     rasterTypes = {'dist','time','dist','time','time'};

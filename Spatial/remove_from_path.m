@@ -3,9 +3,11 @@ selpp = []; selpf = [];
 
 pp_folder_names = {'PostProcessing','PostProcessing_15','PostProcessing_16'};
 pf_folder_names = {'Protocol10_Figures','Protocol10_Figures_AD','Protocol15_1_Figures','Protocol15_Figures','Protocol_16_Figures'};
+folder_names = {'Path_Integration_Paper_Ctrl','Path_Integration_Paper'};
 
 rmp(pp_folder_names,selpp);
-rmp(pf_folder_names,selpf)
+rmp(pf_folder_names,selpf);
+rmp(folder_names,selpf);
 
 function rmp(pp_folder_names,selpp)
 tot = 1:length(pp_folder_names);

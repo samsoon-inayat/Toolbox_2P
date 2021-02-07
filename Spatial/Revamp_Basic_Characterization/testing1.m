@@ -1,34 +1,31 @@
-function motion_responsive_cells(ei)
+function testing1
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-if ~exist('ei','var')
-    ei = evalin('base','d15_2(1)');
-end
+ei = evalin('base','d15_2'); Rs = evalin('base','raster_data'); 
+sC = evalin('base','selContexts'); rN = evalin('base','rasterNames');
 
 cai_sampling_rate = ei{1}.thorExp.frameRate;
 effective_sampling_rate = 1/0.2;
-
-pp = 1;
-
-contexts = ei{1}.plane{pp}.contexts;
-selContexts = [1 2 3 3 4 4 5 5 6 7];
 samplingRate = {'Ca','Ef','Ef','Ef','Ef','Ef','Ef','Ef','Ca','Ef'};
-rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
 timeBefore = [2 4 4 NaN 4 NaN 4 NaN 2 4];
-
-for ii = 1:length(selContexts)
-    thisContext = contexts(selContexts(ii));
-    disp(thisContext.name);
+an = 3;
+anei = ei{an};
+anRs = Rs{an};
+for ii = 1:length(sC)
+    sci = sC(ii);
+    tRs = anRs{ii};
+    thisContext = anei.plane{1}.contexts(sci);
+    disp(thisContext.name)
+    isCell = logical(tRs.iscell);
     if strcmp(samplingRate{ii},'Ca')
-        cmdTxt = sprintf('tempR = thisContext.rasters.%s.fromFrames.sp_rasters;',rasterNames{ii});
+        tempR = tRs.fromFrames.sp_rasters(:,:,isCell);
+        tempDur = tRs.fromFrames.duration;
         SR = cai_sampling_rate;
-        cmdTxt1 = sprintf('tempDur = thisContext.rasters.%s.fromFrames.duration;',rasterNames{ii});
     else
-        cmdTxt = sprintf('tempR = thisContext.rasters.%s.sp_rasters1;',rasterNames{ii});
+        tempR = tRs.sp_rasters1(:,:,isCell);
+        tempDur = tRs.duration1;
         SR = effective_sampling_rate;
-        cmdTxt1 = sprintf('tempDur = thisContext.rasters.%s.duration1;',rasterNames{ii});
     end
-    eval(cmdTxt); eval(cmdTxt1);
-    rasters{ii,1} = find_resp_mdata(tempR,tempDur,timeBefore(ii),SR,thisContext.name,ei);
+    rasters{ii,1} = find_resp_mdata(tempR,tempDur,timeBefore(ii),SR,thisContext.name,anei,tRs,isCell);
 end
 n = 0;
 %%
@@ -37,31 +34,32 @@ n = 0;
 
 meanRs = calc_mean_rasters(rasters,1:10);
 meanRsTrials = calc_mean_rasters(rasters,{1:2,3:4,5:6,7:8,9:10});
+meanRsTrials12 = calc_mean_rasters(rasters,4:10);
 meanRsRemap = calc_mean_rasters(rasters([2 10],1),1:10);
 % meanRsRemap = calc_mean_rasters(rasters([1 9],1),1:10);
 meanRsRemap = calc_mean_rasters(rasters([4 6 8],1),1:10);
+% %%
+% ind = 4;
+% ccs = rasters{ind}.resp.MIs > 3;
+% % ccs = rasters{2}.resp.p < 0.05;
+% sum(ccs)
+% % [popVs,pos_corr,cell_corr] = calc_pop_vector_corr(meanRs,ccs,[1,2]);
+% [popVsR,pos_corrR,cell_corrR] = calc_pop_vector_corr(meanRsRemap',ccs,[]);
+% [popVs,~,~] = calc_pop_vector_corr(meanRs,ccs,popVsR{1}.cell_nums');
+% sel_popVs = [1 2 4 6 8 9 10];
+% plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
+% n= 0 ;
 %%
-ind = 4;
-ccs = rasters{ind}.resp.MIs > 3;
-% ccs = rasters{2}.resp.p < 0.05;
-sum(ccs)
-% [popVs,pos_corr,cell_corr] = calc_pop_vector_corr(meanRs,ccs,[1,2]);
-[popVsR,pos_corrR,cell_corrR] = calc_pop_vector_corr(meanRsRemap',ccs,[]);
-[popVs,~,~] = calc_pop_vector_corr(meanRs,ccs,popVsR{1}.cell_nums');
-sel_popVs = [1 2 4 6 8 9 10];
-plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
-n= 0 ;
-%%
-indr = 2;
+indr = 4;
 Rsr = rasters{indr};
-Rsp = rasters{2};
-ccs = Rsr.resp.p < 0.05;
-% ccs = Rsr.resp.MIs > 3;
+% Rsp = rasters{2};
+% ccs = Rsr.resp.p < 0.05;
+ccs = Rsr.resp.zMIs > 3;
 sum(ccs)
-[popVs,~,~] = calc_pop_vector_corr(meanRs,ccs,[indr,1]);
+[popVs,~,~] = calc_pop_vector_corr(meanRsTrials12,ccs,[indr,1]);
 sel_popVs = [1 2 4 6 8 9 10];
 plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
-
+return;
 % plotRasters_simple(Rsp,find(Rsr.resp.p<0.05),[])
 
 % plotRasters_simple(Rs,find(Rs.resp.MIs>3),[])

@@ -1,13 +1,9 @@
-function out = findResponsiveRasters(rasters,Dur,ci)
+function out = findResponsiveRasters(rasters,Dur,ci,tRs,isCell)
 p = NaN(size(rasters,3),1); p1 = p; p2 = p;
 MIs = p;
 if isempty(ci)
-    parfor ii = 1:size(rasters,3)
-        thisRaster = rasters(:,:,ii);
-%         MIs(ii) = info_metrics_S_onlyMI_2(thisRaster,[],4,Dur,0);
-        MIs(ii) = info_metrics_zMI(thisRaster,[],4,Dur,50);
-    end
-    out.MIs = MIs;
+    MIs = tRs.info_metrics.ShannonMI_Zsh;
+    out.zMIs = MIs(isCell);
     return;
 end
 

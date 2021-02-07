@@ -1,4 +1,4 @@
-function [out,out1] = parameter_matrices(to_do,protocol,varargin)
+function [out,out1] = parameter_matrices_ctrl(to_do,protocol,varargin)
 
 p = inputParser;
 addRequired(p,'to_do',@ischar);

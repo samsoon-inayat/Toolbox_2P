@@ -1,10 +1,10 @@
-function rastersO = find_resp_mdata(rasters,Dur,timeBefore,effective_sampling_rate,titlestr)
+function rastersO = find_resp_mdata(rasters,Dur,timeBefore,effective_sampling_rate,titlestr,ei,tRs,isCell)
 
 binWidths = evalin('base','binWidths');
 
 if isnan(timeBefore)
     rastersO.mdata = [];
-    rastersO.resp = findResponsiveRasters(rasters,Dur,[]);
+    rastersO.resp = findResponsiveRasters(rasters,Dur,[],tRs,isCell);
     rastersO.rasters = rasters;
     rastersO.title = titlestr;
     number_of_columns = size(rasters,2);
