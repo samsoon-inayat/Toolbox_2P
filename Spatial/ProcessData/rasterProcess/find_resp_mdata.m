@@ -4,7 +4,7 @@ binWidths = evalin('base','binWidths');
 
 if isnan(timeBefore)
     rastersO.mdata = [];
-    rastersO.resp = findResponsiveRasters(rasters,Dur,[],tRs,isCell);
+    rastersO.resp = findResponsiveRasters(rasters,Dur,[],tRs);
     rastersO.rasters = rasters;
     rastersO.title = titlestr;
     number_of_columns = size(rasters,2);

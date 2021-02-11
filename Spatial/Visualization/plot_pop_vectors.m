@@ -1,11 +1,19 @@
-function plot_pop_vectors(popVs,rasters)
+function plot_pop_vectors(fignumi,popVs,rasters)
 
-ff = makeFigureRowsCols(106,[1 0.5 2 2],'RowsCols',[1 numel(popVs)],...
+if iscell(fignumi)
+    figpos = fignumi{2};
+    fignum = fignumi{1};
+else
+    fignum = fignumi;
+    figpos = [1 2 10 3];
+end
+
+ff = makeFigureRowsCols(fignum,[1 1.5 2 2],'RowsCols',[1 numel(popVs)],...
     'spaceRowsCols',[0.01 0.011],'rightUpShifts',[0.01 0.12],'widthHeightAdjustment',...
     [-15 -205]);
 gg = 1;
 set(gcf,'color','w');
-set(gcf,'Position',[1 2 10 3]);
+set(gcf,'Position',figpos);
 for cc = 1:length(popVs)
     axes(ff.h_axes(1,cc));
     thisImage = popVs{cc}.popV;

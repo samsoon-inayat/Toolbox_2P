@@ -3,7 +3,7 @@ p = NaN(size(rasters,3),1); p1 = p; p2 = p;
 MIs = p;
 if isempty(ci)
     MIs = tRs.info_metrics.ShannonMI_Zsh;
-    out.zMIs = MIs(isCell);
+    out.zMIs = MIs;%(isCell);
     return;
 end
 

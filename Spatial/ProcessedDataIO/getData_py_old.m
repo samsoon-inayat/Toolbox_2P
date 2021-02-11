@@ -65,7 +65,7 @@ for ii = 1:size(T,1)
         fileName = fullfile(files(1).folder,files(1).name);
         disp(sprintf('Loading 2P plane %d %s',pp,sel_plane));
         tP = load(fileName);
-        Fca = double(tP.F) - 0.7*double(tP.Fneu);
+        Fca = double(tP.F);
         fileName = sprintf('%s\\Fcell_baseline.mat',tei{ii}.plane{pp}.folder);
         if exist(fileName,'file') & owrdeconv == 0
             disp(sprintf('Loading 2P plane %d baselines',pp));

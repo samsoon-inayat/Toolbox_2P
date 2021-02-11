@@ -1,13 +1,13 @@
 function testing1
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','d15_2'); Rs = evalin('base','raster_data'); 
+ei = evalin('base','d15'); Rs = evalin('base','raster_data'); 
 sC = evalin('base','selContexts'); rN = evalin('base','rasterNames');
 
 cai_sampling_rate = ei{1}.thorExp.frameRate;
 effective_sampling_rate = 1/0.2;
 samplingRate = {'Ca','Ef','Ef','Ef','Ef','Ef','Ef','Ef','Ca','Ef'};
 timeBefore = [2 4 4 NaN 4 NaN 4 NaN 2 4];
-an = 3;
+an = 2;
 anei = ei{an};
 anRs = Rs{an};
 for ii = 1:length(sC)
@@ -17,11 +17,11 @@ for ii = 1:length(sC)
     disp(thisContext.name)
     isCell = logical(tRs.iscell);
     if strcmp(samplingRate{ii},'Ca')
-        tempR = tRs.fromFrames.sp_rasters(:,:,isCell);
+        tempR = tRs.fromFrames.sp_rasters;%(:,:,isCell);
         tempDur = tRs.fromFrames.duration;
         SR = cai_sampling_rate;
     else
-        tempR = tRs.sp_rasters1(:,:,isCell);
+        tempR = tRs.sp_rasters1;%(:,:,isCell);
         tempDur = tRs.duration1;
         SR = effective_sampling_rate;
     end
@@ -50,17 +50,20 @@ meanRsRemap = calc_mean_rasters(rasters([4 6 8],1),1:10);
 % plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
 % n= 0 ;
 %%
-indr = 4;
+indr = 2;
 Rsr = rasters{indr};
-% Rsp = rasters{2};
-% ccs = Rsr.resp.p < 0.05;
-ccs = Rsr.resp.zMIs > 3;
+Rsp = rasters{indr};
+ccs = Rsr.resp.p < 0.05;
+% ccs = Rsr.resp.zMIs > 1.96;
 sum(ccs)
 [popVs,~,~] = calc_pop_vector_corr(meanRsTrials12,ccs,[indr,1]);
 sel_popVs = [1 2 4 6 8 9 10];
-plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
+plot_pop_vectors({1000,[1 1 10 3]},popVs(sel_popVs),rasters(sel_popVs));
+set(gcf,'name',sprintf('%s-%d','Cell-Neuropil',sum(ccs)));
 return;
-% plotRasters_simple(Rsp,find(Rsr.resp.p<0.05),[])
+plotRasters_simple(Rsp,find(Rsr.resp.p<0.05),[])
+
+plotRasters_simple(Rsp,find(Rsr.resp.zMIs>1.96),[])
 
 % plotRasters_simple(Rs,find(Rs.resp.MIs>3),[])
 % plotRasters_multi(rasters,rastersD,find(resp.ps(:,1)<0.05),[])

@@ -65,22 +65,22 @@ for ii = 1:size(T,1)
         fileName = fullfile(files(1).folder,files(1).name);
         disp(sprintf('Loading 2P plane %d %s',pp,sel_plane));
         tP = load(fileName);
-        Fca = double(tP.F) - 0.7*double(tP.Fneu);
-        fileName = sprintf('%s\\Fcell_baseline.mat',tei{ii}.plane{pp}.folder);
-        if exist(fileName,'file') & owrdeconv == 0
-            disp(sprintf('Loading 2P plane %d baselines',pp));
-            temp = load(fileName);
-            tP.Fcell_baseline{1} = temp.Fcell_baseline;
-        else
-            disp(sprintf('Finding 2P plane %d baselines',pp));
-            Fcell_baseline = findBleachingTrend(Fca,4);
-            save(fileName,'Fcell_baseline');
-            tP.Fcell_baseline{1} = Fcell_baseline;
-        end
-        tP.signals = 100*(Fca-tP.Fcell_baseline{1})./tP.Fcell_baseline{1};
-%         tP.areCells = tP.iscell(:,1);
-        disp(sprintf('Loading 2P plane %d spikes',pp));
-        [tP.deconv.caSigAll,tP.deconv.spSigAll] = getSpikes(tei{ii}.plane{pp},tP,owrdeconv);
+%         Fca = double(tP.F) - 0.7*double(tP.Fneu);
+%         fileName = sprintf('%s\\Fcell_baseline.mat',tei{ii}.plane{pp}.folder);
+%         if exist(fileName,'file') & owrdeconv == 0
+%             disp(sprintf('Loading 2P plane %d baselines',pp));
+%             temp = load(fileName);
+%             tP.Fcell_baseline{1} = temp.Fcell_baseline;
+%         else
+%             disp(sprintf('Finding 2P plane %d baselines',pp));
+%             Fcell_baseline = findBleachingTrend(Fca,4);
+%             save(fileName,'Fcell_baseline');
+%             tP.Fcell_baseline{1} = Fcell_baseline;
+%         end
+%         tP.signals = 100*(Fca-tP.Fcell_baseline{1})./tP.Fcell_baseline{1};
+% %         tP.areCells = tP.iscell(:,1);
+%         disp(sprintf('Loading 2P plane %d spikes',pp));
+%         [tP.deconv.caSigAll,tP.deconv.spSigAll] = getSpikes(tei{ii}.plane{pp},tP,owrdeconv);
         tei{ii}.plane{pp}.tP = tP;
 %         tei{ii}.plane{pp}.ops1{1} = tP.ops;
     end

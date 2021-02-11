@@ -1,4 +1,4 @@
-function rasters =  getRasters_fixed_bin_width_ctrl(ei,pp,onsets,offsets,rasterType)
+function rasters =  getRasters_fixed_bin_width_s2pspks(ei,pp,onsets,offsets,rasterType)
 
 if strcmp(rasterType,'time')
     binWidth = 0.15; % unit of bin width is sec
@@ -11,8 +11,8 @@ if strcmp(rasterType,'dist')
     maxbins = 55;
 end
 
-ccs = 1:length(ei.tP.deconv.spSigAll);
-% ccs = find(ei.tP.iscell(:,1));%    1:length(ei.tP.deconv.spSigAll);
+% ccs = 1:length(ei.tP.deconv.spSigAll);
+ccs = find(ei.tP.iscell(:,1));%    1:length(ei.tP.deconv.spSigAll);
 b = ei.b;
 b.frames_f = ei.plane{pp}.b.frames_f;
 b.frameRate = ei.thorExp.frameRate;
@@ -21,7 +21,7 @@ b.frameRate = ei.thorExp.frameRate;
 %     cellNum = ccs(ii);
 %     spSigAll(ii,:) = ei.deconv.spSigAll{cellNum}';
 % end
-spSigAll = ei.deconv.spSigAll;
+spSigAll = double(ei.tP.spks(ccs,:));
 rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,maxbins,rasterType);
 rasters.onsets = onsets; 
 rasters.offsets = offsets;
