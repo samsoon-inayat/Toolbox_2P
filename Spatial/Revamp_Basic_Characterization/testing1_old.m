@@ -7,7 +7,7 @@ cai_sampling_rate = ei{1}.thorExp.frameRate;
 effective_sampling_rate = 1/0.2;
 samplingRate = {'Ca','Ef','Ef','Ef','Ef','Ef','Ef','Ef','Ca','Ef'};
 timeBefore = [2 4 4 NaN 4 NaN 4 NaN 2 4];
-an = 2;
+an = 4;
 anei = ei{an};
 anRs = Rs{an};
 for ii = 1:length(sC)
@@ -58,7 +58,7 @@ ccs = Rsr.resp.p < 0.05;
 sum(ccs)
 [popVs,~,~] = calc_pop_vector_corr(meanRsTrials12,ccs,[indr,1]);
 sel_popVs = [1 2 4 6 8 9 10];
-plot_pop_vectors({1001,[1 5 10 3]},popVs(sel_popVs),rasters(sel_popVs));
+plot_pop_vectors({1002,[0.2 5 10 2]},popVs(sel_popVs),rasters(sel_popVs));
 set(gcf,'name',sprintf('%s-%d','Cell',sum(ccs)));
 return;
 plotRasters_simple(Rsp,find(Rsr.resp.p<0.05),[])

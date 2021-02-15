@@ -1,6 +1,6 @@
 function testing1
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','d15'); Rs = evalin('base','raster_data'); 
+ei = evalin('base','d15_spks'); Rs = evalin('base','raster_data_spks'); 
 sC = evalin('base','selContexts'); rN = evalin('base','rasterNames');
 
 cai_sampling_rate = ei{1}.thorExp.frameRate;
@@ -50,7 +50,7 @@ meanRsRemap = calc_mean_rasters(rasters([4 6 8],1),1:10);
 % plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
 % n= 0 ;
 %%
-indr = 10;
+indr = 2;
 Rsr = rasters{indr};
 Rsp = rasters{indr};
 ccs = Rsr.resp.p < 0.05;
@@ -58,8 +58,8 @@ ccs = Rsr.resp.p < 0.05;
 sum(ccs)
 [popVs,~,~] = calc_pop_vector_corr(meanRsTrials12,ccs,[indr,1]);
 sel_popVs = [1 2 4 6 8 9 10];
-plot_pop_vectors({1000,[0.2 1.5 10 2]},popVs(sel_popVs),rasters(sel_popVs));
-set(gcf,'name',sprintf('%s-%d','Cell-Neuropil',sum(ccs)));
+plot_pop_vectors({1001,[0.2 2 10 2]},popVs(sel_popVs),rasters(sel_popVs));
+set(gcf,'name',sprintf('%s-%d','Cell-spks',sum(ccs)));
 return;
 plotRasters_simple(Rsp,find(Rsr.resp.p<0.05),[])
 

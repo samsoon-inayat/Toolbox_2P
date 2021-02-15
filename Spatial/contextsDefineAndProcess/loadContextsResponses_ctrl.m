@@ -57,8 +57,10 @@ for aa = 1:length(ei)
                     if length(unique(rasters.lastBin)) > 1
                         n= 0;
                     end
+                    if strcmp(thisRasterType,'dist')
                     trials = 4:size(rasters.sp_rasters,1);
                     rasters = findRasterProperties_ctrl1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owrp);
+                    end
                     if strcmp(thisRasterType,'dist')
                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sD = rasters;',thisStimMarker); eval(cmdTxt);
                     end

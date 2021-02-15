@@ -46,19 +46,22 @@ end
 % for ii = 1:length(sel15)
 %     process_abf(T15(sel15(ii),:));
 % end
-d15 = getData_py(f,T15(sel15,:),1);
-% binWidths = [0.2,1.5];
+%%
+d15 = getData_py(f,T15(sel15,:),0);
+binWidths = [0.15,1.75];
 % d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
 d15 = loadContextsResponses_ctrl(d15,[1 1],[0 0 0]);
+selContexts = [1 2 3 3 4 4 5 5 6 7];
+rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
+raster_data = get_rasters_data(d15,selContexts,rasterNames);
+%%
 
 d15_c = getData_py_old(f,T15_c(sel15,:),1);
 binWidths = [0.15,1.75];
 % d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
 d15_c = loadContextsResponses_ctrl(d15_c,[1 1],[0 0 0]);
 
-selContexts = [1 2 3 3 4 4 5 5 6 7];
-rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
-raster_data = get_rasters_data(d15,selContexts,rasterNames);
+
 raster_data_c = get_rasters_data(d15_c,selContexts,rasterNames);
 
 %% Protocol 15
@@ -79,4 +82,20 @@ d15_spks = loadContextsResponses_s2pspks(d15,[1 1],[1 1 1]);
 
 raster_data_spks = get_rasters_data(d15_spks,selContexts,rasterNames);
 
+%%
 
+T15_clus = T15_old;
+new_pd_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_4';
+for ii = 1
+    tempF = T15_old{sel15(4),7}{1};
+    pos = strfind(tempF,'Processed_Data');
+    T15_clus{sel15(4),7} = {[new_pd_folder '\' tempF((pos+length('Processed_Data\')):end)]};
+end
+d15_clus = getData_py_old(f,T15_clus(sel15(4),:),1);
+binWidths = [0.15,1.75];
+% d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
+d15_clus = loadContextsResponses_ctrl(d15_clus,[1 1],[1 1 1]);
+
+selContexts = [1 2 3 3 4 4 5 5 6 7];
+rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
+raster_data_clus = get_rasters_data(d15_clus,selContexts,rasterNames);
