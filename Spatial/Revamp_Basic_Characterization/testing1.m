@@ -2,12 +2,12 @@ function testing1
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','d15'); Rs = evalin('base','raster_data'); 
 sC = evalin('base','selContexts'); rN = evalin('base','rasterNames');
-
-cai_sampling_rate = ei{1}.thorExp.frameRate;
+an = 3;
+cai_sampling_rate = ei{an}.thorExp.frameRate;
 effective_sampling_rate = 1/0.15;
 samplingRate = {'Ca','Ef','Ef','Ef','Ef','Ef','Ef','Ef','Ca','Ef'};
 timeBefore = [2 5 7 NaN 7 NaN 7 NaN 2 5];
-an = 3;
+
 anei = ei{an};
 anRs = Rs{an};
 for ii = 1:length(sC)
@@ -50,7 +50,7 @@ meanRsRemap = calc_mean_rasters(rasters([4 6 8],1),1:10);
 % plot_pop_vectors(popVs(sel_popVs),rasters(sel_popVs));
 % n= 0 ;
 %%
-indr = 2;
+indr = 1;
 Rsr = rasters{indr};
 Rsp = rasters{indr};
 ccs = Rsr.resp.p < 0.05;
