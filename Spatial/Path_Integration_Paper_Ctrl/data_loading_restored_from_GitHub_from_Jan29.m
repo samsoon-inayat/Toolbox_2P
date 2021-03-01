@@ -71,9 +71,9 @@ try
         ei10_A(ii) = getData_py(f,ET10_CC(ii,:),0);
     end
 
-    ei10_C = loadContextsResponses_ctrl(ei10_C,[1 1],[0 0 0]);
+    ei10_C = loadContextsResponses_ctrl_old(ei10_C,[1 1],[0 0 0]);
 %     ei10_C1 = loadContextsResponses_ctrl(ei10_C1,[1 1],[0 0 0]);
-    ei10_A = loadContextsResponses_ctrl(ei10_A,[1 1],[0 0 0]);
+    ei10_A = loadContextsResponses_ctrl_old(ei10_A,[1 1],[0 0 0]);
     ei_comb = [ei10_C ei10_A];
     ei_150 = ei10_A(2:5);
     training_data_C1 = behaviorProcessor;

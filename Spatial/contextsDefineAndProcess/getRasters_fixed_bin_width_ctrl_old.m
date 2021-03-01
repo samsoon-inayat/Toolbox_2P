@@ -1,27 +1,24 @@
 function rasters =  getRasters_fixed_bin_width_ctrl(ei,pp,onsets,offsets,rasterType)
 
 if strcmp(rasterType,'time')
-    binWidth = 0.15; % unit of bin width is sec
+    binWidth = 0.2; % unit of bin width is sec
     bins = 0:binWidth:50;
-    maxbins = 1000;
+    maxbins = 75;
 end
 if strcmp(rasterType,'dist')
-    binWidth = 1.75; % unit of bin width is cm
+    binWidth = 3; % unit of bin width is cm
     bins = 0:binWidth:1000;
     maxbins = 55;
 end
 
 ccs = 1:length(ei.tP.deconv.spSigAll);
-% ccs = find(ei.tP.iscell(:,1));%    1:length(ei.tP.deconv.spSigAll);
 b = ei.b;
 b.frames_f = ei.plane{pp}.b.frames_f;
 b.frameRate = ei.thorExp.frameRate;
-% spSigAll = zeros(length(ccs),length(ei.deconv.spSigAll{1}));
-% for ii = 1:length(ccs)
-%     cellNum = ccs(ii);
-%     spSigAll(ii,:) = ei.deconv.spSigAll{cellNum}';
-% end
-spSigAll = ei.deconv.spSigAll;
+spSigAll = zeros(length(ccs),length(ei.deconv.spSigAll{1}));
+for ii = 1:length(ccs)
+    spSigAll(ii,:) = ei.deconv.spSigAll{ii}';
+end
 rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,maxbins,rasterType);
 rasters.onsets = onsets; 
 rasters.offsets = offsets;
@@ -99,8 +96,7 @@ for trial = 1:length(onsets)
     for bin = 1:nbins
         frames = find(b.frames_f > st1(bin) & b.frames_f < se1(bin));
         for cn = 1:size(rasters.sp_rasters,3)
-%             spSig = ei.deconv.spSigAll{cn}';
-            spSig = ei.deconv.spSigAll(cn,:);
+            spSig = ei.deconv.spSigAll{cn}';
             if ~isempty(frames)
                 cell_history(trial,bin,cn) = mean(spSig(frames));
             else

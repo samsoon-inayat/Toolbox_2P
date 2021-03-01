@@ -13,10 +13,9 @@ for aa = 1:length(ei)
         tei.ops1 = tei.plane{pp}.tP.ops;
         tei.tP = tei.plane{pp}.tP;
         tplane = tei.plane{pp};
-%         fileName = makeName('contexts.mat',thispFolder);
-%         temp = load(fileName);
+        fileName = makeName('contexts.mat',thispFolder);
+        temp = load(fileName);
         if ~isfield(tplane,'contexts')
-%             contexts = getContexts({ptei});
             fileName = makeName('contexts_trials_markers.mat',thispFolder);
             S = load(fileName);
             contexts = S.contexts;
@@ -53,14 +52,12 @@ for aa = 1:length(ei)
                         continue;
                     end
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
-                    rasters = getRasters_fixed_bin_width_ctrl(tei,pp,markersOn,markersOff,thisRasterType);
+                    rasters = getRasters_fixed_bin_width_ctrl_old(tei,pp,markersOn,markersOff,thisRasterType);
                     if length(unique(rasters.lastBin)) > 1
                         n= 0;
                     end
-                    if strcmp(thisRasterType,'dist')
                     trials = 4:size(rasters.sp_rasters,1);
                     rasters = findRasterProperties_ctrl1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owrp);
-                    end
                     if strcmp(thisRasterType,'dist')
                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sD = rasters;',thisStimMarker); eval(cmdTxt);
                     end
@@ -71,8 +68,7 @@ for aa = 1:length(ei)
             end
         end
         ptei.plane{pp}.contexts = contexts;
-%         ptei.b.belt_length = temp.belt_length;
+        ptei.b.belt_length = temp.belt_length;
     end
     ei{aa} = ptei;
 end
-
