@@ -11,7 +11,7 @@ selAnimals = 1; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
-conditionNumber = 4;
+conditionNumber = 1;
 contextNumber = [conditionNumber conditionNumber];
 stimMarkers = {'air','air'};
 rasterTypes = {'dist','time'};
@@ -65,8 +65,8 @@ save_pdf(h,mData.pdf_folder,sprintf('cellsAvgImg.pdf'),600);
 return;
 end
 %%
-runthis = 0;
-if runthis
+
+if 0
 cellList = ccsi;
 numberOfRows = 1;
 numberOfCols = 5;
@@ -163,7 +163,7 @@ return;
 end
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 cellList = ccsi;
 numberOfRows = 1;

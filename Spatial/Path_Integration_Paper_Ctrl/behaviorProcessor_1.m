@@ -475,15 +475,15 @@ end
 runthis = 1;
 if runthis
 % this_moas = moml([1 5:11],1:3); this_moas(3,:) = moml(6,[2 3 4]);
-this_moas = get_sel_values(temp.weight,[1 5:11],repmat([1 2 3],11,1));
+this_moas = get_sel_values(temp.weight,[1 3:11],repmat([1 2 3 4],11,1));
 this_moas = 100 * this_moas./this_moas(:,1);
 for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
 data = [this_moas];
-dataT = table(data(:,1),data(:,2),data(:,3));
+dataT = array2table(data);
 dataT.Properties.VariableNames = varNames;
-within = table([1 2 3]');
+within = table([1 2 3 4]');
 within.Properties.VariableNames = {'Day'};
 within.Day = categorical(within.Day);
 ra = repeatedMeasuresAnova(dataT,within);
@@ -491,19 +491,19 @@ ra = repeatedMeasuresAnova(dataT,within);
 mVar = ra.est_marginal_means.Mean;
 semVar = ra.est_marginal_means.Formula_StdErr;
 combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-xdata = [1 2 3]; maxY = 50;
+xdata = [1 2 3 5]; maxY = 50;
 
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
-tcolors = {colors{1};colors{2};colors{3}};
+tcolors = {colors{1};colors{2};colors{3};colors{4}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 
-set(gca,'xlim',[0.25 3.75],'ylim',[95 maxY-10],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'Day1','Day2','Day3'};
+set(gca,'xlim',[0.25 5.75],'ylim',[95 maxY-10],'FontSize',6,'FontWeight','Bold','TickDir','out');
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','Test-Day'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-% xtickangle(30)
+xtickangle(20)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{{'Percentage of','weight on day 1'},[0 0 0]});
 

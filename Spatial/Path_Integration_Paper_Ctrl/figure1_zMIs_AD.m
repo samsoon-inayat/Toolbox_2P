@@ -1,9 +1,10 @@
 function figure1_number_of_PCs
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = NaN;
 conditionsAndRasterTypes = [11 21 31 41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 out = read_data_from_base_workspace(selC)
 
 ei_C = out.eis{1}; ei_A = out.eis{2};
@@ -99,8 +100,8 @@ if runthis
 %     xtickangle(30)
     changePosition(gca,[0.02 0.03 0.04 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{'zMI',[0 0 0]});
-    rectangle(gca,'Position',[0.75 maxY-4 1 2],'edgecolor','k','facecolor','k');     text(1.85,maxY-4+1,'CRTG','FontSize',6);
-    rectangle(gca,'Position',[6 maxY-4 1 2],'edgecolor','k');     text(7.2,maxY-4+1,'CPTG','FontSize',6);
+    rectangle(gca,'Position',[0.75 maxY-4 1 2],'edgecolor','k','facecolor','k');     text(1.85,maxY-4+1,'RSEG','FontSize',6);
+    rectangle(gca,'Position',[6 maxY-4 1 2],'edgecolor','k');     text(7.2,maxY-4+1,'PSEG','FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph',mfilename),600);
 return;
 end

@@ -77,11 +77,13 @@ try
     ei_comb = [ei10_C ei10_A];
     ei_150 = ei10_A(2:5);
     training_data_C1 = behaviorProcessor;
+%     1432      173062      173198      173511      173706      174374      183628      183633      183745      183761      183762
     training_data_C1.belt_lengths = [150 142 142 142 142 142 150 150 150 150 150]';
-    weight_day1 = [52.1 NaN NaN NaN 33.7 30.9 26.8 34.5 34.6 31.6 35.8]';
-    weight_day2 = [52.8 NaN NaN NaN 33.3 30.4 26.6 34.2 34.5 31.3 35.4]';
-    weight_day3 = [51.6 NaN NaN NaN 33.3 30.5 26.7 33.7 33.6 30.7 35.3]';
-    training_data_C1.weight = [weight_day1 weight_day2 weight_day3];
+    weight_day1 = [52.1 46.7 47.3 39.9 33.7 30.9 26.8 34.5 34.6 31.6 35.8]';
+    weight_day2 = [52.8 46.4 47.8 40.2 33.3 30.4 26.6 34.2 34.5 31.3 35.4]';
+    weight_day3 = [51.6 45.9 47.9 39.5 33.3 30.5 26.7 33.7 33.6 30.7 35.3]';
+    weight_day4 = [50.4 45.9 46.4 37.8 31.8 29.7 27.1 33.4 36.1 31.5 35.8]';
+    training_data_C1.weight = [weight_day1 weight_day2 weight_day3 weight_day4];
     
 %     training_data_A = behaviorProcessor_AD;
 

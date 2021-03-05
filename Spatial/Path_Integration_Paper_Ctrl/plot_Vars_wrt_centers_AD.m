@@ -23,7 +23,7 @@ paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','Field Width','RS',{'Percentage of','spatially tuned cells'}};
 y_spacings = [10,2,20,0.7,10];
-svn = 1; %gcn = 3
+svn = 3; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
@@ -31,11 +31,12 @@ if svn == 5
 else
     selected_variable = all_variables{svn};
     selected_variable_f = selected_variable;
-    number_of_bins = 1;
+    number_of_bins = 4;
 end
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = [0.1 5000];
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = NaN;%[0.1 5000];
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = [0.1 5000];
 conditionsAndRasterTypes = [11 21 31 41];
+% conditionsAndRasterTypes = [31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 [cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
 [cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_A',{paramMs_A,selC});
@@ -59,7 +60,7 @@ if runthis
     data_C = [];
     data_A = [];
     ind = 1;
-    for gcni = 1:4
+    for gcni = 1:length(conditionsAndRasterTypes)
         if svn == 5
             tempC = squeeze(out_C.all_data_N(gcni,:,:))';
             tempA = squeeze(out_A.all_data_N(gcni,:,:))';
@@ -103,16 +104,29 @@ if runthis
     dataT.Properties.VariableNames = {'Group',varNames{:}};
     numCols = size(tempC,2);
     dataT.Group = categorical(int32(dataT.Group))
-    colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+    colVar1 = []; colVar2 = [];
+    for cniis = 1:length(conditionsAndRasterTypes)
+        colVar1 = [colVar1 cniis*ones(1,numCols)];
+        colVar2 = [colVar2 1:numCols];
+%         colVar1 = [ones(1,numCols) 2*ones(1,numCols) 3*ones(1,numCols) 4*ones(1,numCols)];    colVar2 = [1:numCols 1:numCols 1:numCols 1:numCols];
+    end
     if number_of_bins == 1
         within = table(colVar1');
         within.Properties.VariableNames = {'Condition'};
         within.Condition = categorical(within.Condition);
     else
-        within = table(colVar1',colVar2');
-        within.Properties.VariableNames = {'Condition','Bin'};
-        within.Condition = categorical(within.Condition);
-        within.Bin = categorical(within.Bin);
+        if length(conditionsAndRasterTypes) > 1
+            within = table(colVar1',colVar2');
+            within.Properties.VariableNames = {'Condition','Bin'};
+            within.Condition = categorical(within.Condition);
+            within.Bin = categorical(within.Bin);
+        else
+%             dataT = dataT(:,2:end);
+            within = table(colVar2');
+            within.Properties.VariableNames = {'Bin'};
+%             within.Condition = categorical(within.Condition);
+            within.Bin = categorical(within.Bin);
+        end
     end
     ra = repeatedMeasuresAnova(dataT,within);
 %     mVarT = ra.est_marginal_means.Mean(1:16); mVarT_A = ra.est_marginal_means.Mean(17:32); 
@@ -127,8 +141,8 @@ if runthis
     semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p<0.05;
 
-
-    xdata = [1:(number_of_bins*4) ((number_of_bins*4)+2):(((number_of_bins*4)+2)+(number_of_bins*4)-1)]; 
+    nConds = length(conditionsAndRasterTypes);
+    xdata = [1:(number_of_bins*nConds) ((number_of_bins*nConds)+2):(((number_of_bins*nConds)+2)+(number_of_bins*nConds)-1)]; 
     colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
     hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.5 1.5],'color','w');
@@ -138,7 +152,7 @@ if runthis
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'maxY',maxY,'ySpacing',y_spacings(svn),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0);
-    for ii = ((number_of_bins*4)+1):length(hbs)
+    for ii = ((number_of_bins*nConds)+1):length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)

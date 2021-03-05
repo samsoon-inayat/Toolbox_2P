@@ -1,4 +1,4 @@
-function firing_rate_trial_vs_inter_trials
+function firing_rate_motion_vs_rest
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
@@ -17,7 +17,7 @@ perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 thr = -1;
 n = 0;
 %%
-fileName = mfilename;
+fileName = fullfile(mData.pd_folder,mfilename);
 if 0
     out_C = get_spike_rate(ei_C,pMs_C,thr);
     out_A = get_spike_rate(ei_A,pMs_A,thr);
@@ -63,6 +63,37 @@ return;
 end
 %%
 if 1
+    perc_cells_or_C = out_C.percent_motion;
+    perc_cells_or_A = out_A.percent_motion;
+    [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
+    
+    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(3) std(perc_cells_or_A)/sqrt(5)];
+    combs = [1 2]; %p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    xdata = [1:2];
+%     xdata = [1 2 3 4];
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+    hold on;
+    tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = 5:length(hbs)
+        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'RSEG','PSEG'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[0.2 0 -0.4 -0.09]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Percent','Motion (%)'},[0 0 0]});
+    
+    save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_Motion_vs_Rest_overall'),600);
+return;
+end
+%%
+if 1
     data_C = [out_C.m_sp_animal_level_motion' out_C.m_sp_animal_level_rest'];
     data_A = [out_A.m_sp_animal_level_motion' out_A.m_sp_animal_level_rest'];
     data = [data_C;data_A];
@@ -79,12 +110,12 @@ if 1
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
      xdata = [1 2 4 5]; 
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
     hold on;
     tcolors ={colors{1};colors{2};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
     for ii = 3:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
@@ -109,8 +140,15 @@ for ii = 1:length(ei_C)
 %     inds_rest = find(speed < 0.5);
     
     speed = ei.b.fSpeed;
-    inds_motion = find(speed > 0);
+%     inds_motion = find(speed > 0);
+    inds_motion = find(speed ~= 0);
     inds_rest = find(speed == 0);
+    onset_first_trial = ei.b.air_puff_r(1)-1000;
+    offset_last_trial = ei.b.air_puff_f(end)+1000;
+    inds_motion1 = inds_motion(find(inds_motion > onset_first_trial & inds_motion < offset_last_trial));
+    inds_rest1 = inds_rest(find(inds_rest > onset_first_trial & inds_rest < offset_last_trial));
+    percent_motion(ii) = 100*length(inds_motion1)/(offset_last_trial - onset_first_trial);
+    percent_rest(ii) = 100*length(inds_rest1)/(offset_last_trial - onset_first_trial);
     
     cell_list = pMs_C{1}.all_cns{ii};
     spSigAll = [];
@@ -163,6 +201,7 @@ out.m_sp_animal_level_motion = m_sp_animal_level_motion;
 out.m_sp_animal_rest = m_sp_animal_rest;
 out.allVals_rest = allVals_rest;
 out.m_sp_animal_level_rest = m_sp_animal_level_rest;
+out.percent_motion = percent_motion;
 
 % out.m_sp_animal_th = m_sp_animal_th;
 % out.m_sp_animal_level_th = m_sp_animal_level_th;

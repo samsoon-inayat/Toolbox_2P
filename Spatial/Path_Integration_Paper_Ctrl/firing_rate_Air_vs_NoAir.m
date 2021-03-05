@@ -17,7 +17,7 @@ perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 thr = -1;
 n = 0;
 %%
-fileName = mfilename;
+fileName = fullfile(mData.pd_folder,mfilename);
 if 0
     out_C = get_spike_rate(ei_C,pMs_C,thr);
     out_A = get_spike_rate(ei_A,pMs_A,thr);

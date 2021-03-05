@@ -6,10 +6,11 @@ f = temp.f;
 cName = temp.cName;
 D = temp.D;
 
-T15 = load('T_15_All_AD.mat');
-T10 = load('T_10_All_AD.mat');
+T15 = load('T_15_All.mat');
+T10 = load('T_10_All.mat');
 
 T = T15.T;
+T10.T.Properties.VariableNames{8} = T.Properties.VariableNames{8};
 T = [T;T10.T];
 
 animalIDs = [];
@@ -38,7 +39,7 @@ for ii = 1:length(uaids)
     Tf = [Tf;emptyRow];
 end
 n = 0;
-writetable(Tf,'allData_AD.xls');
+writetable(Tf,'allData_Final.xls');
 
 % T15_1 = load('T_15_1_Thy1.mat');
 % T15 = load('T15.mat');
