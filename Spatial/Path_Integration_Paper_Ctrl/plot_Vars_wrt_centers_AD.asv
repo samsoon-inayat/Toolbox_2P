@@ -23,20 +23,20 @@ paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','Field Width','RS',{'Percentage of','spatially tuned cells'}};
 y_spacings = [10,2,20,0.7,10];
-svn = 3; %gcn = 3
+svn = 1; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
-    number_of_bins = 2;
+    number_of_bins = 3;
 else
     selected_variable = all_variables{svn};
     selected_variable_f = selected_variable;
-    number_of_bins = 5;
+    number_of_bins = 3;
 end
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = NaN;%[0.1 5000];
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = [0.1 50000];
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = [0.1 5000];
 conditionsAndRasterTypes = [11 21 31 41];
-conditionsAndRasterTypes = [11];
+% conditionsAndRasterTypes = [31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 [cpMs_C,pMs_C] = parameter_matrices_ctrl('select','10_C',{paramMs_C,selC});
 [cpMs_A,pMs_A] = parameter_matrices_ctrl('select','10_A',{paramMs_A,selC});
@@ -115,13 +115,24 @@ if runthis
         within.Properties.VariableNames = {'Condition'};
         within.Condition = categorical(within.Condition);
     else
-        if length(conditionsAndRasterTypes) == 1
-        within = table(colVar1',colVar2');
-        within.Properties.VariableNames = {'Condition','Bin'};
-        within.Condition = categorical(within.Condition);
-        within.Bin = categorical(within.Bin);
+        if length(conditionsAndRasterTypes) > 1
+            within = table(colVar1',colVar2');
+            within.Properties.VariableNames = {'Condition','Bin'};
+            within.Condition = categorical(within.Condition);
+            within.Bin = categorical(within.Bin);
+        else
+%             dataT = dataT(:,2:end);
+            within = table(colVar2');
+            within.Properties.VariableNames = {'Bin'};
+%             within.Condition = categorical(within.Condition);
+            within.Bin = categorical(within.Bin);
+        end
+    end
+    if sum(sum(isnan(dataT{:,2:end}))) > 0
+        disp('NaN values');
     end
     ra = repeatedMeasuresAnova(dataT,within);
+    dataT
 %     mVarT = ra.est_marginal_means.Mean(1:16); mVarT_A = ra.est_marginal_means.Mean(17:32); 
 %     semVarT = ra.est_marginal_means.Formula_StdErr(1:16); semVarT_A = ra.est_marginal_means.Formula_StdErr(17:32); 
 %     mVar = NaN(1,2*(length(mVarT)));
@@ -145,7 +156,7 @@ if runthis
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'maxY',maxY,'ySpacing',y_spacings(svn),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0);
-    for ii = ((number_of_bins*4)+1):length(hbs)
+    for ii = ((number_of_bins*nConds)+1):length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)

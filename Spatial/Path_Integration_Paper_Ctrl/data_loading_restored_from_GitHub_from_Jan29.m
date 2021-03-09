@@ -84,8 +84,53 @@ try
     weight_day3 = [51.6 45.9 47.9 39.5 33.3 30.5 26.7 33.7 33.6 30.7 35.3]';
     weight_day4 = [50.4 45.9 46.4 37.8 31.8 29.7 27.1 33.4 36.1 31.5 35.8]';
     training_data_C1.weight = [weight_day1 weight_day2 weight_day3 weight_day4];
-    
+    training_data_C1.DOB = {'2018-09-27','2017-08-10','2017-08-28','2017-09-18','2017-10-15','2017-12-09',...
+        '2018-09-27','2018-09-27','2018-10-03','2018-10-11','2018-10-11'};
 %     training_data_A = behaviorProcessor_AD;
+    for rr = 1:size(training_data_C1.training_dates,1)
+        dob = datetime(training_data_C1.DOB{rr},'InputFormat','yyyy-MM-dd');
+        for cc = 1:size(training_data_C1.training_dates,2)
+            this_date = training_data_C1.training_dates(rr,cc); this_date = this_date{1};
+            if isempty(this_date)
+                ageAn(rr,cc) = -1;
+            else
+                dv = datevec(this_date-dob);
+                ageAn(rr,cc) = 12*dv(1) + dv(2) + dv(3)/30;
+            end
+        end
+    end
+    animal_id_C = [173062,173511,173198];
+    date_of_rec_C = {'2018-07-11','2018-07-11','2018-07-11'};
+    date_of_surg_C = {'2018-04-13','2018-04-30','2018-04-27'};
+    animal_id_A = [173706,183761,183745,183628,183762];
+    date_of_rec_A = {'2019-02-14','2019-06-19','2019-06-19','2019-06-21','2019-06-24'};
+    date_of_surg_A = {'2018-10-15','2019-03-29','2019-04-30','2019-04-03','2019-04-26'};
+    for rr = 1:length(animal_id_C)
+        ind = find(training_data_C1.animalIDs == animal_id_C(rr));
+        dob = datetime(training_data_C1.DOB{ind},'InputFormat','yyyy-MM-dd');
+        this_date = datetime(date_of_rec_C{rr},'InputFormat','yyyy-MM-dd');
+        dv = datevec(this_date-dob);
+        ageAn_rec_C(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+        start_date = datetime(training_data_C1.training_dates{ind,1},'InputFormat','yyyy-MM-dd');
+        dv = datevec(this_date-start_date);
+        rec_day_C(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+        surg_date = datetime(date_of_surg_C{rr},'InputFormat','yyyy-MM-dd');
+        dv = datevec(start_date-surg_date);
+        postsurg_day_C(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+    end
+    for rr = 1:length(animal_id_A)
+        ind = find(training_data_C1.animalIDs == animal_id_A(rr));
+        dob = datetime(training_data_C1.DOB{ind},'InputFormat','yyyy-MM-dd');
+        this_date = datetime(date_of_rec_A{rr},'InputFormat','yyyy-MM-dd');
+        dv = datevec(this_date-dob);
+        ageAn_rec_A(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+        start_date = datetime(training_data_C1.training_dates{ind,1},'InputFormat','yyyy-MM-dd');
+        dv = datevec(this_date-start_date);
+        rec_day_A(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+        surg_date = datetime(date_of_surg_A{rr},'InputFormat','yyyy-MM-dd');
+        dv = datevec(start_date-surg_date);
+        postsurg_day_A(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+    end
 
     parameter_matrices_ctrl('calculate','10_CD_Ctrl',ei10_C);
 %     parameter_matrices_ctrl('calculate','10_CD_Ctrl1',ei10_C1);

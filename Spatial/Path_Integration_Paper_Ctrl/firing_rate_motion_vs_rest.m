@@ -1,8 +1,9 @@
 function firing_rate_motion_vs_rest
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
-% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = [0.1 5000];
+
+typeP = 'Population';cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
+typeP = 'Place';cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = [0.1 5000];
 
 conditionsAndRasterTypes = [11;21;31;41];
 % conditionsAndRasterTypes = [11 21 31 41];
@@ -17,7 +18,7 @@ perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 thr = -1;
 n = 0;
 %%
-fileName = fullfile(mData.pd_folder,mfilename);
+fileName = fullfile(mData.pd_folder,sprintf('%s_%s',mfilename,typeP));
 if 0
     out_C = get_spike_rate(ei_C,pMs_C,thr);
     out_A = get_spike_rate(ei_A,pMs_A,thr);
@@ -31,7 +32,7 @@ end
 
 n=0;
 %%
-if 1
+if 0
     perc_cells_or_C = out_C.m_sp_animal_level;
     perc_cells_or_A = out_A.m_sp_animal_level;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
@@ -62,7 +63,7 @@ if 1
 return;
 end
 %%
-if 1
+if 0
     perc_cells_or_C = out_C.percent_motion;
     perc_cells_or_A = out_A.percent_motion;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
@@ -89,7 +90,7 @@ if 1
     changePosition(gca,[0.2 0 -0.4 -0.09]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Percent','Motion (%)'},[0 0 0]});
     
-    save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_Motion_vs_Rest_overall'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_Percent_Motion'),600);
 return;
 end
 %%
@@ -110,7 +111,11 @@ if 1
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
      xdata = [1 2 4 5]; 
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    if isnan(zMI_Th)
+       hf = figure(7);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    else
+        hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 9 1.5 1],'color','w');
+    end
     hold on;
     tcolors ={colors{1};colors{2};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...

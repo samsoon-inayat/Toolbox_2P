@@ -1,10 +1,10 @@
 function figure_population_vectors_air_I(fn,allRs,ccs)
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
 conditionsAndRasterTypes = [15;25;35;45];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 out = read_data_from_base_workspace(selC)
 
 ei_C = out.eis{1}; ei_A = out.eis{2};
@@ -14,6 +14,8 @@ cpMs_C = out.cpMs{1}; cpMs_A = out.cpMs{2};
 selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
 perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 % selAnimals_C = [1]; selAnimals_A = [3];
+filename = fullfile(mData.pd_folder,'pop_corr_mat_vector_air_I.mat');
+
 if 0
     cellSel_C = ''; cellSel_A = '';% cellSel_C = cpMs_C; cellSel_A = cpMs_A;
     a_trials = {3:9};
@@ -25,11 +27,11 @@ if 0
         [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T] = get_pop_vector_corr(out,conditionsAndRasterTypes,74,cellSel_A);
         all_out_A{ii} = out;
     end
-    save('pop_corr_mat_vector_air_I.mat','all_out_C','all_out_A','a_trials');
+    save(filename,'all_out_C','all_out_A','a_trials');
     disp('Done');
     return;
 else
-    temp = load('pop_corr_mat_vector_air_I.mat');
+    temp = load(filename);
     all_out_C = temp.all_out_C{1};     all_out_A = temp.all_out_A{1}; a_trials = temp.a_trials{1};
 end
 n = 0;
@@ -111,7 +113,7 @@ return;
 end
 
 %%
-if 0
+if 1
     perc_cells_or_C = 100*cpMs_C.numCells./cpMs_C.areCells;
     perc_cells_or_A = 100*cpMs_A.numCells./cpMs_A.areCells;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
@@ -132,7 +134,7 @@ if 0
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = {'CRTG','CPTG'};
+    xticks = xdata(1:end)+0; xticklabels = {'RSEG','PSEG'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
     changePosition(gca,[0.17 0 -0.4 -0.09]);

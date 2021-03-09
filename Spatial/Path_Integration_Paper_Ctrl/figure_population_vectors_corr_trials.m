@@ -1,6 +1,7 @@
 function figure1_Distributions
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-pop_corr = load('pop_corr_mat_trials.mat');
+filename = fullfile(mData.pd_folder,'pop_corr_mat_trials.mat');
+pop_corr = load(filename);
 pop_corr_C = pop_corr.all_out_C([1:5]);
 pop_corr_A = pop_corr.all_out_A([1:5]);
 num_animals_C = size(pop_corr_C{1}.avg_C_conds{1},3);

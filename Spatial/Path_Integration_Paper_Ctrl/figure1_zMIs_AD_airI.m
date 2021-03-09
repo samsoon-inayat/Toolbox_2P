@@ -1,9 +1,9 @@
 function figure1_number_of_PCs
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = NaN; fcens = NaN; rs_th = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
 conditionsAndRasterTypes = [15 25 35 45];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 out = read_data_from_base_workspace(selC)
 
 ei_C = out.eis{1}; ei_A = out.eis{2};

@@ -2,9 +2,9 @@ function figure_population_vectors_trials(fn,allRs,ccs)
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = NaN;
 conditionsAndRasterTypes = [11;21;31;41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 out = read_data_from_base_workspace(selC)
 
 ei_C = out.eis{1}; ei_A = out.eis{2};
@@ -17,7 +17,7 @@ perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 % trials = 7:10;
 % out_C = get_mean_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,'',trials);
 % out_A = get_mean_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,'',trials);
-
+filename = fullfile(mData.pd_folder,'pop_corr_mat_trials.mat');
 if 0
     cellSel_C = ''; cellSel_A = ''; cellSel_C = cpMs_C; cellSel_A = cpMs_A;
     a_trials = {1:2,3:4,5:6,7:8,9:10};
@@ -29,19 +29,19 @@ if 0
         [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T,out.all_corr_an,out.all_corr_cell_an] = get_pop_vector_corr(out,conditionsAndRasterTypes,49,cellSel_A);
         all_out_A{ii} = out;
     end
-
-    save('pop_corr_mat_trials.mat','all_out_C','all_out_A','a_trials');
+    save(filename,'all_out_C','all_out_A','a_trials');
     disp('Done');
     n= 0;
     return;
 end
-temp = load('pop_corr_mat_trials.mat');
+temp = load(filename);
 all_out_C = temp.all_out_C;     all_out_A = temp.all_out_A; a_trials = temp.a_trials;
 
+% filename = fullfile(mData.pd_folder,'pop_corr_mat_trials.mat');
 if 0
 pos_cell_corr_C = get_pop_vector_corr_trials(all_out_C);
 pos_cell_corr_A = get_pop_vector_corr_trials(all_out_A);
-save('pop_corr_mat_trials.mat','all_out_C','all_out_A','a_trials','pos_cell_corr_C','pos_cell_corr_A');
+save(filename,'all_out_C','all_out_A','a_trials','pos_cell_corr_C','pos_cell_corr_A');
 disp('Done');
 return;
 end

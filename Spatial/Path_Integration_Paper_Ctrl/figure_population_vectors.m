@@ -1,10 +1,10 @@
 function figure_population_vectors(fn,allRs,ccs)
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = NaN;
 conditionsAndRasterTypes = [11 21 31 41];
-selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
 out = read_data_from_base_workspace(selC)
 
 ei_C = out.eis{1}; ei_A = out.eis{2};
@@ -30,7 +30,7 @@ if 0
     return;
 else
     temp = load('pop_corr_mat_vector.mat');
-    all_out_C = temp.all_out_C{1};     all_out_A = temp.all_out_A{1}; a_trials = temp.a_trials{1};
+    all_out_C = temp.all_out_C;     all_out_A = temp.all_out_A; a_trials = temp.a_trials{1};
 end
 n = 0;
 out_C = all_out_C{1}; out_A = all_out_A{1};

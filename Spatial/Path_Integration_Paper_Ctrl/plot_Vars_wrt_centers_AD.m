@@ -23,17 +23,17 @@ paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
 ylabels = {'zMIs','Firing Rate','Field Width','RS',{'Percentage of','spatially tuned cells'}};
 y_spacings = [10,2,20,0.7,10];
-svn = 3; %gcn = 3
+svn = 5; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
-    number_of_bins = 2;
+    number_of_bins = 4;
 else
     selected_variable = all_variables{svn};
     selected_variable_f = selected_variable;
     number_of_bins = 4;
 end
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = NaN;%[0.1 5000];
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3; FR = [0.1 50000];
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = [0.1 5000];
 conditionsAndRasterTypes = [11 21 31 41];
 % conditionsAndRasterTypes = [31 41];
@@ -128,7 +128,13 @@ if runthis
             within.Bin = categorical(within.Bin);
         end
     end
+    if sum(sum(isnan(dataT{:,2:end}))) > 0
+        disp('NaN values');
+    end
     ra = repeatedMeasuresAnova(dataT,within);
+%     dataT1 = dataT(5:end,2:end);
+%     dataT1 = dataT(1:3,2:end);
+%     ra = repeatedMeasuresAnova(dataT1,within);
 %     mVarT = ra.est_marginal_means.Mean(1:16); mVarT_A = ra.est_marginal_means.Mean(17:32); 
 %     semVarT = ra.est_marginal_means.Formula_StdErr(1:16); semVarT_A = ra.est_marginal_means.Formula_StdErr(17:32); 
 %     mVar = NaN(1,2*(length(mVarT)));
