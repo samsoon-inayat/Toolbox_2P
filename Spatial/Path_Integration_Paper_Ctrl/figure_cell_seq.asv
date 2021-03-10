@@ -286,7 +286,7 @@ n = 0;
 return;
 
 %%
-if 1
+if 0
 gAllVals = delta_cell_pos(:);
 minBin = min(gAllVals);
 maxBin = max(gAllVals);

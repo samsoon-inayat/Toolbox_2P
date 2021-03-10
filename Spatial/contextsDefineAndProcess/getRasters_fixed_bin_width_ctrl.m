@@ -3,12 +3,12 @@ function rasters =  getRasters_fixed_bin_width_ctrl(ei,pp,onsets,offsets,rasterT
 if strcmp(rasterType,'time')
     binWidth = 0.15; % unit of bin width is sec
     bins = 0:binWidth:50;
-    maxbins = 1000;
+    maxbins = 500;
 end
 if strcmp(rasterType,'dist')
     binWidth = 1.75; % unit of bin width is cm
     bins = 0:binWidth:1000;
-    maxbins = 55;
+    maxbins = 95;
 end
 
 ccs = 1:length(ei.tP.deconv.spSigAll);

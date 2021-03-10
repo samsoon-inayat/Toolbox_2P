@@ -16,28 +16,13 @@ Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge';
 mData.pdf_folder = [Uleth_one_drive '\PDFs\P15']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedData\Matlab'];
 disp('Done');
-%% protocol 10
-temp = load('T_10_All.mat');
-T10 = temp.T;
-selRecs10 = [8 9 10 11];
-ET10 = T10(selRecs10,:);
-data10 = getData_py(f,ET10(4,:));
-binWidths = [0.2,1.5];
-data10_1 = load_contexts_responses(data10,'define_contexts_1.m',binWidths);
-disp('done')
 %% Protocol 15
 temp = load('T_15_All.mat');
 T15 = temp.T;
 T15_old = T15;
 T15_c = T15;
 sel15 = [2 4 6 8 12];
-new_pd_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_1';
-for ii = 1:length(sel15)
-    tempF = T15_old{sel15(ii),7}{1};
-    pos = strfind(tempF,'Processed_Data');
-    T15{sel15(ii),7} = {[new_pd_folder '\' tempF((pos+length('Processed_Data\')):end)]};
-end
-new_pd_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_2';
+new_pd_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
 for ii = 1:length(sel15)
     tempF = T15_old{sel15(ii),7}{1};
     pos = strfind(tempF,'Processed_Data');
@@ -64,7 +49,7 @@ d15_1 = loadContextsResponses_ctrl(d15(3),[1 1],[0 0 0]);
 d15_c = getData_py_old(f,T15_c(sel15,:),1);
 binWidths = [0.15,1.75];
 % d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
-d15_c = loadContextsResponses_ctrl(d15_c,[1 1],[0 0 0]);
+d15_c = loadContextsResponses_ctrl(d15_c,[1 1],[1 1 1]);
 
 
 raster_data_c = get_rasters_data(d15_c,selContexts,rasterNames);
