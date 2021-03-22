@@ -80,7 +80,7 @@ for ii = 1:size(T,1)
         tP.signals = 100*(Fca-tP.Fcell_baseline{1})./tP.Fcell_baseline{1};
 %         tP.areCells = tP.iscell(:,1);
         disp(sprintf('Loading 2P plane %d spikes',pp));
-        [tP.deconv.caSigAll,tP.deconv.spSigAll] = getSpikes(tei{ii}.plane{pp},tP,owrdeconv);
+        [tP.deconv.caSigAll,tP.deconv.spSigAll] = getSpikes_old(tei{ii}.plane{pp},tP,owrdeconv);
         tei{ii}.plane{pp}.tP = tP;
 %         tei{ii}.plane{pp}.ops1{1} = tP.ops;
     end
