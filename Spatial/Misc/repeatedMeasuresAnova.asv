@@ -29,19 +29,10 @@ out.est_marginal_means_wf = est_margmean_wf;
 %% do all mulitple comparisons
 mcs_bonferroni = do_multiple_comparisons(rm,'bonferroni');
 mcs_lsd = do_multiple_comparisons(rm,'lsd');
-mcs_bonferroni = populate_combs_and_ps(rm,est_margmean,mcs_bonferroni,0);
-mcs_lsd = populate_combs_and_ps(rm,est_margmean,mcs_lsd,0);
-
-mcs_bonferroni_wf = do_multiple_comparisons(rm,'bonferroni');
-mcs_lsd_wf = do_multiple_comparisons(rm,'lsd');
-mcs_bonferroni_wf = populate_combs_and_ps(rm,est_margmean_wf,mcs_bonferroni,1);
-mcs_lsd_wf = populate_combs_and_ps(rm,est_margmean_wf,mcs_lsd,1);
-
+mcs_bonferroni = populate_combs_and_ps(rm,est_margmean,mcs_bonferroni,'bonferroni');
+mcs_lsd = populate_combs_and_ps(rm,est_margmean,mcs_lsd,'lsd');
 out.mcs = mcs_bonferroni;
 out.mcs_lsd = mcs_lsd;
-
-out.mcs_wf = mcs_bonferroni_wf;
-out.mcs_lsd_wf = mcs_lsd_wf;
 
 % out.sig_mcs = find_sig_mcs(mcs);
 
@@ -131,16 +122,11 @@ if length(all_factors) > 1
     end
 end
 
-function mcs = populate_combs_and_ps(rm,est_margmean,mcs,wf)
+function mcs = populate_combs_and_ps(rm,est_margmean,mcs,comparisonType)
 combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
-
-if wf == 0
-    all_factors = [rm.BetweenFactorNames rm.WithinFactorNames];
-    [between_factors,nbf] = get_between_factors(rm.BetweenDesign);
-else
-    all_factors = [rm.WithinFactorNames];
-    between_factors = []; nbf = 0;
-end
+n = 0;
+all_factors = [rm.BetweenFactorNames rm.WithinFactorNames];
+[between_factors,nbf] = get_between_factors(rm.BetweenDesign);
 within_factors = rm.WithinFactorNames;
 if length(all_factors) == 1
     factor1 = all_factors{1};

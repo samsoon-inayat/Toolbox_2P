@@ -488,7 +488,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4};colors{5}};
 set(gca,'xlim',[0.25 6.75],'ylim',[95 maxY-10],'FontSize',6,'FontWeight','Bold','TickDir','out');
 xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4','Test-Day'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-xtickangle(30)
+xtickangle(45)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{{'Percentage of','weight on day 1'},[0 0 0]});
 

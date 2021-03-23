@@ -9,4 +9,8 @@ selC.fcenter_limits = fcenter_limits; % to select field center locations to be i
 selC.frs_threshold = frs_threshold; % to select a threshold to be put on fitting r-square value
 selC.HaFD_threshold = HaFD_th;
 selC.HiFD_threshold = HiFD_th;
-selC.FR_threshold = FR;
+try
+    selC.FR_threshold = FR;
+catch
+    selC.FR_threshold = NaN;
+end

@@ -8,7 +8,7 @@ D = temp.D;
 
 T15_1 = load('T_15_1_Thy1.mat');
 T15 = load('T15.mat');
-T16 = load('T16.mat');
+% T16 = load('T16.mat');
 T10 = load('T.mat');
 
 T = T15_1.T;
