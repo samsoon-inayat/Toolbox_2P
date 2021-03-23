@@ -12,7 +12,7 @@ colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; 
 Uleth_one_drive = 'G:\OneDrives\OneDrive - University of Lethbridge';
-% Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge';
+Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge';
 mData.pdf_folder = [Uleth_one_drive '\PDFs\P15']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedData\Matlab'];
 disp('Done');
@@ -32,10 +32,10 @@ end
 %     process_abf(T15(sel15(ii),:));
 % end
 %%
-d15 = getData_py(f,T15(sel15(1:2),:),0);
+d15 = getData_py(f,T15_c(sel15(1:5),:),1);
 binWidths = [0.15,1.75];
 % d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
-d15 = loadContextsResponses_ctrl(d15,[1 1],[0 0 0]);
+d15 = loadContextsResponses_ctrl(d15,[1 1],[1 1 1]);
 selContexts = [1 2 3 3 4 4 5 5 6 7];
 rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
 raster_data = get_rasters_data(d15,selContexts,rasterNames);
