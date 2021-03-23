@@ -7,10 +7,10 @@ if exist(fileName,'file') & ~ow
 end
 
 signals = tP.signals;
-ccs = find(tP.iscell(:,1));
-% ccs = 1:size(signals,1);
-% caSigAll = cell(1,length(ccs));
-caSigAll = zeros(length(ccs),size(signals,2));
+% ccs = find(tP.iscell(:,1));
+ccs = 1:size(signals,1);
+caSigAll = cell(1,length(ccs));
+% caSigAll = zeros(length(ccs),size(signals,2));
 spSigAll = caSigAll;
 parfor cc = 1:length(ccs)
 %     disp(cc);

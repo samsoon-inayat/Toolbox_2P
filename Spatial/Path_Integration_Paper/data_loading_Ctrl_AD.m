@@ -3,6 +3,7 @@ for ii = 1:60
 end
 %%
 add_to_path
+%%
 clear all
 % clc
 [f,cName] = getFolders;
@@ -33,7 +34,7 @@ disp('Done');
 try
     send_email({'samsoon.inayat@uleth.ca'},'Neuroimaging 3 has started loading data for Protocol 10 and 15')
     for ii = 1:size(ET15_C,1)
-        ei15_C(ii) = getData_py_old(f,ET15_C(ii,:),1);
+        ei15_C(ii) = getData_py_old(f,ET15_C(ii,:),0);
     end
 
     for ii = 1:size(ET15_A,1)
