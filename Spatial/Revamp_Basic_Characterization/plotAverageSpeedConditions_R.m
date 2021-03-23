@@ -3,23 +3,20 @@ function plotAverageSpeedConditions(b,markers1,markers2,fn)
 %%
 n = 0;
 %%
-% ei = evalin('base','ei10_C');
-ei1 = evalin('base','ei10_A');
-ei2 = evalin('base','ei10_C1');
-ei3 = evalin('base','ei10_C');
-ei = [ei3 ei1(1:5) ei2([3])];
-% ei = [ei3 ei1(2:5) ei2([1 2 3])];
+ei = evalin('base','d15');
 
 mData = evalin('base','mData');
 
+conds = [3 4 5];
+
 for an = 1:length(ei)
-    for cc = 1:4
+    for cci = 1:length(conds)
+        cc = conds(cci);
         thisspeed = ei{an}.plane{1}.contexts(cc).rasters.airT.speed;
-        meanSpeedTrials(:,cc) = nanmean(thisspeed,2);
+        meanSpeedTrials(:,cci) = nanmean(thisspeed,2);
         thisspeed = ei{an}.plane{1}.contexts(cc).rasters.airIT.speed;
-        meanSpeedTrialsI(:,cc) = nanmean(thisspeed,2);
+        meanSpeedTrialsI(:,cci) = nanmean(thisspeed,2);
     end
-    
     meanSpeedTrialsAnimalsT(an,:) = mean(meanSpeedTrials);
     meanSpeedTrialsAnimalsIT(an,:) = mean(meanSpeedTrialsI);
 end
