@@ -116,7 +116,7 @@ thisCols_all = mData.colors;
 for selRowi = 1:5
     selRowi
     these_cols = selColsAll(selRowi,:)
-    ass = as1{selRowi};
+    ass = as{selRowi};
     ff = makeFigureWindow__one_axes_only(5,[10 4 1.25 1],[0.19 0.2 0.79 0.75]);
     axes(ff.ha);hold on;
 %     ass = as1{selRowi};
@@ -131,7 +131,7 @@ for selRowi = 1:5
     plot(1:max(lenTs),ones(size(1:max(lenTs)))*7,'m','linewidth',0.5);
     set(gca,'xlim',[0 max(lenTs)],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
     changePosition(gca,[0.03 0.09 -0.03 -0.1])
-    put_axes_labels(gca,{'Intertrial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
+    put_axes_labels(gca,{'Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
     legs = [];
     for ii = 1:length(these_cols)
         legs{ii} = sprintf('Day %1d',ii);
@@ -142,7 +142,7 @@ for selRowi = 1:5
 %     putLegend(ff.ha,legs,'colors',{'k'});
 %     title(sprintf('Animal %d',temp.animalIDs(selRows(selRowi))));
     changePosition(gca,[0 -0.05 0 0]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_InterTrials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_Trials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
 end
 return;
 end

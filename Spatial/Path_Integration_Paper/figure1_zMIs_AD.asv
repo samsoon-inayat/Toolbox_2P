@@ -63,13 +63,7 @@ n = 0;
 %%
 
 if 1
-    dataT = [[ones(size(var_oi_C,1),1);2*ones(size(var_oi_A,1),1)] [var_oi_C;var_oi_A]];
-    between = array2table(dataT);
-    between.Properties.VariableNames = {'Group','C1','C2','C3','C4'};
-    between.Group = categorical(between.Group);
-    within = array2table([1 2 3 4]'); within.Properties.VariableNames = {'Conds'};
-    within.Conds = categorical(within.Conds);
-    ra = repeatedMeasuresAnova(between,within,0.05);
+    dataT = 
 end
 %%
 runthis = 1;

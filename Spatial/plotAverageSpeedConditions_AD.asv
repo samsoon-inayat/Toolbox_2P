@@ -65,12 +65,12 @@ xticks = xdata(1:2:end)+0.5; xticklabels = {'C1','C2','C3','C4','C1','C2','C3','
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 changePosition(gca,[0.03 0.03 0.02 -0.11]);
 put_axes_labels(gca,{[],[0 0 0]},{{'Average','Speed (cm/sec)'},[0 0 0]});
-% rectangle(gca,'Position',[0.75 21 1 2],'edgecolor','k','facecolor','k');
-% text(1.85,22,'Trials','FontSize',5);
-% rectangle(gca,'Position',[6 21 1 2],'edgecolor','k');
-% text(7.2,22,'Inter-Trials','FontSize',5);
-% text(3.5,18,'Control','FontSize',7);
-% text(18.5,18,'APP','FontSize',7);
+rectangle(gca,'Position',[0.75 21 1 2],'edgecolor','k','facecolor','k');
+text(1.85,22,'Trials','FontSize',5);
+rectangle(gca,'Position',[6 21 1 2],'edgecolor','k');
+text(7.2,22,'Inter-Trials','FontSize',5);
+text(3.5,18,'Control','FontSize',7);
+text(18.5,18,'APP','FontSize',7);
 % applyhatch_plusC(gcf
 save_pdf(hf,mData.pdf_folder,'AverageSpeedConditions',600);
 

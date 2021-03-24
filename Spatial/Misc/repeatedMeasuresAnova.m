@@ -1,4 +1,4 @@
-function out = repeatedMeasuresAnova(between,within,varargin)
+function out = repeatedMeasuresAnova(between,within,alpha)
 [between_factors,nbf] = get_between_factors(between);
 nwf = size(within,2);
 if nbf > 1 || nwf > 2
@@ -21,19 +21,24 @@ out.ranova = rm.ranova('WithinModel',rm.WithinModel);
 all_factors = [between_factors within_factors];
 [est_margmean,group_stats] = get_est_margmean_and_group_stats(rm,all_factors);
 [est_margmean_wf,group_stats_wf] = get_est_margmean_and_group_stats(rm,within_factors);
+if ~isempty(between_factors)
+    [est_margmean_bf,group_stats_bf] = get_est_margmean_and_group_stats(rm,between_factors);
+    out.group_stats_bf = group_stats_bf;
+    out.est_marginal_means_bf = est_margmean_bf;
+end
 out.group_stats = group_stats;
 out.est_marginal_means = est_margmean;
 out.group_stats_wf = group_stats_wf;
 out.est_marginal_means_wf = est_margmean_wf;
 
 %% do all mulitple comparisons
-mcs_bonferroni = do_multiple_comparisons(rm,'bonferroni');
-mcs_lsd = do_multiple_comparisons(rm,'lsd');
+mcs_bonferroni = do_multiple_comparisons(rm,'bonferroni',alpha);
+mcs_lsd = do_multiple_comparisons(rm,'lsd',alpha);
 mcs_bonferroni = populate_combs_and_ps(rm,est_margmean,mcs_bonferroni,0);
 mcs_lsd = populate_combs_and_ps(rm,est_margmean,mcs_lsd,0);
 
-mcs_bonferroni_wf = do_multiple_comparisons(rm,'bonferroni');
-mcs_lsd_wf = do_multiple_comparisons(rm,'lsd');
+mcs_bonferroni_wf = do_multiple_comparisons(rm,'bonferroni',alpha);
+mcs_lsd_wf = do_multiple_comparisons(rm,'lsd',alpha);
 mcs_bonferroni_wf = populate_combs_and_ps(rm,est_margmean_wf,mcs_bonferroni,1);
 mcs_lsd_wf = populate_combs_and_ps(rm,est_margmean_wf,mcs_lsd,1);
 
@@ -113,11 +118,12 @@ cemm = size(est_margmean,2);
 est_margmean{:,cemm+1} = grp_stats{:,end};
 est_margmean.Properties.VariableNames{cemm+1} = 'Formula_StdErr';
 
-function mcs = do_multiple_comparisons(rm,comparison_type)
+function mcs = do_multiple_comparisons(rm,comparison_type,alpha)
 all_factors = [rm.BetweenFactorNames rm.WithinFactorNames];
 for ii = 1:length(all_factors)
+%     ii
     nameOfVariable = sprintf('mcs.%s',all_factors{ii});
-    rhs = sprintf('multcompare(rm,all_factors{ii},''ComparisonType'',''%s'');',comparison_type);
+    rhs = sprintf('multcompare(rm,all_factors{ii},''ComparisonType'',''%s'',''Alpha'',%d);',comparison_type,alpha);
     cmdTxt = sprintf('%s = %s;',nameOfVariable,rhs); eval(cmdTxt)
 end
 if length(all_factors) > 1
@@ -126,7 +132,7 @@ if length(all_factors) > 1
     for ii = 1:size(combs,1)
         ind1 = combs(ii,1); ind2 = combs(ii,2);
         nameOfVariable = sprintf('mcs.%s_by_%s',all_factors{ind1},all_factors{ind2});
-        rhs = sprintf('multcompare(rm,all_factors{ind1},''By'',all_factors{ind2},''ComparisonType'',''%s'');',comparison_type);
+        rhs = sprintf('multcompare(rm,all_factors{ind1},''By'',all_factors{ind2},''ComparisonType'',''%s'',''Alpha'',%d);',comparison_type,alpha);
         cmdTxt = sprintf('%s = %s;',nameOfVariable,rhs); eval(cmdTxt)
     end
 end
