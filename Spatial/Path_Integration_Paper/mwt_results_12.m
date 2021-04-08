@@ -1,9 +1,16 @@
 function mwt_results
 
+mData = evalin('base','mData');
+colors = mData.colors;
+
 filename = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\PDFs\APP Figure 1 MWT Data.xlsx';
 
-
+marker_styles = {'s','d','^','s','d','^','^','*'};
+line_styles = {'-',':','-.','-',':','-.'};
+mSize = 8;
 %% 12months speed
+
+
 
 [num,strings,raw] = xlsread(filename,1,'A1:I24');
 data = array2table(num);
@@ -15,20 +22,18 @@ within.Properties.VariableNames = {'Day'};
 within.Day = categorical(within.Day);
 ra = repeatedMeasuresAnova(data,within,0.05);
 n = 0;
-
+%%
 if 1
     mVar = ra.est_marginal_means.Mean;
     semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < -0.05;
-    xdata = [1 2 3 4 5 6 [1 2 3 4 5 6]+8]; 
-
+    xdata = 1:8;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.9 1],'color','w');
     hold on;
-    tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
-    tcolors = repmat(tcolors,2,1)';
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+    ii = 1;
+    plot(xdata,mVar(1:8),'.','color',colors{ii},'markersize',mSize,'marker',marker_styles{ii});
+    plot(xdata,mVar(9:16),'linewidth',1.5,'color',colors{ii+1},'linestyle',line_styles{ii});
+    errorbar(xs1,allTrials(:,ii),allSEM(:,ii),'.','color',thisCols{ii},'markersize',mSize);
 
     set(gca,'xlim',[0.25 14.75],'ylim',[0 46.1434],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     xticks = [1.5 3.5 5.5 9.5 11.5 13.5]; xticklabels = {'Day1','Day2','Day3'}; xticklabels = repmat(xticklabels,2,1)';
