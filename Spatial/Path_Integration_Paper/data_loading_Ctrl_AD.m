@@ -6,6 +6,7 @@ add_to_path
 %%
 clear all
 % clc
+%%
 [f,cName] = getFolders;
 T10 = load('T_10_All.mat');
 T15 = load('T_15_All.mat');
@@ -18,7 +19,7 @@ ET10_C = ET10_C([6 7 9 11 12],:);
 T10_AD = load('T_10_All_AD.mat');
 T15_AD = load('T_15_All_AD.mat');
 ET10_A = T10_AD.T(2:6,:); ET15_A = T15_AD.T([1 4 9 10 13 14],:); 
-clear('selRecs10','selRecs15','T10','T15','T10_AD','T15_AD','cName')
+% clear('selRecs10','selRecs15','T10','T15','T10_AD','T15_AD','cName')
 disp('done')
 % \174374\2019-02-12\1_002'
 % %%
