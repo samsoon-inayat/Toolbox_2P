@@ -1,8 +1,9 @@
 for ii = 1:60
     pause(1);
 end
+%%
 clear all
-% add_to_path
+add_to_path
 % clc
 %%
 [f,cName] = getFolders;
@@ -32,10 +33,10 @@ end
 %     process_abf(T15(sel15(ii),:));
 % end
 %%
-d15 = getData_py(f,T15_c(sel15(1:5),:),1);
+d15 = getData_py(f,T15_c(sel15(1:5),:),0);
 binWidths = [0.15,1.75];
 % d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
-d15 = loadContextsResponses_ctrl(d15,[1 1],[1 1 1]);
+d15 = loadContextsResponses_ctrl(d15,[1 1],[0 0 0]);
 selContexts = [1 2 3 3 4 4 5 5 6 7];
 rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
 raster_data = get_rasters_data(d15,selContexts,rasterNames);

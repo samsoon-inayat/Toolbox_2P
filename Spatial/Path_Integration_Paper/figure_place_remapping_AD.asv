@@ -18,10 +18,10 @@ paramMs_A = parameter_matrices('get','10_A');
 % after getting all matrics, we can apply selection criteria to select a
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 120]; fcens = [0 140]; rs_th = 0;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th =3; fwids = [1 120]; fcens = [0 140]; rs_th = 0;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 included_cells = 'All';
-conditionsAndRasterTypes = [11 21 31 41];
+conditionsAndRasterTypes = [11;21;31;41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
 [cpMs_C,pMs_C] = parameter_matrices('select','10_C',{paramMs_C,selC});
 [cpMs_A,pMs_A] = parameter_matrices('select','10_A',{paramMs_A,selC});
@@ -41,7 +41,7 @@ group = 1;
 
 filename_and = fullfile(mData.pd_folder,'pop_corr_mat_remapping_and_AD.mat');
 filename_or = fullfile(mData.pd_folder,'pop_corr_mat_remapping_or_AD.mat');
-if 0
+if 1
     cellSel_C = ''; cellSel_A = ''; cellSel_C = cpMs_C; cellSel_A = cpMs_A;
     a_trials = {3:10};
     for ii = 1:length(a_trials)
@@ -60,8 +60,8 @@ if 0
     disp('Done');
     return;
 else
-%     temp = load(filename_and);
-%     all_out_C_and = temp.all_out_C{1};     all_out_A_and = temp.all_out_A{1}; a_trials = temp.a_trials{1};
+    temp = load(filename_and);
+    all_out_C_and = temp.all_out_C{1};     all_out_A_and = temp.all_out_A{1}; a_trials = temp.a_trials{1};
     temp = load(filename_or);
     all_out_C_or = temp.all_out_C{1};     all_out_A_or = temp.all_out_A{1}; a_trials = temp.a_trials{1};
 end

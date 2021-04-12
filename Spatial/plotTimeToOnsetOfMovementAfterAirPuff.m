@@ -45,7 +45,7 @@ for an = 1:length(ei)
 end
 n=0;
 %%
-if 0
+if 1
 moas = duration_onset_moveC;
 for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
@@ -57,7 +57,7 @@ within = table([1 2 3 4]');
 within.Properties.VariableNames = {'Condition'};
 within.Condition = categorical(within.Condition);
 
-ra = repeatedMeasuresAnova(dataT,within);
+ra = repeatedMeasuresAnova(dataT,within,0.05);
 
 mVar = ra.est_marginal_means.Mean;
 semVar = ra.est_marginal_means.Formula_StdErr;
@@ -94,7 +94,7 @@ within = table([1 2 3 4]');
 within.Properties.VariableNames = {'Condition'};
 within.Condition = categorical(within.Condition);
 
-ra = repeatedMeasuresAnova(dataT,within);
+ra = repeatedMeasuresAnova(dataT,within,0.05);
 
 mVar = ra.est_marginal_means.Mean;
 semVar = ra.est_marginal_means.Formula_StdErr;
