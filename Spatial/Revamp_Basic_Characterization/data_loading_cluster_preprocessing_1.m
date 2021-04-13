@@ -32,6 +32,7 @@ end
 % for ii = 1:length(sel15)
 %     process_abf(T15(sel15(ii),:));
 % end
+disp('done')
 %%
 d15 = getData_py(f,T15_c(sel15(1:5),:),0);
 binWidths = [0.15,1.75];

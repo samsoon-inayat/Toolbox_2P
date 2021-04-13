@@ -66,10 +66,16 @@ try
     training_data_C = behaviorProcessor;
     training_data_A = behaviorProcessor_AD;
 
-    parameter_matrices('calculate','10_C',ei10_C);
-    parameter_matrices('calculate','15_C',ei15_C);
-    parameter_matrices('calculate','10_A',ei10_A);
-    parameter_matrices('calculate','15_A',ei15_A);
+    parameter_matrices_ctrl('calculate','10_C',ei10_C);
+    parameter_matrices_ctrl('calculate','15_C',ei15_C);
+    parameter_matrices_ctrl('calculate','10_A',ei10_A);
+    parameter_matrices_ctrl('calculate','15_A',ei15_A);
+%     
+%     parameter_matrices('calculate','10_C',ei10_C);
+%     parameter_matrices('calculate','15_C',ei15_C);
+%     parameter_matrices('calculate','10_A',ei10_A);
+%     parameter_matrices('calculate','15_A',ei15_A);
+    
     send_email({'samsoon.inayat@uleth.ca','brendan.mcallister@uleth.ca'},'Complete - Loading data for Protocol 10 and 15')
 catch
     send_email({'samsoon.inayat@uleth.ca'},'Error occurred while loading data')

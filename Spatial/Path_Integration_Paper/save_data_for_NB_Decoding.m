@@ -1,18 +1,47 @@
 function save_data_for_NB_Decoding
 
-protocol_C = '10_C';
-protocol_A = '10_A';
-ei_C = evalin('base','ei10_C');
-ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ET_C = evalin('base',sprintf('ET%s',protocol_C));
-ET_A = evalin('base',sprintf('ET%s',protocol_A));
-selAnimals_C = 1:length(ei_C);
-selAnimals_A = 1:length(ei_A);
+
+% typeP = 'Population';cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
+typeP = 'Place';cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = [0.1 5000];
+
+conditionsAndRasterTypes = [11;21;31;41];
+% conditionsAndRasterTypes = [11 21 31 41];
+selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
+out = read_data_from_base_workspace_AD(selC)
+
+ei_C = out.eis{1}; ei_A = out.eis{2};
+pMs_C = out.pMs{1}; pMs_A = out.pMs{2};
+paramMs_C = out.paramMs{1}; paramMs_A = out.paramMs{2};
+cpMs_C = out.cpMs{1}; cpMs_A = out.cpMs{2};
+selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
+perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
+filename_or = fullfile(mData.pd_folder,sprintf('pop_corr_mat_remapping_or_AD_%s.mat',typeP));
+if 0
+    cellSel_C = ''; cellSel_A = ''; cellSel_C = cpMs_C; cellSel_A = cpMs_A;
+    a_trials = {3:10};
+    for ii = 1:length(a_trials)
+        out = get_mean_rasters(pMs_C',paramMs_C,selAnimals_C,ei_C,conditionsAndRasterTypes',selC,cellSel_C,a_trials{ii});
+        [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T,out.all_corr_an,out.all_corr_cell_an] = get_pop_vector_corr(out,conditionsAndRasterTypes,min(out.sz(:)),cellSel_C);
+        all_out_C{ii} = out;
+        out = get_mean_rasters(pMs_A',paramMs_A,selAnimals_A,ei_A,conditionsAndRasterTypes',selC,cellSel_A,a_trials{ii});
+        [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T,out.all_corr_an,out.all_corr_cell_an] = get_pop_vector_corr(out,conditionsAndRasterTypes,49,cellSel_A);
+        all_out_A{ii} = out;
+    end
+    save(filename_or,'all_out_C','all_out_A','a_trials','-v7.3');
+    disp('Done');
+    return;
+else
+    temp = load(filename_or);
+    all_out_C_or = temp.all_out_C{1};     all_out_A_or = temp.all_out_A{1}; a_trials = temp.a_trials{1};
+end
 
 [out.aXs_C,out.aYs_C] = getXYs(ei_C,selAnimals_C);
 [out.aXs_A,out.aYs_A] = getXYs(ei_A,selAnimals_A);
-save('NB_decoding.mat','-struct','out','-v7.3');
+fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_C_%s.mat',typeP));
+save(fileName,'-struct','all_out_C_or','-v7.3');
+fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_A_%s.mat',typeP));
+save(fileName,'-struct','all_out_A_or','-v7.3');
 n = 0;
 
 function [aXs,aYs] = getXYs(ei_C,selAnimals_C)

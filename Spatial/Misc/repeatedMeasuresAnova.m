@@ -1,4 +1,7 @@
 function out = repeatedMeasuresAnova(between,within,alpha)
+if ~exist('alpha','var')
+    alpha = 0.05;
+end
 [between_factors,nbf] = get_between_factors(between);
 nwf = size(within,2);
 if nbf > 1 || nwf > 2
