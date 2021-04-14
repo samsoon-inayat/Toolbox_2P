@@ -176,7 +176,7 @@ if runthis(3)
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = {'CRTG','CPTG'};
+    xticks = xdata(1:end)+0; xticklabels = {'Control','APP'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
     changePosition(gca,[0.17 0 -0.4 -0.09]);

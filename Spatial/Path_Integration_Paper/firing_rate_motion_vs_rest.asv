@@ -95,7 +95,7 @@ end
 % end
 %%
 if 1
-    tcolors = {'k','k','k','k'};
+    tcolors = {'k','k','r','r'};
 
     data_C = [out_C.m_sp_animal_level_rest' out_C.m_sp_animal_level_motion'];
     data_A = [out_A.m_sp_animal_level_rest' out_A.m_sp_animal_level_motion'];
@@ -110,8 +110,8 @@ if 1
     ra = repeatedMeasuresAnova(dataT,within);
 
     mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
-    combs = ra.mcs.combs; p = 2*ra.mcs.p; h = ra.mcs.p < 0.05;
-    combs = circshift(combs,1); p = circshift(p,1); h = circshift(h,1);
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    combs = circshift(combs,1); p = circ
      xdata = [1 2 4 5]; 
     colors = mData.colors;
     if isnan(zMI_Th)
@@ -122,13 +122,13 @@ if 1
     hold on;
 %     tcolors ={colors{1};colors{2};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
     for ii = 1:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     set(hbs(1),'facecolor',[0.5 0.5 0.5],'edgecolor','k');
-    set(hbs(3),'facecolor',[0.5 0.5 0.5],'edgecolor','k');
+    set(hbs(3),'facecolor','r','edgecolor','r');
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     xticks = [1.5 4.5]; xticklabels = {'Control','APP'};
 %     xtickangle(20)
