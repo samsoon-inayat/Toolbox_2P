@@ -1,6 +1,6 @@
 function tracePlots (ei)
 %%
-ei = evalin('base','ei10');
+ei = evalin('base','ei10_C');
 % data = evalin('base','data');
 % dataB = evalin('base','datab');
 % dataAOn = evalin('base','dataAOn010');
@@ -432,7 +432,7 @@ end
 % showCells(102,ei,ccsi);
 h = figure(102);clf;plot(0,0);
 % ccsi = [19 85 127 129];
-cellList = ccsi;
+cellList = [];
 showCells(gca,tei,pl,cellList)
 set(h,'units','inches');
 set(h,'Position',[10 4 1.5 1.5]);
