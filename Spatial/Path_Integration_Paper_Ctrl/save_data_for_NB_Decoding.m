@@ -29,6 +29,10 @@ rasterNames = {'airT','airT','airT','airT'};
 raster_data_C = get_rasters_data(ei_C,selContexts,rasterNames);
 % raster_data_A = get_rasters_data(ei_A,selContexts,rasterNames);
 
+
+fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_raster.mat'));
+save(fileName,'raster_data_C','-v7.3');
+
 cn = 1; train = 1:2:10; test = 2:2:10;
 % 
 [outNB.aXs_C_train,outNB.aYs_C_train] = getXYs1(raster_data_C,cn,train,pMs_C); [outNB.aXs_C_test,outNB.aYs_C_test] = getXYs1(raster_data_C,cn,test,pMs_C);
