@@ -8,14 +8,14 @@ typeP = 'Place';cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150
 conditionsAndRasterTypes = [11;21;31;41];
 % conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN,FR);
-out = read_data_from_base_workspace_AD(selC)
+out = read_data_from_base_workspace_onlyC(selC)
 
-ei_C = out.eis{1}; ei_A = out.eis{2};
-pMs_C = out.pMs{1}; pMs_A = out.pMs{2};
-paramMs_C = out.paramMs{1}; paramMs_A = out.paramMs{2};
-cpMs_C = out.cpMs{1}; cpMs_A = out.cpMs{2};
-selAnimals_C = out.selAnimals{1}; selAnimals_A = out.selAnimals{2};
-perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
+ei_C = out.eis{1}; %ei_A = out.eis{2};
+pMs_C = out.pMs{1}; %pMs_A = out.pMs{2};
+paramMs_C = out.paramMs{1}; %paramMs_A = out.paramMs{2};
+cpMs_C = out.cpMs{1}; %cpMs_A = out.cpMs{2};
+selAnimals_C = out.selAnimals{1}; %selAnimals_A = out.selAnimals{2};
+perc_cells_C = out.perc_cells{1}; %perc_cells_A = out.perc_cells{2};
 
 % [out.aXs_C,out.aYs_C,out.aYs1_C] = getXYs(ei_C,selAnimals_C);
 % [out.aXs_A,out.aYs_A,out.aYs1_A] = getXYs(ei_A,selAnimals_A);
@@ -24,33 +24,20 @@ perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 % save(fileName,'-struct','out','-v7.3');
 % return;
 selContexts = [1 2 3 4];
+% rasterNames = {'airD','airD','airD','airD'};
 rasterNames = {'airT','airT','airT','airT'};
 raster_data_C = get_rasters_data(ei_C,selContexts,rasterNames);
-raster_data_A = get_rasters_data(ei_A,selContexts,rasterNames);
+% raster_data_A = get_rasters_data(ei_A,selContexts,rasterNames);
 
-rast = raster_data_C{1}{1}.fromFrames.sp_rasters(1:2:10,:,:);
-rast = permute(rast,[2 1 3]);
-rast1 = reshape(rast,size(rast,1)*size(rast,2),size(rast,3));
-figure(1);clf;plot(rast1(:,1));
 
-fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_raster_C.mat'));
+fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_raster.mat'));
 save(fileName,'raster_data_C','-v7.3');
 
-fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_raster_A.mat'));
-save(fileName,'raster_data_A','-v7.3');
-return
-
-
-train = 1:10;% test = 2:2:10;
+cn = 1; train = 1:2:10; test = 2:2:10;
 % 
-% [outNB.aXs_C_train,outNB.aYs_C_train] = getXYs1(raster_data_C,cn,train,pMs_C); [outNB.aXs_C_test,outNB.aYs_C_test] = getXYs1(raster_data_C,cn,test,pMs_C);
-% 
+[outNB.aXs_C_train,outNB.aYs_C_train] = getXYs1(raster_data_C,cn,train,pMs_C); [outNB.aXs_C_test,outNB.aYs_C_test] = getXYs1(raster_data_C,cn,test,pMs_C);
+
 % [outNB.aXs_A_train,outNB.aYs_A_train] = getXYs1(raster_data_A,cn,train,pMs_A); [outNB.aXs_A_test,outNB.aYs_A_test] = getXYs1(raster_data_A,cn,test,pMs_A);
-
-for cn = 1:4
-    [outNB.XsC{cn},outNB.YsC{cn}] = getXYs1(raster_data_C,cn,train,pMs_C);
-    [outNB.XsA{cn},outNB.YsA{cn}] = getXYs1(raster_data_A,cn,train,pMs_A);
-end
 
 fileName = fullfile(mData.pd_folder,sprintf('NB_decoding.mat'));
 save(fileName,'-struct','outNB','-v7.3');
@@ -103,7 +90,6 @@ for ii = 1:length(raster_data)
         n = 0;
     end
     [rnanYs,cnanYs] = find(isnan(Ys));
-%     [Ys,mu,sigma] = zscore(Ys,0,1);
     aYs_train{ii} = Ys';
     
     sp_rasters = permute(rd.sp_rasters(train,:,:),[2 1 3]);
