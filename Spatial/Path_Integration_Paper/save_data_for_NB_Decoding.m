@@ -3,7 +3,7 @@ function save_data_for_NB_Decoding
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 
 % typeP = 'Population';cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
-typeP = 'Place';cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = [0.1 5000];
+typeP = 'Place';cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = NaN;%[0.1 5000];
 
 conditionsAndRasterTypes = [11;21;31;41];
 % conditionsAndRasterTypes = [11 21 31 41];
@@ -24,16 +24,16 @@ perc_cells_C = out.perc_cells{1}; perc_cells_A = out.perc_cells{2};
 % save(fileName,'-struct','out','-v7.3');
 % return;
 selContexts = [1 2 3 4];
-% rasterNames = {'airD','airD','airD','airD'};
 rasterNames = {'airT','airT','airT','airT'};
 raster_data_C = get_rasters_data(ei_C,selContexts,rasterNames);
 raster_data_A = get_rasters_data(ei_A,selContexts,rasterNames);
 
-cn = 1; train = 1:2:10; test = 2:2:10;
-% 
-[outNB.aXs_C_train,outNB.aYs_C_train] = getXYs1(raster_data_C,cn,train); [outNB.aXs_C_test,outNB.aYs_C_test] = getXYs1(raster_data_C,cn,test);
 
-[outNB.aXs_A_train,outNB.aYs_A_train] = getXYs1(raster_data_A,cn,train); [outNB.aXs_A_test,outNB.aYs_A_test] = getXYs1(raster_data_A,cn,test);
+cn = 3; train = 1:2:10; test = 2:2:10;
+% 
+[outNB.aXs_C_train,outNB.aYs_C_train] = getXYs1(raster_data_C,cn,train,pMs_C); [outNB.aXs_C_test,outNB.aYs_C_test] = getXYs1(raster_data_C,cn,test,pMs_C);
+
+[outNB.aXs_A_train,outNB.aYs_A_train] = getXYs1(raster_data_A,cn,train,pMs_A); [outNB.aXs_A_test,outNB.aYs_A_test] = getXYs1(raster_data_A,cn,test,pMs_A);
 
 fileName = fullfile(mData.pd_folder,sprintf('NB_decoding.mat'));
 save(fileName,'-struct','outNB','-v7.3');
@@ -67,10 +67,10 @@ n = 0;
 % end
 % 
 
-function [aXs_train,aYs_train] = getXYs1(raster_data,cn,train)
-
+function [aXs_train,aYs_train] = getXYs1(raster_data,cn,train,pMs)
+pMsC = pMs{cn};
 for ii = 1:length(raster_data)
-    iscell = raster_data{ii}{cn}.iscell;
+    iscell = raster_data{ii}{cn}.iscell;% & pMsC.cellSel{ii};
     rd = raster_data{ii}{cn}.fromFrames;
     
     Ys = [];
@@ -82,7 +82,11 @@ for ii = 1:length(raster_data)
     dist = rd.speed(train,:);
     dist = reshape(dist',size(dist,1)*size(dist,2),1);
     Ys(:,2) = dist(inds);
-    
+    if sum(isnan(Ys(:)))>0
+        n = 0;
+    end
+    [rnanYs,cnanYs] = find(isnan(Ys));
+    [Ys,mu,sigma] = zscore(Ys,0,1);
     aYs_train{ii} = Ys';
     
     sp_rasters = permute(rd.sp_rasters(train,:,:),[2 1 3]);
@@ -90,7 +94,15 @@ for ii = 1:length(raster_data)
     sp_rastersR = sp_rastersR(:,iscell==1);
     
     
-    Xs = sp_rastersR(inds,:)+1;
+    Xs = sp_rastersR(inds,:);
+    [rnanXs,cnanXs] = find(isnan(Xs));
+    Xs(:,cnanXs) = [];
+    Xs = fillmissing(Xs,'linear','EndValues','nearest');
+%     mXs = nanmean(Xs,2);
+    [Xs,mu,sigma] = zscore(Xs,0,2);
+    if sum(isnan(Xs(:))) > 0
+        n = 0;
+    end
 %     disp(max(Xs(:)));
 %     [rs,cs] = find(Xs>1000);
 %     if ~isempty(rs)

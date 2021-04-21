@@ -38,18 +38,18 @@ disp('Done');
 %%
 try
     send_email({'samsoon.inayat@uleth.ca'},'Neuroimaging 3 has started loading data for Protocol 10 and 15')
-    for ii = 1:size(ET15_C,1)
-        ei15_C(ii) = getData_py_old(f,ET15_C(ii,:),0);
-    end
-
-    for ii = 1:size(ET15_A,1)
-        ei15_A(ii) = getData_py_old(f,ET15_A(ii,:),0);
-    end
-
-    ei15_C = loadContextsResponses_ctrl_old(ei15_C,[1 1],[0 0 0]);
-    ei15_A = loadContextsResponses_ctrl_old(ei15_A,[1 1],[0 0 0]);
-    % ei15_AA = loadContextsResponses(ei15_AA,[1 1],[0 0 0]);
-    % ei15_A(3) = ei15_AA(2);
+%     for ii = 1:size(ET15_C,1)
+%         ei15_C(ii) = getData_py_old(f,ET15_C(ii,:),0);
+%     end
+% 
+%     for ii = 1:size(ET15_A,1)
+%         ei15_A(ii) = getData_py_old(f,ET15_A(ii,:),0);
+%     end
+% 
+%     ei15_C = loadContextsResponses_ctrl_old(ei15_C,[1 1],[0 0 0]);
+%     ei15_A = loadContextsResponses_ctrl_old(ei15_A,[1 1],[0 0 0]);
+%     % ei15_AA = loadContextsResponses(ei15_AA,[1 1],[0 0 0]);
+%     % ei15_A(3) = ei15_AA(2);
 
 
     % for loading behavior and 2p data
@@ -67,9 +67,9 @@ try
     training_data_A = behaviorProcessor_AD;
 
     parameter_matrices_ctrl('calculate','10_C',ei10_C);
-    parameter_matrices_ctrl('calculate','15_C',ei15_C);
+%     parameter_matrices_ctrl('calculate','15_C',ei15_C);
     parameter_matrices_ctrl('calculate','10_A',ei10_A);
-    parameter_matrices_ctrl('calculate','15_A',ei15_A);
+%     parameter_matrices_ctrl('calculate','15_A',ei15_A);
 %     
 %     parameter_matrices('calculate','10_C',ei10_C);
 %     parameter_matrices('calculate','15_C',ei15_C);

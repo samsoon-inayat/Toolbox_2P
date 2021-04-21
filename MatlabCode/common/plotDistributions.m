@@ -1,7 +1,32 @@
 function [ha,hb,hca,varargout] = plotDistributions (distD,varargin)
-hb = NaN;
-hca = NaN;
-ha = NaN;
+hb = NaN; hca = NaN; ha = NaN;
+if nargin == 1
+    if ismatrix(distD)
+        distDo = [];
+        allVals = [];
+        allValsG = [];
+        for cc = 1:size(distD,2)
+            allValsGt = [];
+            for rr = 1:size(distD,1)
+                thisVal = distD{rr,cc};
+                thisVal = mean(thisVal,2);
+%                 thisVal = max(thisVal,[],2);
+                thisVal = thisVal(:);
+%                 thisVal = thisVal(thisVal > 0);
+                allVals = [allVals;thisVal(:)];
+                distDo{rr,cc} = thisVal;
+                allValsGt = [allValsGt;thisVal(:)];
+            end
+            allValsG{cc} = allValsGt;
+        end
+        ha = distDo;
+        hb = allVals;
+        hca = allValsG;
+    end
+    return;
+end
+
+
 
 % allD = [];
 % for ii = 1:length(distD)
@@ -175,6 +200,9 @@ if ismatrix(distD) && strcmp(do_mean,'Yes')
         allBars = [];
         for an = 1:size(distD,1)
             bd = distD{an,dd};
+            if size(bd,1) > 1 || size(bd,2) > 1
+                bd = bd(:);
+            end
             [bar1 xs] = hist(bd,bins); bar1 = 100*bar1/sum(bar1);
             allBars = [allBars;bar1];
         end
@@ -183,11 +211,11 @@ if ismatrix(distD) && strcmp(do_mean,'Yes')
         shadedErrorBar(bins,mDist,semDist,{'color',cols{dd}},0.7);
     end
     ha = gca;
-    sigR = significanceTesting(distD);
+%     sigR = significanceTesting(distD);
     
-    if nargout == 4
-        varargout{1} = sigR;
-    end
+%     if nargout == 4
+%         varargout{1} = sigR;
+%     end
     
     axes(ha);
     if ~isempty(legs)

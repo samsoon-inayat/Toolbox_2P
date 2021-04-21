@@ -3,7 +3,7 @@ function firing_rate_motion_vs_rest
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 
 typeP = 'Population';cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
-% typeP = 'Place';cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = [0.1 5000];
+% typeP = 'Place';cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = [0.1 5000];FR = NaN;
 
 conditionsAndRasterTypes = [11;21;31;41];
 % conditionsAndRasterTypes = [11 21 31 41];
@@ -32,7 +32,7 @@ end
 tcolors = {'k','r','k','r'};
 n=0;
 %%
-if 0
+if 1
     perc_cells_or_C = out_C.m_sp_animal_level;
     perc_cells_or_A = out_A.m_sp_animal_level;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
@@ -140,8 +140,45 @@ return;
 end
 
 
+%%
+if 1
+    tcolors = {'k','r'};
+   distD(:,1) = out_C.allVals_an';
+   distD(:,2) = out_A.allVals_an';
+   [distDo,allVals,allValsG] = plotDistributions(distD);
+   minBin = min(allVals);
+   maxBin = max(allVals);
+   [h,p,ks2stat] = kstest2(allValsG{1},allValsG{2});
+   [h,p,cd,ks2stat] = ttest2(allValsG{1},allValsG{2});
+   %%
+   incr = 0.1; %maxBin =
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.75 1],'color','w');
+   hold on;
+%    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+   [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
+   %%
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    for ii = 1:length(hbs)
+        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    set(hbs(1),'facecolor',[0.5 0.5 0.5],'edgecolor','k');
+    set(hbs(3),'facecolor',[0.5 0.5 0.5],'edgecolor','k');
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+    xticks = [1.5 4.5]; xticklabels = {'Control','APP'};
+%     xtickangle(20)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    changePosition(gca,[0.14 0.05 -0.05 -0.1]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing', 'Rate (Hz)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_Motion_vs_Rest'),600);
+return;
+end
+
+
 function out = get_spike_rate(ei_C,pMs_C,thr)
 allVals = []; allVals_motion = []; allVals_rest = []; allVals_th = [];
+allVals_an = [];
 for ii = 1:length(ei_C)
     ei = ei_C{ii};
     
@@ -190,6 +227,7 @@ for ii = 1:length(ei_C)
     m_sp_animal_rest{ii} = tm_sp_animal_rest ;
 
     allVals = [allVals;m_sp_animal{ii}];
+    allVals_an{ii} = all_spSigAll;
     allVals_motion = [allVals_motion;m_sp_animal_motion{ii}];
     allVals_rest = [allVals_rest;m_sp_animal_rest{ii}];
     m_sp_animal_level(ii) = nanmean(m_sp_animal{ii});
@@ -212,6 +250,7 @@ out.m_sp_animal_rest = m_sp_animal_rest;
 out.allVals_rest = allVals_rest;
 out.m_sp_animal_level_rest = m_sp_animal_level_rest;
 out.percent_motion = percent_motion;
+out.allVals_an = allVals_an;
 
 % out.m_sp_animal_th = m_sp_animal_th;
 % out.m_sp_animal_level_th = m_sp_animal_level_th;
