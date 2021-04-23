@@ -33,14 +33,17 @@ axes(ah);
 specs = legs{end};
 legs(end) = [];
 lenLine = specs(2);
-x1 = specs(1); x2 = x1+lenLine; y1 = (specs(3):-specs(4):0); y1 = y1(1:length(legs)); y2 = y1;
+x1 = specs(1); x2 = x1+lenLine; y1 = specs(3);%:-specs(4):0); y1 = y1(1:length(legs)); y2 = y1;
+gap = specs(4);
 legendFontSize = sigFontSize;
 for ii = 1:length(legs)
     if isempty(legs{ii})
         continue;
     end
-    plot([x1 x2],[y1(ii) y2(ii)],'color',cols{ii},'linewidth',lineWidth);
-    text(x2+(lenLine/2),y1(ii),sprintf('%s',legs{ii}),'Color',cols{ii},'FontSize',legendFontSize);
+    plot([x1 x2],[y1 y1],'color',cols{ii},'linewidth',lineWidth);
+    ht = text(x2+(lenLine/2),y1,sprintf('%s',legs{ii}),'Color',cols{ii},'FontSize',legendFontSize);
+    te = get(ht,'Extent');
+    y1 = te(2) - gap;
 end
 
 if isstruct(sigR)

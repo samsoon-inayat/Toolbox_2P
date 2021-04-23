@@ -2,18 +2,18 @@ function plotTimeToOnsetOfMovementAfterAirPuff(b,markers1,markers2,fn)
 %%
 n = 0;
 %%
-ei1 = evalin('base','d15_c');
+ei1 = evalin('base','d15');
 ei = [ei1(1:5)];
-
 speed_threshold = 0;
 
 mData = evalin('base','mData');
 
 timeBefore = 0;
 timeAfter = 15;
-    
+cs = [3 4 5];
 for an = 1:length(ei)
-    for cc = 1:4
+    for cci = 1:3
+        cc = cs(cci);
         b = ei{an}.b;
         markers1i = ei{an}.plane{1}.contexts(cc).markers.air_onsets;
         markers2i = ei{an}.plane{1}.contexts(cc).markers.air_offsets;
@@ -36,8 +36,8 @@ for an = 1:length(ei)
             
             timeToCompleteT(ii) = ts(markers2i(ii)) - ts(markers1i(ii));
         end
-        duration_onset_moveC(an,cc) = mean(duration_onset_moveT);
-        timeToCompleteC(an,cc) = mean(timeToCompleteT);
+        duration_onset_moveC(an,cci) = mean(duration_onset_moveT);
+        timeToCompleteC(an,cci) = mean(timeToCompleteT);
     end
 end
 n=0;
@@ -48,9 +48,9 @@ for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
 end
 data = [moas];
-dataT = table(data(:,1),data(:,2),data(:,3),data(:,4));
-dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3} varNames{4}};
-within = table([1 2 3 4]');
+dataT = array2table(data);
+dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
+within = table([1 2 3]');
 within.Properties.VariableNames = {'Condition'};
 within.Condition = categorical(within.Condition);
 
@@ -61,7 +61,7 @@ semVar = ra.est_marginal_means.Formula_StdErr;
 combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
 % xdata = [1 2 3]; maxY = 50;
 
-xdata = [1:1.15:6]; xdata = xdata(1:4);
+xdata = [1:1.15:6]; xdata = xdata(1:3);
 maxY = 1;
 colors = mData.colors;
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
@@ -71,7 +71,7 @@ tcolors = colors;
     'maxY',maxY,'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.051);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'C1','C2','C3','C4'};
+xticks = xdata; xticklabels = {'C3','C4','C5'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 changePosition(gca,[0.19 0.02 -0.1 -0.015])
 put_axes_labels(gca,{'Conditions',[0 0 0]},{{'Movement','Latency (sec)'},[0 0 0]});
@@ -85,9 +85,9 @@ for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
 end
 data = [moas];
-dataT = table(data(:,1),data(:,2),data(:,3),data(:,4));
-dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3} varNames{4}};
-within = table([1 2 3 4]');
+dataT = array2table(data);
+dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
+within = table([1 2 3]');
 within.Properties.VariableNames = {'Condition'};
 within.Condition = categorical(within.Condition);
 
@@ -97,7 +97,7 @@ mVar = ra.est_marginal_means.Mean;
 semVar = ra.est_marginal_means.Formula_StdErr;
 combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
 
-xdata = [1:1.15:6]; xdata = xdata(1:4);
+xdata = [1:1.15:6]; xdata = xdata(1:3);
 maxY = 15;
 colors = mData.colors;
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1 1],'color','w');
@@ -107,7 +107,7 @@ tcolors = colors;
     'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'C1','C2','C3','C4'};
+xticks = xdata; xticklabels = {'C3','C4','C5'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 changePosition(gca,[0.17 0.02 -0.1 -0.011])
 put_axes_labels(gca,{'Conditions',[0 0 0]},{{'Trial Time (sec)'},[0 0 0]});

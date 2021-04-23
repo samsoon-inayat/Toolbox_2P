@@ -8,7 +8,7 @@ add_to_path
 %%
 [f,cName] = getFolders;
 colormaps = load('../MatlabCode/colorblind_colormap.mat');
-mData.colors = mat2cell(colormaps.colorblind([5 7 8 6 1 2 11],:),[ones(1,7)]);%
+mData.colors = mat2cell(colormaps.colorblind([5 7 8 1 2 11 6],:),[ones(1,7)]);%
 mData.line_styles = {'-',':','-.','-',':','-.'};
 mData.marker_styles = {'s','d','^','s','d','^','^','*'};
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; 

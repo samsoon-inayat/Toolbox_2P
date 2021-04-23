@@ -33,7 +33,7 @@ moas = NaN(size(ei));
 moasi = moas; mott = moas; motd = moas; momaxtd = moas;
 pa7 = moas;
 for iii = 1:size(ei,1)
-    if iii == 2
+    if iii == 3
         n = 0;
     end
     disp(temp.animalIDs(iii));
@@ -111,15 +111,18 @@ end
 %%
 runthis =1;
 if runthis
+    itr = 1;
 thisCols_all = mData.colors;
     selRowi = 5;
 for selRowi = 1:5
     selRowi
     these_cols = selColsAll(selRowi,:)
     ass = as{selRowi};
-    ff = makeFigureWindow__one_axes_only(5,[10 4 1.25 1],[0.19 0.2 0.79 0.75]);
+    ff = makeFigureWindow__one_axes_only(5,[10 4 1.5 1],[0.19 0.2 0.79 0.75]);
     axes(ff.ha);hold on;
-%     ass = as1{selRowi};
+    if itr
+    ass = as1{selRowi};
+    end
     for ii = 1:length(these_cols)
         if isnan(these_cols(ii))
             continue;
@@ -128,21 +131,29 @@ for selRowi = 1:5
         plot(1:length(this),this,'linewidth',0.5,'color',thisCols_all{ii});
         lenTs(ii) = length(this);
     end
-    plot(1:max(lenTs),ones(size(1:max(lenTs)))*7,'m','linewidth',0.5);
-    set(gca,'xlim',[0 max(lenTs)],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    plot(1:max(lenTs),ones(size(1:max(lenTs)))*7,'-','linewidth',0.5,'markersize',1,'color',[0.5 0.5 0.5]);
+    set(gca,'xlim',[0 max(lenTs)],'ylim',[0 40],'FontSize',6,'FontWeight','Bold','TickDir','out');
     changePosition(gca,[0.03 0.09 -0.03 -0.1])
+    if itr
+    put_axes_labels(gca,{'Inter-Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
+    else
     put_axes_labels(gca,{'Trial Number',[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
+    end
     legs = [];
     for ii = 1:length(these_cols)
         legs{ii} = sprintf('Day %1d',ii);
     end
-    legs{ii+1} = [5 3 30 4];
+    legs{ii+1} = [5 3 35 1];
     putLegendH(ff.ha,legs,'colors',mData.colors,'sigR',{[],'anova',[],5});
-    legs = {sprintf('Animal %d',temp.animalIDs(selRows(selRowi))),[22 0 25 4]};
+%     legs = {sprintf('Animal %d',temp.animalIDs(selRows(selRowi))),[22 0 25 4]};
 %     putLegend(ff.ha,legs,'colors',{'k'});
 %     title(sprintf('Animal %d',temp.animalIDs(selRows(selRowi))));
-    changePosition(gca,[0 -0.05 0 0]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_Trials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
+    changePosition(gca,[-0.05 -0.01 0 0]);
+    if itr
+        save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_InterTrials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
+    else
+        save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_Trials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
+    end
 end
 return;
 end
@@ -190,76 +201,13 @@ set(gca,'xtick',xticks,'xticklabels',xticklabels);
 changePosition(gca,[0.1 0.02 -0.03 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
 rectangle(gca,'Position',[0.75 maxY+3 1 3],'edgecolor','k','facecolor','k');
-text(1.85,maxY+5,'Trials','FontSize',5);
-rectangle(gca,'Position',[4 maxY+3 1 3],'edgecolor','k');
-text(5.2,maxY+5,'Inter-Trials','FontSize',5);
+text(1.95,maxY+5,'Trials','FontSize',5);
+rectangle(gca,'Position',[4.5 maxY+3 1 3],'edgecolor','k');
+text(5.7,maxY+5,'Inter-Trials','FontSize',5);
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova.pdf',600);
 return;
 end
-
-%% check speed differences between groups
-runthis = 1;
-if runthis
-    selColsAll1 = selColsAll;
-this_moas = get_sel_values(moas,[1:5],selColsAll1(:,1:2));
-this_moasi = get_sel_values(moasi,[1:5],selColsAll1(:,1:2));
-% this_moas = moas([1 5:11],1:3); this_moas(3,:) = moas(6,[2 3 4]);
-% this_moasi = moasi([1 5:11],1:3); this_moasi(3,:) = moasi(6,[2 3 4]);
-for ii = 1:size(this_moas,2)
-    varNames{ii} = sprintf('Trials_Day%d',ii);
-end
-for ii = 1:size(this_moasi,2)
-    varNamesI{ii} = sprintf('InterTrials_Day%d',ii);
-end
-data0 = [this_moas this_moasi];
-data = data0(:,[1 3 2 4]);
-dataT = array2table([[ones(3,1);(2*ones(8,1))] data]);
-dataT.Properties.VariableNames = {'Group' varNames{1} varNamesI{1} varNames{2} varNamesI{2}};
-dataT.Group = categorical(dataT.Group);
-within = table([1 1 2 2]',[1 2 1 2]');
-within.Properties.VariableNames = {'Day','TI'};
-within.TI = categorical(within.TI);
-within.Day = categorical(within.Day);
-
-ra = repeatedMeasuresAnova(dataT,within);
-
-% writetable(between,'Training_Data.xls');
-rm = fitrm(dataT,'Trials_Day1,InterTrials_Day1,Trials_Day2,InterTrials_Day2,Trials_Day3,InterTrials_Day3 ~ 1','WithinDesign',within,'WithinModel','Day*TI');
-rtable = ranova(rm,'WithinModel',rm.WithinModel);
-mauchlytbl = mauchly(rm);
-% multcompare(rm,'Day','ComparisonType','bonferroni')
-mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
-mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
-
-mVar = ra.est_marginal_means.Mean;
-semVar = ra.est_marginal_means.Formula_StdErr;
-combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-xdata = [1 2 4 5 7 8]; maxY = 50;
-
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
-hold on;
-tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
-[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',6,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-for ii = 2:2:length(hbs)
-    set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
-end
-set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY+7],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = [1.5 4.5 7.5]; xticklabels = {'Day1','Day2','Day3'};
-set(gca,'xtick',xticks,'xticklabels',xticklabels);
-changePosition(gca,[0.1 0.02 -0.03 -0.011])
-put_axes_labels(gca,{[],[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
-rectangle(gca,'Position',[0.75 maxY+3 1 3],'edgecolor','k','facecolor','k');
-text(1.85,maxY+5,'Trials','FontSize',5);
-rectangle(gca,'Position',[4 maxY+3 1 3],'edgecolor','k');
-text(5.2,maxY+5,'Inter-Trials','FontSize',5);
-
-save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_speed_groups.pdf',600);
-return;
-end
-
 %%
 runthis = 1;
 if runthis
@@ -330,7 +278,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY+3],'FontSize',6,'FontWeight','Bold','TickDir','out');
 xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-% xtickangle(30)
+xtickangle(30)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{{'Trial Distance','(% of belt length)'},[0 0 0]});
 
@@ -409,7 +357,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
 xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-% xtickangle(30)
+xtickangle(30)
 changePosition(gca,[0.1 0.02 -0.15 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{{'Trial Time (sec)'},[0 0 0]});
 
@@ -449,7 +397,7 @@ set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','Tic
 xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30)
-changePosition(gca,[0.12 0.02 -0.15 -0.011])
+changePosition(gca,[0.22 0.02 -0.15 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{{'Movement','Latency (sec)'},[0 0 0]});
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_mov_lat.pdf',600);
@@ -460,7 +408,7 @@ end
 runthis = 1;
 if runthis
 % this_moas = moml([1 5:11],1:3); this_moas(3,:) = moml(6,[2 3 4]);
-this_moas = get_sel_values(temp.weight,[1:5],repmat([1 2 3 4 5],5,1));
+this_moas = get_sel_values(temp.weight,[1:4],repmat([1 2 3 4 5],5,1));
 this_moas = 100 * this_moas./this_moas(:,1);
 for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
@@ -476,7 +424,7 @@ ra = repeatedMeasuresAnova(dataT,within);
 mVar = ra.est_marginal_means.Mean;
 semVar = ra.est_marginal_means.Formula_StdErr;
 combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-xdata = [1 2 3 4 6]; maxY = 50;
+xdata = [1 2 3 4]; maxY = 50;
 
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
@@ -485,8 +433,9 @@ tcolors = {colors{1};colors{2};colors{3};colors{4};colors{5}};
     'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 
-set(gca,'xlim',[0.25 6.75],'ylim',[95 maxY-10],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4','Test-Day'};
+set(gca,'xlim',[0.25 4.75],'ylim',[95 maxY-10],'FontSize',6,'FontWeight','Bold','TickDir','out');
+% xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4','Test-Day'};
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(45)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
@@ -521,7 +470,7 @@ for ii = 1:length(ei)
     mtt(ii) = mean(tt{ii}); 
     mtd(ii) = mean(td{ii});
     maxtd(ii) = max(td{ii});
-    mml(ii) = mean(ml{ii});
+    mml(ii) = nanmean(ml{ii});
     semas(ii) = std(as{ii})/sqrt(lenT(ii)); 
     semtt(ii) = std(tt{ii})/sqrt(lenT(ii)); 
     semtd(ii) = std(td{ii})/sqrt(lenT(ii));
