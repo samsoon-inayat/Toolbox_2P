@@ -88,7 +88,7 @@ end
 
 if ~isempty(strfind(protocol,'15')) && iscell(aei)
     selAnimals = 1:length(aei);
-    selCells = 'All';
+    selCells = 'areCellsAll';
     planeNumbers = 'All';
     maxDistTime = [Inf Inf];
 
@@ -114,9 +114,9 @@ if ~isempty(strfind(protocol,'15')) && iscell(aei)
                 contextNumber = contextNumbers(ci);
             end
             for si = 1:length(stimMarkers)
-%                 if [an ci si] == [1 3 1]
-%                     n = 0;
-%                 end
+                if [an ci si] == [1 1 2]
+                    n = 0;
+                end
                 disp([an ci si]);
                 stimMarker = stimMarkers{si};
                 rasterType = rasterTypes{si};

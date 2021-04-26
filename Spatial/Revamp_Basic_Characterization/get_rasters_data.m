@@ -5,8 +5,9 @@ if ~exist('ei','var')
     rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
 end
 
+rasters = cell(length(ei),length(selContexts))
 for ii = 1:length(ei)
-    rasters{ii} = get_data(ei{ii},selContexts,rasterNames);
+    rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
 end
 
 

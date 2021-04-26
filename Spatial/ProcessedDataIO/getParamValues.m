@@ -1,5 +1,10 @@
 function [values,cns,cells] = getParamValues(varName,ei,planeNumbers,contextNumber,stimMarker,rasterType,selCells,maxDistTime)
 
+if sum(strcmp(fields(ei{1}.b),'belt_length')) == 0
+     tempB = get_mean_belt_length(ei,'protocol 15');
+     ei{1}.b.belt_length = mean(tempB{1});
+end
+
 pos = strfind(varName,'.');
 if ~isempty(pos)
     varNameParts{1,1} = varName(1:(pos(1)-1));
@@ -46,8 +51,12 @@ for ee = 1:length(ei)
         if ischar(selCells)
             if strcmp(selCells,'All')
                 theSelectedCells = logical(ones(length(areCells),1));
-            else
+            end
+            if strcmp(selCells,'areCells')
                 theSelectedCells = areCells;
+            end
+            if strcmp(selCells,'areCellsAll')
+                theSelectedCells = ones(sum(areCells),1);
             end
         else
             if size(selCells,2) == 1

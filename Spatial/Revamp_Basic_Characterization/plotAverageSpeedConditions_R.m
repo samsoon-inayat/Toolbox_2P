@@ -60,7 +60,7 @@ for ii = 2:2:length(hbs)
 end
 maxY = maxY + 6;
 set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = [1.5 4.5 7.5]; xticklabels = {'C3','C4','C5'};
+xticks = [1.5 4.5 7.5]; xticklabels = {'C3','C4','C3'''};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 changePosition(gca,[0.15 0.02 -0.07 -0.011]);
 put_axes_labels(gca,{[],[0 0 0]},{{'Average','Speed (cm/sec)'},[0 0 0]});

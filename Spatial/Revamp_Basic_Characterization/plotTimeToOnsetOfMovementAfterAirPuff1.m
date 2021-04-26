@@ -42,7 +42,7 @@ for an = 1:length(ei)
 end
 n=0;
 %%
-if 0
+if 1
 moas = duration_onset_moveC;
 for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
@@ -68,12 +68,12 @@ hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'co
 hold on;
 tcolors = colors;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'maxY',maxY,'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.005,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.051);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'C3','C4','C5'};
+xticks = xdata; xticklabels = {'C3','C4','C3'''};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-changePosition(gca,[0.19 0.02 -0.1 -0.015])
+changePosition(gca,[0.19 0.02 -0.25 -0.015])
 put_axes_labels(gca,{'Conditions',[0 0 0]},{{'Movement','Latency (sec)'},[0 0 0]});
 save_pdf(hf,mData.pdf_folder,'Duration to Movement Onset',600);
 return
@@ -107,8 +107,8 @@ tcolors = colors;
     'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'C3','C4','C5'};
+xticks = xdata; xticklabels = {'C3','C4','C3'''};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-changePosition(gca,[0.17 0.02 -0.1 -0.011])
+changePosition(gca,[0.13 0.02 -0.15 -0.011])
 put_axes_labels(gca,{'Conditions',[0 0 0]},{{'Trial Time (sec)'},[0 0 0]});
 save_pdf(hf,mData.pdf_folder,'Time to Complete Trial',600);
