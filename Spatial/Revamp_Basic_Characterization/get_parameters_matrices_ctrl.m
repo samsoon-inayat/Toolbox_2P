@@ -330,6 +330,15 @@ for an = 1:length(paraMs.all_areCells)
 end
     
 function out = getVals(paraMs,cellList,varNamesDH)
+
+if size(paraMs.all_zMIs{1},3) < length(cellList{1})
+    for ii = 1:length(cellList)
+        temp = cellList{ii};
+        temp(temp==0) = [];
+        cellList{ii} = temp;
+    end
+end
+
 varNamesDH{1+length(varNamesDH)} = 'cns';
 for an = 1:length(paraMs.all_areCells)
     for vi = 1:length(varNamesDH)

@@ -14,7 +14,7 @@ mData.marker_styles = {'s','d','^','s','d','^','^','*'};
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; 
 Uleth_one_drive = 'G:\OneDrives\OneDrive - University of Lethbridge';
 Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge';
-Uleth_one_drive = 'D:\Dropbox\OneDrive\Documents\Manuscripts\Air_Puff_Characterization';
+% Uleth_one_drive = 'D:\Dropbox\OneDrive\Documents\Manuscripts\Air_Puff_Characterization';
 mData.pdf_folder = [Uleth_one_drive '\PDFs']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedData'];
 disp('Done');
@@ -35,6 +35,7 @@ end
 % end
 disp('done')
 %%
+ET15 = T15_c(sel15(1:5),:);
 d15 = getData_py(f,T15_c(sel15(1:5),:),0);
 binWidths = [0.15,1.75];
 % d15_1 = load_contexts_responses(d15,'define_contexts.m',binWidths);
