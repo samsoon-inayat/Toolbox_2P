@@ -73,6 +73,7 @@ if ~isempty(strfind(protocol,'10')) && iscell(aei)
             cmdTxt = sprintf('out.all_%s{an} = %s_c;',thisVarDH,thisVarDH);
             eval(cmdTxt);
         end
+        n = 0;
     end
     out.recordingFolders = rFs;
     out.selCells = selCells;
@@ -114,7 +115,7 @@ if ~isempty(strfind(protocol,'15')) && iscell(aei)
                 contextNumber = contextNumbers(ci);
             end
             for si = 1:length(stimMarkers)
-                if [an ci si] == [1 1 2]
+                if [an ci si] == [1 1 1]
                     n = 0;
                 end
                 disp([an ci si]);
@@ -143,6 +144,7 @@ if ~isempty(strfind(protocol,'15')) && iscell(aei)
             cmdTxt = sprintf('out.all_%s{an} = %s_c;',thisVarDH,thisVarDH);
             eval(cmdTxt);
         end
+        n = 0;
     end
     out.recordingFolders = rFs;
     out.selCells = selCells;

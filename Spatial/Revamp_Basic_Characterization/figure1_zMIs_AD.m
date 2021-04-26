@@ -1,8 +1,11 @@
 function figure1_number_of_PCs
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','d15'); Rs = evalin('base','raster_data'); 
-sC = evalin('base','selContexts'); rN = evalin('base','rasterNames');
+ei = evalin('base','d15'); 
+selContexts = [1 2 3 3 4 4 5 5 6 7];
+rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
+Rs = get_rasters_data(ei,selContexts,rasterNames);
+
 an = 1;
 cai_sampling_rate = ei{an}.thorExp.frameRate;
 effective_sampling_rate = 1/0.15;
@@ -14,7 +17,7 @@ for anii = 1:5
     for indsii = 1:length(inds)
         this_raster = Rs{anii,inds(indsii)};
         zMIs = this_raster.info_metrics.ShannonMI_Zsh;
-%         zMIs = zMIs(zMIs>1.96);
+        zMIs = zMIs(zMIs>1.96);
         var_oi_C(anii,indsii) = nanmean(zMIs);
     end
 end
