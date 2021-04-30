@@ -16,22 +16,24 @@ end
 p = NaN(size(rasters,3),1); p1 = p; p2 = p;
 prm = p;
 MIs = p;
+trials = 1:size(rasters,1);
+Dur = Dur(trials,:);
 parfor ii = 1:size(rasters,3)
-    thisRaster = rasters(:,:,ii);
-    MIs(ii) = info_metrics_S_onlyMI_2(thisRaster,[],4,Dur,0);
+    thisRaster = rasters(trials,:,ii);
+%     MIs(ii) = info_metrics_S_onlyMI_2(thisRaster,[],4,Dur,0);
     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
-    dataT = array2table(thisRaster);
-    within = array2table(group');
-    within.Var1 = categorical(within.Var1);
+%     dataT = array2table(thisRaster);
+%     within = array2table(group');
+%     within.Var1 = categorical(within.Var1);
 %     ra = repeatedMeasuresAnova(dataT,within,0.05);
 %     prm(ii) = ra.ranova{3,5};
 %     [p(ii),atab,stats] = ttest2(thisRaster,group,'nodisplay');
-    try
-    [mc,mm,mh,mgnames] = multcompare(stats,'CType','bonferroni','Display','off');
-    p1(ii) = mc(1,6);
-    p2(ii) = mc(3,6);
-    catch
-    end
+%     try
+%     [mc,mm,mh,mgnames] = multcompare(stats,'CType','bonferroni','Display','off');
+%     p1(ii) = mc(1,6);
+%     p2(ii) = mc(3,6);
+%     catch
+%     end
 %     if stats.means(1) < stats.means(2)
 %         exin(ii) = 1;
 %     end
@@ -58,9 +60,9 @@ parfor ii = 1:size(rasters,3)
 end
 out.p = p;
 % out.prm = prm;
-out.ps = [p1 p2];
+% out.ps = [p1 p2];
 out.h = p<0.05;
-out.MIs = MIs;
+% out.MIs = MIs;
 % out.exin = exin;
 % out.fd1 = fd1;
 % out.fd2 = fd2;

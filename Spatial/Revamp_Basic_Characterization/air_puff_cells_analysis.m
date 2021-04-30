@@ -1,14 +1,13 @@
-function all_responsiveness
-
+function air_puff_cells_analysis
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','d15'); 
-sC = [1 4 6];
-rasterNames = {'light22T','light22T','light22T'};
+ei = evalin('base','d15');
+sC = [2 7];
+rasterNames = {'air55T','air55T'};
 Rs = get_rasters_data(ei,sC,rasterNames);
 
 
-samplingRate = {'Ca','Ca','Ca'};
-timeBefore = [2 2 2];
+samplingRate = {'Ca','Ca'};
+timeBefore = [5 5];
 
 %%
 for an = 1:5
@@ -25,25 +24,21 @@ for an = 1:5
             tempR = tRs.fromFrames.sp_rasters;%(:,:,isCell);
             tempDur = tRs.fromFrames.duration;
             SR = cai_sampling_rate;
-         if SR > 15
-            nSamp = size(tempR,2);
-            tempR = tempR(:,1:3:nSamp,:);
-            tempDur = tRs.fromFrames.duration(:,1:3:nSamp);
-            SR = cai_sampling_rate/3;
-         end
-%         else
-%             tempR = tRs.sp_rasters1;%(:,:,isCell);
-%             tempDur = tRs.duration1;
-%             SR = effective_sampling_rate;
-%         end
+%          if SR > 15
+%             nSamp = size(tempR,2);
+%             tempR = tempR(:,1:3:nSamp,:);
+%             tempDur = tRs.fromFrames.duration(:,1:3:nSamp);
+%             SR = cai_sampling_rate/3;
+%          end
         rasters{an,ii} = find_resp_mdata(tempR,tempDur,timeBefore(ii),SR,thisContext.name,anei,tRs,isCell);
     end
 end
 [all_ccs,fR] = get_responsive_cells(rasters);
 n = 0;
 %%
-an = 1
-plotRasters_simple(rasters{an,1},find(all_ccs{an,1}),[])
+%%
+an = 1; cn = 2;
+plotRasters_simple(rasters{an,cn},find(all_ccs{an,cn}),[])
 %% visualization of signals
 if 1
     meanRs = calc_mean_rasters(rasters,1:10);
@@ -55,7 +50,7 @@ if 1
     end
     graphs = [];
     for an = 1:5
-        for cc = 1:3
+        for cc = 1:2
             graphs{an,cc} = popVs{an}{cc}.popV;
         end
     %     graphs{an,3} = popVsD{an}{1}.popV;
