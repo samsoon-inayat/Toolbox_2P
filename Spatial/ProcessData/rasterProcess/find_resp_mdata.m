@@ -27,6 +27,7 @@ rastersO.xs = linspace(0,totalTime,number_of_columns);
 % % mdata.xs = round(mdata.xs - mdata.xs(column_index),1);
 mdata.cis = cis(1,2:3);
 rastersO.mdata = mdata;
+rastersO.zMIs = tRs.info_metrics.ShannonMI_Zsh;
 rastersO.resp = resp;
 rastersO.rasters = rasters;
 rastersO.title = titlestr;

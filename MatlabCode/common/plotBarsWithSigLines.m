@@ -56,9 +56,13 @@ dx = xdata(2) - xdata(1);
 yl = get(gca,'YLim');
 
 dy = (maxY-yl(1));
+if ~isempty(combs)
 diffCombs  = combs(:,2) - combs(:,1);
 maxdiff = max(combs(:,2) - combs(:,1));
 numberOfSigLines = length(find(sig(:,1)));
+else 
+    numberOfSigLines = 0;
+end
 if numberOfSigLines > 0
     fyy = maxY + sigLinesStartYFactor*(maxY-yl(1));
     fyy1 = maxY + 10*(maxY-yl(1));

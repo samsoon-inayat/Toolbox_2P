@@ -56,7 +56,7 @@ for ee = 1:length(ei)
                 theSelectedCells = areCells;
             end
             if strcmp(selCells,'areCellsAll')
-                theSelectedCells = ones(sum(areCells),1);
+                theSelectedCells = logical(ones(sum(areCells),1));
             end
         else
             if size(selCells,2) == 1

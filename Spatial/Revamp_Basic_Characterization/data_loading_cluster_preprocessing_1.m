@@ -46,6 +46,10 @@ raster_data = get_rasters_data(d15,selContexts,rasterNames);
 parameter_matrices_ctrl('calculate','15_Charac',d15);
 % testing why the number of columns for animal 1 and 3 are different
 % d15_1 = loadContextsResponses_ctrl(d15(3),[1 1],[0 0 0]);
+d15{5} = loadContextsResponses_ctrl(d15(5),[1 1],[0 0 0]);
+
+%%
+
 
 %%
 training_data = behaviorProcessor;

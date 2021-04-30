@@ -2,14 +2,14 @@ function testing1
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','d15'); Rs = evalin('base','raster_data'); 
 sC = evalin('base','selContexts'); rN = evalin('base','rasterNames');
-an = 1;
+an = 2;
 cai_sampling_rate = ei{an}.thorExp.frameRate;
 effective_sampling_rate = 1/0.15;
 samplingRate = {'Ca','Ef','Ef','Ef','Ef','Ef','Ef','Ef','Ca','Ef'};
 timeBefore = [2 5 7 NaN 7 NaN 7 NaN 2 5];
 
 anei = ei{an};
-anRs = Rs{an};
+anRs = Rs(an,:);
 for ii = 1:length(sC)
     sci = sC(ii);
     tRs = anRs{ii};

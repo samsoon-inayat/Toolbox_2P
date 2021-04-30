@@ -136,7 +136,7 @@ if ~isempty(strfind(protocol,'15')) && iscell(aei)
                 end
             end
         end
-        out.all_areCells{an} = areCells;
+        out.all_areCells{an} = logical(ones(sum(areCells),1));
         out.all_cns{an} = cns;
         for vi = 1:length(varNames)
             thisVar = varNames{vi};
@@ -332,14 +332,6 @@ for an = 1:length(paraMs.all_areCells)
 end
     
 function out = getVals(paraMs,cellList,varNamesDH)
-
-if size(paraMs.all_zMIs{1},3) < length(cellList{1})
-    for ii = 1:length(cellList)
-        temp = cellList{ii};
-        temp(temp==0) = [];
-        cellList{ii} = temp;
-    end
-end
 
 varNamesDH{1+length(varNamesDH)} = 'cns';
 for an = 1:length(paraMs.all_areCells)
