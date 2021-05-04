@@ -35,19 +35,19 @@ end
 n = 0;
 %%
 an = 1; cn = [1 2 3 4 5];
-% plotRasters_compare(200,rasters(an,cn),find(all_ccs{an,1}))
-plotRasters_compare(200,rasters(an,cn),find(all_ccs{an,1}|all_ccs{an,2}|all_ccs{an,3}|all_ccs{an,4}|all_ccs{an,5}))
+plotRasters_compare(200,rasters(an,cn),find(all_ccs{an,3}))
+% plotRasters_compare(200,rasters(an,cn),find(all_ccs{an,1}|all_ccs{an,2}|all_ccs{an,3}|all_ccs{an,4}|all_ccs{an,5}))
 %%
 an = 1; cn = 3;
 plotRasters_simple(rasters{an,cn},find(all_ccs{an,cn}),[])
 %% visualization of signals
 if 1
-    meanRs = calc_mean_rasters(rasters,1:10);
+    meanRs = calc_mean_rasters(rasters(:,[2 3 4]),1:10);
     meanRs = correct_for_size(meanRs);
     
     for an = 1:5
-        cell_list = all_ccs{an,1};% & all_ccs{an,3};
-        [popVs{an},cpc{an},ccc{an},~] = calc_pop_vector_corr(meanRs(an,:),cell_list,[1 1]);
+        cell_list = all_ccs{an,4};% & all_ccs{an,3};
+        [popVs{an},cpc{an},ccc{an},~] = calc_pop_vector_corr(meanRs(an,:),cell_list,[1 3]);
     end
     graphs = [];
     for an = 1:5

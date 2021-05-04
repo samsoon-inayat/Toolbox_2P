@@ -3,18 +3,18 @@ if isempty(ccs)
     ccs = 1:size(rasters,3);
 end
 
-if length(ccs) == 1
-    figure(1005);
-    clf;
-    thisRaster = rasters(:,:,1);
-    mSig = nanmean(thisRaster);
-    imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);colorbar;hold on;
-    plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.75,'color','m');
-%     title(sprintf('%d',cn));
-    box off;
-    set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
-    return;
-end
+% if length(ccs) == 1
+%     figure(1005);
+%     clf;
+%     thisRaster = rasters(:,:,1);
+%     mSig = nanmean(thisRaster);
+%     imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);colorbar;hold on;
+%     plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.75,'color','m');
+% %     title(sprintf('%d',cn));
+%     box off;
+%     set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
+%     return;
+% end
 
 numberOfRows = 4;
 numberOfCols = 4;
@@ -47,10 +47,13 @@ while 1
             cn = ccs(cni);
             Rs = rasters;
             thisRaster = Rs.rasters(:,:,cn);
-            mdata = Rs.mdata;
+            if isfield(Rs,'mdata')
+                mdata = Rs.mdata;
+            end
             mSig = nanmean(thisRaster);
             axes(ff.h_axes(rr,cc));
             mtr = 1;%mode(thisRaster(thisRaster(:)>0));
+            try
             imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
             colorbar;hold on;
             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
@@ -61,6 +64,8 @@ while 1
             if ~isempty(mdata)
                 plot([mdata.cis(1) mdata.cis(1)],[0 16],'linewidth',1.5,'color','r');
                 plot([mdata.cis(2) mdata.cis(2)],[0 16],'linewidth',1.5,'color','m');
+            end
+            catch
             end
 %             xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
 %             set(gca,'XTick',xticks,'XTickLabels',mdata.xs(xticks));

@@ -1,29 +1,17 @@
-function o = abf2behavior_1(ei,saveDataFolder,varargin)
-%
-p = inputParser;
-default_overwrite_behavior = 0;
-default_downsample = 500;
-addRequired(p,'ei',@isstruct);
-addRequired(p,'saveDataFolder',@ischar);
-addOptional(p,'overwrite_behavior',default_overwrite_behavior,@isnumeric);
-addOptional(p,'downsample',default_downsample,@isnumeric);
-parse(p,ei,saveDataFolder,varargin{:});
-overwrite = p.Results.overwrite_behavior;
-downSampleFactor = p.Results.downsample;
+function o = get_abf(recording,overwrite)
 
-fileName = makeName(sprintf('behavior%d.mat',ei.db.selectedPlane),saveDataFolder);
+fileName = fullfile(recording.processed_data_folder,'behavior.mat');
 if exist(fileName,'file') && overwrite == 0
     o = load(fileName);
 else
-db = ei.db;
-
-filename = ei.abf_file;
+ei = recording.ei;
+files = dir([recording.data_folder '\*.abf']);
+filename = fullfile(files.folder,files.name);
 [d,si] = abf2load(filename);
 
-if size(d,2) ~= length(db.channel)
-    display('Check your meta data file ... number of channels not consistent with number of channel names provided');
-    error;
-end
+filename = fullfile(recording.data_folder,'metaD.xml');
+db = get_mdataxml(filename);
+
 o.channelsChanged = 0;
 i_channels = identify_abf_channels(d,si);
 if ~isequal(db.channel,i_channels)
@@ -81,12 +69,11 @@ o.encoderCount = processEncodeSignals(cha,chb);
 %%%%%%% 
 data_rate = 1/(si*1e-6);
 if ei.zFastEnable
-    ei.zSteps * data_rate/(ei.frameRate)
+    frames_diff_threshold = floor(data_rate/((ei.frameRate)*(ei.zSteps+1))+25);
 else
-    
+    frames_diff_threshold = floor(data_rate/((ei.frameRate))+25);
 end
-frames_diff_threshold = floor(ei.frameRate * 20);
-disp(sprintf('Using frame diff threshold %d',frames_diff_threshold));
+% disp(sprintf('Using frame diff threshold %d',frames_diff_threshold));
 dFf = diff(o.frames_f);
 temp = find(dFf > frames_diff_threshold);
 o.frames_f(temp+1) = [];
@@ -94,65 +81,48 @@ o.frames_f(temp+1) = [];
 dFr = diff(o.frames_r);
 temp = find(dFr > frames_diff_threshold);
 o.frames_r(temp+1) = [];
+if isfield(o,'air_puff_f')
+    [o.air_puff_f,apitor] = getRidOfCloseRepetitions(o.air_puff_f,5000);
+    if ~isempty(apitor)
+        o.air_puff_r(apitor) = [];
+    end
+    [o.air_puff_r,apitor] = getRidOfCloseRepetitions(o.air_puff_r,5000);
+    if ~isempty(apitor)
+        o.air_puff_f(apitor) = [];
+    end
 
-[o.air_puff_f,apitor] = getRidOfCloseRepetitions(o.air_puff_f,5000);
-if ~isempty(apitor)
-    o.air_puff_r(apitor) = [];
-end
-[o.air_puff_r,apitor] = getRidOfCloseRepetitions(o.air_puff_r,5000);
-if ~isempty(apitor)
-    o.air_puff_f(apitor) = [];
-end
+    if o.air_puff_f(1) < o.air_puff_r(1)
+        o.air_puff_f(1) = [];
+%         if length(o.air_puff_f) < length(o.air_puff_r)
+    end
+    
+    if length(o.air_puff_f) ~= length(o.air_puff_r)
+        error('air_puff_f is not equal to air_puff_r');
+    end
 
-if ei.zFastEnable
-    try
-        ii = ei.db.selectedPlane;
-        nFrames = ei.totalFrames;
-        framesToSelect = ii:(ei.zSteps+1):(nFrames*(ei.zSteps+1));
-        o.frames_f = o.frames_f(framesToSelect);
-        o.frames_r = o.frames_r(framesToSelect);
-    catch
-        if length(o.frames_f) < ei.streaming_frames
-            diffLengths = ei.streaming_frames - length(o.frames_f);
-            remain = mod(diffLengths,ei.zSteps+1);
-            ii = remain + ei.db.selectedPlane;
-            nFrames = length(o.frames_f);
-            framesToSelect = ii:(ei.zSteps+1):nFrames;
-            o.frames_f = o.frames_f(framesToSelect);
-            o.frames_r = o.frames_r(framesToSelect);
-        else
-            error;
-        end
+    if abs(length(o.frames_f) - length(o.frames_r)) > 2
+        error('frames_f is not equal to frames_r');
     end
 end
-
-if o.air_puff_f(1) < o.air_puff_r(1)
-    o.air_puff_f(1) = [];
-end
-
-if length(o.air_puff_f) ~= length(o.air_puff_r)
-    error('air_puff_f is not equal to air_puff_r');
-end
-
-if abs(length(o.frames_f) - length(o.frames_r)) > 2
-    error('frames_f is not equal to frames_r');
-end
-
 ts = (0:(size(d(:,1))-1)) * si * 1e-6;
 hf = figure(77777);clf;
 frames = zeros(size(ts));
 frames(o.frames_f) = 0.5;
 subplot 211;
 plot(ts,frames,'linewidth',0.25);hold on;
-plot(ts,o.air_puff_raw,'linewidth',4);
-for ii = 1:length(o.air_puff_f)
-    text(ts(o.air_puff_f(ii))+5,0.75,num2str(ii));
+if isfield(o,'air_puff_raw')
+    plot(ts,o.air_puff_raw,'linewidth',4);
+    for ii = 1:length(o.air_puff_f)
+        text(ts(o.air_puff_f(ii))+5,0.75,num2str(ii));
+    end
 end
 subplot 212;
 frames = zeros(size(ts));
 frames(o.ch_a_r) = 0.5;
 plot(ts,frames,'linewidth',0.25);hold on;
+if isfield(o,'air_puff_raw')
 plot(ts,o.air_puff_raw,'linewidth',4);
+end
 
 set(gcf,'Position',get(0,'ScreenSize'));
 
@@ -167,8 +137,9 @@ set(gcf,'Position',get(0,'ScreenSize'));
 % else
 %     o.trials = str2num(answer{1});
 % end
-
+if isfield(o,'air_puff_raw')
 o.trials = 1:length(o.air_puff_r);
+end
 
 save(fileName,'-struct','o','-v7.3');
 close(hf);

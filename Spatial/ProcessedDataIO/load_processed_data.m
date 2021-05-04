@@ -1,0 +1,9 @@
+function pdr = load_processed_data(recording,data_folder,processed_data_folder)
+recording.data_folder = fullfile(data_folder,recording.animal_id,recording.date,recording.exp_dir);
+recording.processed_data_folder = fullfile(processed_data_folder,recording.animal_id,recording.date,recording.exp_dir);
+recording.ei = thorGetExperimentInfo(recording.data_folder);
+pdr.deconv = get_cluster_deconv(recording);
+% pdr.timecourses = get_cluster_timecourses(recording);
+pdr.iscell = get_cluster_iscell(recording);
+pdr.b = calcBehav(get_abf(recording,0));
+pdr.ei = recording.ei;

@@ -3,7 +3,7 @@ function plotRasers_compare(figN,rasters,ccs)
 figure(figN);clf;
 
 numberOfRows = 4;
-numberOfCols = 5;
+numberOfCols = size(rasters,2);
 graphsOnOneFigure = numberOfRows;
 numberOfData = length(ccs);
 numberOfGroups = ceil(numberOfData/graphsOnOneFigure);
@@ -23,6 +23,11 @@ gg = 1;
 while 1
     for rr = 1:numberOfRows
         cni = groupIndices(rr,gg);
+        if isnan(cni)
+            cla(ff.h_axes(rr,cc));
+                set(ff.h_axes(rr,cc),'visible','off');
+            continue;
+        end
         cn = ccs(cni);
         for cc = 1:numberOfCols
             if isnan(cni)

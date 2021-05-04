@@ -34,11 +34,12 @@ for an = 1:5
         rasters{an,ii} = find_resp_mdata(tempR,tempDur,timeBefore(ii),SR,thisContext.name,anei,tRs,isCell);
     end
 end
-[all_ccs,fR] = get_responsive_cells(rasters);
+[all_ccs,fR] = get_responsive_cells(rasters,0.05);
 n = 0;
 %%
 an = 3
-plotRasters_simple(rasters{an,2},find(all_ccs{an,1}),[])
+% plotRasters_simple(rasters{an,2},find(all_ccs{an,1}),[])
+plotRasters_compare(200,rasters(an,:),find(all_ccs{an,1}))
 %% visualization of signals
 if 1
     meanRs = calc_mean_rasters(rasters,1:10);

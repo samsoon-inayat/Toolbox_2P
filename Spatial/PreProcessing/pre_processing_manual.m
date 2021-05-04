@@ -21,4 +21,4 @@ bidishift = get_bidi_shift(eip,1,100);
 save(fn,'bidishift');
 
 ii = 1;
-pd_path = d15{ii}.
+% pd_path = d15{ii}.
