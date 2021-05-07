@@ -14,7 +14,10 @@ for ee = 1:length(aei)
     try
         plotMarkers(ei.b,ei.b.air_puff_r,ei.b.stim_r,1001);
     catch
-        plotMarkers(ei.b,ei.b.air_puff_r,[],1001);
+        try
+            plotMarkers(ei.b,ei.b.air_puff_r,[],1001);
+        catch
+        end
     end
 
     ylim([-0.1 1.4]);
@@ -32,7 +35,10 @@ for ee = 1:length(aei)
         text(x2+0.5,y1(ii),sprintf('%s',legs{ii}),'Color',thisCols{ii},'FontSize',legendFontSize);
     end
     box off;
-    title(ei.recordingFolder);
+    try
+        title(ei.recordingFolder);
+    catch
+    end
     if length(aei) > 1
         pause;
     end

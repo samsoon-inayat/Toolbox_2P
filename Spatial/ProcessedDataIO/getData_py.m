@@ -84,8 +84,11 @@ for ii = 1:size(T,1)
         tei{ii}.plane{pp}.tP = tP;
 %         tei{ii}.plane{pp}.ops1{1} = tP.ops;
     end
+    try
     b = rmfield(b,'frames_f');
     b = rmfield(b,'frames_r');
+    catch
+    end
     b = calcBehav(b);
     tei{ii}.b = b;
 end

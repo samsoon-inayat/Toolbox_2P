@@ -12,7 +12,10 @@ end
 figure(fn);clf;
 % b = ei.b;
 
-plot(b.ts,b.air_puff_raw,'color','b','linewidth',1.5);hold on;
+if isfield(b,'stim_raw')
+    plot(b.ts,b.air_puff_raw,'color','b','linewidth',1.5);hold on;
+end
+hold on;
 plot(b.ts,0.25*b.photo_sensor_raw+0.55,'color','r','linewidth',1.5);
 if isfield(b,'stim_raw')
     plot(b.ts,0.75*b.stim_raw+0,'color','g','linewidth',1.5);
