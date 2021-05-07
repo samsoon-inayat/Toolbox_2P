@@ -66,7 +66,7 @@ save_pdf(h,mData.pdf_folder,sprintf('cellsAvgImg.pdf'),600);
 return;
 end
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 cellList = ccsi;
 numberOfRows = 1;

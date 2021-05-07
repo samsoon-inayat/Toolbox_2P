@@ -87,21 +87,21 @@ if runthis
 %     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4};};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'maxY',maxY,'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.05,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
     for ii = 5:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    maxY = maxY + 5 + 2;
+    maxY = maxY + 1 + 2;
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata(1:end); xticklabels = {'C1','C2','C3','C4'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     xtickangle(30)
     changePosition(gca,[0.02 0.03 0.04 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{'zMI',[0 0 0]});
-    rectangle(gca,'Position',[0.75 maxY-4 1 2],'edgecolor','k','facecolor','k');     text(1.85,maxY-4+1,'Control','FontSize',6);
-    rectangle(gca,'Position',[6 maxY-4 1 2],'edgecolor','k');     text(7.2,maxY-4+1,'APP','FontSize',6);
+    rectangle(gca,'Position',[0.75 maxY-2 1 1],'edgecolor','k','facecolor','k');     text(1.85,maxY-2.5+1,'Control','FontSize',6);
+    rectangle(gca,'Position',[6 maxY-2 1 1],'edgecolor','k');     text(7.2,maxY-2.5+1,'APP','FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bargraph',mfilename),600);
 return;
 end

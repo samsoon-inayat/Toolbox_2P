@@ -164,7 +164,7 @@ return;
 end
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 cellList = ccsi;
 numberOfRows = 1;

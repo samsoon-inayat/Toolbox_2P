@@ -44,8 +44,9 @@ for ii = 1:length(xdata)
     set(hb,'FaceColor',cols{ii},'EdgeColor',cols{ii});
 %     xdata = get(hb,'XData');
 %     dx = xdata(2) - xdata(1);
-    errorbar(xdata(ii), means(ii), [],sems(ii), 'k', 'linestyle', 'none','CapSize',3);
-    errorbar(xdata(ii), means(ii), sems(ii),[], 'w', 'linestyle', 'none','CapSize',3);
+    errorbar(xdata(ii), means(ii), sems(ii), 'k', 'linestyle', 'none','CapSize',3);
+%     errorbar(xdata(ii), means(ii), [],sems(ii), 'k', 'linestyle', 'none','CapSize',3);
+%     errorbar(xdata(ii), means(ii), sems(ii),[], 'w', 'linestyle', 'none','CapSize',3);
     hbs(ii) = hb;
 end
 % xlim([0.5 length(means)+0.5]);

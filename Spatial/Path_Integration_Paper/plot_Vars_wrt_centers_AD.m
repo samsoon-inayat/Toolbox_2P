@@ -21,19 +21,20 @@ paramMs_A.belt_lengths = get_mean_belt_length(ei_A,protocol_A)
 % subgroup of cells
 % here is the selection criteria in make_selC_structure function
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
-ylabels = {'zMIs','Firing Rate','PF Widths','RS','Percent PCs'};
+ylabels = {'zMIs','Firing Rate','Field Widths','RS','Percent Spatially Tuned'};
 maxYs = [10,30,20,0.7,100];
-svn = 2; %gcn = 3
+svn = 3; %gcn = 3
 if svn == 5
     selected_variable = all_variables{1};
     selected_variable_f = 'Percent_PCs';
-    number_of_bins = 4;
+    number_of_bins = 2;
 else
     selected_variable = all_variables{svn};
     selected_variable_f = selected_variable;
-    number_of_bins = 1;
+    number_of_bins = 2;
 end
 cellsOrNot = 1; planeNumber = NaN; zMI_Th = 3; fwids = [1 120]; fcens = [0 140]; rs_th = 0.4;
+cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [0 150]; rs_th = 0.3;
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN;
 conditionsAndRasterTypes = [11 21 31 41];
 selC = make_selC_struct(cellsOrNot,planeNumber,conditionsAndRasterTypes,zMI_Th,fwids,fcens,rs_th,NaN,NaN);
@@ -226,7 +227,7 @@ if runthis
     within.Properties.VariableNames = {'Condition','Bin'};
     within.Condition = categorical(within.Condition);
     within.Bin = categorical(within.Bin);
-
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
 %     rm = fitrm(dataT,sprintf('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s~Group',...
 %         varNames{1},varNames{2},varNames{3},varNames{4},varNames{5},varNames{6},varNames{7},varNames{8},...
 %         varNames{9},varNames{10},varNames{11},varNames{12},varNames{13},varNames{14},varNames{15},varNames{16}),'WithinDesign',within,'WithinModel','Condition*Bin');
@@ -234,7 +235,7 @@ if runthis
 %     file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA_%s.xlsx',mfilename,selected_variable_f));
 %     writetable(rtable,file_name,'WriteRowNames',true);
     file_name = fullfile(mData.pdf_folder,sprintf('%s_Data_%s.xlsx',mfilename,selected_variable_f));
-    writetable(dataT,file_name,'WriteRowNames',true)
+%     writetable(dataT,file_name,'WriteRowNames',true)
 %     mauchlytbl = mauchly(rm);
 %     % multcompare(rm,'Day','ComparisonType','bonferroni')
 %     mcGbyC = find_sig_mctbl(multcompare(rm,'Group','By','Condition','ComparisonType','bonferroni'),6);
@@ -242,38 +243,33 @@ if runthis
 % %     writetable(mcGroup,'RANOVA_Number_of_PCs_multcompare_10.xlsx')
     
     
-    [mVarT,semVarT] = findMeanAndStandardError(data_C);
-    [mVarT_A,semVarT_A] = findMeanAndStandardError(data_A);
-    mVar = NaN(1,2*(length(mVarT)));
-    semVar = mVar; TL = 2*length(mVarT);
-    tcolors = num2cell(mVar);
-    mVar(1:2:TL) = mVarT;semVar(1:2:TL) = semVarT;
-    mVar(2:2:TL) = mVarT_A;semVar(2:2:TL) = semVarT_A;
-    tcolors(1:2:TL) = temp_tcolors; tcolors(2:2:TL) = temp_tcolors;
-    combs = nchoosek(1:TL,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
+    mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
+    
+    tcolors = [temp_tcolors temp_tcolors];
+    combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.05;
 %     row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcGroup{1,6}; h(ii) = 1; 
     % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
     % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 
-    xdata = 1:TL; maxY = maxYs(svn);
+    xdata = [1:(length(mVar)/2) ((length(mVar)/2)+1+(1:(length(mVar)/2)))]; maxY = maxYs(svn);
     colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
     hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 6.9 2],'color','w');
     hold on;
     ind = 1
 
-    hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+    [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.3);
-    for ii = 2:2:length(hbs)
+    for ii = (1+(length(hbs)/2)):length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:2:end)+0.5; 
-    
+    xticks = xdata;%(1:2:end)+0.5; 
+    xticklabels
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    changePosition(gca,[0.02 0.03 0.02 -0.11]);
+    changePosition(gca,[-0.05 0.03 -0.3 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{ylabels{svn},[0 0 0]});
 %     rectangle(gca,'Position',[0.75 9 1 2],'edgecolor','k','facecolor','k');
 %     text(1.85,10,'Control','FontSize',5);

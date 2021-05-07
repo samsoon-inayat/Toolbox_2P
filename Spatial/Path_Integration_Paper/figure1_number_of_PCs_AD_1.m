@@ -133,21 +133,21 @@ if runthis(2)
     hold on;
     tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'ySpacing',4,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
     for ii = 5:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    maxY = maxY + 15 + 12;
+    maxY = maxY + 12;
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata(1:end)+0; xticklabels = {'C1','C2','C3','C4','C1','C2','C3','C4'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     xtickangle(30);
-    changePosition(gca,[0.075 0.0 0 -0.11]);
+    changePosition(gca,[0.075 0.1 0 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Percentage of','spatially tuned cells'},[0 -5 0]});
-    rectangle(gca,'Position',[0.75 maxY-20 1 19],'edgecolor','k','facecolor','k');     text(1.85,maxY-14+1,'CRTG','FontSize',6);
-    rectangle(gca,'Position',[6 maxY-20 1 19],'edgecolor','k');     text(7.2,maxY-14+1,'CPTG','FontSize',6);
+    rectangle(gca,'Position',[0.75 maxY-7 1 3],'edgecolor','k','facecolor','k');     text(1.85,maxY-6+1,'Control','FontSize',6);
+    rectangle(gca,'Position',[6 maxY-7 1 3],'edgecolor','k');     text(7.2,maxY-6+1,'APP','FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('Percentage of PCs'),600);
 return;
 end
@@ -164,14 +164,14 @@ if runthis(3)
     combs = [1 2]; %p = ra.mcs.p; h = ra.mcs.p < 0.05;
     xdata = [1:2];
 %     xdata = [1 2 3 4];
-    colors = mData.colors;
+%     colors = {'k','k'};%mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
-    tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+    tcolors ={'k','r'};%colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-    for ii = 5:length(hbs)
+    for ii = 1:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
@@ -179,7 +179,7 @@ if runthis(3)
     xticks = xdata(1:end)+0; xticklabels = {'Control','APP'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
-    changePosition(gca,[0.17 0 -0.4 -0.09]);
+    changePosition(gca,[0.17 0.05 -0.4 -0.09]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Overall percentage of','spatially tuned cells'},[0 -5 0]});
     
     save_pdf(hf,mData.pdf_folder,sprintf('Percentage of Unique PCs'),600);
