@@ -93,16 +93,16 @@ o.frames_f(temp+1) = [];
 dFr = diff(o.frames_r);
 temp = find(dFr > frames_diff_threshold);
 o.frames_r(temp+1) = [];
-
-[o.air_puff_f,apitor] = getRidOfCloseRepetitions(o.air_puff_f,5000);
-if ~isempty(apitor)
-    o.air_puff_r(apitor) = [];
+if isfield(o,'air_puff_f')
+    [o.air_puff_f,apitor] = getRidOfCloseRepetitions(o.air_puff_f,5000);
+    if ~isempty(apitor)
+        o.air_puff_r(apitor) = [];
+    end
+    [o.air_puff_r,apitor] = getRidOfCloseRepetitions(o.air_puff_r,5000);
+    if ~isempty(apitor)
+        o.air_puff_f(apitor) = [];
+    end
 end
-[o.air_puff_r,apitor] = getRidOfCloseRepetitions(o.air_puff_r,5000);
-if ~isempty(apitor)
-    o.air_puff_f(apitor) = [];
-end
-
 if ei.zFastEnable
     try
         ii = ei.db.selectedPlane;
@@ -125,14 +125,15 @@ if ei.zFastEnable
     end
 end
 
-if o.air_puff_f(1) < o.air_puff_r(1)
-    o.air_puff_f(1) = [];
-end
+if isfield(o,'air_puff_f')
+    if o.air_puff_f(1) < o.air_puff_r(1)
+        o.air_puff_f(1) = [];
+    end
 
-if length(o.air_puff_f) ~= length(o.air_puff_r)
-    error('air_puff_f is not equal to air_puff_r');
+    if length(o.air_puff_f) ~= length(o.air_puff_r)
+        error('air_puff_f is not equal to air_puff_r');
+    end
 end
-
 if abs(length(o.frames_f) - length(o.frames_r)) > 2
     error('frames_f is not equal to frames_r');
 end
@@ -143,15 +144,19 @@ frames = zeros(size(ts));
 frames(o.frames_f) = 0.5;
 subplot 211;
 plot(ts,frames,'linewidth',0.25);hold on;
-plot(ts,o.air_puff_raw,'linewidth',4);
-for ii = 1:length(o.air_puff_f)
-    text(ts(o.air_puff_f(ii))+5,0.75,num2str(ii));
+if isfield(o,'air_puff_f')
+    plot(ts,o.air_puff_raw,'linewidth',4);
+    for ii = 1:length(o.air_puff_f)
+        text(ts(o.air_puff_f(ii))+5,0.75,num2str(ii));
+    end
 end
 subplot 212;
 frames = zeros(size(ts));
 frames(o.ch_a_r) = 0.5;
 plot(ts,frames,'linewidth',0.25);hold on;
-plot(ts,o.air_puff_raw,'linewidth',4);
+if isfield(o,'air_puff_f')
+    plot(ts,o.air_puff_raw,'linewidth',4);
+end
 
 set(gcf,'Position',get(0,'ScreenSize'));
 
@@ -166,10 +171,22 @@ set(gcf,'Position',get(0,'ScreenSize'));
 % else
 %     o.trials = str2num(answer{1});
 % end
-
+if isfield(o,'air_puff_f')
 o.trials = 1:length(o.air_puff_r);
+end
 
-save(fileName,'-struct','o','-v7.3');
+try
+    save(fileName,'-struct','o','-v7.3');
+catch
+    mkdir(saveDataFolder);
+    try
+        save(fileName,'-struct','o','-v7.3');
+    catch
+        disp('unknown error');
+        lasterror;
+    end
+end
+
 close(hf);
 end
 

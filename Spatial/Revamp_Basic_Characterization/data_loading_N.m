@@ -21,9 +21,11 @@ disp('Done');
 %%
 data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Data\RSEG_PSEG_more_data';
 processed_data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_Basic_Char';
-recording(1).animal_id = '3328';
-recording(1).date = '2021-05-01';
-recording(1).exp_dir = '1';
+dS = get_exp_info_from_folder(data_folder);
+rr = 1; cc = 3;
+recording(1).animal_id = dS.exp_list_animal{rr,cc};
+recording(1).date = dS.exp_list_date{rr,cc};
+recording(1).exp_dir = dS.exp_list_expDir{rr,cc};
 pd_rec = load_processed_data(recording(1),data_folder,processed_data_folder);
 disp('Done');
 %%
@@ -35,5 +37,13 @@ rasters =  getRasters_fixed_bin_width_cluster(pd_rec,onsets,offsets,'dist');
 %%
 Rs.rasters = rasters.sp_rasters_nan_corrected1;
 plotRasters_simple(Rs,1:350,[])
+%%
+onsets = pd_rec.b.photo_sensor_f(1:16);
+offsets = pd_rec.b.photo_sensor_f(2:17);
+rastersP =  getRasters_fixed_bin_width_cluster(pd_rec,onsets,offsets,'dist');
+%%
+RsP.rasters = rastersP.sp_rasters_nan_corrected1;
+plotRasters_simple(RsP,1:350,[])
+
 
 

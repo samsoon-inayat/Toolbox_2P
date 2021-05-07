@@ -30,7 +30,7 @@ end
 if isfield(b,'stim_raw')
    plot(b.ts,b.stim_raw*ylims(2),'r','linewidth',0.5)
 end
-% plot(b.ts,b.photo_sensor_raw*ylims(2),'c','linewidth',0.5)
+plot(b.ts,b.photo_sensor_raw*ylims(2),'c','linewidth',0.5)
 plot(b.ts,b.fSpeed,'y');
 set(gca,'Ydir','Normal');
 xlabel('Time (sec)');
