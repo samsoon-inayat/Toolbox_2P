@@ -178,8 +178,13 @@ if strcmp(lower(markerType),'airi')
 end
 
 if strcmp(lower(markerType),'belt')
-    onsets = ei.b.air_puff_r(trials);
-    offsets = ei.b.air_puff_f(trials);
+    if isfield(ei.b,'air_puff_r')
+        onsets = ei.b.air_puff_r(trials);
+        offsets = ei.b.air_puff_f(trials);
+    else
+        offsets = ei.b.photo_sensor_f(end) + round(1e6 * 0.3/ei.b.si);
+        onsets = ei.b.photo_sensor_f(1) - round(1e6 * 0.3/ei.b.si);
+    end
     photo_sensor = ei.b.photo_sensor_f(ei.b.photo_sensor_f>onsets(1) & ei.b.photo_sensor_f<offsets(end));
     dists = ei.b.dist(photo_sensor);
     diff_dists = diff(dists);
@@ -434,8 +439,14 @@ end
 
 if strcmp(lower(markerType),'motioni') & isnan(trials)
     spSig = ei.b.fSpeed;
-    onsets = ei.b.air_puff_r;
-    offsets = ei.b.air_puff_f;
+    try
+        onsets = ei.b.air_puff_r;
+        offsets = ei.b.air_puff_f;
+    catch
+        psL = length(ei.b.photo_sensor_f);
+        onsets = ei.b.photo_sensor_f(1:(psL-1));
+        offsets = ei.b.photo_sensor_f(2:psL);
+    end
     mOn = pMarkers.markersOn;
     mOff = pMarkers.markersOff;
     all{1} = 1:(onsets(1)-1);
@@ -488,13 +499,18 @@ if strcmp(lower(markerType),'motion') & isnan(trials)
     spSig = ei.b.fSpeed;
     motionOnsets = find_rising_edge(spSig > 0.25,0.1,500); % find places where speed is above threshold
     motionOffsets = find_falling_edge(spSig > 0.25,-0.1,500); % find places where speed is below threshold
-    [motionOnsets,motionOffsets] = resolveMotionOnsetsOffsets(ei,motionOnsets,motionOffsets,spSig);
-    diffs = motionOnsets(2:end) - motionOffsets(1:(end-1));
-    inds = find(diffs < 500);
-    motionOnsets(inds+1) = [];
-    motionOffsets(inds) = [];
-    markersOn = motionOnsets;
-    markersOff = motionOffsets;
+    if isempty(motionOnsets)
+        markersOn = [];
+        markerOff = [];
+    else
+        [motionOnsets,motionOffsets] = resolveMotionOnsetsOffsets(ei,motionOnsets,motionOffsets,spSig);
+        diffs = motionOnsets(2:end) - motionOffsets(1:(end-1));
+        inds = find(diffs < 500);
+        motionOnsets(inds+1) = [];
+        motionOffsets(inds) = [];
+        markersOn = motionOnsets;
+        markersOff = motionOffsets;
+    end
 end
 
 

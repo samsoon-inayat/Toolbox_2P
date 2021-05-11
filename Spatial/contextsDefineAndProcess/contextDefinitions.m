@@ -12,6 +12,7 @@ allContexts.names = {
     'Air - Light - Brake';
     'Tone - Brake'; % stop the animal with the brake and apply tone
     'Spontaneous - No Brake';
+    'Spontaneous - Brake';
     };
 
 

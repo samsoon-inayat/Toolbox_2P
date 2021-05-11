@@ -29,8 +29,10 @@ rasters = fixRastersForNaN(rasters);
 rasters.xs = bins(1:(min(rasters.lastBin)-1));
 if strcmp(rasterType,'time')
     rasters.cell_history = getCellHistory(ei,b,onsets,rasters,binWidth);
-    out =  getTimeRaster_2(b,spSigAll,onsets,offsets,binWidth);
-    rasters.wholeData = out;
+    if isfield(b,'air_puff_raw')
+        out =  getTimeRaster_2(b,spSigAll,onsets,offsets,binWidth);
+        rasters.wholeData = out;
+    end
     out =  getRasters_from_frames(b,spSigAll,onsets,offsets);
     rasters.fromFrames = out;
 end

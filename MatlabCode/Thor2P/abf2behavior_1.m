@@ -131,7 +131,7 @@ if isfield(o,'air_puff_f')
     end
 
     if length(o.air_puff_f) ~= length(o.air_puff_r)
-        error('air_puff_f is not equal to air_puff_r');
+%         error('air_puff_f is not equal to air_puff_r');
     end
 end
 if abs(length(o.frames_f) - length(o.frames_r)) > 2

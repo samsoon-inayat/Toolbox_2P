@@ -23,16 +23,17 @@ data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Dat
 processed_data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_Basic_Char';
 f.data_folder = data_folder; f.processed_data_folder = processed_data_folder;
 [dS,T] = get_exp_info_from_folder(data_folder,processed_data_folder);
-if 0
+if 1
     make_db(T);
     process_abf(T,0);
 end
-ei = getData_py(f,T,0);
+ei = getData_py(f,T([2 7 12],:),0);
 for ii = 1:length(ei)
     try
-        ei{ii} = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
+        ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
     catch
-        disp(sprintf('Error for %s',cell2mat(T{ii,6})));
+        disp(sprintf('Error for %s',ei{ii}.recordingFolder));
+        lasterror
     end
 end
 rr = 1; cc = 3;

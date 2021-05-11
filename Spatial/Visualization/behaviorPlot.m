@@ -19,6 +19,11 @@ for ee = 1:length(aei)
         catch
         end
     end
+    
+    try
+        plotMarkers(ei.b,ei.b.photo_sensor_f,[],1001);
+    catch
+    end
 
     ylim([-0.1 1.4]);
     % xlim([300 550]);
