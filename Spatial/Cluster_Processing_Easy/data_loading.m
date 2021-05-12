@@ -28,9 +28,10 @@ if 1
     process_abf(T,0);
 end
 ei = getData_py_1(f,T([2 10 18],:),0);
+ei = getData_py_1(f,T([8 17],:),0);
 for ii = 1:length(ei)
     try
-        ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
+        ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[1 0 0]);
     catch
         disp(sprintf('Error for %s',ei{ii}.recordingFolder));
         lasterror
