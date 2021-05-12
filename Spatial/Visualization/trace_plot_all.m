@@ -1,7 +1,12 @@
 function trace_plot_all(pd_rec)
-
+try
 signals = pd_rec.deconv';
 frames_f = pd_rec.b.frames_f;
+catch
+    signals = pd_rec.plane{1}.tP.deconv.spSigAll;
+    frames_f = pd_rec.plane{1}.b.frames_f;
+end
+
 b = pd_rec.b;
 
 traceTime = b.ts(frames_f);
