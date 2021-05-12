@@ -9,5 +9,8 @@ for ii = 1:size(T,1)
     if strcmp(sourceFile,destFile)
         continue;
     end
-    copyfile(sourceFile,destFile);
+    if ~exist(destFile,'file')
+        disp('copying file');
+        copyfile(sourceFile,destFile);
+    end
 end
