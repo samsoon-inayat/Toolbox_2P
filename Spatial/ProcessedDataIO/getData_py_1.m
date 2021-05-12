@@ -45,6 +45,9 @@ for ii = 1:size(T,1)
         end
         tei{ii}.plane{pp}.s2p_folder = plane{pp};
         tei{ii}.plane{pp}.folder = fullfile(plane{pp},'post_suite2p_matlab');
+        if ~exist(tei{ii}.plane{pp}.folder,'dir')
+            mkdir(tei{ii}.plane{pp}.folder);
+        end
         if owrdeconv
             files = dir(sprintf('%s\\Fall.mat',sel_plane));
             fileName = fullfile(files(1).folder,files(1).name);
