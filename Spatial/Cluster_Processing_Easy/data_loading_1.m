@@ -27,7 +27,8 @@ if 1
     make_db(T);
     process_abf(T,0);
 end
-ei = getData_py_1(f,T([8 17],:),0);
+ET = T([2 11 20],:);
+ei = getData_py_1(f,T([2 11 20],:),0);
 for ii = 1:length(ei)
     try
         ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
@@ -36,6 +37,9 @@ for ii = 1:length(ei)
         lasterror
     end
 end
+
+parameter_matrices_ctrl('calculate','P2_1',ei);
+
 rr = 1; cc = 3;
 recording(1).animal_id = dS.exp_list_animal{rr,cc};
 recording(1).date = dS.exp_list_date{rr,cc};
