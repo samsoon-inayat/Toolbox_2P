@@ -72,6 +72,10 @@ for ii = 1:size(T,1)
         tP.areCells = get_cluster_iscell(recording);
         disp(sprintf('Loading 2P plane %d spikes',pp));
         deconv = get_cluster_deconv(recording);
+        if size(deconv,2) < size(tP.areCells,1)
+            tP.areCells = tP.areCells(tP.areCells(:,1)==1,:);
+        end
+        tP.iscell = tP.areCells;
 %         dFbF = get_cluster_timecourses(recording);
         tP.deconv.spSigAll = deconv';
         tei{ii}.plane{pp}.tP = tP;
