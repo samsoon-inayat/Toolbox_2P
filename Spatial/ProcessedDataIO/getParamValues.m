@@ -1,8 +1,9 @@
 function [values,cns,cells] = getParamValues(varName,ei,planeNumbers,contextNumber,stimMarker,rasterType,selCells,maxDistTime)
 
 if sum(strcmp(fields(ei{1}.b),'belt_length')) == 0
-     tempB = get_mean_belt_length(ei,'protocol 15');
-     ei{1}.b.belt_length = mean(tempB{1});
+    tempB = get_belt_length(ei{1});
+%      tempB = get_mean_belt_length(ei,'protocol 15');
+     ei{1}.b.belt_length = mean(tempB);
 end
 
 pos = strfind(varName,'.');

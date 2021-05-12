@@ -51,11 +51,11 @@ trace_plot_all(pd_rec);
 %%
 
 selContexts = [1 1];
-rasterNames = {'airD','beltD'};
-raster_data = get_rasters_data(ei,selContexts,rasterNames);
+rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
+raster_data = get_rasters_data(d15,selContexts,rasterNames);
 
 %%
-Rs.rasters = raster_data{1,1}.sp_rasters_nan_corrected1;
+Rs.rasters = rasters.sp_rasters_nan_corrected1;
 plotRasters_simple(Rs,1:350,[])
 %%
 onsets = pd_rec.b.photo_sensor_f(1:16);

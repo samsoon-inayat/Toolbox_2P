@@ -227,8 +227,8 @@ if ~isempty(strfind(protocol,'P2')) && iscell(aei)
     maxDistTime = [Inf Inf];
 
 
-    stimMarkers = {'air','air','belt','belt','airI'};
-    rasterTypes = {'dist','time','dist','time','time'};
+    stimMarkers = {'air','air','belt','belt'};
+    rasterTypes = {'dist','time','dist','time'};
     contextNumbers = [1];
 
 

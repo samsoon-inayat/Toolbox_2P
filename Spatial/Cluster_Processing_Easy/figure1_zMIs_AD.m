@@ -14,7 +14,7 @@ selAnimals_C = out.selAnimals{1};
 
 
 all_conds = []; all_rts = [];
-gAllVals_C = []; gAllVals_A = [];
+gAllVals_C = []; 
 for rr = 1:size(pMs_C,1)
     for cc = 1:size(pMs_C,2)
         tcond = conditionsAndRasterTypes(rr,cc);
@@ -29,19 +29,7 @@ for rr = 1:size(pMs_C,1)
         end
     end
 end
-for rr = 1:size(pMs_A,1)
-    for cc = 1:size(pMs_A,2)
-        tcond = conditionsAndRasterTypes(rr,cc);
-        nds = dec2base(tcond,10) - '0';
-        for an = 1:length(selAnimals_A)
-            zMIs_A(an,rr,cc) = nanmean(squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:)));
-            a_zMIs_A{an,rr,cc} = squeeze(pMs_A{rr,cc}.all_zMIs{selAnimals_A(an)}(nds(1),nds(2),:));
-            gAllVals_A = [gAllVals_A;a_zMIs_A{an,rr,cc}];
-        end
-    end
-end
 all_conds = unique(all_conds); all_rts = unique(all_rts);
-var_oi_A = squeeze(zMIs_A);
 var_oi_C = squeeze(zMIs_C);
 n = 0;
 %%
