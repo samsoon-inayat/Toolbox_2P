@@ -24,7 +24,7 @@ processed_data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallis
 f.data_folder = data_folder; f.processed_data_folder = processed_data_folder;
 [dS,T] = get_exp_info_from_folder(data_folder,processed_data_folder);
 %%
-sT = T([9 19 10 20],:);
+sT = T([9 20 10 21],:);
 if 0
     make_db(T);
     process_abf(T,0);
@@ -32,7 +32,7 @@ end
 % sT = T([2 11 20 3 12 21 4 13 22 5 14 23 6 15 24],:);
 ei = getData_py_1(f,sT,0);
 %%
-for ii = 1:length(ei)
+for ii = 3:length(ei)
     try
         ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
     catch
