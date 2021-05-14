@@ -1,8 +1,8 @@
 function rasters = get_rasters_data(ei,selContexts,rasterNames)
 if ~exist('ei','var')
-    ei = evalin('base','d15_2');
-    selContexts = [1 2 3 3 4 4 5 5 6 7];
-    rasterNames = {'light22T','air55T','air77T','airD','air77T','airD','air77T','airD','light22T','air55T'};
+    ei = evalin('base','ei');
+    selContexts = [];
+    rasterNames = {'airD'};
 end
 
 rasters = cell(length(ei),length(selContexts));

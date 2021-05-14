@@ -1,4 +1,7 @@
-function trace_plot_all(pd_rec)
+function trace_plot_all(pd_rec,flag)
+if ~exist('flag','var')
+    flag = [1 1 1 1];
+end
 try
 signals = pd_rec.deconv';
 frames_f = pd_rec.b.frames_f;
@@ -29,14 +32,22 @@ hold on;
 % plot(b.ts(frames_f),spSigAll(:,:));
 ylims = ylim;
 hold on;
+if flag(1)
 if isfield(b,'air_puff_raw')
    plot(b.ts,b.air_puff_raw*ylims(2),'g','linewidth',0.5)
 end
+end
+if flag(2)
 if isfield(b,'stim_raw')
    plot(b.ts,b.stim_raw*ylims(2),'r','linewidth',0.5)
 end
+end
+if flag(3)
 plot(b.ts,b.photo_sensor_raw*ylims(2),'c','linewidth',0.5)
+end
+if flag(4)
 plot(b.ts,b.fSpeed,'y');
+end
 set(gca,'Ydir','Normal');
 xlabel('Time (sec)');
 ylabel('Cell Number (arranged by peaks)');

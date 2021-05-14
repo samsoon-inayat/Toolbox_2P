@@ -23,23 +23,30 @@ data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Dat
 processed_data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_Basic_Char';
 f.data_folder = data_folder; f.processed_data_folder = processed_data_folder;
 [dS,T] = get_exp_info_from_folder(data_folder,processed_data_folder);
-if 1
+if 0
     make_db(T);
     process_abf(T,0);
 end
-ET = T([2 11 20],:);
-ei = getData_py_1(f,T([2 11 20],:),0);
-for ii = 1:length(ei)
+% sT = T([2 11 20 3 12 21 4 13 22 5 14 23 6 15 24],:);
+sT = T([2 11 20 3 12 21 4 13 22 5 14 23],:);
+ei = getData_py_1(f,sT,0);
+%%
+for ii = 10:length(ei)
     try
         ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
     catch
         disp(sprintf('Error for %s',ei{ii}.recordingFolder));
-        lasterror
+        lasterror;
     end
 end
+% parameter_matrices_ctrl('calculate','P2_1',ei(1:3));
+%%
 
-parameter_matrices_ctrl('calculate','P2_1',ei);
+selContexts = [];
+rasterNames = {'airD','beltD'};
+raster_data = get_rasters_data(ei,selContexts,rasterNames);
 
+%%
 rr = 1; cc = 3;
 recording(1).animal_id = dS.exp_list_animal{rr,cc};
 recording(1).date = dS.exp_list_date{rr,cc};

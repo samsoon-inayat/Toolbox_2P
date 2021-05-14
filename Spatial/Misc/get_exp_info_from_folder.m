@@ -1,4 +1,9 @@
 function [dS,T] = get_exp_info_from_folder(thisFolder,pFolder)
+
+[dS,T] = get_exp_info_from_rfolder(thisFolder,pFolder);
+
+
+function [dS,T] = get_exp_info_from_rfolder(thisFolder,pFolder)
 ind = 1;
 % for ii = 1:length(data_folder)
 %     thisFolder = f.mainDataFolderList{ii};

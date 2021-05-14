@@ -2,7 +2,7 @@ function out = read_data_from_base_workspace_P2(selC)
 
 rsel = 1
 ei_names = {'ei'};
-ET_names = {'ET'};
+ET_names = {'sT'};
 param_names = {'P2_1'};
 
 for ii = 1:length(ei_names)
