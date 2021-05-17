@@ -32,7 +32,7 @@ end
 % sT = T([2 11 20 3 12 21 4 13 22 5 14 23 6 15 24],:);
 ei = getData_py_1(f,sT,0);
 %%
-for ii = 3:length(ei)
+for ii = 4:length(ei)
     try
         ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
     catch
