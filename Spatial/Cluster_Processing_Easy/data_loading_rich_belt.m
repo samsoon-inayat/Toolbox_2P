@@ -23,16 +23,22 @@ data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Dat
 processed_data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_Basic_Char';
 f.data_folder = data_folder; f.processed_data_folder = processed_data_folder;
 [dS,T] = get_exp_info_from_folder(data_folder,processed_data_folder);
+disp('Done');
 %%
-sT = T([9 20 10 21],:);
-if 0
-    make_db(T);
-    process_abf(T,0);
+sT = T([9 20 10 21 11 22],:);
+sT = T([11 22],:);
+if 1
+    make_db(sT);
+    process_abf(sT,0);
 end
 % sT = T([2 11 20 3 12 21 4 13 22 5 14 23 6 15 24],:);
 ei = getData_py_1(f,sT,0);
 %%
-for ii = 4:length(ei)
+if 1
+    edit('./Cluster_Processing_Easy/contexts_definer.m');
+end
+%%
+for ii = 2:length(ei)
     try
         ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
     catch

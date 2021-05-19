@@ -20,6 +20,7 @@ allContexts = contextDefinitions;
 aa = 1
 tei = ei{aa};
 contexts = defineContexts(tei,dcfilename);
+tei = fix_for_air_puff_trials(tei);
 [motion.markersOn,motion.markersOff] = getMarkers(tei,NaN,NaN,'motion');
 [motionI.markersOn,motionI.markersOff] = getMarkers(tei,NaN,NaN,'motionI',motion);
 for ii = 1:length(contexts) % process all contexts

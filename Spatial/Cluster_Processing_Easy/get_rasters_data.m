@@ -1,40 +1,54 @@
 function rasters = get_rasters_data(ei,selContexts,rasterNames)
 if ~exist('ei','var')
     ei = evalin('base','ei');
-    selContexts = [];
-    rasterNames = {'airD'};
+    selContexts = [3 3];
+    rasterNames = {'airD','beltD'};
 end
 
-rasters = cell(length(ei),length(selContexts));
-for ii = 1:length(ei)
-    rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
+% rasters = cell(length(ei),length(selContexts));
+% for ii = 1:length(ei)
+%     rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
+% end
+
+rasters = cell(length(ei),length(rasterNames));
+for rr = 1:length(rasterNames)
+    for ii = 1:length(ei)
+        rasters{ii,rr} = get_data(ei{ii},selContexts(rr),rasterNames{rr});
+    end
 end
 
 
 function rasters = get_data(ei,selContexts,rasterNames)
-
+rasters = [];
 nplanes = length(ei.plane);
-for ii = 1:length(selContexts)
+% for ii = 1:length(selContexts)
+    cN = get_context_number(ei,selContexts);
+    if isempty(cN)
+        return;
+    end
     pp = 1;
-    thisContext = ei.plane{pp}.contexts(selContexts(ii));
+    thisContext = ei.plane{pp}.contexts(cN);
     disp(sprintf('%s - plane-%d',thisContext.name,pp));
-    cmdTxt = sprintf('tempR = thisContext.rasters.%s;',rasterNames{ii});
+    cmdTxt = sprintf('tempR = thisContext.rasters.%s;',rasterNames);
     eval(cmdTxt);
     iscell1 = ei.plane{pp}.tP.iscell(:,1);
     if nplanes == 1
-        rasters{ii,1} = tempR;
-        rasters{ii,1}.iscell = iscell1;
+        rasters = tempR;
+        rasters.iscell = iscell1;
     else
         pp = 2;
-        thisContext = ei.plane{pp}.contexts(selContexts(ii));
+        thisContext = ei.plane{pp}.contexts(cN);
         disp(sprintf('%s - plane-%d',thisContext.name,pp));
-        cmdTxt = sprintf('tempR1 = thisContext.rasters.%s;',rasterNames{ii});
+        cmdTxt = sprintf('tempR1 = thisContext.rasters.%s;',rasterNames);
         eval(cmdTxt);
-        rasters{ii,1} = combine_planes_data(tempR,tempR1);
+        rasters = combine_planes_data(tempR,tempR1);
         iscell2 = ei.plane{pp}.tP.iscell(:,1);
-        rasters{ii,1}.iscell = cat(1,iscell1,iscell2);
+        rasters.iscell = cat(1,iscell1,iscell2);
     end
-end
+% end
+
+
+
 
 function tempRC = combine_planes_data(tempR,tempR1)
 struct_fields_to_combine = {'fromFrames','info_metrics','gauss_fit_on_mean','fractal_dim'};

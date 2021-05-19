@@ -16,4 +16,5 @@ if ~exist(fileName,'File')
 end
 
 out = get_mfile_vars(fileName);
+n = 0;
 

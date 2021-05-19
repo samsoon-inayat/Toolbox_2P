@@ -32,6 +32,7 @@ for ii = 1:length(contextIDs)
     cmdTxt = sprintf('contexts(ii).stimMarkers = thisMarkers;');
     eval(cmdTxt);
 end
+n = 0;
 % 
 % for ii = 1:length(ei)
 %     for pp = 1:length(ei{ii}.plane)

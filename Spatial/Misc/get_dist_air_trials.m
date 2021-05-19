@@ -9,5 +9,11 @@ offsets = b.air_puff_f;
 
 if length(onsets) == length(offsets)
     BL1 = d(offsets)-d(onsets);
+else
+    if length(onsets) > length(offsets)
+        onsets(end) = [];
+        BL1 = d(offsets)-d(onsets);
+    end
+    n = 0;;
 end
 
