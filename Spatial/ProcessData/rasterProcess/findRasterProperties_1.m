@@ -10,8 +10,8 @@ allContexts = contextDefinitions;
 % allContexts.varNames = {'info_metrics';'gauss_fit_on_mean';'fractal_dim'};
 
 
-Rs_functions = allContexts.rasterFunctions(4:6);
-Rs_varNames = allContexts.varNames(4:6);
+Rs_functions = allContexts.rasterFunctions([4 2 3]);
+Rs_varNames = allContexts.varNames([4 2 3]);
 
 for ii = 1:length(Rs_functions)
     if ow(ii) == -1

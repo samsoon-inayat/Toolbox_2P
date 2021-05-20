@@ -1,6 +1,6 @@
 %% for context definitions (only need to be run in the start)
 % for ii = 1:size(sel_T,1)
-ii = 27;
+ii = 3;
     this_table_row = sT(ii,:);
     recording_folder = get_recording_folder_from_table_row(this_table_row);
     pd_folder = get_processed_data_folder_from_table_row(this_table_row);

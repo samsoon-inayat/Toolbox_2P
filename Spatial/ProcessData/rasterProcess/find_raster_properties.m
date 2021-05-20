@@ -8,9 +8,9 @@ for aa = 1:length(ei)
         disp(thispFolder);
         tei.folders.thispFolder = thispFolder;
 %         tei.areCells = find(tei.plane{pp}.tP.areCells);
-        tei.deconv = tei.plane{pp}.tP.deconv;
-        tei.ops1 = tei.plane{pp}.tP.ops;
-        tei.tP = tei.plane{pp}.tP;
+%         tei.deconv = tei.plane{pp}.tP.deconv;
+%         tei.ops1 = tei.plane{pp}.tP.ops;
+%         tei.tP = tei.plane{pp}.tP;
         tplane = tei.plane{pp};
         contexts = tplane.contexts;
         for contextNumber = 1:length(contexts)

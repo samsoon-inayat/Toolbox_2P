@@ -10,7 +10,11 @@ if iscell(R)
             if isempty(R{rr,cc})
                 zMI(rr,cc) = NaN;
             else
-                zMI(rr,cc) = nanmean(R{rr,cc}.info_metrics.ShannonMI_Zsh);
+                try
+                    zMI(rr,cc) = nanmedian(R{rr,cc}.info_metrics.ShannonMI_Zsh);
+                catch
+                    zMI(rr,cc) = nanmedian(R{rr,cc}.MIs);
+                end
             end
         end
     end

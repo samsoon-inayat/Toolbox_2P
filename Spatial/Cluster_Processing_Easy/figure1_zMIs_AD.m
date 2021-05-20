@@ -5,12 +5,18 @@ cellsOrNot = 1; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th
 % cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = NaN;
 Rs = evalin('base','Rs');
 sT = evalin('base','sT');
-sT = sT(:,1:3);
+sT = sT(:,1:2);
 
 avg_zMI = get_average_zMI(Rs);
-ris = strcmp(sT{:,1},'4071');
+ris = strcmp(sT{:,1},'3395');
 table(sT(ris,2),avg_zMI(ris,1))
 
+ris1 = strcmp(sT{:,1},'3328');
+Tbl = [array2table([1:size(sT,1)]') sT array2table(avg_zMI)];
+Tbl.Properties.VariableNames(4:end) = evalin('base','raster_types');
+Tbl.Properties.VariableNames(1) = {'Number'};
+disp(Tbl);
+return;
 ei_C = out.eis{1}; 
 pMs_C = out.pMs{1}; 
 paramMs_C = out.paramMs{1}; 

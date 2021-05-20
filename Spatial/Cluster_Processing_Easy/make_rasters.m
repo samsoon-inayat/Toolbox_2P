@@ -1,19 +1,20 @@
-function rasters =  getRasters_fixed_bin_width_ctrl(ei,pp,onsets,offsets,rasterType)
+function rasters =  make_rasters(ei,pp,onsets,offsets,rasterType,binwidths)
 
 if strcmp(rasterType,'time')
-    binWidth = 0.15; % unit of bin width is sec
-    bins = 0:binWidth:50;
-    maxbins = 500;
+    binWidth = binwidths(1); % unit of bin width is sec
+    bins = 0:binWidth:500;
+%     maxbins = 1000;
 end
 if strcmp(rasterType,'dist')
-    binWidth = 1.75; % unit of bin width is cm
+    binWidth = binwidths(2); % unit of bin width is cm
     bins = 0:binWidth:1000;
-    maxbins = 95;
+%     maxbins = 95;
 end
 
 ccs = 1:length(ei.tP.deconv.spSigAll);
 % ccs = find(ei.tP.iscell(:,1));%    1:length(ei.tP.deconv.spSigAll);
 b = ei.b;
+[nbins,binWidth] = get_nbins(b,onsets,offsets,binWidth,rasterType);
 b.frames_f = ei.plane{pp}.b.frames_f;
 b.frameRate = ei.thorExp.frameRate;
 % spSigAll = zeros(length(ccs),length(ei.deconv.spSigAll{1}));
@@ -22,22 +23,44 @@ b.frameRate = ei.thorExp.frameRate;
 %     spSigAll(ii,:) = ei.deconv.spSigAll{cellNum}';
 % end
 spSigAll = ei.deconv.spSigAll;
-rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,maxbins,rasterType);
+rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,nbins,rasterType);
+rasters.bin_width = binWidth;
+rasters.nbins = nbins;
 rasters.onsets = onsets; 
 rasters.offsets = offsets;
 rasters = fixRastersForNaN(rasters);
-rasters.xs = bins(1:(min(rasters.lastBin)-1));
-rasters.xs1 = bins(1:(max(rasters.lastBin)-1));
-if strcmp(rasterType,'time')
-    rasters.cell_history = getCellHistory(ei,b,onsets,rasters,binWidth);
-    if isfield(b,'air_puff_raw')
-        out =  getTimeRaster_2(b,spSigAll,onsets,offsets,binWidth);
-        rasters.wholeData = out;
+% rasters.xs = bins(1:size(rasters.sp_rasters,2));
+% rasters.xs = bins(1:(min(rasters.lastBin)-1));
+rasters.xs = bins(1:(max(rasters.lastBin)-1));
+% if strcmp(rasterType,'time')
+%     rasters.cell_history = getCellHistory(ei,b,onsets,rasters,binWidth);
+%     if isfield(b,'air_puff_raw')
+%         out =  getTimeRaster_2(b,spSigAll,onsets,offsets,binWidth);
+%         rasters.wholeData = out;
+%     end
+%     out =  getRasters_from_frames(b,spSigAll,onsets,offsets);
+%     rasters.fromFrames = out;
+% end
+
+function [nbins,binWidth] = get_nbins(b,onsets,offsets,binWidth,rasterType)
+for trial = 1:length(onsets)
+    st = onsets(trial);
+    se = offsets(trial);
+    if strcmp(rasterType,'time')
+        trial_vals(trial) = b.ts(se)-b.ts(st);
     end
-    out =  getRasters_from_frames(b,spSigAll,onsets,offsets);
-    rasters.fromFrames = out;
+    if strcmp(rasterType,'dist')
+        trial_vals(trial) = b.dist(se)-b.dist(st);
+    end
 end
 
+max_trial_vals = max(trial_vals);
+nbins = ceil(max_trial_vals/binWidth);
+% if nbins > 52
+%     nbins = 52;
+%     binWidth = round(max_trial_vals/nbins,1);
+%     [nbins,binWidth] = get_nbins(b,onsets,offsets,binWidth,rasterType);
+% end
 
 function out =  getRasters(b,spSignal,onsets,offsets,bin_width,nbins,rasterType)
 raster = NaN(length(onsets),nbins,size(spSignal,1));

@@ -27,22 +27,35 @@ f.data_folder = data_folder; f.processed_data_folder = processed_data_folder;
 sT = T;
 %%
 if 0
-    make_db(T);
-    process_abf(T,0);
+    make_db(sT);
+    process_abf(sT,0);
 end
 %%
 ei = getData_py_1(f,sT,0);
 %%
-for ii = 1:length(ei)
+for ii = 16%:length(ei)
 %     process_abf(sT(ii,:),0);
-    ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[0 0 0]);
+    ei(ii) = loadContextsResponses_ctrl(ei(ii),[1 1],[1 1 1]);
 end
-% parameter_matrices_ctrl('calculate','P2_1',ei(1:3));
+
+%%
+binwidths = [0.2 3];
+for ii = 1:length(ei1)
+    ei1(ii) = make_and_load_rasters(ei1(ii),binwidths);
+end
+%%
+for ii = 1:length(ei1)
+    ei1(ii) = find_raster_properties(ei1(ii));
+end
+
 %%
 
-selContexts = [3 3];
-rasterNames = {'airD','beltD'};
-Rs = get_rasters_data(ei,selContexts,rasterNames);
+selContexts = [3 3 3 11 2];
+rasterNames = {'airD','airT','beltD','beltD','air33T'};
+Rs = get_rasters_data(ei1,selContexts,rasterNames);
+for ii = 1:length(selContexts)
+    raster_types{ii} = sprintf('%s_%d',rasterNames{ii},selContexts(ii));
+end
 
 %%
 rr = 1; cc = 3;

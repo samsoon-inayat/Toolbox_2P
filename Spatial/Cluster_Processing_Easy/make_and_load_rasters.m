@@ -1,4 +1,4 @@
-function ei = loadContextsResponses_ctrl(ei,owr,owrp)
+function ei = make_and_load_rasters(ei,binwidths)
 
 allContexts = contextDefinitions;
 for aa = 1:length(ei)
@@ -46,22 +46,13 @@ for aa = 1:length(ei)
                 typesOfRasters = getTypesOfRasters(allContexts,thisStimMarker);
                 for kk = 1:length(typesOfRasters)
                     thisRasterType = typesOfRasters{kk};
-                    if strcmp(thisRasterType,'dist') && owr(1) == 0
-                        continue;
-                    end
-                    if strcmp(thisRasterType,'time') && owr(2) == 0
-                        continue;
-                    end
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
-                    rasters = getRasters_fixed_bin_width_ctrl(tei,pp,markersOn,markersOff,thisRasterType);
+                    rasters = make_rasters(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
+                    trials = 1:size(rasters.sp_rasters,1);
+                    rasters = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,[0 0 0]);
                     if length(unique(rasters.lastBin)) > 1
                         n= 0;
                     end
-%                     if strcmp(thisRasterType,'dist')
-                    trials = 1:size(rasters.sp_rasters,1);
-%                     rasters = findRasterProperties_ctrl1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owrp);
-                    rasters = findRasterProperties(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owrp);
-%                     end
                     if strcmp(thisRasterType,'dist')
                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sD = rasters;',thisStimMarker); eval(cmdTxt);
                     end
