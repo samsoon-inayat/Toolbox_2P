@@ -15,14 +15,15 @@ for aa = 1:length(ei)
         tplane = tei.plane{pp};
 %         fileName = makeName('contexts.mat',thispFolder);
 %         temp = load(fileName);
-        if ~isfield(tplane,'contexts')
-            contexts = getContexts({ptei});
-%             fileName = makeName('contexts_trials_markers.mat',thispFolder);
-%             S = load(fileName);
-%             contexts = S.contexts;
-        else
-            contexts = tplane.contexts;
-        end
+        contexts = getContexts({ptei});
+%         if ~isfield(tplane,'contexts')
+%             contexts = getContexts({ptei});
+% %             fileName = makeName('contexts_trials_markers.mat',thispFolder);
+% %             S = load(fileName);
+% %             contexts = S.contexts;
+%         else
+%             contexts = tplane.contexts;
+%         end
 %         typesOfMarkers = S.typesOfMarkers;
         for contextNumber = 1:length(contexts)
             thisContext = contexts(contextNumber);

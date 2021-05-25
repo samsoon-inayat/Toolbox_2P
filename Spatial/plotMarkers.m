@@ -9,8 +9,9 @@ if motion
     return;
 end
 
-figure(fn);clf;
+% figure(fn);clf;
 % b = ei.b;
+axes(fn);
 
 if isfield(b,'air_puff_raw')
     plot(b.ts,b.air_puff_raw,'color','b','linewidth',1.5);hold on;

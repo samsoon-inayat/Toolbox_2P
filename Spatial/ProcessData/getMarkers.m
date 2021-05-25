@@ -195,6 +195,19 @@ if strcmp(lower(markerType),'belt')
     markersOff = temp_photo_sensor(2:end);
 end
 
+if strcmp(lower(markerType),'belti')
+    offsets = ei.b.photo_sensor_f(end) + round(1e6 * 0.3/ei.b.si);
+    onsets = ei.b.photo_sensor_f(1) - round(1e6 * 0.3/ei.b.si);
+    photo_sensor = ei.b.photo_sensor_f(ei.b.photo_sensor_f>onsets(1) & ei.b.photo_sensor_f<offsets(end));
+    dists = ei.b.dist(photo_sensor);
+    diff_dists = diff(dists);
+    inds = find(diff_dists < 100);
+    temp_photo_sensor = photo_sensor;
+    temp_photo_sensor(inds+1) = [];
+    markersOn = temp_photo_sensor(1:(length(temp_photo_sensor)-1));
+    markersOff = temp_photo_sensor(2:end);
+end
+
 if strcmp(lower(markerType),'aironsets22')
     onsets = ei.b.air_puff_r(trials);
     offsets = ei.b.air_puff_f(trials);
