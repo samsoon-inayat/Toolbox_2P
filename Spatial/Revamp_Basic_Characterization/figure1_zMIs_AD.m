@@ -17,7 +17,7 @@ for anii = 1:5
     for indsii = 1:length(inds)
         this_raster = Rs{anii,inds(indsii)};
         zMIs = this_raster.info_metrics.ShannonMI_Zsh;
-        zMIs = zMIs(zMIs>1.96);
+%         zMIs = zMIs(zMIs>1.96);
         var_oi_C(anii,indsii) = nanmean(zMIs);
     end
 end

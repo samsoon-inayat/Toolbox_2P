@@ -46,14 +46,14 @@ for ii = 1:length(ei)
 end
 %%
 for ii = 1:length(ei1)
-    ei1(ii) = find_raster_properties(ei1(ii));
+    ei(ii) = find_raster_properties(ei(ii));
 end
 
 %%
 
 selContexts = [3 3 3 11 2];
 rasterNames = {'airD','airT','beltD','beltD','air33T'};
-Rs = get_rasters_data(ei1,selContexts,rasterNames);
+Rs = get_rasters_data(ei,selContexts,rasterNames);
 for ii = 1:length(selContexts)
     raster_types{ii} = sprintf('%s_%d',rasterNames{ii},selContexts(ii));
 end

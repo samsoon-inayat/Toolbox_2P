@@ -13,7 +13,7 @@ samplingRate = {'Ca','Ca','Ef','Ca'};
 timeBefore = [2 2 NaN 2];
 
 mRs = calc_mean_rasters(Rs,1:10,'sp_rasters1');
-resp = find_responsive_rasters(Rs,3);
+resp = find_responsive_rasters(Rs,1.96);
 view_population_vector(mRs,resp,100);
 return;
 sci = 1;

@@ -12,6 +12,9 @@ end
 
 rasters = cell(length(ei),length(rasterNames));
 for rr = 1:length(rasterNames)
+    if rr == 3
+        n = 0;
+    end
     for ii = 1:length(ei)
         rasters{ii,rr} = get_data(ei{ii},selContexts(rr),rasterNames{rr});
     end
@@ -19,6 +22,10 @@ end
 
 
 function rasters = get_data(ei,selContexts,rasterNames)
+disp(ei.recordingFolder);
+if strcmp('\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Data\RSEG_PSEG_more_data\3406\2021-05-20\1',ei.recordingFolder)
+    n = 0;
+end
 rasters = [];
 nplanes = length(ei.plane);
 % for ii = 1:length(selContexts)

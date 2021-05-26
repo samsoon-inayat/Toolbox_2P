@@ -13,7 +13,11 @@ if iscell(R)
                 try
                     zMI(rr,cc) = nanmedian(R{rr,cc}.info_metrics.ShannonMI_Zsh);
                 catch
-                    zMI(rr,cc) = nanmedian(R{rr,cc}.MIs);
+                    try
+                        zMI(rr,cc) = nanmedian(R{rr,cc}.info_metrics_1.ShannonMI_Zsh);
+                    catch
+                        zMI(rr,cc) = nanmedian(R{rr,cc}.MIs);
+                    end
                 end
             end
         end

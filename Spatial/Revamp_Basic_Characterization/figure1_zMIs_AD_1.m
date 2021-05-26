@@ -2,7 +2,7 @@ function figure1_zMIs_AD_1
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 cellsOrNot = NaN; planeNumber = NaN; zMI_Th = NaN; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
-cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = NaN;
+% cellsOrNot = 1; planeNumber = NaN; zMI_Th = 1.96; fwids = [1 150]; fcens = [1 150]; rs_th = 0.3; FR = NaN;
 % cellsOrNot = NaN; planeNumber = NaN; zMI_Th = 1.96; fwids = NaN; fcens = NaN; rs_th = NaN; FR = NaN;
 
 conditionsAndRasterTypes = [31 41 51];
