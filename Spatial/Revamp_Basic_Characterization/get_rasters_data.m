@@ -34,6 +34,9 @@ for ii = 1:length(selContexts)
         iscell2 = ei.plane{pp}.tP.iscell(:,1);
         rasters{ii,1}.iscell = cat(1,iscell1,iscell2);
     end
+    rasters{ii,1}.context_info = sprintf('%d-%s',selContexts(ii),rasterNames{ii});
+    rasters{ii,1}.marker_name = sprintf('%s',rasterNames{ii});
+    rasters{ii,1}.thorexp = ei.thorExp;
 end
 
 function tempRC = combine_planes_data(tempR,tempR1)

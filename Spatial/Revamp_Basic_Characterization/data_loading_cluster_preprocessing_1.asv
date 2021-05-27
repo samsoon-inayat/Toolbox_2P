@@ -70,8 +70,7 @@ date_of_surg_A = {'2019-03-27','2019-03-29','2019-04-30','2019-04-03','2019-04-2
 for rr = 1:length(animal_id_A)
     ind = find(training_data.animalIDs == animal_id_A(rr));
     dob = datetime(training_data.DOB{ind},'InputFormat','yyyy-MM-dd');
-%     this_date = datetime(date_of_rec_A{rr},'InputFormat','yyyy-MM-dd');
-    this_date = datetime(training_data.training_dates{ind,4},'InputFormat','yyyy-MM-dd');
+    this_date = datetime(date_of_rec_A{rr},'InputFormat','yyyy-MM-dd');
     dv = datevec(this_date-dob);
     ageAn_rec_A(rr) = 12*dv(1) + dv(2) + dv(3)/30;
     start_date = datetime(training_data.training_dates{ind,3},'InputFormat','yyyy-MM-dd');
