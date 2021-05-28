@@ -1,6 +1,6 @@
-function db = get_db(f)
+function db = get_db(recordingFolder)
 
-fileName = fullfile(f.recordingFolder,'make_db.m');
+fileName = fullfile(recordingFolder,'make_db.m');
 run(fileName);
 
 display('Loading stimulus data');
@@ -8,7 +8,7 @@ for ii = 1:length(db)
     
     db(ii).date = datestr(db(ii).date,'yyyy-mm-dd');
     
-    xmlFile = fullfile(f.recordingFolder,db(ii).metaD);
+    xmlFile = fullfile(recordingFolder,db(ii).metaD);
     xDoc = xmlread(xmlFile);
     tt = xDoc.getElementsByTagName('stimuli');
     tt1 = tt.item(0);

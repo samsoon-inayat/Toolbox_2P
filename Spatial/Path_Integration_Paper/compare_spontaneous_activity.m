@@ -16,7 +16,7 @@ out_A = get_spike_rate(ei_A);
 
 n=0;
 %%
-if 0
+if 1
     data_C = out_C.m_sp_animal_th;
     data_A = out_A.m_sp_animal_th;
     data = [data_C' data_A'];

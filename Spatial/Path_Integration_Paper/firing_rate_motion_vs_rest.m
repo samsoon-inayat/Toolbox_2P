@@ -32,7 +32,7 @@ end
 tcolors = {'k','r','k','r'};
 n=0;
 %%
-if 1
+if 0
     perc_cells_or_C = out_C.m_sp_animal_level;
     perc_cells_or_A = out_A.m_sp_animal_level;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
@@ -94,7 +94,7 @@ end
 % return;
 % end
 %%
-if 1
+if 0
     tcolors = {'k','k','k','k'};
 
     data_C = [out_C.m_sp_animal_level_rest' out_C.m_sp_animal_level_motion'];
@@ -152,10 +152,14 @@ if 1
    [h,p,cd,ks2stat] = ttest2(allValsG{1},allValsG{2});
    %%
    incr = 0.1; %maxBin =
-   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.75 1],'color','w');
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');
    hold on;
 %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
+   set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+   changePosition(gca,[0.09 0.13 -0.05 -0.13]);
+    put_axes_labels(gca,{'Average Firing Rate (Hz)',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
    %%
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...

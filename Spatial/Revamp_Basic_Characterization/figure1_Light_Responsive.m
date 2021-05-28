@@ -48,13 +48,19 @@ for ii = 1:length(resp_vals)
     all_OI{ii} = OI;
 end
 
+all_OIm = repmat(OI,1,1,5);
 figure(200);clf
 for ii = 1:length(resp_vals)
     OI = all_OI{ii};
     subplot(5,1,ii);
     imagesc(OI);
     colorbar;
+    all_OIm(:,:,ii) = OI;
 end
+
+figure(210);clf;
+imagesc(mean(all_OIm,3));
+colorbar
 
 
 dataT = array2table(resp_fraction(:,1:3));

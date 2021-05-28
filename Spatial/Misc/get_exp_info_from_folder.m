@@ -1,9 +1,14 @@
-function [dS,T] = get_exp_info_from_folder(thisFolder,pFolder)
+function [dS,T] = get_exp_info_from_folder(thisFolder,pFolder,animal_list,date_list)
 
-[dS,T] = get_exp_info_from_rfolder(thisFolder,pFolder);
+if ~exist('animal_list','var')
+    animal_list = [];
+    date_list = [];
+end
+
+[dS,T] = get_exp_info_from_rfolder(thisFolder,pFolder,animal_list,date_list);
 
 
-function [dS,T] = get_exp_info_from_rfolder(thisFolder,pFolder)
+function [dS,T] = get_exp_info_from_rfolder(thisFolder,pFolder,animal_list,date_list)
 ind = 1;
 % for ii = 1:length(data_folder)
 %     thisFolder = f.mainDataFolderList{ii};
@@ -23,6 +28,12 @@ ind = 1;
                     continue;
                 end
             end
+            if ~any(strcmp(animal_list,thisName))
+                continue;
+            end
+            if strcmp(thisName,'183762')
+                n = 0;
+            end
             animal(ind).ID = thisName;
             animalList{ind} = thisName;
             animalListNum(ind) = str2double(thisName);
@@ -35,6 +46,9 @@ ind = 1;
             for kk = 1:length(filesD)
                 thisNameD = filesD(kk).name;
                 if ~filesD(kk).isdir | strcmp(thisNameD,'.') | strcmp(thisNameD,'..')
+                    continue;
+                end
+                if ~any(strcmp(date_list,thisNameD))
                     continue;
                 end
                 if ~isempty(str2num(thisNameD(1)))
@@ -64,7 +78,8 @@ dS.animal = animal;
 dS.animalList = animalList;
 dS.animalListNum = animalListNum;
 dS.data_folder = thisFolder;
-dS.processed_data_folder = pFolder;
+dS.s2p_processed_data_folder = pFolder{1};
+dS.matlab_processed_data_folder = pFolder{2};
 
 T = get_table(dS);
 
@@ -79,7 +94,8 @@ for rr = 1:size(dS.exp_list_animal,1)
         T{ind,2} = dS.exp_list_date{rr,cc};
         T{ind,3} = dS.exp_list_expDir{rr,cc};
         T{ind,6} = fullfile(dS.data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
-        T{ind,7} = fullfile(dS.processed_data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
+        T{ind,7} = fullfile(dS.s2p_processed_data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
+        T{ind,8} = fullfile(dS.matlab_processed_data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
         ind = ind + 1;
     end
 end

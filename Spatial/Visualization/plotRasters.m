@@ -85,9 +85,13 @@ else
                 end
                 set(ff.h_axes(rr,cc),'visible','on');
                 cn = ccs(cni);
+                if cn == 440
+                    n = 0;
+                end
                 A = Ai{cc};
                 thisRaster = A.rasters(:,:,cn);
-                mSig = applyGaussFilt(nanmean(thisRaster),5);
+%                 mSig = applyGaussFilt(nanmean(thisRaster),5);
+                mSig = nanmean(thisRaster);
                 axes(ff.h_axes(rr,cc));
 %                 ft = fittype(A.formula);
                 xs = 1:size(A.rasters,2);
@@ -95,7 +99,15 @@ else
 %                 coeff = A.coeff(:,cn);
                 imagesc(thisRaster,[0 max(thisRaster(:))]);colorbar;hold on;
                 try
-                    fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
+                    
+                    statsetfitnlm = statset('fitnlm');
+                    statsetfitnlm.MaxIter = 1000;
+                    statsetfitnlm.TolFun = 1e-10;
+                    % statsetfitnlm.Display = 'iter';
+                    statsetfitnlm.TolX = statsetfitnlm.TolFun;
+                    statsetfitnlm.UseParallel = 1;
+                    [fitplot,mdl,coeffsrsM] = do_gauss_fit(xs,mSig,statsetfitnlm,[1 0]);
+%                     fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
                     plot(xs,size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1.5,'color','r');
                 catch
                 end

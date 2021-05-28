@@ -1,13 +1,14 @@
 function out =  getFits_myGaussFit_1(thispFolder,contextNumber,stimMarker,Rs,thisRasterType,trials,ow)
 
-fileName = makeName(sprintf('gauss_fit_on_means_1_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
+fileName = makeName(sprintf('gauss_fit_on_means_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
 if exist(fileName,'file') && ow == 0
     out = load(fileName);
     return;
 end
 % hWaitBar = waitbar(0,sprintf('Finding gaussian fits ... plz wait'));
 
-rasters = Rs.sp_rasters_nan_corrected;%(trials,:,:);
+% rasters = Rs.sp_rasters_nan_corrected;%(trials,:,:);
+rasters = Rs.sp_rasters1;%(trials,:,:);
 
 numCells = size(rasters,3);
 xs = 1:size(rasters,2);

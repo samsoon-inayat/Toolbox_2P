@@ -24,7 +24,7 @@ for ss = 1:length(stimMarkers)
     for jj = 1:length(selAnimals)
         [tempVals cns ACs] = getParamValues(varName,ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},rasterTypes{ss},selCells,maxDistTime);
 %         [clus] = getParamValues('cluster4',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
-        [placeCells] = getParamValues('placeCells5',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
+        [placeCells] = getParamValues('placeCells3',ei(selAnimals(jj)),planeNumbers,contextNumber(ss),stimMarkers{ss},'dist',selCells,maxDistTime);
     end
     dataC{ss} = tempVals;
 end
@@ -33,7 +33,10 @@ A = dataC{1}; B = dataC{2}; %C = dataC{3}; %D = dataC{4};
 % rasters = A;
 PCs = ACs & placeCells;
 % PCs = ACs;% & clus;
-coiSI = find(PCs);
+% coiSI = find(PCs);
+load('coiSI.mat');
+coiSI = find(coiSI);
+coiSI = [33    41   263   287   568   634]';
 sum(PCs)/length(PCs);
 [~,inds] = sort([A.place_field_properties.centers(coiSI)']);
 coiSI = coiSI(inds); 
@@ -42,9 +45,8 @@ centers = A.place_field_properties.centers(coiSI);
 
 % coiSI =  coiSI(centers > 25 & centers < 80)';
 % coiSI =  coiSI(centers > 40)';
-
 % plot_trial_correlation(dataC,coiSI);return;
-% plotRasters(dataC,coiSI);return
+plotRasters(dataC,coiSI);return
 % ccsi = [132 374 59 18 181];% 51]; % animal 1 plane 1
 ccsi = [168 356 662 406 157 75 66];% 51]; % animal 1 plane 1
 ccsi = [231 586 66 282 81 146];% 51]; % animal 3 plane 1
@@ -66,7 +68,7 @@ save_pdf(h,mData.pdf_folder,sprintf('cellsAvgImg.pdf'),600);
 return;
 end
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 cellList = ccsi;
 numberOfRows = 1;

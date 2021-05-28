@@ -1,6 +1,6 @@
 function out =  find_MI_1(thispFolder,contextNumber,stimMarker,rasters,thisRasterType,trials,ow)
 
-fileName = makeName(sprintf('info_metrics_1_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
+fileName = makeName(sprintf('info_metrics_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
 if exist(fileName,'file') && ow == 0
     out = load(fileName);
     return;
@@ -21,7 +21,7 @@ Rs = sRs;
 Dur = sDur;
 
 nbins = 4;
-nShuffle = 100;
+nShuffle = 500;
 hWaitBar = waitbar(0,sprintf('Finding MI scores ... plz wait'));
 numCells = size(Rs,3);
 

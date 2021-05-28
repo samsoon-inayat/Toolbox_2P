@@ -19,7 +19,13 @@ allContexts = contextDefinitions;
 
 aa = 1
 tei = ei{aa};
-contexts = defineContexts(tei,dcfilename);
+try
+    contexts = defineContexts(tei,dcfilename);
+catch
+    fileName = makeName('contexts.mat',ei{1}.recordingFolder);
+    temp = load(fileName);
+    contexts = temp.contexts;
+end
 tei = fix_for_air_puff_trials(tei);
 [motion.markersOn,motion.markersOff] = getMarkers(tei,NaN,NaN,'motion');
 [motionI.markersOn,motionI.markersOff] = getMarkers(tei,NaN,NaN,'motionI',motion);

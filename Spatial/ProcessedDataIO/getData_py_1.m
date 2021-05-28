@@ -1,14 +1,14 @@
-function tei = getData_py_1(f,T,owrdeconv)
+function tei = getData_py_1(T,owrdeconv)
 
 for ii = 1:size(T,1)
     try
-        f.recordingFolder = cell2mat(T{ii,6});
+        recordingFolder = cell2mat(T{ii,6});
     catch
-        f.recordingFolder = (T{ii,6});
+        recordingFolder = (T{ii,6});
     end
-    disp(f.recordingFolder);
-    tei{ii}.recordingFolder = f.recordingFolder;
-    tei{ii}.thorExp = thorGetExperimentInfo(f.recordingFolder);
+    disp(recordingFolder);
+    tei{ii}.recordingFolder = recordingFolder;
+    tei{ii}.thorExp = thorGetExperimentInfo(recordingFolder);
 %     fileName = makeName('abf_data.mat',cell2mat(T{ii,7}));
 %     disp('Loading behavior data');
 %     b = load(fileName);
@@ -69,7 +69,7 @@ for ii = 1:size(T,1)
     %         tP.areCells = tP.iscell(:,1);
         end
         recording.processed_data_folder = cell2mat(T{ii,7}); 
-        tP.areCells = get_cluster_iscell(recording);
+        tP.areCells = get_cluster_iscell(recording,sprintf('plane%d',pp-1));
         disp(sprintf('Loading 2P plane %d spikes',pp));
         deconv = get_cluster_deconv(recording);
         if size(deconv,2) < size(tP.areCells,1)

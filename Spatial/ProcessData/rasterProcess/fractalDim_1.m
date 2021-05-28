@@ -1,14 +1,15 @@
 function out = fractalDim(thispFolder,contextNumber,stimMarker,Rs,thisRasterType,trials,ow)
 
 
-fileName = makeName(sprintf('factal_dim_1_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
+fileName = makeName(sprintf('factal_dim_%d_%s_%s.mat',contextNumber,stimMarker,thisRasterType),thispFolder);
 if exist(fileName,'file') && ow == 0
     out = load(fileName);
     return;
 end
 hWaitBar = waitbar(0,sprintf('Finding fractal dim ... plz wait'));
 
-rasters = Rs.sp_rasters_nan_corrected;
+% rasters = Rs.sp_rasters_nan_corrected;
+rasters = Rs.sp_rasters1;
 numCells = size(rasters,3);
 
 for ii = 1:numCells
