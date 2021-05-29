@@ -33,7 +33,7 @@ for ii = 1:length(selContexts)
         rasters{ii,1} = combine_planes_data(tempR,tempR1);
         iscell2 = ei.plane{pp}.tP.iscell(:,1);
         rasters{ii,1}.iscell = cat(1,iscell1,iscell2);
-        rasters{ii,1}.cns = [[1:length(rasters{ii,1}.iscell)]' [ones(length(iscell1),1);2*ones(length(iscell2),1)] [[1:length(iscell1)]';[1:length(iscell2)]']];
+        rasters{ii,1}.cns = [[1:length(rasters{ii,1}.iscell)]' [ones(length(iscell1),1);2*ones(length(iscell2),1)] ];
     end
     rasters{ii,1}.context_info = sprintf('%d-%s',selContexts(ii),rasterNames{ii});
     rasters{ii,1}.marker_name = sprintf('%s',rasterNames{ii});

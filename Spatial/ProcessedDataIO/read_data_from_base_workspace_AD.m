@@ -2,7 +2,7 @@ function out = read_data_from_base_workspace_AD(selC)
 
 rsel = 1
 ei_names = {'ei10_C','ei10_A'};
-ET_names = {'ET10_C','ET10_A'};
+ET_names = {'T_C','T_A'};
 param_names = {'10_C','10_A'};
 
 for ii = 1:length(ei_names)

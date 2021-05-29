@@ -12,21 +12,11 @@ data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
 data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
 processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_AD_paper\Control';
 processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_AD_paper\Matlab\Control';
-animal_list_control = {'173706';'183761';'183745';'183628';'183762'};
-date_list_control = {'2019-02-14';'2019-06-19';'2019-06-19';'2019-06-21';'2019-06-24'};
+animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
+date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
 [dS_C,T_C] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_control,date_list_control);
-[dS_C1,T_C1] = get_exp_info_from_folder(data_folder2,processed_data_folder,animal_list_control,date_list_control);
-T_C = [T_C;T_C1];
+T_C = [T_C];
 T_C = reduce_table(T_C,animal_list_control,date_list_control);
-disp('Done');
-%%
-animal_list_APP = {'183227';'183228';'183329';'001567';'001569'};
-date_list_APP = {'2019-06-26';'2019-06-27';'2019-06-25';'2020-04-26';'2020-04-26'};
-data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
-processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_AD_paper\APP';
-processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_AD_paper\Matlab\APP';
-[dS_A,T_A] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_APP,date_list_APP);
-T_A = reduce_table(T_A,animal_list_APP,date_list_APP);
 disp('Done');
 %%
 colormaps = load('../MatlabCode/colorblind_colormap.mat');
@@ -52,8 +42,8 @@ disp('Done');
 ei10_C = getData_py_2(T_C);
 ei10_A = getData_py_2(T_A);
 %%
-binwidths = [0.2 1.5];
-for ii = 1:length(ei10_C)
+binwidths = [0.1 1.5];
+for ii = 2:length(ei10_C)
     ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths);
 end
 for ii = 1:length(ei10_A)
