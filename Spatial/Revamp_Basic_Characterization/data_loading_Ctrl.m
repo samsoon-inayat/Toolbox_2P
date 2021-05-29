@@ -40,6 +40,12 @@ disp('Done');
 ei = getData_py_2(T_C);
 %%
 binwidths = [0.1 1.5];
-for ii = 1:length(ei)
+for ii = 1:2%length(ei)
+    ei(ii) = make_and_load_rasters(ei(ii),binwidths);
+end
+
+%%
+binwidths = [0.1 1.5];
+for ii = 3:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths);
 end
