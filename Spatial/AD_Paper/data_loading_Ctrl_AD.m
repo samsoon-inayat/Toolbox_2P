@@ -52,17 +52,19 @@ disp('Done');
 ei10_C = getData_py_2(T_C);
 ei10_A = getData_py_2(T_A);
 %%
-binwidths = [0.1 1.5];
-for ii = 2:length(ei10_C)
-    ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths);
+nowr = [0 0 0];
+owr = [1 1 1];
+binwidths = [0.2 3];
+for ii = 1:length(ei10_C)
+    ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths,owr);
 end
 for ii = 1:length(ei10_A)
-    ei10_A(ii) = make_and_load_rasters(ei10_A(ii),binwidths);
+    ei10_A(ii) = make_and_load_rasters(ei10_A(ii),binwidths,owr);
 end
 
 %%
-ei10_C = loadContextsResponses_ctrl_old(ei10_C,[1 1],[0 0 0]);
-ei10_A = loadContextsResponses_ctrl_old(ei10_A,[1 1],[0 0 0]);
+% ei10_C = loadContextsResponses_ctrl_old(ei10_C,[1 1],[0 0 0]);
+% ei10_A = loadContextsResponses_ctrl_old(ei10_A,[1 1],[0 0 0]);
 training_data_C = behaviorProcessor;
 training_data_A = behaviorProcessor_AD;
 

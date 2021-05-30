@@ -32,15 +32,15 @@ rasters = fixRastersForNaN(rasters);
 % rasters.xs = bins(1:size(rasters.sp_rasters,2));
 % rasters.xs = bins(1:(min(rasters.lastBin)-1));
 rasters.xs = bins(1:(max(rasters.lastBin)-1));
-% if strcmp(rasterType,'time')
-%     rasters.cell_history = getCellHistory(ei,b,onsets,rasters,binWidth);
-%     if isfield(b,'air_puff_raw')
-%         out =  getTimeRaster_2(b,spSigAll,onsets,offsets,binWidth);
-%         rasters.wholeData = out;
-%     end
-%     out =  getRasters_from_frames(b,spSigAll,onsets,offsets);
-%     rasters.fromFrames = out;
-% end
+if strcmp(rasterType,'time')
+    rasters.cell_history = getCellHistory(ei,b,onsets,rasters,binWidth);
+    if isfield(b,'air_puff_raw')
+        out =  getTimeRaster_2(b,spSigAll,onsets,offsets,binWidth);
+        rasters.wholeData = out;
+    end
+    out =  getRasters_from_frames(b,spSigAll,onsets,offsets);
+    rasters.fromFrames = out;
+end
 
 function [nbins,binWidth] = get_nbins(b,onsets,offsets,binWidth,rasterType)
 for trial = 1:length(onsets)

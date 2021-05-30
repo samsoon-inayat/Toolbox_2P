@@ -1,7 +1,7 @@
 function figure1_Light_Responsive
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','d15'); 
+ei = evalin('base','ei'); 
 % selContexts = [1 2 3 4 4 5 6];
 % rasterNames = {'light22T','airD','light22T','airD','airD','light22T'};
 % Rs = get_rasters_data(ei,selContexts,rasterNames);
@@ -9,12 +9,6 @@ ei = evalin('base','d15');
 selContexts = [1 4 6 2 7 3 4 5];
 rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airD','airD'};
 Rs = get_rasters_data(ei,selContexts,rasterNames);
-
-an = 1;
-cai_sampling_rate = ei{an}.thorExp.frameRate;
-effective_sampling_rate = 1/0.15;
-samplingRate = {'Ca','Ca','Ef','Ca'};
-timeBefore = [2 2 NaN 2];
 
 mRs = calc_mean_rasters(Rs,1:10);
 Rs = find_responsive_rasters(Rs,1:10);

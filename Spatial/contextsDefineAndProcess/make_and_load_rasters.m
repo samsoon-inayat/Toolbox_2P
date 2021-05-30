@@ -1,4 +1,8 @@
-function ei = make_and_load_rasters(ei,binwidths)
+function ei = make_and_load_rasters(ei,binwidths,owr)
+
+if ~exist('owr','var')
+    owr = [0 0 0];
+end
 
 allContexts = contextDefinitions;
 for aa = 1:length(ei)
@@ -39,7 +43,7 @@ for aa = 1:length(ei)
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
                     rasters = make_rasters(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
                     trials = 1:size(rasters.sp_rasters,1);
-                    rasters = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,[0 0 0]);
+                    rasters = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owr);
                     if length(unique(rasters.lastBin)) > 1
                         n= 0;
                     end
