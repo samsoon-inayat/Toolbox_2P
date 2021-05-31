@@ -54,7 +54,7 @@ ei10_A = getData_py_2(T_A);
 %%
 nowr = [0 0 0];
 owr = [1 1 1];
-binwidths = [0.2 3];
+binwidths = [0.11 1.5];
 for ii = 1:length(ei10_C)
     ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths,owr);
 end

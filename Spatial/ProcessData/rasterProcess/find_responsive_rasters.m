@@ -8,7 +8,7 @@ for rr = 1:size(Rs,1)
         if strcmp(R.marker_name,'airD')
             [rs,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
             zMIs = R.info_metrics.ShannonMI_Zsh;
-            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.3;
+            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1. & rs > 0.3;
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
     end

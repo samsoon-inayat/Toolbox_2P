@@ -13,7 +13,7 @@ typeP = 'Population';
 thr = -1;
 %%
 fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
-if 0
+if 1
     out_C = get_spike_rate(ei_C,thr);
     out_A = get_spike_rate(ei_A,thr);
     save(fileName,'out_C','out_A','thr');
