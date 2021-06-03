@@ -4,10 +4,11 @@ if ~iscell(trials)
         for cc = 1:size(Rs,2)
             R = Rs{ii,cc};
             if strcmp(R.marker_name,'light22T') || strcmp(R.marker_name,'air55T')
-                temp1 = (squeeze(nanmean(Rs{ii,cc}.fromFrames.sp_rasters(trials,:,:),1)))';
+%                 temp1 = (squeeze(nanmean(Rs{ii,cc}.fromFrames.sp_rasters(trials,:,:),1)))';
+                temp1 = (squeeze(nanmean(Rs{ii,cc}.sp_rasters1(trials,:,:),1)))';
                 mRsi{ii,cc} = normalizeSignal(temp1,2);
             end
-            if strcmp(R.marker_name,'airD')
+            if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD')
                 temp1 = (squeeze(nanmean(Rs{ii,cc}.sp_rasters1(trials,:,:),1)))';
                 mRsi{ii,cc} = normalizeSignal(temp1,2);
             end

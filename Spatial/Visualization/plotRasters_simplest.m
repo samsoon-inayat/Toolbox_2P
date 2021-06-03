@@ -1,6 +1,7 @@
-function plotRasters_simple(rasters,ccs,mdata)
-if isempty(ccs)
-    ccs = 1:size(rasters,3);
+function plotRasters_simplest(R,ccs)
+rasters = R.sp_rasters1;
+if ~exist('ccs','var')
+    ccs = find(R.resp.vals);
 end
 
 % if length(ccs) == 1
@@ -49,7 +50,7 @@ while 1
             mSig = nanmean(thisRaster);
             axes(ff.h_axes(rr,cc));
             mtr = 1;%mode(thisRaster(thisRaster(:)>0));
-            try
+%             try
             imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
             colorbar;hold on;
             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
@@ -57,12 +58,13 @@ while 1
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));
             box off;
             set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
-            if ~isempty(mdata)
-                plot([mdata.cis(1) mdata.cis(1)],[0 16],'linewidth',1.5,'color','r');
-                plot([mdata.cis(2) mdata.cis(2)],[0 16],'linewidth',1.5,'color','m');
+            if isfield(R.resp,'cis')
+                cis = R.resp.cis;
+                plot([cis(2,1) cis(2,1)],[0 10],'linewidth',1.5,'color','r');
+                plot([cis(1,3) cis(1,3)],[0 10],'linewidth',1.5,'color','m');
             end
-            catch
-            end
+%             catch
+%             end
 %             xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
 %             set(gca,'XTick',xticks,'XTickLabels',mdata.xs(xticks));
         end
