@@ -11,17 +11,7 @@ Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 Rs = find_responsive_rasters(Rs,1:10);
 n = 0;
 %%
-% traces and raster plots
-for rr = 1:size(Rs,1)
-    ccs = [];
-    for cc = 1:size(Rs,2)
-        R = Rs{rr,cc};
-        ccs(:,cc) = R.resp.vals';
-        resp_fraction(rr,cc) = R.resp.fraction;
-    end
-    resp_vals{rr} = ccs;
-end
-disp('done');
+[resp_fraction,resp_vals,OI,mean_OI] = get_responsive_fraction(Rs)
 n = 0;
 
 %%

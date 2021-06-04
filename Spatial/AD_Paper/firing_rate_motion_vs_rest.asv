@@ -13,7 +13,7 @@ typeP = 'Population';
 thr = -1;
 %%
 fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
-if 0
+if 1
     out_C = get_spike_rate(ei_C,thr);
     out_A = get_spike_rate(ei_A,thr);
     save(fileName,'out_C','out_A','thr');
@@ -96,18 +96,18 @@ if 1
     data = [data_C;data_A];
     dataT = [table([ones(size(data_C,1),1);(2*ones(size(data_A,1),1))]) array2table(data)];
     dataT.Properties.VariableNames = {'Group','Rest','Motion'};
-    dataT.Group = categorical(dataT.Group);
+    dataT.Group = categorical(dataT.Group)
 
     within = table([1;2]);
     within.Properties.VariableNames = {'Type'};
     within.Type = categorical(within.Type);
     ra = repeatedMeasuresAnova(dataT,within);
-%     writetable(dataT,fullfile(mData.pdf_folder,'FR_motion_rest_Table.xls'));
+
     percentChangeC = 100*(data_C(:,2)-data_C(:,1))./data_C(:,1);
     percentChangeA = 100*(data_A(:,2)-data_A(:,1))./data_A(:,1);
     [h,p,ci,stats] = ttest2(percentChangeC,percentChangeA)
     [mpcC,sempcC] = findMeanAndStandardError(percentChangeC);
-    [mpcA,sempcA] = findMeanAndStandardError(percentChangeA);
+    [mpcA,sempcC] = findMeanAndStandardError(percentChangeC);
 
     mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = 2*ra.mcs.p; h = ra.mcs.p < 0.05;
@@ -159,7 +159,7 @@ if 1
    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
    changePosition(gca,[0.09 0.13 -0.05 -0.13]);
-    put_axes_labels(gca,{'Average Firing Rate (AU)',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
+    put_axes_labels(gca,{'Average Firing Rate (Hz)',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
    %%
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...

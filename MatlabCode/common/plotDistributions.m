@@ -9,7 +9,7 @@ if nargin == 1
             allValsGt = [];
             for rr = 1:size(distD,1)
                 thisVal = distD{rr,cc};
-                thisVal = mean(thisVal,2);
+                thisVal = nanmean(thisVal,2);
 %                 thisVal = max(thisVal,[],2);
                 thisVal = thisVal(:);
 %                 thisVal = thisVal(thisVal > 0);

@@ -10,7 +10,7 @@ for rr = 1:size(mRs,1)
         else
             ccs = [];
         end
-        [~,CRc{rr,cc},~] = findPopulationVectorPlot(ptc,ccs)
+        [~,CRc{rr,cc},~] = findPopulationVectorPlot(ptc,ccs);
    end
 end
 
@@ -26,8 +26,8 @@ for cc = 1:size(mRs,2)
     aCRc{cc} = nanmean(aCRc{cc},3);
 end
 
-if plt(1) == 1
-    figure(500);clf
+if exist('plt','var')
+    figure(plt);clf
     for cc = 1:size(mRs,2)
         subplot(1,size(mRs,2),cc);
         imagesc(aCRc{cc});

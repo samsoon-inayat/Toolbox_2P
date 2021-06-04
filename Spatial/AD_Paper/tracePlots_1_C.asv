@@ -44,13 +44,17 @@ coiSI = coiSI(inds);
 centers = A.place_field_properties.centers(coiSI);
 [coiSI(inds) A.place_field_properties.centers(coiSI(inds))' A.place_field_properties.pws(coiSI(inds))'];
 coiSI = find(resp_valsC{selAnimals}(:,conditionNumber))'
-% plotRasters_simplest(RsC{selAnimals,conditionNumber},coiSI);
-% return
+% coiSI =  coiSI(centers > 25 & centers < 80)';
+% coiSI =  coiSI(centers > 40)';
+% plot_trial_correlation(dataC,coiSI);return;
+[rs,as,bs,cs] = get_gauss_fit_parameters(RsC{3,1}.gauss_fit_on_mean,3);
+coiSI = find(cs > 150);
+plotRasters(dataC,coiSI);return
 % ccsi = [132 374 59 18 181];% 51]; % animal 1 plane 1
 
-ccsi = [235 158 147 251 260 93 18];% 51]; % animal 3 plane 1
+ccsi = [235 158 251 260 97 18];% 51]; % animal 3 plane 1
 
-n = 0;
+n=0;
 
 %%
 if 0
