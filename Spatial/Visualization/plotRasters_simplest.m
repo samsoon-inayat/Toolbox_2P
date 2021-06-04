@@ -57,11 +57,11 @@ while 1
             haa = findHaFD(af_TR,1:10);
             ham = findHaFD(mf_TR,1:10);
             htR = R.fractal_dim.HaFD(cn);
-            [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
+            [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
             haCRR = findHaFD(CRR,1:size(CRR,1));
             try
-%                 imagesc(CRR);
-                imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
+                imagesc(CRR);
+%                 imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
             catch
                 continue;
             end
