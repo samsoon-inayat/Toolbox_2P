@@ -7,11 +7,12 @@ ei_2_3 = evalin('base','ei_2_3');
 selContexts = [1 4 6];
 rasterNames = {'light22T','light22T','light22T'};
 Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
+Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
 Rs = find_responsive_rasters(Rs,1:10);
 n = 0;
 %%
 [resp_fraction,resp_vals,OI,mean_OI] = get_responsive_fraction(Rs)
 n = 0;
 %%
-an = 1; cn = 2;
+an = 2; cn = 1;
 plotRasters_simplest(Rs{an,cn})
