@@ -20,7 +20,6 @@ Rs12 = get_rasters_data(ei_2_3,selContexts,rasterNames);
 selContexts = [3 4 5];
 rasterNames = {'airD','airD','airD'};
 Rs2 = get_rasters_data(ei_2_3,selContexts,rasterNames);
-Rs2 = get_rasters_data(ei_11_15,selContexts,rasterNames);
 
 selContexts = [1 4 6 2 7 3 4 5];
 rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airD','airD'};
@@ -30,13 +29,13 @@ mRs = calc_mean_rasters(Rs,1:10);
 Rs = find_responsive_rasters(Rs,1:10);
 view_population_vector(Rs,mRs,100);
 view_population_vector_corr(Rs,mRs,200);
-% [CR,aCR] = find_population_vector_corr(Rs,mRs,1);
+[CR,aCR] = find_population_vector_corr(Rs,mRs,1);
 % return;
 [resp_fraction,resp_vals,OI,mean_OI] = get_responsive_fraction(Rs);
 
-% figure(310);clf;
-% imagesc(mean_OI);
-% colorbar
+figure(310);clf;
+imagesc(mean_OI);
+colorbar
 
 %%
 dataT = array2table(resp_fraction(:,1:3));

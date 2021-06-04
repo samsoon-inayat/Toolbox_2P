@@ -57,17 +57,16 @@ while 1
             haa = findHaFD(af_TR,1:10);
             ham = findHaFD(mf_TR,1:10);
             htR = R.fractal_dim.HaFD(cn);
-            [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
-            haCRR = findHaFD(CRR,1:size(CRR,1));
             try
-%                 imagesc(CRR);
-                imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
+                [ptc,~] = findPopulationVectorPlot(
+                imagesc(af_TR);
+%                 imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
             catch
                 continue;
             end
             colorbar;hold on;
             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
-            title(sprintf('%d - %.3f - %.3f - %.3f - %.3f',cn,htR,haa,ham,haCRR));
+            title(sprintf('%d - %.3f - %.3f - %.3f',cn,htR,haa,ham));
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));
             box off;
             set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');

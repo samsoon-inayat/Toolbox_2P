@@ -14,5 +14,5 @@ n = 0;
 [resp_fraction,resp_vals,OI,mean_OI] = get_responsive_fraction(Rs)
 n = 0;
 %%
-an = 1; cn = 2;
+an = 4; cn = 2;
 plotRasters_simplest(Rs{an,cn})

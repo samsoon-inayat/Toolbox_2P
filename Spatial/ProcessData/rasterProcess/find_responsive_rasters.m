@@ -89,9 +89,11 @@ parfor ii = 1:size(rasters,3)
     [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
 %     [p1(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
     vert = nansum(thisRaster,2);
-    hv(ii) = sum(vert>0) > 3;
+%     hv(ii) = sum(vert>0) > 3;
+    [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
+    hv(ii) = findHaFD(CRR,1:size(CRR,1));
 end
-resp = p < 0.05 & hv;
+resp = p < 0.05 & hv > 0.6;
 
 
 function [resp,cis] = find_resp_time_raster_light_fractal(R,trials)
