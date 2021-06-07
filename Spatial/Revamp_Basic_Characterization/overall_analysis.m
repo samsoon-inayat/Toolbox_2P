@@ -35,6 +35,7 @@ Rs = find_responsive_rasters(Rs,1:10);
 % view_population_vector(Rs,mRs,1,100);
 % view_population_vector_corr(Rs,mRs,1,200);
 %%
+if 0
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[7 7 3.25 3.25],'color','w');
 hold on;
 imagesc(mean_OI);
@@ -50,17 +51,18 @@ set(gca,'XTick',[1:8],'XTickLabels',xticklabels,'YTick',[1:7],'YTickLabels',(xti
 set(gca,'Ydir','reverse','linewidth',0.5,'FontSize',6,'FontWeight','Bold');
 save_pdf(hf,mData.pdf_folder,sprintf('overall_overlap_imageD'),600);
 return;
+end
 %%
 %% overlap RM bar graph
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
     C2 = [];
     for ii = 1:5
-        C2(ii,:) = OI{ii}(3,4:8);
+        C2(ii,:) = OI{ii}(4,5:8);
     end
     dataT = array2table([C2]);
 %     dataT.Properties.VariableNames = {'A1','A2','A3'};
-    within = array2table([1 2 3 4 5]');
+    within = array2table([1 2 3 4]');
     within.Properties.VariableNames = {'Cond'};
     within.Cond = categorical(within.Cond);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
@@ -72,14 +74,14 @@ mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
     % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 
-    xdata = [1 2 3 4 5]; 
+    xdata = [1 2 3 4]; 
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
 %     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4};};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
     for ii = 5:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
@@ -87,7 +89,7 @@ mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
 %     maxY = maxY + 5 + 2;
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end); xticklabels = {'C3','C4','C3''',''};
+    xticks = xdata(1:end); xticklabels = {'C2''','C3','C4','C3'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30)
     changePosition(gca,[0.2 0.03 -0.3 -0.05]);
