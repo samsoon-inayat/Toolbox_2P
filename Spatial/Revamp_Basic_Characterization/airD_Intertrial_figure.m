@@ -4,23 +4,17 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 ei_11_15 = evalin('base','ei_11_15'); 
 ei_2_3 = evalin('base','ei_2_3'); 
 
-selContexts = [1 4 6];
-rasterNames = {'light22T','light22T','light22T'};
+selContexts = [3 4 5];
+rasterNames = {'airIT','airIT','airIT'};
 Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 % Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
-Rs = find_responsive_rasters(Rs,1:10);
-mR = calc_mean_rasters(Rs,1:10);
+Rs = find_responsive_rasters(Rs,1:9);
+mR = calc_mean_rasters(Rs,1:9);
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1);
-n = 0;
-%%
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
-
 n = 0;
 %%
-
-n = 0;
-%%
-an = 1; cn = 2;
+an = 1; cn = 1;
 % plotRasters_simplest(Rs{an,cn})
 % find(resp_valsC{an}(:,cn));
 ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
@@ -30,16 +24,16 @@ gg = 1;
 set(gcf,'color','w');
 set(gcf,'Position',[10 4 3.25 1]);
 ff = sample_rasters(Rs{an,cn},[558 328 168 55],ff);
-save_pdf(ff.hf,mData.pdf_folder,sprintf('light_rastgers'),600);
+save_pdf(ff.hf,mData.pdf_folder,sprintf('airI_rasters'),600);
 %% population vector and correlation single animal
-an = 2;
+an = 1;
 ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
     'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
     [0.01 -60]);
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 3.25 2]);
 ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:));
-save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr.pdf'),600);
+save_pdf(ff.hf,mData.pdf_folder,sprintf('airI_population_vector_corr.pdf'),600);
 
 %% average correlation of all animals
 ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 3],...
@@ -48,7 +42,7 @@ ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 3],...
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 3.25 1]);
 ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc);
-save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr.pdf'),600);
+save_pdf(ff.hf,mData.pdf_folder,sprintf('airI_average_population_vector_corr.pdf'),600);
 %%
 dataT = array2table(resp_fractionC*100);
 dataT.Properties.VariableNames = {'L1','L2','L3'};

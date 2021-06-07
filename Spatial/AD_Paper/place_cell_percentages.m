@@ -87,7 +87,7 @@ save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_contexts_10_pooled.pdf',600);
     perc_cells_or_A = resp_OR_fractionA*100;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
     
-    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(3) std(perc_cells_or_A)/sqrt(5)];
+    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(5) std(perc_cells_or_A)/sqrt(5)];
     combs = [1 2]; %p = ra.mcs.p; h = ra.mcs.p < 0.05;
     xdata = [1:2];
 %     xdata = [1 2 3 4];
@@ -116,7 +116,7 @@ save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_contexts_10_pooled.pdf',600);
     perc_cells_or_A = resp_AND_fractionA*100;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
     
-    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(3) std(perc_cells_or_A)/sqrt(5)];
+    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(5) std(perc_cells_or_A)/sqrt(5)];
     combs = [1 2]; %p = ra.mcs.p; h = ra.mcs.p < 0.05;
     xdata = [1:2];
 %     xdata = [1 2 3 4];

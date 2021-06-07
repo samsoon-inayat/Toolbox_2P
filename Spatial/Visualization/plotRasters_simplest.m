@@ -54,8 +54,8 @@ while 1
             f_TR = (fft2(thisRaster));
             af_TR = abs(f_TR);
             mf_TR = angle(f_TR);
-            haa = findHaFD(af_TR,1:10);
-            ham = findHaFD(mf_TR,1:10);
+            haa = findHaFD(af_TR,1:size(thisRaster,1));
+            ham = findHaFD(mf_TR,1:size(thisRaster,1));
             htR = R.fractal_dim.HaFD(cn);
             [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
             haCRR = findHaFD(CRR,1:size(CRR,1));
@@ -75,6 +75,13 @@ while 1
                 cis = R.resp.cis;
                 plot([cis(2,1) cis(2,1)],[0 11],'linewidth',1.5,'color','r');
                 plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','g');
+            end
+            A = R;
+            xs = 1:length(A.xs);
+            if strfind(R.context_info,'air') & strfind(R.context_info,'D')
+                fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
+                plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.5,'color','m');
+                
             end
 %             catch
 %             end

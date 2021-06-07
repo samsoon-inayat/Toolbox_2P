@@ -52,6 +52,11 @@ end
 % xlim([0.5 length(means)+0.5]);
 
 % xdata = 1:length(means);
+if length(xdata) == 1
+    ylims = ylim;
+    myys = ylims(2);
+    return;
+end
 dx = xdata(2) - xdata(1);
 
 yl = get(gca,'YLim');

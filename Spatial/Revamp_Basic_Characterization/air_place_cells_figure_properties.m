@@ -1,41 +1,36 @@
-function plot_Vars_wrt_centers_AD
+function air_place_cells_figure_properties
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C2'); 
-ei_A = evalin('base','ei10_A2'); 
+ei_11_15 = evalin('base','ei_11_15'); 
+ei_2_3 = evalin('base','ei_2_3'); 
 
+selContexts = [3 4 5];
+rasterNames = {'airD','airD','airD'};
+% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
+Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
+Rs = find_responsive_rasters(Rs,1:10);
+mR = calc_mean_rasters(Rs,1:10);
+[CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1);
+[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
+[all_corr_C,all_corr_cell_C,mean_corr_C,mean_cell_corr_C,xs_C] = find_population_vector_corr_remap(Rs,mR,resp_ORC);
 
-selContexts = [1 2 3 4];
-rasterNames = {'airD','airD','airD','airD'};
-
-RsC = get_rasters_data(ei_C,selContexts,rasterNames);
-mRsC = calc_mean_rasters(RsC,1:10);
-RsC = find_responsive_rasters(RsC,1:10);
-% view_population_vector(Rs,mRs,300);
-[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(RsC);
-
-RsA = get_rasters_data(ei_A,selContexts,rasterNames);
-mRsA = calc_mean_rasters(RsA,1:10);
-RsA = find_responsive_rasters(RsA,1:10);
-% view_population_vector(Rs,mRs,400);
-[resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
 n = 0;
+
 %%
 
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
-ylabels = {{'Mutual Information','(z-score)'},'Firing Rate (AU)','Field Widths (cm)','R-Squared','Spatially Tuned Cells (%)'};
+ylabels = {{'Mutual Information','(z-score)'},{'Peak Firing','Rate (AU)'},'Field Widths (cm)','R-Squared',{'Spatially Tuned', 'Cells (%)'}};
 
-vn = 4;
+vn = 3;
 
-number_of_bins = 1;
-[all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn});
-[all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn});
+number_of_bins = 4;
+[all_valsC,all_vals_NC] = get_values(Rs,number_of_bins,all_variables{vn});
 
-if 1
+if 0
     all_valsC = all_vals_NC;
-    all_valsA = all_vals_NA;
     vn = 5;
 end
+varNames = [];
 if number_of_bins > 1
     ind = 1;
     w1 = [];
@@ -51,52 +46,48 @@ if number_of_bins > 1
         end
     end
 
-    dataT = array2table([[1;1;1;1;1;2;2;2;2;2] [all_valsC;all_valsA]]);
-    dataT.Properties.VariableNames = {'Group',varNames{:}};
+    dataT = array2table([all_valsC]);
+    dataT.Properties.VariableNames = {varNames{:}};
     within = array2table([w1' w2']);
     within.Properties.VariableNames = {'Cond','Bin'};
     within.Cond = categorical(within.Cond);
     within.Bin = categorical(within.Bin);
-    dataT.Group = categorical(dataT.Group);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     ra.ranova
 else
     temp_tcolors = repmat(colors(1:4),2,1);
-    varNames = {'C1','C2','C3','C4'};
+    varNames = {'C3','C4','C5'};
     xticklabels = varNames;
-    dataT = array2table([[1;1;1;1;1;2;2;2;2;2] [all_valsC;all_valsA]]);
-    dataT.Properties.VariableNames = {'Group',varNames{:}};
-    within = array2table([1 2 3 4]');
+    dataT = array2table(all_valsC);
+    dataT.Properties.VariableNames = {varNames{:}};
+    within = array2table([1 2 3]');
     within.Properties.VariableNames = {'Cond'};
     within.Cond = categorical(within.Cond);
-    dataT.Group = categorical(dataT.Group);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     ra.ranova
 end
-writetable(dataT,fullfile(mData.pdf_folder,sprintf('%s_values.xlsx',all_variables{vn})));
+% writetable(dataT,fullfile(mData.pdf_folder,sprintf('%s_values.xlsx',all_variables{vn})));
 
 n = 0;
-%% average distributions w.r.t centers for the two groups
+% average distributions w.r.t centers for the two groups
 if 1
     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
     tcolors = [temp_tcolors temp_tcolors];
     combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.05;
-    xdata = [1:(length(mVar)/2) ((length(mVar)/2)+1+(1:(length(mVar)/2)))];
+    xdata = [1:length(mVar)];
     colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
-    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 6.9 2],'color','w');
+    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 3.5 1],'color','w');
     hold on;
     [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.3);
-    for ii = (1+(length(hbs)/2)):length(hbs)
-        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
-    end
+        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xlim',[0.25 xdata(end)+0.15],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata;%(1:2:end)+0.5; 
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    changePosition(gca,[-0.05 0.03 -0.1 -0.11]);
+    changePosition(gca,[0.05 0.03 -0.1 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{ylabels{vn},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_variables{vn},number_of_bins),600);
     return;
@@ -113,7 +104,7 @@ hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 7 3.25 1],'c
 hold on;
 % tcolors = repmat(tcolors,2,1)';
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 
 set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
