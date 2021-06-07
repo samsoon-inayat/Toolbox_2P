@@ -15,7 +15,6 @@ if ~iscell(trials)
         end
     end
     mRs = mRsi;
-    
 else
     for tt = 1:length(trials)
         mRs{tt} = calc_mean_rasters(Rs,trials{tt});

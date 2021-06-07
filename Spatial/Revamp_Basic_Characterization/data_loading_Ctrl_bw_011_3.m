@@ -38,7 +38,7 @@ mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
 
 Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-mData.pdf_folder = [Uleth_one_drive '\PDFs']; 
+mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedDataMatlab'];
 disp('Done');
 

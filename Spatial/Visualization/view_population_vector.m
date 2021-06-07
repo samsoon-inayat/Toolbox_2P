@@ -1,4 +1,4 @@
-function view_population_vector(Rs,mRs,figNum)
+function view_population_vector(Rs,mRs,ccs,figNum)
 
 if exist('figNum','var')
     figure(figNum);
@@ -17,12 +17,12 @@ if iscell(mRs)
             ptc = mRs{rr,cc};
             R = Rs{rr,cc};
             resp = R.resp;
-            if ~isempty(resp)
-                ccs = find(resp.vals);
+            if ~isempty(ccs)
+                ccsr = find(resp.vals);
             else
-                ccs = [];
+                ccsr = ccs;
             end
-            [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccs)
+            [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccsr)
             imagesc(ptco);
             set(gca,'Ydir','Normal');
             colorbar;

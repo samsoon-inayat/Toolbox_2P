@@ -25,6 +25,40 @@ RsA = find_responsive_rasters(RsA,1:10);
 [all_corr_A,all_corr_cell_A,mean_corr_A,mean_cell_corr_A,xs_A] = find_population_vector_corr_remap(RsA,mRsA,resp_ORA);
 
 n = 0;
+%% only for and condition
+if 1
+    n = 0;
+    perc_cells_common_C = 100*(cpMs_C.numCells./cpMs_C.areCells);
+    perc_cells_common_A = 100*(cpMs_A.numCells./cpMs_A.areCells);
+    [h,p,ci,stats] = ttest2(perc_cells_common_C,perc_cells_common_A);
+    mVar = [mean(perc_cells_common_C) mean(perc_cells_common_A)]; 
+    semVar = [std(perc_cells_common_C)./sqrt(length(perc_cells_common_C)) std(perc_cells_common_A)./sqrt(length(perc_cells_common_A))];
+    combs = [1 2];
+    xdata = [1 2];
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+    hold on;
+    tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = 5:length(hbs)
+        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'Control','APP'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[0.17 0.03 -0.3 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Common Spatially','Tuned Cells (%)'},[0 0 0]});
+
+    save_pdf(hf,mData.pdf_folder,'Perc Of Place Cells_common',600);
+    
+    return;
+end
+
+
 %%
 if 1
 % out_CC = all_out_C.all_corr_an{3};
@@ -83,7 +117,7 @@ end
 %%
 % out_CC = all_out_C.all_corr_an{3};
 % out_AA = all_out_A.all_corr_an{1};
-group = 1
+group = 2
 if group == 1
     sel_out = mean_corr_C;
     xs = xs_C;
@@ -121,7 +155,7 @@ for rr = 1:4
             cols = size(sel_out{rr,cc},2);
             colsHalf = round(cols/2);
             ts = round(xs);
-            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[0 ts(colsHalf) ts(cols)]);
+            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1)-2 ts(colsHalf) ts(cols)+2]);
 
         else
             axis off

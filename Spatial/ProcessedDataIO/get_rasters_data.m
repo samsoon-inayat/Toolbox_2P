@@ -38,6 +38,7 @@ for ii = 1:length(selContexts)
     rasters{ii,1}.context_info = sprintf('%d-%s',selContexts(ii),rasterNames{ii});
     rasters{ii,1}.marker_name = sprintf('%s',rasterNames{ii});
     rasters{ii,1}.thorexp = ei.thorExp;
+    rasters{ii,1}.beltLength = get_belt_length(ei);
 end
 
 function tempRC = combine_planes_data(tempR,tempR1)

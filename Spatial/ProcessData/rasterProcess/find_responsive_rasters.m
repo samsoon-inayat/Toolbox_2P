@@ -13,7 +13,7 @@ for rr = 1:size(Rs,1)
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
             zMIs = R.info_metrics.ShannonMI_Zsh;
-            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.3 & PWs < 150 & centers > 0 & centers < 150;
+            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
     end
@@ -47,15 +47,17 @@ parfor ii = 1:size(rasters,3)
     thisRaster = rasters(trials,:,ii);
     m_thisRaster = nanmean(thisRaster);
 %     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
-    [p(ii),atabk,statsk] = kruskalwallis(thisRaster,group,'nodisplay');
-    [p1(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
+%     [p(ii),atabk,statsk] = kruskalwallis(thisRaster,group,'nodisplay');
+    [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
+    vert = nansum(thisRaster,2);
+    hv(ii) = sum(vert>0) > 5;
 end
-resp = p < 0.05 & p1 < 0.05;
+resp = p < 0.05 & hv';
 % resp = p<0.05 & (R.info_metrics.ShannonMI_Zsh > 1.96)';
 % % resp = (R.info_metrics.ShannonMI_Zsh > 1.96)';
 % [rs,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
 % zMIs = R.info_metrics.ShannonMI_Zsh;
-% resp = R.iscell' & zMIs > 1.96 & rs > 0.3;
+% resp = zMIs > 1.96 & rs > 0.3;
 
 
 function [resp,cis] = find_resp_time_raster_light(R,trials)
@@ -84,16 +86,17 @@ p1 = NaN(size(rasters,3),1);
 hv = NaN(size(rasters,3),1);
 parfor ii = 1:size(rasters,3)
     thisRaster = rasters(trials,:,ii);
-%     m_thisRaster = nanmean(thisRaster);
+    m_thisRaster = nanmean(thisRaster);
 %     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
-    [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
-%     [p1(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
+%     [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
+%     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
+    [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
     vert = nansum(thisRaster,2);
-%     hv(ii) = sum(vert>0) > 3;
-    [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
-    hv(ii) = findHaFD(CRR,1:size(CRR,1));
+    hv(ii) = sum(vert>0) > 5;
+%     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
+%     hv(ii) = findHaFD(CRR,1:size(CRR,1));
 end
-resp = p < 0.05 & hv > 0.6;
+resp = p < 0.05 & hv;
 
 
 function [resp,cis] = find_resp_time_raster_light_fractal(R,trials)

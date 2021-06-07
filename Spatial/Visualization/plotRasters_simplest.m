@@ -60,8 +60,8 @@ while 1
             [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
             haCRR = findHaFD(CRR,1:size(CRR,1));
             try
-                imagesc(CRR);
-%                 imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
+%                 imagesc(CRR);
+                imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
             catch
                 continue;
             end
@@ -74,7 +74,7 @@ while 1
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
                 plot([cis(2,1) cis(2,1)],[0 11],'linewidth',1.5,'color','r');
-                plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','m');
+                plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','g');
             end
 %             catch
 %             end

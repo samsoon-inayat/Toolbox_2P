@@ -12,17 +12,8 @@ mRsC = calc_mean_rasters(RsC,1:10);
 RsC = find_responsive_rasters(RsC,1:10);
 [CR_C,aCR_C] = find_population_vector_corr(RsC,mRsC,100);
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(RsC);
-
-RsA = get_rasters_data(ei_A,selContexts,rasterNames);
-mRsA = calc_mean_rasters(RsA,1:10);
-RsA = find_responsive_rasters(RsA,1:10);
-[CR_A,aCR_A] = find_population_vector_corr(RsA,mRsA,200);
-[resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
-
-
-% [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T,out.all_corr_an,out.all_corr_cell_an] = get_pop_vector_corr(out,conditionsAndRasterTypes,min(out.sz(:)),cellSel_C);
 [all_corr_C,all_corr_cell_C,mean_corr_C,mean_cell_corr_C,xs_C] = find_population_vector_corr_remap(RsC,mRsC,resp_ORC);
-[all_corr_A,all_corr_cell_A,mean_corr_A,mean_cell_corr_A,xs_A] = find_population_vector_corr_remap(RsA,mRsA,resp_ORA);
+
 
 n = 0;
 %%

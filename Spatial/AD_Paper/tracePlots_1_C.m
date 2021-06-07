@@ -48,7 +48,7 @@ coiSI = find(resp_valsC{selAnimals}(:,conditionNumber))'
 % return
 % ccsi = [132 374 59 18 181];% 51]; % animal 1 plane 1
 
-ccsi = [235 158 147 251 260 93 18];% 51]; % animal 3 plane 1
+ccsi = [235 251 147 97 18];% 51]; % animal 3 plane 1
 
 n = 0;
 
@@ -157,7 +157,7 @@ for rr = 1
         
         if cc == 5 && rr == 1
             hca = gca;
-            hc = putColorBar(hca,[0 0 -0.05 0],{'0','Max FR'},6,'northoutside',[0.15 0.22 0.05 0.22]);
+            hc = putColorBar(hca,[-0.05 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.22 0.05 0.22]);
         end
     end
 end
