@@ -32,8 +32,9 @@ Rs = find_responsive_rasters(Rs,1:10);
 [CR,aCR] = find_population_vector_corr(Rs,mRs,1,1000);
 % return;
 
-% view_population_vector(Rs,mRs,1,100);
-% view_population_vector_corr(Rs,mRs,1,200);
+view_population_vector(Rs,mRs,1,100);
+view_population_vector_corr(Rs,mRs,1,200);
+return;
 %%
 if 0
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[7 7 3.25 3.25],'color','w');
