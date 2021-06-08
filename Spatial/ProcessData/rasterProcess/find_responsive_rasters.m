@@ -17,7 +17,8 @@ for rr = 1:size(Rs,1)
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
             zMIs = R.info_metrics.ShannonMI_Zsh;
-            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
+%             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
+            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.64 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
     end

@@ -62,3 +62,36 @@ binwidths = [0.2 3];
 for ii = 1:length(ei_2_3)
     ei_2_3(ii) = make_and_load_rasters(ei_2_3(ii),binwidths,[0 0 0]);
 end
+
+%% training
+
+training_data = behaviorProcessor;
+training_data.belt_lengths = [150 150 150 150 150]';
+training_data.DOB = {'2018-09-27';'2018-10-11';'2018-10-03';'2018-09-27';'2018-10-11'};
+training_data.weight = [34.5000   34.2000   33.7000   33.5000   34.6
+   31.6000   31.3000   30.7000   31.5000   30.3
+   34.6000   34.5000   33.6000   35.3000   35.7
+   26.8000   26.6000   26.7000   27.6000   26.6
+   35.8000   35.4000   35.3000   35.1000   35.1];
+
+
+animal_id_A = [183633,183761,183745,183628,183762];
+date_of_rec_A = {'2019-06-04','2019-06-06','2019-06-07','2019-06-11','2019-06-11'};
+date_of_surg_A = {'2019-03-27','2019-03-29','2019-04-30','2019-04-03','2019-04-26'};
+for rr = 1:length(animal_id_A)
+    ind = find(training_data.animalIDs == animal_id_A(rr));
+    dob = datetime(training_data.DOB{ind},'InputFormat','yyyy-MM-dd');
+%     this_date = datetime(date_of_rec_A{rr},'InputFormat','yyyy-MM-dd');
+    this_date = datetime(training_data.training_dates{ind,4},'InputFormat','yyyy-MM-dd');
+    dv = datevec(this_date-dob);
+    ageAn_rec_A(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+    start_date = datetime(training_data.training_dates{ind,3},'InputFormat','yyyy-MM-dd');
+    dv = datevec(this_date-start_date);
+    rec_day_A(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+    surg_date = datetime(date_of_surg_A{rr},'InputFormat','yyyy-MM-dd');
+    dv = datevec(start_date-surg_date);
+    postsurg_day_A(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+    dv = datevec(surg_date - dob);
+    age_at_surg(rr) = 12*dv(1) + dv(2) + dv(3)/30;
+end
+disp('Done');

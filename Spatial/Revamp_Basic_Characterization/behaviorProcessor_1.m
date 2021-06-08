@@ -196,7 +196,7 @@ for ii = 2:2:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 end
 set(gca,'xlim',[0.25 11.75],'ylim',[0 maxY+7],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'Day1','Day2','Day3','Day4'};
+xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 changePosition(gca,[0.1 0.02 -0.03 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
