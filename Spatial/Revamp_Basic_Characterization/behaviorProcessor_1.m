@@ -237,7 +237,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY+7],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
@@ -276,7 +276,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY+3],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
@@ -316,7 +316,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY+3],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 % xtickangle(30)
 changePosition(gca,[0.22 0.02 -0.15 -0.011])
@@ -355,7 +355,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30)
 changePosition(gca,[0.1 0.02 -0.15 -0.011])
@@ -394,7 +394,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30)
 changePosition(gca,[0.22 0.02 -0.15 -0.011])
@@ -434,8 +434,8 @@ tcolors = {colors{1};colors{2};colors{3};colors{4};colors{5}};
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[95 maxY-10],'FontSize',6,'FontWeight','Bold','TickDir','out');
-% xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4','Test-Day'};
-xticks = xdata; xticklabels = {'Day1','Day2','Day3','Day4'};
+% xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT','Test-Day'};
+xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(45)
 changePosition(gca,[0.2 0.02 -0.15 -0.011])
