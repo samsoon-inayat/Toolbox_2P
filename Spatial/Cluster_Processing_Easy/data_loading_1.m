@@ -2,7 +2,7 @@ for ii = 1:60
     pause(1);
 end
 %%
-% clear all
+clear all
 %%
 % add_to_path
 clc
@@ -20,19 +20,24 @@ mData.pd_folder = [Uleth_one_drive '\ProcessedData\Matlab'];
 disp('Done');
 %%
 data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Data\RSEG_PSEG_more_data';
-processed_data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_Basic_Char';
+processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_Basic_Char';
+processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_Basic_Char\Matlab';
 f.data_folder = data_folder; f.processed_data_folder = processed_data_folder;
-[dS,T] = get_exp_info_from_folder(data_folder,processed_data_folder);
+% [dS,T] = get_exp_info_from_folder(data_folder,processed_data_folder);
 % sT = T([2 11 20 3 12 21 4 13 22 5 14 23 6 15 24],:);
-sT = T(23,:);
+animal_list_control = {'3328'};
+date_list_control = {'2021-05-04'};
+[dS_C,T_C] = get_exp_info_from_folder(data_folder,processed_data_folder,animal_list_control,date_list_control);
+T_C = [T_C];
+T_C = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
 %%
-if 0
-    make_db(sT);
-    process_abf(sT,0);
+if 1
+%     make_db(sT);
+    process_abf(T_C,0);
 end
 %%
-ei = getData_py_1(f,sT,0);
+ei = getData_py_2(T_C);
 %%
 for ii = 1%:length(ei)
     process_abf(sT(ii,:),0);

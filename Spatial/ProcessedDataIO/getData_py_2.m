@@ -13,6 +13,9 @@ for ii = 1:size(T,1)
     if size(T,2) == 9
         matlab_planeD{1} = fullfile(cell2mat(T{ii,9}),'suite2P\plane0');
         matlab_planeD{2} = fullfile(cell2mat(T{ii,9}),'suite2P\plane1');
+    else
+        matlab_planeD{1} = fullfile(cell2mat(T{ii,8}),'suite2P\plane0');
+        matlab_planeD{2} = fullfile(cell2mat(T{ii,8}),'suite2P\plane1');
     end
     for pp = 1:length(plane)
         if isempty(plane{pp})
