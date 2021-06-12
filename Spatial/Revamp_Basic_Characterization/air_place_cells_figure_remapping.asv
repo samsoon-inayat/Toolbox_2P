@@ -11,9 +11,11 @@ Rs = find_responsive_rasters(Rs,1:10);
 
 selContexts = [2 7];
 rasterNames = {'air55T','air55T'};
-Rs = get_rasters_data(ei,selContexts,rasterNames);
+Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 Rs = find_responsive_rasters(Rs,1:10);
-[resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(Rs);
+
+[CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1);
+[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
 
 
 selContexts = [3 4 5];
@@ -24,15 +26,15 @@ Rs = find_responsive_rasters(Rs,1:10);
 mR = calc_mean_rasters(Rs,1:10);
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1);
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
-for ii = 1:length(resp_valsC)
-    selResp{ii} = logical(resp_valsC{ii}(:,1));
+for ii = 1:length(resp_valsL)
+    selResp{ii} = logical(resp_valsL{ii}(:,3));
 end
 [all_corr_C,all_corr_cell_C,mean_corr_C,mean_cell_corr_C,xs_C] = find_population_vector_corr_remap(Rs,mR,selResp);
 
 n = 0;
 
 %%
-if 0
+if 1
 % out_CC = all_out_C.all_corr_an{3};
 % out_AA = all_out_A.all_corr_an{1};
     temp = mean_cell_corr_C(:,:,1);
