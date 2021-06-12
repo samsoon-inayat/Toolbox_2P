@@ -80,6 +80,11 @@ dS.animalListNum = animalListNum;
 dS.data_folder = thisFolder;
 dS.s2p_processed_data_folder = pFolder{1};
 dS.matlab_processed_data_folder = pFolder{2};
+if length(pFolder) == 3
+    dS = rmfield(dS,'matlab_processed_data_folder');
+    dS.matlab_processed_data_folder_time = pFolder{2};
+    dS.matlab_processed_data_folder_dist = pFolder{3};
+end
 
 T = get_table(dS);
 
@@ -95,7 +100,12 @@ for rr = 1:size(dS.exp_list_animal,1)
         T{ind,3} = dS.exp_list_expDir{rr,cc};
         T{ind,6} = fullfile(dS.data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
         T{ind,7} = fullfile(dS.s2p_processed_data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
-        T{ind,8} = fullfile(dS.matlab_processed_data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
+        if isfield(dS,'matlab_processed_data_folder')
+            T{ind,8} = fullfile(dS.matlab_processed_data_folder,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
+        else
+            T{ind,8} = fullfile(dS.matlab_processed_data_folder_time,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
+            T{ind,9} = fullfile(dS.matlab_processed_data_folder_dist,dS.exp_list_animal{rr,cc},dS.exp_list_date{rr,cc},dS.exp_list_expDir{rr,cc});
+        end
         ind = ind + 1;
     end
 end

@@ -10,6 +10,11 @@ for aa = 1:length(ei)
     tei = ptei;
     for pp = 1:length(ei{aa}.plane)
         thispFolder = tei.plane{pp}.folder;
+        if isfield(tei.plane{pp},'folderD')
+            thispFolderD = tei.plane{pp}.folderD;
+        else
+            thispFolderD = tei.plane{pp}.folder;
+        end
         disp(thispFolder);
         tei.folders.thispFolder = thispFolder;
 %         tei.areCells = find(tei.plane{pp}.tP.areCells);
@@ -43,14 +48,23 @@ for aa = 1:length(ei)
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
                     rasters = make_rasters(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
                     trials = 1:size(rasters.sp_rasters,1);
-                    rasters = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owr);
                     if length(unique(rasters.lastBin)) > 1
                         n= 0;
                     end
                     if strcmp(thisRasterType,'dist')
+                        rasters = findRasterProperties_1(thispFolderD,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owr);
+                        if double(rasters.bin_width) == double(binwidths(2))
+                        else
+                            error;
+                        end
                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sD = rasters;',thisStimMarker); eval(cmdTxt);
                     end
                    if strcmp(thisRasterType,'time')
+                        rasters = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owr);
+                        if double(rasters.bin_width) == double(binwidths(1))
+                        else
+                            error;
+                        end
                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sT = rasters;',thisStimMarker); eval(cmdTxt);
                     end 
                 end

@@ -11,14 +11,28 @@ clear all
 data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
 data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
 processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
-processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
-processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
+processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
+processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
+
 animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
 date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
 [dS_C,T_C] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_control,date_list_control);
 T_C = [T_C];
 T_C1 = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
+
+%%
+data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
+data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
+processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
+processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
+animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
+date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
+[dS_C,T_C] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_control,date_list_control);
+T_C = [T_C];
+T_C2 = reduce_table(T_C,animal_list_control,date_list_control);
+disp('Done');
+
 %%
 colormaps = load('../MatlabCode/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
@@ -38,13 +52,18 @@ end
 disp('Done');
 
 %%
-ei = getData_py_2(T_C1);
+ei_11_15 = getData_py_2(T_C1);
+ei_2_3 = getData_py_2(T_C2);
 %%
-binwidths = [0.11 3];
-for ii = 1:length(ei)
-    ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
+binwidths = [0.11 1.5];
+for ii = 1:length(ei_11_15)
+    ei_11_15(ii) = make_and_load_rasters(ei_11_15(ii),binwidths,[0 0 0]);
 end
 
+binwidths = [0.2 3];
+for ii = 1:length(ei_2_3)
+    ei_2_3(ii) = make_and_load_rasters(ei_2_3(ii),binwidths,[0 0 0]);
+end
 
 %% training
 

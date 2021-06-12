@@ -10,6 +10,10 @@ for ii = 1:size(T,1)
     plane{2} = fullfile(cell2mat(T{ii,7}),'suite2P\plane1');
     matlab_plane{1} = fullfile(cell2mat(T{ii,8}),'suite2P\plane0');
     matlab_plane{2} = fullfile(cell2mat(T{ii,8}),'suite2P\plane1');
+    if size(T,2) == 9
+        matlab_planeD{1} = fullfile(cell2mat(T{ii,9}),'suite2P\plane0');
+        matlab_planeD{2} = fullfile(cell2mat(T{ii,9}),'suite2P\plane1');
+    end
     for pp = 1:length(plane)
         if isempty(plane{pp})
             continue;
@@ -31,6 +35,7 @@ for ii = 1:size(T,1)
         end
         tei{ii}.plane{pp}.s2p_folder = plane{pp};
         tei{ii}.plane{pp}.folder = matlab_plane{pp};
+        tei{ii}.plane{pp}.folderD = matlab_planeD{pp};
         if ~exist(tei{ii}.plane{pp}.folder,'dir')
             mkdir(tei{ii}.plane{pp}.folder);
         end
