@@ -3,7 +3,7 @@ if ~iscell(trials)
     for ii = 1:size(Rs,1)
         for cc = 1:size(Rs,2)
             R = Rs{ii,cc};
-            if strcmp(R.marker_name,'light22T') || strcmp(R.marker_name,'air55T') || strcmp(R.marker_name,'airIT')
+            if strcmp(R.marker_name,'light22T') || strcmp(R.marker_name,'air55T') || strcmp(R.marker_name,'airIT') || strcmp(R.marker_name,'air33T')
 %                 temp1 = (squeeze(nanmean(Rs{ii,cc}.fromFrames.sp_rasters(trials,:,:),1)))';
                 temp1 = (squeeze(nanmean(Rs{ii,cc}.sp_rasters1(trials,:,:),1)))';
                 mRsi{ii,cc} = normalizeSignal(temp1,2);

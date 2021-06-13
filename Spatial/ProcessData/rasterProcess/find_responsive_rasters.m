@@ -9,6 +9,9 @@ for rr = 1:size(Rs,1)
         if strcmp(R.marker_name,'air55T')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_air(R,trials);
         end
+        if strcmp(R.marker_name,'air33T')
+            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_air(R,trials);
+        end
         if strcmp(R.marker_name,'airIT')
             zMIs = R.info_metrics.ShannonMI_Zsh;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96;

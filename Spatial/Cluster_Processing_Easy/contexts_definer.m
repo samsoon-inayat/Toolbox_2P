@@ -1,7 +1,7 @@
 %% for context definitions (only need to be run in the start)
 % for ii = 1:size(sel_T,1)
 ii = 1;
-    this_table_row = sT(ii,:);
+    this_table_row = T_C(ii,:);
     recording_folder = get_recording_folder_from_table_row(this_table_row);
     pd_folder = get_processed_data_folder_from_table_row(this_table_row);
     edit_define_contexts_file(ei{ii});
