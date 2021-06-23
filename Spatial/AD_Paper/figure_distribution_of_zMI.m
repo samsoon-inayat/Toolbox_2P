@@ -1,8 +1,8 @@
 function figure_distribution_of_zMI
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C2'); 
-ei_A = evalin('base','ei10_A2'); 
+ei_C = evalin('base','ei10_C1'); 
+ei_A = evalin('base','ei10_A1'); 
 
 selContexts = [1 2 3 4];
 rasterNames = {'airD','airD','airD','airD'};
@@ -29,24 +29,24 @@ for rr = 1:size(RsC,1)
         zMIsA{rr,cc} = R.info_metrics.ShannonMI_Zsh';
     end
 end
-
+n = 0;
 %%
-if 0
-CN = 4;
+if 1
+CN = 3;
 tcolors = {'k','r'};
 distD(:,1) = zMIsC(:,CN);
 distD(:,2) = zMIsA(:,CN);
 [distDo,allVals,allValsG] = plotDistributions(distD);
 minBin = min(allVals);
 maxBin = max(allVals);
-%%
+
 tcolors = {'k','r'};
 incr = 0.001; %maxBin =
 hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
 hold on;
 %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
 [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
-plot([1.96 1.96],[0 100],'--k');
+plot([1.65 1.65],[0 100],'--k');
 xlim([-5 30]);
 set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
 changePosition(gca,[0.15 0.13 -0.2 -0.13]);

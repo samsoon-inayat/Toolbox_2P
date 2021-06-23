@@ -1,4 +1,4 @@
-function [all_corr_an,all_corr_cell_an,mean_corr,mean_corr_cell,xs] = find_population_vector_corr_remap(Rs,mRs,resp)
+function [all_corr_an,all_corr_cell_an,mean_corr,mean_corr_cell,xs,param] = find_population_vector_corr_remap(Rs,mRs,resp)
 
 for rr = 1:size(mRs,1)
     for cc1 = 1:size(mRs,2)
@@ -25,6 +25,7 @@ for rr = 1:size(mRs,1)
             corrV = fillmissing(corrV,'linear',2,'EndValues','nearest');
             corrV = fillmissing(corrV,'linear',1,'EndValues','nearest');
             all_corr{cc1,cc2} = corrV;
+            [param.FD(cc1,cc2,rr),param.all_bw{cc1,cc2}] = findFractalDim(corrV);
             [corrCV,pCV] = corr(pv1',pv2');
             corrCV = fillmissing(corrCV,'linear',2,'EndValues','nearest');
             corrCV = fillmissing(corrCV,'linear',1,'EndValues','nearest');
@@ -55,3 +56,7 @@ if size(set1,2) < maxcolsz
     nanmat = NaN(size(set1,1),diffsz);
     set1 = [set1 nanmat];
 end
+
+function [fd,bw] = findFractalDim(corrV)
+bw = imbinarize(corrV,'adaptive','Sensitivity',0.75);
+fd = BoxCountfracDim(bw);

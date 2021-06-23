@@ -1,25 +1,24 @@
 function overall_analysis
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_11_15 = evalin('base','ei_11_15'); 
-ei_2_3 = evalin('base','ei_2_3'); 
+ei = evalin('base','ei'); 
 % selContexts = [1 2 3 4 4 5 6];
 % rasterNames = {'light22T','airD','light22T','airD','airD','light22T'};
 % Rs = get_rasters_data(ei,selContexts,rasterNames);
 
 selContexts = [1 4 6];
 rasterNames = {'light22T','light22T','light22T'};
-Rs1 = get_rasters_data(ei_11_15,selContexts,rasterNames);
-% Rs1 = get_rasters_data(ei_2_3,selContexts,rasterNames);
+Rs1 = get_rasters_data(ei,selContexts,rasterNames);
+% Rs1 = get_rasters_data(ei,selContexts,rasterNames);
 
 selContexts = [2 7];
 rasterNames = {'air55T','air55T'};
-% Rs12 = get_rasters_data(ei_11_15,selContexts,rasterNames);
-Rs12 = get_rasters_data(ei_2_3,selContexts,rasterNames);
+% Rs12 = get_rasters_data(ei,selContexts,rasterNames);
+Rs12 = get_rasters_data(ei,selContexts,rasterNames);
 
 selContexts = [3 4 5];
 rasterNames = {'airD','airD','airD'};
-Rs2 = get_rasters_data(ei_2_3,selContexts,rasterNames);
+Rs2 = get_rasters_data(ei,selContexts,rasterNames);
 
 selContexts = [1 4 6 2 7 3 4 5];
 rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airD','airD'};

@@ -85,8 +85,8 @@ within.Cond = categorical(within.Cond);
 
 ra = repeatedMeasuresAnova(dataT(6:10,2:end),within,0.05);
 
-mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
-    combs = ra.mcs.combs; p = ra.mcs_wf.p; h = ra.mcs.p < 0.05;
+mVar = ra.est_marginal_means_wf.Mean;semVar = ra.est_marginal_means_wf.Formula_StdErr;
+    combs = ra.mcs_wf.combs; p = ra.mcs_wf.p; h = ra.mcs_wf.p < 0.05;
 %     row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcGroup{1,6}; h(ii) = 1; 
     % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
     % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 

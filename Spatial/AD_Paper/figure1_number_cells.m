@@ -1,8 +1,8 @@
 function figure1_number_PCs_threshold_comparison
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C2'); 
-ei_A = evalin('base','ei10_A2'); 
+ei_C = evalin('base','ei10_C1'); 
+ei_A = evalin('base','ei10_A1'); 
 tcolors = colors;
 tcolors = {'k','r'};
 

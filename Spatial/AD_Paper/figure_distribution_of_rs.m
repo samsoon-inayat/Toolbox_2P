@@ -1,8 +1,8 @@
 function figure_distribution_of_zMI
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C2'); 
-ei_A = evalin('base','ei10_A2'); 
+ei_C = evalin('base','ei10_C1'); 
+ei_A = evalin('base','ei10_A1'); 
 
 selContexts = [1 2 3 4];
 rasterNames = {'airD','airD','airD','airD'};
@@ -72,7 +72,7 @@ for rr = 1:size(RsC,1)
         mzMIsA(rr,cc) = nanmean(zMIsA{rr,cc});
     end
 end
-
+n = 0;
 %%
 dataT = array2table([[1;1;1;1;1;2;2;2;2;2] [mzMIsC;mzMIsA]]);
 dataT.Properties.VariableNames = {'Group','C1','C2','C3','C4'};

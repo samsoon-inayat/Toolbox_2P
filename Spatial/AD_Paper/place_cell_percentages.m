@@ -1,8 +1,8 @@
 function overall_population_vectors
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C2'); 
-ei_A = evalin('base','ei10_A2'); 
+ei_C = evalin('base','ei10_C1'); 
+ei_A = evalin('base','ei10_A1'); 
 
 
 selContexts = [1 2 3 4];
@@ -35,7 +35,7 @@ semVar = ra.est_marginal_means.Formula_StdErr;
 combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
 xdata = [1 2 3 4 6 7 8 9]; 
 
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.9 1],'color','w');
+hf = figure(7);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.9 1],'color','w');
 hold on;
 tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
 % tcolors = repmat(tcolors,2,1)';
@@ -43,7 +43,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3}
     'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
-set(gca,'xlim',[0.25 9.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+set(gca,'xlim',[0.25 9.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
 xticks = xdata; xticklabels = {'C1','C2','C3','C4'}; xticklabels = repmat(xticklabels,1,2);
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 
@@ -65,7 +65,7 @@ semVar = ra.est_marginal_means_wf.Formula_StdErr;
 combs = ra.mcs_wf.combs; p = ra.mcs_wf.p; h = ra.mcs_wf.p < 0.05;
 xdata = [1 2 3 4]; 
 
-hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 7 1.25 1],'color','w');
+hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 7 1.25 1],'color','w');
 hold on;
 tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
 % tcolors = repmat(tcolors,2,1)';
@@ -73,7 +73,7 @@ tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3}
     'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
-set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+set(gca,'xlim',[0.25 4.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
 xticks = xdata; xticklabels = {'C1','C2','C3','C4'}; xticklabels = repmat(xticklabels,1,2);
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 
