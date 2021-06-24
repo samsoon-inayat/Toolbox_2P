@@ -204,6 +204,7 @@ if ismatrix(distD) && strcmp(do_mean,'Yes')
                 bd = bd(:);
             end
             [bar1 xs] = hist(bd,bins); bar1 = 100*bar1/sum(bar1);
+%             [bar1 xs] = hist(bd,bins); bar1 = 100*bar1/length(bd);
             allBars = [allBars;bar1];
         end
         [mDist,semDist] = findMeanAndStandardError(cumsum(allBars,2));

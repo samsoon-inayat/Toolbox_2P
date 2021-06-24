@@ -5,7 +5,7 @@ ei_C = evalin('base','ei10_C1');
 ei_A = evalin('base','ei10_A1'); 
 
 selContexts = [1 2 3 4];
-rasterNames = {'airD','airD','airD','airD'};
+rasterNames = {'airT','airT','airT','airT'};
 
 RsC = get_rasters_data(ei_C,selContexts,rasterNames);
 mRsC = calc_mean_rasters(RsC,1:10);
@@ -32,7 +32,7 @@ end
 n = 0;
 %%
 if 1
-CN = 4;
+CN = 2;
 tcolors = {'k','r'};
 distD(:,1) = zMIsC(:,CN);
 distD(:,2) = zMIsA(:,CN);
@@ -55,7 +55,7 @@ if CN == 1
 else
     put_axes_labels(gca,{'zMI',[0 0 0]},{'',[1 0 0]});
 end
-save_pdf(hf,mData.pdf_folder,sprintf('Distribution_zMI_%d',CN),600);
+save_pdf(hf,mData.pdf_folder,sprintf('Distribution_zMI_time_%d',CN),600);
 return;
 end
 %%

@@ -8,9 +8,9 @@ rasterNames = {'airD','airD','airD'};
 % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
 Rs = find_responsive_rasters(Rs,1:10);
+[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
 mR = calc_mean_rasters(Rs,1:10);
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1);
-[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
 n = 0;
 %%
 % an = 5; cn = 2;
@@ -28,7 +28,7 @@ set(gcf,'Position',[10 4 3.25 1]);
 ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
 %% population vector and correlation single animal
-an = 1;
+an = 3;
 ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
     'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
     [0.01 -60]);

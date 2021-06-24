@@ -26,31 +26,19 @@ mR = calc_mean_rasters(Rs,1:10);
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
 
 %% all cells
-for ii = 1:length(resp_valsC)
-    selResp{ii} = logical(ones(size(resp_valsC{ii},1),1));% & ~logical(resp_valsC{ii}(:,2)) & ~logical(resp_valsC{ii}(:,3));
-end
-selRespA = selResp;
+selRespA = get_cell_list(resp_valsC,[NaN NaN NaN]);
 [all_corr_CA,all_corr_cell_CA,mean_corr_CA,mean_cell_corr_CA,xs_CA,paramA] = find_population_vector_corr_remap(Rs,mR,selRespA);
 FDA = paramA.FD;
 %% place cells in condition 1 only
-for ii = 1:length(resp_valsC)
-    selResp{ii} = logical(resp_valsC{ii}(:,1)) & ~logical(resp_valsC{ii}(:,2)) & ~logical(resp_valsC{ii}(:,3));
-end
-selResp1 = selResp;
+selResp1 = get_cell_list(resp_valsC,[1 -2 -3]);
 [all_corr_C1,all_corr_cell_C1,mean_corr_C1,mean_cell_corr_C1,xs_C1,param1] = find_population_vector_corr_remap(Rs,mR,selResp1);
 FD1 = param1.FD;
 %% place cells in condition 2 only
-for ii = 1:length(resp_valsC)
-    selResp{ii} = ~logical(resp_valsC{ii}(:,1)) & logical(resp_valsC{ii}(:,2)) & ~logical(resp_valsC{ii}(:,3));
-end
-selResp2 = selResp;
+selResp2 = get_cell_list(resp_valsC,[-1 2 -3]);
 [all_corr_C2,all_corr_cell_C2,mean_corr_C2,mean_cell_corr_C2,xs_C2,param2] = find_population_vector_corr_remap(Rs,mR,selResp2);
 FD2 = param2.FD;
 %% place cells in condition 3 only
-for ii = 1:length(resp_valsC)
-    selResp{ii} = ~logical(resp_valsC{ii}(:,1)) & ~logical(resp_valsC{ii}(:,2)) & logical(resp_valsC{ii}(:,3));
-end
-selResp3 = selResp;
+selResp3 = get_cell_list(resp_valsC,[-1 -2 3]);
 [all_corr_C3,all_corr_cell_C3,mean_corr_C3,mean_cell_corr_C3,xs_C3,param3] = find_population_vector_corr_remap(Rs,mR,selResp3);
 FD3 = param3.FD;
 
