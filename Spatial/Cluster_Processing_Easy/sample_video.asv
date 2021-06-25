@@ -32,8 +32,8 @@ vts = (vfr-trigger_frame)/vo.FrameRate;
 n = 0;
 %%
 
-trialStart = 20;
-trialEnd = 20;
+trialStart = 10;
+trialEnd = trialStart;
 
 tStart = bts(b.air_puff_r(trialStart)-round(1e6 * 1/b.si));
 tEnd = bts(b.air_puff_f(trialEnd)+round(1e6 * 1/b.si));
@@ -49,7 +49,7 @@ for ii = 1:length(trials)
     vfrEndT(ii) = get_video_frame_and_time(vfr,vts,tEnd1);
 end
 
-%% get calcium imaging video
+% get calcium imaging video
 indS = find(b.ts >= tStart,1,'first'); indE = find(b.ts >= tEnd,1,'first');
 frameNumbers = find(b.frames_f >= indS & b.frames_f <= indE);
 rows = 512; cols = 512;
@@ -57,16 +57,18 @@ rawFile = fullfile(ei{1}.plane{1}.s2p_folder,'data.bin');
 rawFile = ei{1}.thorExp.rawFile;
 frames = getFramesFromRaw_simple (rawFile,rows,cols,frameNumbers);
 sT = evalin('base','T_C');
-average_image = max(frames,[],3);
+average_image = mean(frames,3);
 % navgimg = normalize_image(average_image);
 
-%% get behavior video
+% get behavior video
 frameNums = vfrStart:vfrEnd;
 vFrames = get_video_frames(vo,frameNums);
 
 %%
 m = min([min(average_image(:)) min(frames(:))])+100;
-M = 0.5*max([max(average_image(:)) max(frames(:))]);
+M = 0.3*max([max(average_image(:)) max(frames(:))]);
+m = min([min(frames(:))])+100;
+M = 0.5*max([max(frames(:))]);
 figure(1000);clf;
 subplot 211;
 hi = imagesc(vFrames{1});
@@ -75,7 +77,7 @@ axis equal;
 subplot 212;
 ind = 1;
 cFrame = imfuse((average_image),frames(:,:,ind),'blend');
-cFrame = imfuse((average_image),cFrame,'blend');
+% cFrame = imfuse((average_image),cFrame,'blend');
 hic = imagesc((cFrame)); ind = ind + 1;
 axis off;
 axis equal;
@@ -83,20 +85,24 @@ colormap gray;
 title(frameNums(1));
 
 for ii = 2:length(frameNums)
-    set(hi,'CData',vFrames{ii});
+%     set(hi,'CData',vFrames{ii});
     if ismember(frameNums(ii), vfrStartT)
-        hts = text(260,260,'Air','color','r');
+        hts = text(60,60,'Air','color','r','FontSize',12,'FontWeight','Bold');
     end
     if ismember(frameNums(ii),vfrEndT)
         delete(hts);
-        break;
+%         break;
     end
     title(frameNums(ii));
     if mod(ii,2) == 0
         cFrame = imfuse((average_image),frames(:,:,ind),'blend');
-        cFrame = imfuse((average_image),cFrame,'blend');
-        set(hic,'CData',(cFrame));
-%         set(hic,'clims',[1000 2500]);
+        cFrame = frames(:,:,ind);
+%         cFrame = imfuse((average_image),cFrame,'blend');
+%         set(hic,'CData',(cFrame));
+        hic = imagesc((cFrame),[m M]);
+        axis off;
+        axis equal;
+        colormap gray;
 %         xlim([257 512]);
 %         ylim([257 512]);
         ind = ind+1;

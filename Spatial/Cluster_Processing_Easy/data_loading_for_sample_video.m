@@ -51,7 +51,11 @@ for ii = 1:length(ei)
 end
 
 %%
-
+video_file = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data\Videos\mouse_3328_21-05-11_16_13_59_vid_60_fps.mp4';
+csv_file = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data\Videos\mouse_3328_21-05-11_16_13_59_TrigTimes_60_fps.csv';
+[raw] = readtable(csv_file);
+trigger_frame = raw{1,end};
+vo = VideoReader(video_file);
 
 %%
 rr = 1; cc = 3;
