@@ -21,6 +21,8 @@ RsA = find_responsive_rasters(RsA,1:10);
 [CRcA,aCRcA,mRsRA] = find_population_vector_corr(RsA,mRsA,1);
 % view_population_vector(Rs,mRs,400);
 [resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
+
+minmaxCorr = [-0.4 1]; maxBin = 49;
 n = 0;
 
 %%
@@ -31,7 +33,7 @@ ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...
     [0.01 -60]);
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 3.25 2]);
-ff = show_population_vector_and_corr(mData,ff,RsC(an,:),mRsRC(an,:),CRcC(an,:));
+ff = show_population_vector_and_corr(mData,ff,RsC(an,:),mRsRC(an,:),CRcC(an,:),minmaxCorr,maxBin);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr.pdf'),600);
 
 %% average correlation of all animals
@@ -40,7 +42,7 @@ ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 4],...
     [0.01 -220]);
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 3.25 1]);
-ff = show_population_vector_and_corr(mData,ff,RsC(an,:),[],aCRcC);
+ff = show_population_vector_and_corr(mData,ff,RsC(an,:),[],aCRcC,minmaxCorr,maxBin);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr.pdf'),600);
 
 %% population vector and correlation single animal
@@ -50,7 +52,7 @@ ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...
     [0.01 -60]);
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 3.25 2]);
-ff = show_population_vector_and_corr(mData,ff,RsA(an,:),mRsRA(an,:),CRcA(an,:));
+ff = show_population_vector_and_corr(mData,ff,RsA(an,:),mRsRA(an,:),CRcA(an,:),minmaxCorr,maxBin);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_AD.pdf'),600);
 
 %% average correlation of all animals
@@ -59,5 +61,5 @@ ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 4],...
     [0.01 -220]);
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 3.25 1]);
-ff = show_population_vector_and_corr(mData,ff,RsA(an,:),[],aCRcA);
+ff = show_population_vector_and_corr(mData,ff,RsA(an,:),[],aCRcA,minmaxCorr,maxBin);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_AD.pdf'),600);

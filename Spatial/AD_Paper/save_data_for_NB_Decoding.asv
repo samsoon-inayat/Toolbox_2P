@@ -32,7 +32,7 @@ RsA = find_responsive_rasters(RsA,1:10);
 [resp_fractionA,resp_valsA,OIA,mean_OIA] = get_responsive_fraction(RsA);
 
 % an = 1; cn = 1;
-
+n = 0;
 for an = 1:5
     for cn = 1:4
         [XsC{an,cn},YsC{an,cn}] = getXYs1(raster_data_C{an,cn},[]);
