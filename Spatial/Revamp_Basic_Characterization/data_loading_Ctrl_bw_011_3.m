@@ -25,7 +25,8 @@ colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
 
-Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
+% Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
+Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs'
 mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedDataMatlab'];
 disp('Done');
@@ -39,14 +40,12 @@ disp('Done');
 
 %%
 ei = getData_py_2(T_C1);
-%%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
 
-
-%% training
+% training
 
 training_data = behaviorProcessor;
 training_data.belt_lengths = [150 150 150 150 150]';
@@ -78,3 +77,6 @@ for rr = 1:length(animal_id_A)
     age_at_surg(rr) = 12*dv(1) + dv(2) + dv(3)/30;
 end
 disp('Done');
+%%
+disp('Hello just executing this cell for testing ctrl enter');
+%%

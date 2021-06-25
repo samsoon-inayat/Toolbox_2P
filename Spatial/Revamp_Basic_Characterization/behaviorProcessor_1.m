@@ -143,6 +143,7 @@ for selRowi = 1:5
     for ii = 1:length(these_cols)
         legs{ii} = sprintf('Day %1d',ii);
     end
+    legs{end} = 'ART';
     legs{ii+1} = [5 3 35 1];
     putLegendH(ff.ha,legs,'colors',mData.colors,'sigR',{[],'anova',[],5});
 %     legs = {sprintf('Animal %d',temp.animalIDs(selRows(selRowi))),[22 0 25 4]};
