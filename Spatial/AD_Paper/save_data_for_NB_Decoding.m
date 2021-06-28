@@ -33,25 +33,25 @@ RsA = find_responsive_rasters(RsA,1:10);
 
 % an = 1; cn = 1;
 
-for an = 1:5
-    for cn = 1:4
-        [XsC{an,cn},YsC{an,cn}] = getXYs1(raster_data_C{an,cn},[]);
-        [XsA{an,cn},YsA{an,cn}] = getXYs1(raster_data_A{an,cn},[]);
-    end
-end
-
-fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_all_cells.mat'));
-save(fileName,'XsC','YsC','XsA','YsA','-v7.3');
-
 % for an = 1:5
 %     for cn = 1:4
-%         [XsC{an,cn},YsC{an,cn}] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
-%         [XsA{an,cn},YsA{an,cn}] = getXYs1(raster_data_A{an,cn},resp_valsA{an}(:,cn));
+%         [YsC{an,cn},XsC{an,cn}] = getXYs1(raster_data_C{an,cn},[]);
+%         [YsA{an,cn},XsA{an,cn}] = getXYs1(raster_data_A{an,cn},[]);
 %     end
 % end
 % 
-% fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
+% fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_all_cells.mat'));
 % save(fileName,'XsC','YsC','XsA','YsA','-v7.3');
+
+for an = 1:5
+    for cn = 1:4
+        [YsC{an,cn},XsC{an,cn}] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
+        [YsA{an,cn},XsA{an,cn}] = getXYs1(raster_data_A{an,cn},resp_valsA{an}(:,cn));
+    end
+end
+
+fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
+save(fileName,'XsC','YsC','XsA','YsA','-v7.3');
 return
 
 
