@@ -2,7 +2,7 @@ function plotTimeToOnsetOfMovementAfterAirPuff(b,markers1,markers2,fn)
 %%
 n = 0;
 %%
-ei1 = evalin('base','d15');
+ei1 = evalin('base','ei');
 ei = [ei1(1:5)];
 speed_threshold = 0;
 
@@ -42,7 +42,7 @@ for an = 1:length(ei)
 end
 n=0;
 %%
-if 1
+if 0
 moas = duration_onset_moveC;
 for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);

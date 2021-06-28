@@ -1,8 +1,7 @@
 function light_figure
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_11_15 = evalin('base','ei_11_15'); 
-ei_2_3 = evalin('base','ei_2_3'); 
+ei_11_15 = evalin('base','ei'); 
 
 selContexts = [2 7];
 rasterNames = {'air55T','air55T'};
