@@ -22,7 +22,7 @@ end
 
 for cc = 1:size(mRs,2)
     msz = max(sz_CRc(:,cc));
-    temp = zeros(msz,msz);
+    temp = NaN(msz,msz);
     aCRc{cc} = repmat(temp,1,1,size(mRs,1));
 end
 
