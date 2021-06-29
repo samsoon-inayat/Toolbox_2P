@@ -12,10 +12,10 @@ mR = calc_mean_rasters(Rs,1:10);
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
 
-[respE,respE_OR,respE_AND] = get_cell_list_exc_inh(resp_exc_inh,1,1);
+[respE,respE_OR,respE_AND,respE_fraction] = get_cell_list_exc_inh(resp_exc_inh,1,1);
 [CRcE,aCRcE,mRRE] = find_population_vector_corr(Rs,mR,respE,0);
 
-[respI,respI_OR,respI_AND] = get_cell_list_exc_inh(resp_exc_inh,1,0);
+[respI,respI_OR,respI_AND,respI_fraction] = get_cell_list_exc_inh(resp_exc_inh,1,0);
 [CRcI,aCRcI,mRRI] = find_population_vector_corr(Rs,mR,respI,0);
 
 [all_corr_CA,all_corr_cell_CA,mean_corr_CA,mean_cell_corr_CA,xs_CA,paramA] = find_population_vector_corr_remap(Rs,mR,resp_ORC);
@@ -43,7 +43,7 @@ ff = makeFigureRowsCols(106,[1 0.5 4 1],'RowsCols',[2 2],...
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 2.2 2]);
 % ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
-ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRRI(an,:),CRcE(an,:),[-0.1 1],[]);
+ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRRE(an,:),CRcE(an,:),[-0.1 1],[]);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
 
 %% average correlation of all animals
