@@ -74,10 +74,10 @@ if ~isempty(allP)
             end
             hold on;
             cis = R.resp.cis;
-%             plot([cis(2,1) cis(2,1)]+1,[0 size(corrPlot,1)+1],'linewidth',0.5,'color','r');
-%             plot([cis(1,3) cis(1,3)]+1,[0 size(corrPlot,1)+1],'linewidth',0.5,'color','m');
-%             plot([0 size(corrPlot,2)+1],[cis(2,1) cis(2,1)]+1,'linewidth',0.5,'color','r');
-%             plot([0 size(corrPlot,2)+1],[cis(1,3) cis(1,3)]+1,'linewidth',0.5,'color','m');
+            plot([cis(2,1) cis(2,1)]+1,[0 size(corrPlot,1)+1],'linewidth',0.5,'color','r');
+            plot([cis(1,3) cis(1,3)]+1,[0 size(corrPlot,1)+1],'linewidth',0.5,'color','m');
+            plot([cis(2,1) cis(2,1)]+1,'linewidth',0.5,'color','r');
+            plot([cis(1,3) cis(1,3)]+1,[0 size(corrPlot,1)+1],'linewidth',0.5,'color','m');
         else
             set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
             if sii == 1
@@ -135,6 +135,12 @@ if isempty(allP)
         cols = size(C,2);
         colsHalf = round(cols/2);
         ts = floor(R.xs(1:cols)+R.bin_width/2);
+        set(gca,'XTick',[]);
+        if sii == 1
+            set(gca,'YTick',[1 colsHalf cols],'YTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
+        else
+            set(gca,'YTick',[]);
+        end
         if isfield(R,'fromFrames')
             h = xlabel('Time (sec)');%    changePosition(h,[0 0 0]);
         else
@@ -143,27 +149,13 @@ if isempty(allP)
         cols = size(C,2);
         colsHalf = ceil(cols/2);
         ts = floor(R.xs(1:cols)+R.bin_width/2);
-        if isfield(R.resp,'cis')
-            cis = R.resp.cis;
-            xs = R.xs;
-            xs = xs - xs(cis(1,2));
-            xticks = [cis(1,:) size(corrPlot,2)];
-            xs = round(xs);
-            set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
-            if sii == 1
-                set(gca,'YTick',xticks,'YTickLabel',xs(xticks));
-            else
-                set(gca,'YTick',[]);
-            end
+        set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
+        if sii == 1
+            set(gca,'YTick',[1 colsHalf cols],'YTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
         else
-            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
-            if sii == 1
-                set(gca,'YTick',[1 colsHalf cols],'YTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
-            else
-                set(gca,'YTick',[]);
-            end
-        end
-            set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+            set(gca,'YTick',[]);
+    end
+            set(gca,'Ydir','Normal','linewidth',1,'FontSize',FS,'FontWeight','Bold');
     end
 
     colormap parula

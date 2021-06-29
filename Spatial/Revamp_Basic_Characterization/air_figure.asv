@@ -64,12 +64,20 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rest_remap_corr.pdf'),600);
 if 0
 % out_CC = all_out_C.all_corr_an{3};
 % out_AA = all_out_A.all_corr_an{1};
-    temp = mean_cell_corr_CA(:,:,1);
+    temp = mean_cell_corr_C(:,:,1);
     mask = ones(size(temp)); mask = triu(mask,1) & ~triu(mask,2);
-    for ii = 1:size(mean_cell_corr_CA,3)
-        temp = mean_cell_corr_CA(:,:,ii);
+    for ii = 1:size(mean_cell_corr_C,3)
+        temp = mean_cell_corr_C(:,:,ii);
         var_C(ii,:) = temp(mask)';
     end
+    dataT = array2table([var_C]);
+    dataT.Properties.VariableNames = {'C12','C23'};
+    colVar1 = [1 2];    
+    within = table(colVar1');
+    within.Properties.VariableNames = {'Condition'};
+    within.Condition = categorical(within.Condition);
+    ra = repeatedMeasuresAnova(dataT,within);
+
     mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
     xdata = [1 2];
@@ -88,7 +96,7 @@ if 0
     changePosition(gca,[0.06 0.03 0.02 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
 
-    save_pdf(hf,mData.pdf_folder,'air_rest_cell corr remap',600);
+    save_pdf(hf,mData.pdf_folder,'air_restcell corr remap',600);
 return;
 end
 

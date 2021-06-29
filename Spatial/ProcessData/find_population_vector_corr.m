@@ -1,19 +1,41 @@
-function [CRc,aCRc,mR] = find_population_vector_corr(Rs,mRs,ccs,plt)
+function [CRc,aCRc,mR] = find_population_vector_corr(Rs,mRs,ccs,ordercol)
+
+
+for rr = 1:size(mRs,1)
+    for cc = 1:size(mRs,2)
+        R = Rs{rr,cc};
+        resp = R.resp;
+        if ~iscell(ccs)
+            if ccs == 0
+                accsr{rr,cc} = [];
+            else
+                accsr{rr,cc} = find(resp.vals);
+            end
+        else
+            accsr{rr,cc} = find(ccs{rr});
+        end
+        ccsr = accsr{rr,cc};
+        ptc = mRs{rr,cc};
+        [~,~,cellNums{rr,cc}] = findPopulationVectorPlot(ptc,ccsr);
+    end
+end
 
 for rr = 1:size(mRs,1)
     for cc = 1:size(mRs,2)
         ptc = mRs{rr,cc};
         R = Rs{rr,cc};
         resp = R.resp;
-        if ~isempty(ccs)
-            if ccs == 1
-                ccsr = find(resp.vals);
+        ccsr = accsr{rr,cc};
+        if ordercol > 0
+            try
+                [ptco,temp_C,~] = findPopulationVectorPlot(ptc,ccsr,cellNums{rr,ordercol});
+            catch
+                disp('To order properly the number of cells must be same across conditions');
+                lasterror
             end
         else
-            ccsr = ccs;
+            [ptco,temp_C,~] = findPopulationVectorPlot(ptc,ccsr);
         end
-        [ptco,temp_C,~] = findPopulationVectorPlot(ptc,ccsr);
-%         [~,temp_C,~] = findPopulationVectorPlot(ptc,ccsr);
         CRc{rr,cc} = temp_C;
         sz_CRc(rr,cc) = size(temp_C,1);
         mR{rr,cc} = ptco;
@@ -35,15 +57,15 @@ for cc = 1:size(mRs,2)
     aCRc{cc} = nanmean(aCRc{cc},3);
 end
 
-if exist('plt','var')
-    figure(plt);clf
-    for cc = 1:size(mRs,2)
-        subplot(1,size(mRs,2),cc);
-        imagesc(aCRc{cc});
-        axis equal
-%         axis off;
-        set(gca,'Ydir','Normal');
-%         colorbar;
-    end
-end
+% if exist('plt','var')
+%     figure(plt);clf
+%     for cc = 1:size(mRs,2)
+%         subplot(1,size(mRs,2),cc);
+%         imagesc(aCRc{cc});
+%         axis equal
+% %         axis off;
+%         set(gca,'Ydir','Normal');
+% %         colorbar;
+%     end
+% end
 

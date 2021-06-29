@@ -6,7 +6,7 @@ for rr = 1:size(Rs,1)
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light(R,trials);
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light_fractal(R,trials);
         end
-        if strcmp(R.marker_name,'air55T')
+        if strcmp(R.marker_name,'air55T') ||  strcmp(R.marker_name,'air77T')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_air(R,trials);
         end
         if strcmp(R.marker_name,'air33T') 
@@ -57,6 +57,7 @@ parfor ii = 1:size(rasters,3)
 %     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
 %     [p(ii),atabk,statsk] = kruskalwallis(thisRaster,group,'nodisplay');
     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
+%     [p(ii),~,~] = anova1(m_thisRaster,group,'nodisplay');
     vert = nansum(thisRaster,2);
     hv(ii) = sum(vert>0) > 5;
 end

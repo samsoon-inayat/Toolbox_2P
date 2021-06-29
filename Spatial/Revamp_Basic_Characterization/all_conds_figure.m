@@ -4,40 +4,19 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 ei = evalin('base','ei'); 
 
 
-selContexts = [2 7];
-rasterNames = {'air55T','air55T'};
-Rs_rest = get_rasters_data(ei,selContexts,rasterNames);
-% Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
-Rs_rest = find_responsive_rasters(Rs_rest,1:10);
-mR_rest = calc_mean_rasters(Rs_rest,1:10);
-[resp_fraction_rest,resp_vals_rest,OI_rest,mean_OI_rest,resp_OR_rest,resp_OR_fraction_rest,resp_AND_rest,resp_AND_fraction_rest] = get_responsive_fraction(Rs_rest);
-
-
-selContexts = [3 4 5];
-rasterNames = {'air77T','air77T','air77T'};
-% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
-RsT = get_rasters_data(ei,selContexts,rasterNames);
-RsT = find_responsive_rasters(RsT,1:10);
-[resp_fractionT,resp_valsT,OIT,mean_OIT,resp_ORT,resp_OR_fractionT,resp_ANDT,resp_AND_fractionT] = get_responsive_fraction(RsT);
-mRT = calc_mean_rasters(RsT,1:10);
-
-selContexts = [3 4 5];
-rasterNames = {'airD','airD','airD'};
-% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
-RsS = get_rasters_data(ei,selContexts,rasterNames);
-RsS = find_responsive_rasters(RsS,1:10);
-[resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(RsS);
-mRS = calc_mean_rasters(RsS,1:10);
-n = 0;
+selContexts = [1 2 3 4 4 5 6 7];
+rasterNames = {'light22T','air55T','airD','airD','light22T','airD','light22T','air55T'};
+Rs = get_rasters_data(ei,selContexts,rasterNames);
+Rs = find_responsive_rasters(Rs,1:10);
+[resp_fraction,resp_vals,OI,mean_OI,resp_OR,resp_OR_fraction,resp_AND,resp_AND_fraction] = get_responsive_fraction(Rs);
+mR = calc_mean_rasters(Rs,1:10);
 
 %%
-resp = resp_OR_rest;
-Rs = [Rs_rest RsS];
-mR = [mR_rest mRS];
-[CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
+resp = resp_AND;
+[CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp_AND,0);
 
 an = 3;
-ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 5],...
+ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 8],...
     'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
     [0.01 -60]);
 set(gcf,'color','w');
@@ -46,7 +25,7 @@ ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]
 save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corrD.pdf'),600);
 
 
-ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 5],...
+ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 8],...
     'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.075 0.2],'widthHeightAdjustment',...
     [0.01 -220]);
 set(gcf,'color','w');

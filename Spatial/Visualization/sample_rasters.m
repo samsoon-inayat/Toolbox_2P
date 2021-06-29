@@ -38,12 +38,17 @@ for rr = 2
         end
         box off;
 %         text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR %d - zMI = %.2f',round(max(thisRaster(:))),R.info_metrics.ShannonMI_Zsh(cn)),'FontSize',4,'color','k','rotation',90);
-        text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR = %d',round(max(thisRaster(:)))),'FontSize',4,'color','k','rotation',90);
+        text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR = %d',round(max(thisRaster(:)))),'FontSize',5,'color','k','rotation',90);
         text(size(thisRaster,1)/2,size(thisRaster,1)+1.25,sprintf('Cell %d',cn),'FontSize',6,'color','k');
         set(gca,'FontSize',6,'FontWeight','Bold','linewidth',0.5,'Ydir','normal','TickDir','out');
         colormap jet;
             xticks = [1:10:size(thisRaster,2)];
-            xs = round(R.xs);
+            xs = R.xs;
+            if isfield(R.resp,'cis')
+                xs = xs - xs(cis(1,2));
+                xticks = [cis(1,:) size(thisRaster,2)];
+            end
+            xs = round(xs);
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
             if strfind(R.context_info,'air') & strfind(R.context_info,'D')
                 for bb = 1:length(R.lastBin)
@@ -61,14 +66,14 @@ for rr = 2
             h = ylabel('Trials');
         end
         
-        if cc == 5
+        if cc == length(ff.h_axes)
             hca = gca;
-            hc = putColorBar(hca,[-0.05 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.22 0.05 0.22]);
+            hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
         end
         cols = size(thisRaster,2);
         colsHalf = ceil(cols/2);
         ts = xs;
-        set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
+%         set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
     end
 end
 colormap parula;

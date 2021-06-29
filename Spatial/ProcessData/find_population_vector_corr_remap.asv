@@ -13,19 +13,17 @@ if isfield(Rs{1,1}.resp,'cis')
     cis = Rs{1,1}.resp.cis;
     xs = Rs{1,1}.xs;
     xs = xs - xs(cis(1,2));
-    xticks = [cis(1,:) maxcolsz];
+    xticks = [cis(1,:) size(corrPlot,2)];
     xs = round(xs);
     xso.vals = xs;
     xso.ticks = xticks;
-    xso.label = 'Time (secs)';
 else
     xs = 0:bw:1000;
     xs = xs(1:maxcolsz);
-    cols = maxcolsz;
+    cols = size(remap_corrs{rr,cc},2);
     colsHalf = round(cols/2);
-    xso.vals = round(xs);
-    xso.ticks = [1 colsHalf cols];
-    xso.label = 'Position (cm)';
+    ts = round(xs);
+    set(gca,'YTick',[1 colsHalf cols],'YTickLabel',ts([1 colsHalf cols]));
 end
 
 for rr = 1:size(mRs,1)
