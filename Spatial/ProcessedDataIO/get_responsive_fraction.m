@@ -1,14 +1,26 @@
-function [resp_fraction,resp_vals,all_OI,mean_OI,resp_OR,resp_OR_fraction,resp_AND,resp_AND_fraction] = get_responsive_fraction(Rs)
+function [resp_fraction,resp_vals,all_OI,mean_OI,resp_OR,resp_OR_fraction,resp_AND,resp_AND_fraction,resp_exc_inh] = get_responsive_fraction(Rs)
 
+% resp_exc_inh = NaN;
 
 for rr = 1:size(Rs,1)
     ccs = [];
+    exc = [];
+    inh = [];
     for cc = 1:size(Rs,2)
         R = Rs{rr,cc};
         ccs(:,cc) = R.resp.vals';
         resp_fraction(rr,cc) = R.resp.fraction;
+        if isfield(R.resp,'excinh')
+            exc(:,cc) = R.resp.excinh==1;
+            inh(:,cc) = R.resp.excinh==0;
+        else
+            exc_inh = NaN;
+        end
     end
     resp_vals{rr} = ccs;
+    resp_exc_inh{rr,1} = exc;
+    resp_exc_inh{rr,2} = inh;
+    
     resp_OR{rr} = logical(zeros(size(ccs,1),1));
     resp_AND{rr} = logical(ones(size(ccs,1),1));
     for cc = 1:size(Rs,2)

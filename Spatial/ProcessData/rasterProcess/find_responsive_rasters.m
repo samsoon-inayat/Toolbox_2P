@@ -7,7 +7,7 @@ for rr = 1:size(Rs,1)
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light_fractal(R,trials);
         end
         if strcmp(R.marker_name,'air55T') ||  strcmp(R.marker_name,'air77T')
-            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_air(R,trials);
+            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis,Rs{rr,cc}.resp.excinh] = find_resp_time_raster_air(R,trials);
         end
         if strcmp(R.marker_name,'air33T') 
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_air(R,trials);
@@ -28,7 +28,7 @@ for rr = 1:size(Rs,1)
 end
 
 
-function [resp,cis] = find_resp_time_raster_air(R,trials)
+function [resp,cis,excinh] = find_resp_time_raster_air(R,trials)
 % SR = R.thorexp.frameRate;
 SR = 1/R.bin_width;
 markerType = R.marker_name;
@@ -50,18 +50,28 @@ for ii = 1:size(cis,2)
     group = [group ii*ones(1,length(cis(1,ii):cis(2,ii)))];
 end
 p = NaN(size(rasters,3),1);
-p1 = NaN(size(rasters,3),1);
+hv = p;
+resp = logical(zeros(size(p)));
+excinh = p;
 parfor ii = 1:size(rasters,3)
     thisRaster = rasters(trials,:,ii);
     m_thisRaster = nanmean(thisRaster);
-%     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
-%     [p(ii),atabk,statsk] = kruskalwallis(thisRaster,group,'nodisplay');
-    [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
-%     [p(ii),~,~] = anova1(m_thisRaster,group,'nodisplay');
+    [p(ii),atabk,statsk] = kruskalwallis(m_thisRaster,group,'nodisplay');
     vert = nansum(thisRaster,2);
     hv(ii) = sum(vert>0) > 5;
+    if p(ii) < 0.05 & hv(ii) == 1
+        resp(ii) = 1;
+        if mean(m_thisRaster(group==1)) > mean(m_thisRaster(group==2)) && mean(m_thisRaster(group==3)) > mean(m_thisRaster(group==2))
+            excinh(ii) = 0;
+        else
+            excinh(ii) = 1;
+        end
+    end
 end
-resp = p < 0.05 & hv';
+
+
+
+
 % resp = p<0.05 & (R.info_metrics.ShannonMI_Zsh > 1.96)';
 % % resp = (R.info_metrics.ShannonMI_Zsh > 1.96)';
 % [rs,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);

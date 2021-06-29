@@ -9,8 +9,14 @@ Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 % Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
 Rs = find_responsive_rasters(Rs,1:10);
 mR = calc_mean_rasters(Rs,1:10);
-[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
+[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
+
+[respE,respE_OR,respE_AND] = get_cell_list_exc_inh(resp_exc_inh,1,1);
+[CRcE,aCRcE,mRRE] = find_population_vector_corr(Rs,mR,respE,0);
+
+[respI,respI_OR,respI_AND] = get_cell_list_exc_inh(resp_exc_inh,1,0);
+[CRcI,aCRcI,mRRI] = find_population_vector_corr(Rs,mR,respI,0);
 
 [all_corr_CA,all_corr_cell_CA,mean_corr_CA,mean_cell_corr_CA,xs_CA,paramA] = find_population_vector_corr_remap(Rs,mR,resp_ORC);
 
@@ -36,7 +42,8 @@ ff = makeFigureRowsCols(106,[1 0.5 4 1],'RowsCols',[2 2],...
     [-70 -60]);
 set(gcf,'color','w');
 set(gcf,'Position',[5 5 2.2 2]);
-ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
+% ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
+ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRRI(an,:),CRcE(an,:),[-0.1 1],[]);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
 
 %% average correlation of all animals
@@ -116,18 +123,32 @@ tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3}
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
-hbe = bar(3,mean(100*resp_OR_fractionC));
-hbee = errorbar(3,mean(100*resp_OR_fractionC),std(100*resp_OR_fractionC)/sqrt(5), 'k', 'linestyle', 'none','CapSize',3);
-set(hbe,'FaceColor',colors{3},'EdgeColor',colors{3});
+% hbe = bar(3,mean(100*resp_OR_fractionC));
+% hbee = errorbar(3,mean(100*resp_OR_fractionC),std(100*resp_OR_fractionC)/sqrt(5), 'k', 'linestyle', 'none','CapSize',3);
+% set(hbe,'FaceColor',colors{3},'EdgeColor',colors{3});
 % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
 %     maxY = maxY + 5 + 2;
-set(gca,'xlim',[0.25 xdata(end)+1.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
-xticks = [xdata(1:end) 3]; xticklabels = {'C2','C2''','Any'};
+set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
+xticks = [xdata(1:end)]; xticklabels = {'C2','C2'''};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     xtickangle(30)
-changePosition(gca,[0.2 0.03 -0.3 -0.05]);
+changePosition(gca,[0.2 0.03 -0.5 -0.05]);
 put_axes_labels(gca,{[],[0 0 0]},{{'Air Responsive','Cells (%)'},[0 0 0]});
 save_pdf(hf,mData.pdf_folder,sprintf('percentage_air_responsive'),600);
+
+hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[3 7 1.25 1],'color','w');
+hold on;
+
+hbe = bar(1,mean(100*resp_OR_fractionC),'barwidth',0.6);
+hbee = errorbar(1,mean(100*resp_OR_fractionC),std(100*resp_OR_fractionC)/sqrt(5), 'k', 'linestyle', 'none','CapSize',3);
+set(hbe,'FaceColor',colors{3},'EdgeColor',colors{3});
+set(gca,'xlim',[0.25 1.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
+xticks = [xdata(1:end)]; xticklabels = {'C2 or C2'''};
+set(gca,'xtick',xticks,'xticklabels',xticklabels);
+%     xtickangle(30)
+changePosition(gca,[0.2 0.03 -0.55 -0.05]);
+put_axes_labels(gca,{[],[0 0 0]},{{'Air Responsive Cells','in any Condition(%)'},[0 0 0]});
+save_pdf(hf,mData.pdf_folder,sprintf('percentage_air_responsive_any'),600);
 %%
 %% overlap RM bar graph
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
