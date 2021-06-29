@@ -66,7 +66,46 @@ ff = show_remapping_corr_plots(mData,ff,mean_corr_CA,xs_CA,[-0.1 1]);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rest_remap_corr.pdf'),600);
 
 
-%%
+%% excitatory inhibitory responsive percentages
+if 1
+    [respE1,respE_OR1,respE_AND1,respE_fraction1] = get_cell_list_exc_inh(resp_exc_inh,1,1);
+    [respE2,respE_OR2,respE_AND2,respE_fraction2] = get_cell_list_exc_inh(resp_exc_inh,2,1);
+    
+    [respI1,respI_OR1,respI_AND1,respI_fraction1] = get_cell_list_exc_inh(resp_exc_inh,1,0);
+    [respI2,respI_OR2,respI_AND2,respI_fraction2] = get_cell_list_exc_inh(resp_exc_inh,2,0);
+    
+    dataT = array2table(100*[respE_fraction1' respI_fraction1' respE_fraction2' respI_fraction2']);
+    dataT.Properties.VariableNames = {'C1E','C1I','C2E','C2I'};
+    within = array2table([[1 1 2 2]' [1 2 1 2]']);
+    within.Properties.VariableNames = {'Cond','EI'}; within.Cond = categorical(within.Cond); within.EI = categorical(within.EI);
+    
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
+    
+    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    xdata = [1 2 3 4];
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hold on;
+    tcolors ={colors{1};colors{1};colors{2};colors{2};};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    for ii = [2 4]
+        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'C2-E','C2-I','C2''-E','C2''-I'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+%     xtickangle(30);
+%     changePosition(gca,[0.2 0.03 -0.55 -0.05]);
+    changePosition(gca,[0.11 0.03 -0.15 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Air responsive','Cells (%)'},[0 0 0]});
+
+    save_pdf(hf,mData.pdf_folder,'air_responsive_exc_inh',600);
+    
+end
+
 %%
 if 0
 % out_CC = all_out_C.all_corr_an{3};
