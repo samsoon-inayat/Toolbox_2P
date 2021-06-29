@@ -90,16 +90,17 @@ if 1
     tcolors ={colors{1};colors{1};colors{2};colors{2};};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
     for ii = [2 4]
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata(1:end)+0; xticklabels = {'C2-E','C2-I','C2''-E','C2''-I'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    xtickangle(30);
-    changePosition(gca,[0.06 0.03 0.02 -0.11]);
-    put_axes_labels(gca,{[],[0 0 0]},{{'Air responsive Cells (%)'},[0 0 0]});
+%     xtickangle(30);
+%     changePosition(gca,[0.2 0.03 -0.55 -0.05]);
+    changePosition(gca,[0.11 0.03 -0.15 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Air responsive','Cells (%)'},[0 0 0]});
 
     save_pdf(hf,mData.pdf_folder,'air_responsive_exc_inh',600);
     
