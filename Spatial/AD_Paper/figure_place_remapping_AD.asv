@@ -33,7 +33,6 @@ respA = get_cell_list(resp_valsA,[1;2;3;4]);
 [all_corr_C_pop,all_corr_cell_C_pop,mean_corr_C_pop,mean_corr_popV_C_pop,mean_cell_corr_C_pop,xs_C_pop,paramC_pop] = find_population_vector_corr_remap(RsC,mRsC,respC_pop);
 [all_corr_A_pop,all_corr_cell_A_pop,mean_corr_A_pop,mean_corr_popV_A_pop,mean_cell_corr_A_pop,xs_A_pop,paramA_pop] = find_population_vector_corr_remap(RsA,mRsA,respA_pop);
 
-n = 0;
 %%
 an = 5;
 for cc = 1:4
@@ -125,12 +124,12 @@ end
 
 %% average correlation of all animals
 if 1
-    ff = makeFigureRowsCols(106,[1 0.5 4 0.5],'RowsCols',[4 4],...
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[4 4],...
         'spaceRowsCols',[0.1 0.1],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',...
         [-150 -150]);
     set(gcf,'color','w');
     set(gcf,'Position',[5 3 4 4]);
-    ff = show_remapping_corr_plots(mData,ff,mean_corr_popV_C,xs_C,[]);
+    ff = show_remapping_corr_plots(mData,ff,mean_corr_popV_A,xs_C,[]);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('remap_corr_C.pdf'),600);
 end
 %%

@@ -1,4 +1,4 @@
-function [all_corr_an,all_corr_cell_an,mean_corr,mean_corr_popV,mean_corr_cell,xso,param] = find_population_vector_corr_remap(Rs,mRs,resp)
+function [all_corr_an,all_corr_cell_an,mean_corr,mean_corr_cell,xso,param] = find_population_vector_corr_remap(Rs,mRs,resp)
 
 for rr = 1:size(mRs,1)
     for cc1 = 1:size(mRs,2)
@@ -57,18 +57,17 @@ mean_corr = cell(N,N);
 for rr = 1:N
     for cc = 1:N
         thisCC = [];
-        tmean_corr_popV = NaN(length(all_corr_an),maxcolsz);
+        mean_corr_popV = NaN(
         for an = 1:length(all_corr_an)
             temp_popV = all_corr_an{an}{rr,cc};
             thisCC(:,:,an) = temp_popV;
             mask = double(~eye(size(temp_popV)));
             mask(mask==0) = NaN;
             temp_popV = temp_popV .* mask;
-            tmean_corr_popV(an,:) = nanmean(temp_popV);
+            mean_corr_popV = nanmean(temp_popV);
             mean_corr_cell(rr,cc,an) = mean(diag(all_corr_cell_an{an}{rr,cc}));
         end
         mean_corr{rr,cc} = nanmean(thisCC,3);
-        mean_corr_popV{rr,cc} = normalizeSignal(tmean_corr_popV,2);
     end
 end
 n = 0;

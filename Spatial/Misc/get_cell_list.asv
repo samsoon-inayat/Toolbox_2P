@@ -2,7 +2,7 @@ function selResp = get_cell_list(resp_valsC,cond)
 
 if isempty(cond)
     for ii = 1:length(resp_valsC)
-        selResp{ii} = logical(ones(size(resp_valsC{ii},1),1));
+        selResp{ii} = 
     end
     return;
 end
