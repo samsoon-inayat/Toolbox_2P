@@ -26,33 +26,31 @@ respC = get_cell_list(resp_valsC,[1;2;3;4]);
 respA = get_cell_list(resp_valsA,[1;2;3;4]);
 
 % [out.allP_an,out.allC_an,out.avg_C_conds,out.mean_rasters_T,out.all_corr_an,out.all_corr_cell_an] = get_pop_vector_corr(out,conditionsAndRasterTypes,min(out.sz(:)),cellSel_C);
-[all_corr_C,all_corr_cell_C,mean_corr_C,mean_corr_popV_C,mean_cell_corr_C,xs_C,paramC] = find_population_vector_corr_remap(RsC,mRsC,respC);
-[all_corr_A,all_corr_cell_A,mean_corr_A,mean_corr_popV_A,mean_cell_corr_A,xs_A,paramA] = find_population_vector_corr_remap(RsA,mRsA,respA);
+out_C = find_population_vector_corr_remap(RsC,mRsC,respC);
+out_A = find_population_vector_corr_remap(RsA,mRsA,respA);
 
-
-[all_corr_C_pop,all_corr_cell_C_pop,mean_corr_C_pop,mean_corr_popV_C_pop,mean_cell_corr_C_pop,xs_C_pop,paramC_pop] = find_population_vector_corr_remap(RsC,mRsC,respC_pop);
-[all_corr_A_pop,all_corr_cell_A_pop,mean_corr_A_pop,mean_corr_popV_A_pop,mean_cell_corr_A_pop,xs_A_pop,paramA_pop] = find_population_vector_corr_remap(RsA,mRsA,respA_pop);
+out_C_pop = find_population_vector_corr_remap(RsC,mRsC,respC_pop);
+out_A_pop = find_population_vector_corr_remap(RsA,mRsA,respA_pop);
 
 n = 0;
-%%
-an = 5;
-for cc = 1:4
-    meanctemp(cc,:) = mean_corr_popV_C{1,cc}(an,:);
-end
-figure(102);clf;imagesc(meanctemp)
-n = 0;
+selC = out_C;
+selA = out_A;
 %%
 if 1
 % out_CC = all_out_C.all_corr_an{3};
 % out_AA = all_out_A.all_corr_an{1};
-    temp = mean_cell_corr_C(:,:,1);
+    temp = selC.rate_remap.mean_cells(:,:,1);
     mask = ones(size(temp)); mask = triu(mask,1) & ~triu(mask,2);
-    for ii = 1:size(mean_cell_corr_C,3)
-        temp = mean_cell_corr_C(:,:,ii);
+%     vals_C = selC.spatial.mean_corr; vals_A = selA.spatial.mean_corr;
+    vals_C = selC.rate_remap.mean_pv; vals_A = selA.rate_remap.mean_pv;
+    vals_C = selC.rate_remap.mean_cells; vals_A = selA.rate_remap.mean_cells;
+%     vals_C = selC.popV.mean_corr; vals_A = selA.popV.mean_corr;
+    for ii = 1:size(vals_C,3)
+        temp = vals_C(:,:,ii);
         var_C(ii,:) = temp(mask)';
     end
-    for ii = 1:size(mean_cell_corr_A,3)
-        temp = mean_cell_corr_A(:,:,ii);
+    for ii = 1:size(vals_A,3)
+        temp = vals_A(:,:,ii);
         var_A(ii,:) = temp(mask)';
     end
     dataT = array2table([[ones(size(var_C,1),1);2*ones(size(var_A,1),1)] [var_C;var_A]]);
@@ -94,7 +92,6 @@ if 1
     save_pdf(hf,mData.pdf_folder,'cell corr remap',600);
 return;
 end
-
 
 %% pooled
 if 1
