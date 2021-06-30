@@ -26,6 +26,9 @@ if ~isempty(allP)
         set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold','YTick',[1]);
         set(gca,'YTick',[1 size(P,1)]);
         set(gca,'XTick',[]);
+%         text(0,size(P,1)+5,{'Pop. Activity'},'FontSize',5);
+        ht = title('Pop. Activity');
+        set(ht,'FontSize',5,'FontWeight','Normal');
 
         %% 2nd row
         axes(ff.h_axes(2,sii));
@@ -87,6 +90,8 @@ if ~isempty(allP)
             end
         end
             set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+            ht = title('Pop. Correlation');
+        set(ht,'FontSize',5,'FontWeight','Normal');
     end
 
     colormap parula
@@ -164,6 +169,8 @@ if isempty(allP)
             end
         end
             set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+            ht = title('Avg. Pop. Correlation');
+        set(ht,'FontSize',5,'FontWeight','Normal');
     end
 
     colormap parula
