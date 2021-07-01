@@ -26,22 +26,14 @@ else
 end
 
 function R = reduce_R(R,trials)
+n = 0;
 fields = fieldnames(R);
 num_trials = size(R.sp_rasters,1);
 for ii = 1:length(fields)
     thisField = fields{ii};
-    cmdTxt = sprintf('TT = R.%s;',thisField); eval(cmdTxt);
-    if size(TT,1) == num_trials
-        if size(TT,3) > 1
-            TT = TT(trials,:,:);
-        else
-            if size(TT,2) > 1
-                TT = TT(trials,:);
-            else
-                TT = TT(trials,1);
-            end
-        end
-        cmdTxt = sprintf('R.%s = TT;',thisField); eval(cmdTxt);
+    cmdTxt = sprintf('temp = R.%s;',thisField); eval(cmdTxt);
+    if size(temp,1) == num_trials
+        temp = temp(
     end
 end
 

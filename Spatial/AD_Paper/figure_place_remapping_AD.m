@@ -32,26 +32,98 @@ out_A = find_population_vector_corr_remap(RsA,mRsA,respA);
 out_C_pop = find_population_vector_corr_remap(RsC,mRsC,respC_pop);
 out_A_pop = find_population_vector_corr_remap(RsA,mRsA,respA_pop);
 
-n = 0;
 selC = out_C;
 selA = out_A;
+n = 0;
+%%
+varC = selC.adj_SP_corr_diag;
+varA = selA.adj_SP_corr_diag;
+if 1
+    CN = 3;
+    tcolors = {'k','r'};
+    distD(:,1) = varC(:,CN);
+    distD(:,2) = varA(:,CN);
+    [distDo,allVals,allValsG] = plotDistributions(distD);
+    minBin = min(allVals);
+    maxBin = max(allVals);
+
+    tcolors = {'k','r'};
+    incr = 0.001; %maxBin =
+    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hold on;
+    %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
+    % plot([1.65 1.65],[0 100],'--k');
+    % xlim([-5 30]);
+    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+    changePosition(gca,[0.15 0.13 -0.2 -0.13]);
+    put_axes_labels(gca,{'Spatial Correlation',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_SP_Corr_%d',CN),600);
+return;
+end
+
+
+%%
+varC = selC.adj_PV_corr_diag;
+varA = selA.adj_PV_corr_diag;
+if 1
+    CN = 1;
+    tcolors = {'k','r'};
+    distD(:,1) = varC(:,CN);
+    distD(:,2) = varA(:,CN);
+    [distDo,allVals,allValsG] = plotDistributions(distD);
+    minBin = min(allVals);
+    maxBin = max(allVals);
+
+    tcolors = {'k','r'};
+    incr = 0.001; %maxBin =
+    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hold on;
+    %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
+    % plot([1.65 1.65],[0 100],'--k');
+    % xlim([-5 30]);
+    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+    changePosition(gca,[0.15 0.13 -0.2 -0.13]);
+    put_axes_labels(gca,{'PV Correlation',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_PV_Corr_%d',CN),600);
+return;
+end
+
+%%
+varC = selC.adj_RR_SP;
+varA = selA.adj_RR_SP;
+if 1
+    CN = 3;
+    tcolors = {'k','r'};
+    distD(:,1) = varC(:,CN);
+    distD(:,2) = varA(:,CN);
+    [distDo,allVals,allValsG] = plotDistributions(distD);
+    minBin = min(allVals);
+    maxBin = max(allVals);
+
+    tcolors = {'k','r'};
+    incr = 0.001; %maxBin =
+    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hold on;
+    %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
+    % plot([1.65 1.65],[0 100],'--k');
+    % xlim([-5 30]);
+    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+    changePosition(gca,[0.15 0.13 -0.2 -0.13]);
+    put_axes_labels(gca,{'Spatial Correlation',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_RR_Corr_%d',CN),600);
+return;
+end
+
 %%
 if 1
-% out_CC = all_out_C.all_corr_an{3};
-% out_AA = all_out_A.all_corr_an{1};
-    temp = selC.rate_remap.mean_cells(:,:,1);
-    mask = ones(size(temp)); mask = triu(mask,1) & ~triu(mask,2);
-%     vals_C = selC.spatial.mean_corr; vals_A = selA.spatial.mean_corr;
-    vals_C = selC.rate_remap.mean_pv; vals_A = selA.rate_remap.mean_pv;
-    vals_C = selC.rate_remap.mean_cells; vals_A = selA.rate_remap.mean_cells;
-%     vals_C = selC.popV.mean_corr; vals_A = selA.popV.mean_corr;
-    for ii = 1:size(vals_C,3)
-        temp = vals_C(:,:,ii);
-        var_C(ii,:) = temp(mask)';
-    end
-    for ii = 1:size(vals_A,3)
-        temp = vals_A(:,:,ii);
-        var_A(ii,:) = temp(mask)';
+    for rr = 1:size(varC,1)
+        for cc = 1:size(varC,2)
+            var_C(rr,cc) = nanmean(varC{rr,cc});
+            var_A(rr,cc) = nanmean(varA{rr,cc});
+        end
     end
     dataT = array2table([[ones(size(var_C,1),1);2*ones(size(var_A,1),1)] [var_C;var_A]]);
     dataT.Properties.VariableNames = {'Group','C12','C23','C34'};
@@ -89,7 +161,7 @@ if 1
     changePosition(gca,[0.06 0.03 0.02 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
 
-    save_pdf(hf,mData.pdf_folder,'cell corr remap',600);
+    save_pdf(hf,mData.pdf_folder,'remap bar graph',600);
 return;
 end
 

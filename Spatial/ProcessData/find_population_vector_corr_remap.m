@@ -30,71 +30,88 @@ else
 end
 
 for rr = 1:size(mRs,1)
-    all_corr = [];
-    all_corr_cell =[];
+    PV_corr = []; PV_corr_diag = [];
+    SP_corr =[]; SP_corr_diag = [];
+    RR = []; RR_SP = []; RR_PV = []; RR_score_PV_corr_diag = []; RR_score_PF_corr_diag = [];
     for cc1 = 1:size(mRs,2)
         for cc2 = 1:size(mRs,2)
-            set1 = mRs{rr,cc1}; set2 = mRs{rr,cc2};
-            set1 = correctsz(set1(resp{rr},:),maxcolsz); set2 = correctsz(set2(resp{rr},:),maxcolsz);
-            [pv1,~,cellnums] = findPopulationVectorPlot(set1,[]);
-            [pv2,~,~] = findPopulationVectorPlot(set2,[],cellnums);
-            [corrV,pV] = corr(pv1,pv2);
-            corrV = fillmissing(corrV,'linear',2,'EndValues','nearest');
-            corrV = fillmissing(corrV,'linear',1,'EndValues','nearest');
-            all_corr{cc1,cc2} = corrV;
+            RV1 = mRs{rr,cc1}; RV2 = mRs{rr,cc2};
+            RV1 = correctsz(RV1(resp{rr},:),maxcolsz); RV2 = correctsz(RV2(resp{rr},:),maxcolsz);
+            [RV1_ordered,~,cellnums] = findPopulationVectorPlot(RV1,[]);
+            [RV2_ordered,~,~] = findPopulationVectorPlot(RV2,[],cellnums);
+            [this_PV_corr,pPV] = corr(RV1_ordered,RV2_ordered);
+            this_PV_corr = fillmissing(this_PV_corr,'linear',2,'EndValues','nearest');
+            this_PV_corr = fillmissing(this_PV_corr,'linear',1,'EndValues','nearest');
+            PV_corr{cc1,cc2} = this_PV_corr;
+            PV_corr_diag{cc1,cc2} = diag(this_PV_corr);
             
-            [param.FD(cc1,cc2,rr),param.all_bw{cc1,cc2}] = findFractalDim(corrV);
+%             [param.FD(cc1,cc2,rr),param.all_bw{cc1,cc2}] = findFractalDim(this_PV_corr);
             
             % spatial correlation
-            [corrCV,pCV] = corr(pv1',pv2');
-            corrCV = fillmissing(corrCV,'linear',2,'EndValues','nearest');
-            corrCV = fillmissing(corrCV,'linear',1,'EndValues','nearest');
-            all_corr_cell{cc1,cc2} = corrCV;
+            [this_SP_corr,pSP] = corr(RV1_ordered',RV2_ordered');
+            this_SP_corr = fillmissing(this_SP_corr,'linear',2,'EndValues','nearest');
+            this_SP_corr = fillmissing(this_SP_corr,'linear',1,'EndValues','nearest');
+            SP_corr{cc1,cc2} = this_SP_corr;
+            SP_corr_diag{cc1,cc2} = diag(this_SP_corr);
             
-            % rate remapping
-            rate_remapping{cc1,cc2} = abs(pv1-pv2)./(pv1+pv2);
-            rate_remapping_cells{cc1,cc2} = nanmean(abs(pv1-pv2)./(pv1+pv2),2);
-            rate_remapping_pv{cc1,cc2} = nanmean(abs(pv1-pv2)./(pv1+pv2),1);
+            % RR --> rate remapping
+            RR_score = abs(RV1_ordered-RV2_ordered)./(RV1_ordered+RV2_ordered);
+            RR{cc1,cc2} = RR_score;
+            RR_score_PV_corr = corr(RR_score);
+            RR_score_PF_corr = corr(RR_score');
+            RR_SP{cc1,cc2} = nanmean(RR_score,2);
+            RR_PV{cc1,cc2} = [nanmean(RR_score,1)]';
+            RR_score_PV_corr_diag{cc1,cc2} = diag(RR_score_PV_corr);
+            RR_score_PF_corr_diag{cc1,cc2} = diag(RR_score_PF_corr);
         end
    end
-    all_corr_an{rr} = all_corr;
-    all_corr_cell_an{rr} = all_corr_cell;
-    rate_remapping_an{rr} = rate_remapping;
-    rate_remapping_an_cell{rr} = rate_remapping_cells;
-    rate_remapping_an_pv{rr} = rate_remapping_pv;
+    all_PV_corr{rr} = PV_corr;
+    all_PV_corr_diag{rr} = PV_corr_diag;
+    all_SP_corr{rr} = SP_corr;
+    all_SP_corr_diag{rr} = SP_corr_diag;
+    all_RR{rr} = RR;
+    all_RR_PV{rr} = RR_PV;
+    all_RR_SP{rr} = RR_SP;
+    all_RR_score_PV_corr_diag{rr} = RR_score_PV_corr_diag;
+    all_RR_score_PF_corr_diag{rr} = RR_score_PF_corr_diag;
 end
 
 N = size(mRs,2);
 mean_corr = cell(N,N);
+mask = ones(size(mean_corr)); mask = triu(mask,1) & ~triu(mask,2);
+ind = 1;
 for rr = 1:N
     for cc = 1:N
-        thisCC = [];
-        for an = 1:length(all_corr_an)
-            temp_popV = all_corr_an{an}{rr,cc};
-            thisCC(:,:,an) = temp_popV;
-            mean_corr_popV(rr,cc,an) = nanmean(diag(temp_popV));
-            corr_popV{rr,cc,an} = diag(temp_popV);
-            mean_corr_cell(rr,cc,an) = mean(diag(all_corr_cell_an{an}{rr,cc}));
-            corr_cell{rr,cc,an} = diag(all_corr_cell_an{an}{rr,cc});
-            mean_rate_remap_cells(rr,cc,an) = nanmean(rate_remapping_an_cell{an}{rr,cc});
-            mean_rate_remap_pv(rr,cc,an) = nanmean(rate_remapping_an_pv{an}{rr,cc});
+        for_mean_PV_corr = [];
+        for an = 1:length(all_PV_corr)
+            for_mean_PV_corr(:,:,an) = all_PV_corr{an}{rr,cc};
         end
-        mean_corr{rr,cc} = nanmean(thisCC,3);
+        mean_PV_corr{rr,cc} = nanmean(for_mean_PV_corr,3);
+        
+        % for across adjacent conditions
+        if mask(rr,cc)
+            for an = 1:length(all_PV_corr)
+                adj_PV_corr_diag{an,ind} = all_PV_corr_diag{an}{rr,cc};
+                adj_SP_corr_diag{an,ind} = all_SP_corr_diag{an}{rr,cc};
+                adj_RR_SP{an,ind} = all_RR_SP{an}{rr,cc};
+                adj_RR_PV{an,ind} = all_RR_PV{an}{rr,cc};
+            end
+            ind = ind + 1;
+        end
     end
 end
-out.popV.animals = all_corr_an;
-out.popV.mean_corr_animal_wise = mean_corr;
-out.popV.mean_popV_wise = mean_corr_popV;
-out.popV.corr = corr_popV;
-out.popV.param = param;
-out.spatial.animals = all_corr_cell_an;
-out.spatial.mean_cell_wise = mean_corr_cell;
-out.spatial.corr = corr_cell;
-out.rate_remap.animals = rate_remapping_an;
-out.rate_remap.animals_cells = rate_remapping_an_cell;
-out.rate_remap.animals_pv = rate_remapping_an_pv;
-out.rate_remap.mean_cells = mean_rate_remap_cells;
-out.rate_remap.mean_pv = mean_rate_remap_pv;
+out.mean_PV_corr = mean_PV_corr;
+out.all_SP_corr = all_SP_corr;
+out.all_SP_corr_diag = all_SP_corr_diag;
+out.all_PV_corr = all_PV_corr;
+out.all_PV_corr_diag = all_PV_corr_diag;
+out.all_RR = all_RR;
+out.all_RR_SP = all_RR_SP;
+out.all_RR_PV = all_RR_PV;
+out.adj_PV_corr_diag = adj_PV_corr_diag;
+out.adj_SP_corr_diag = adj_SP_corr_diag;
+out.adj_RR_SP = adj_RR_SP;
+out.adj_RR_PV = adj_RR_PV;
 out.xs = xso;
 
 
@@ -103,11 +120,11 @@ n = 0;
 
 
 
-function set1 = correctsz(set1,maxcolsz)
-if size(set1,2) < maxcolsz
-    diffsz = maxcolsz - size(set1,2);
-    nanmat = NaN(size(set1,1),diffsz);
-    set1 = [set1 nanmat];
+function RV1 = correctsz(RV1,maxcolsz)
+if size(RV1,2) < maxcolsz
+    diffsz = maxcolsz - size(RV1,2);
+    nanmat = NaN(size(RV1,1),diffsz);
+    RV1 = [RV1 nanmat];
 end
 
 function [fd,bw] = findFractalDim(corrV)
