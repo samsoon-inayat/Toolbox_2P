@@ -6,45 +6,55 @@ ei_A = evalin('base','ei10_A1');
 
 selContexts = [1];
 rasterNames = {'airD'};
-
-trials = {[1 2],[3 4],[5 6],[7 8],[9 10]};
-% trials = {[1 2],[3 4],[5 6],[7 8],[9 10]};
-
-trials = {[1],[2],[3],[4],[5],[6],[7],[8],[9],[10]};
-
+trials = mat2cell([1:10]',ones(10,1));
 
 RsC = get_rasters_data(ei_C,selContexts,rasterNames);
-RsC = repmat(RsC,1,length(trials));
-mRsC = calc_mean_rasters(RsC,1:10);
-for ii = 1:length(trials)
-    [mRsCT(:,ii),RsCT(:,ii)] = calc_mean_rasters(RsC(:,1),trials{ii});
-end
 RsC = find_responsive_rasters(RsC,1:10);
-[CR_C,aCR_C] = find_population_vector_corr(RsC,mRsC,1,0);
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(RsC);
-
-respC_pop = get_cell_list(resp_valsC,[]);
-respC = get_cell_list(resp_valsC,[1]);
+respC = get_cell_list(resp_valsC,[]);
+out_C = find_population_vector_corr_remap_trials(RsC,respC,trials);
 
 
 RsA = get_rasters_data(ei_A,selContexts,rasterNames);
-RsA = repmat(RsA,1,length(trials));
-mRsA = calc_mean_rasters(RsA,1:10);
-for ii = 1:length(trials)
-    [mRsAT(:,ii),RsAT(:,ii)] = calc_mean_rasters(RsA(:,1),trials{ii});
-end
 RsA = find_responsive_rasters(RsA,1:10);
-[CR_A,aCR_A] = find_population_vector_corr(RsA,mRsA,1,0);
 [resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
+respA = get_cell_list(resp_valsA,[]);
+out_A = find_population_vector_corr_remap_trials(RsA,respA,trials);
 
-respA_pop = get_cell_list(resp_valsA,[]);
-respA = get_cell_list(resp_valsA,[1]);
 
-out_C = find_population_vector_corr_remap(RsC,mRsCT,respC);
-out_A = find_population_vector_corr_remap(RsA,mRsAT,respA);
-
-% out_C_pop = find_population_vector_corr_remap(RsC,mRsCT,respC_pop);
-% out_A_pop = find_population_vector_corr_remap(RsA,mRsAT,respA_pop);
+% 
+% RsC = get_rasters_data(ei_C,selContexts,rasterNames);
+% RsC = repmat(RsC,1,length(trials));
+% mRsC = calc_mean_rasters(RsC,1:10);
+% for ii = 1:length(trials)
+%     [mRsCT(:,ii),RsCT(:,ii)] = calc_mean_rasters(RsC(:,1),trials{ii});
+% end
+% RsC = find_responsive_rasters(RsC,1:10);
+% [CR_C,aCR_C] = find_population_vector_corr(RsC,mRsC,1,0);
+% [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(RsC);
+% 
+% respC_pop = get_cell_list(resp_valsC,[]);
+% respC = get_cell_list(resp_valsC,[1]);
+% 
+% 
+% RsA = get_rasters_data(ei_A,selContexts,rasterNames);
+% RsA = repmat(RsA,1,length(trials));
+% mRsA = calc_mean_rasters(RsA,1:10);
+% for ii = 1:length(trials)
+%     [mRsAT(:,ii),RsAT(:,ii)] = calc_mean_rasters(RsA(:,1),trials{ii});
+% end
+% RsA = find_responsive_rasters(RsA,1:10);
+% [CR_A,aCR_A] = find_population_vector_corr(RsA,mRsA,1,0);
+% [resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
+% 
+% respA_pop = get_cell_list(resp_valsA,[]);
+% respA = get_cell_list(resp_valsA,[1]);
+% 
+% out_C = find_population_vector_corr_remap_trials(RsC,mRsCT,respC);
+% out_A = find_population_vector_corr_remap(RsA,mRsAT,respA);
+% 
+% % out_C_pop = find_population_vector_corr_remap(RsC,mRsCT,respC_pop);
+% % out_A_pop = find_population_vector_corr_remap(RsA,mRsAT,respA_pop);
 
 selC = out_C;
 selA = out_A;
@@ -85,29 +95,25 @@ if 1
         end
     end
     for cc = 1:size(var_C,2)
-        varNames{cc} = sprintf('TS%d%d',cc,cc+1);
+        varNames{cc} = sprintf('T%d%d',cc,cc+1);
+        xlabels{cc} = sprintf('T%d-T%d',cc,cc+1);
     end
     dataT = array2table([[ones(size(var_C,1),1);2*ones(size(var_A,1),1)] [var_C;var_A]]);
     dataT.Properties.VariableNames = {'Group',varNames{:}};
     dataT.Group = categorical(dataT.Group);
     colVar1 = [1:size(var_C,2)];    
     within = table(colVar1');
-    within.Properties.VariableNames = {'Condition'};
-    within.Condition = categorical(within.Condition);
+    within.Properties.VariableNames = {'TrialPairs'};
+    within.TrialPairs = categorical(within.TrialPairs);
     ra = repeatedMeasuresAnova(dataT,within);
-    
-    dataTC = dataT(1:3,2:end);
-    raC = repeatedMeasuresAnova(dataTC,within);
-    
-    dataTA = dataT(4:end,2:end);
-    raA = repeatedMeasuresAnova(dataTA,within);
+%     writetable(dataT,fullfile(mData.pdf_folder,'Remapping_Trials.xls'));
 
     mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
     nbars = length(mVar)/2;
     xdata = [1:nbars ([1:nbars]+nbars+1)];
     colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 5 1.25],'color','w');
     hold on;
     tcolors = colors(1:nbars); tcolors = repmat(tcolors,1,2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -118,13 +124,13 @@ if 1
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = dataT.Properties.VariableNames(2:end); xticklabels = repmat(xticklabels,1,2);
+    xticks = xdata(1:end)+0; xticklabels = xlabels; xticklabels = repmat(xticklabels,1,2);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
-    changePosition(gca,[0.06 0.03 0.02 -0.11]);
+    changePosition(gca,[-0.06 0.03 0.15 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
 
-    save_pdf(hf,mData.pdf_folder,'remap bar graph',600);
+    save_pdf(hf,mData.pdf_folder,'remap bar graph_trials',600);
 return;
 end
 

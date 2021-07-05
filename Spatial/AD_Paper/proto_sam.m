@@ -16,8 +16,8 @@ norm = false;
 mle = false;
 
 %% pick an example
-n = XsC{1, 1}; % neuronal time series
-x = YsC{1, 1}; % distance
+n = XsC{3, 3}; % neuronal time series
+x = YsC{3, 3}; % distance
 
 %% linearize
 trials = repmat(1:size(x, 1), [size(x, 2) 1]);

@@ -22,8 +22,6 @@ out = find_population_vector_corr_remap(Rs,mR,resp_ORC);
 
 trials = mat2cell([1:10]',ones(size([1:10]')));
 
-out = find_population_vector_corr_remap_trials(Rs,mR,resp_ORC);
-
 n = 0;
 %%
 %%

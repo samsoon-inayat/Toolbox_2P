@@ -39,7 +39,7 @@ n = 0;
 varC = selC.adj_SP_corr_diag;
 varA = selA.adj_SP_corr_diag;
 if 1
-    CN = 3;
+    CN = 1;
     tcolors = {'k','r'};
     distD(:,1) = varC(:,CN);
     distD(:,2) = varA(:,CN);
