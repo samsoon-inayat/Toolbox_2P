@@ -13,6 +13,8 @@ within_factors = within.Properties.VariableNames;
 wilk_text = build_wilk_text(between,between_factors);
 rm = fitrm(between,wilk_text);
 [rm.WithinDesign,rm.WithinModel] = build_within_design_and_model(within);
+out.number_of_between_factors = nbf;
+out.number_of_within_factors = nwf;
 out.rm = rm;
 out.mauchly = mauchly(rm);
 out.ranova = rm.ranova('WithinModel',rm.WithinModel);
@@ -50,6 +52,7 @@ out.mcs_lsd = mcs_lsd;
 
 out.mcs_wf = mcs_bonferroni_wf;
 out.mcs_lsd_wf = mcs_lsd_wf;
+
 
 % out.sig_mcs = find_sig_mcs(mcs);
 

@@ -18,12 +18,78 @@ mR = calc_mean_rasters(Rs,1:10);
 [respI,respI_OR,respI_AND,respI_fraction] = get_cell_list_exc_inh(resp_exc_inh,1,0);
 [CRcI,aCRcI,mRRI] = find_population_vector_corr(Rs,mR,respI,0);
 
-out = find_population_vector_corr_remap(Rs,mR,resp_ORC);
-
+outE = find_population_vector_corr_remap(Rs,mR,respE_OR);
+outI = find_population_vector_corr_remap(Rs,mR,respI_OR);
+n = 0;
+%%
 trials = mat2cell([1:10]',ones(size([1:10]')));
+resp = get_cell_list(resp_valsC,[]);
+outE1 = find_population_vector_corr_remap_trials(Rs(:,1),respE_OR,trials);
+outE2 = find_population_vector_corr_remap_trials(Rs(:,2),respE_OR,trials);
+outI1 = find_population_vector_corr_remap_trials(Rs(:,1),respI_OR,trials);
+outI2 = find_population_vector_corr_remap_trials(Rs(:,2),respI_OR,trials);
 
 n = 0;
 %%
+if 1
+% for testing spatial correlation of excitatory and inhibitory cells
+[within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},2,9);
+varE1 = arrayfun(@(x) mean(x{1}),outE1.adj_SP_corr_diag); varE2 = arrayfun(@(x) mean(x{1}),outE2.adj_SP_corr_diag);
+varI1 = arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag); varI2 = arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag);
+between = make_between_table({varE1,varE2;varI1,varI2},dvn);
+
+ra = repeatedMeasuresAnova(between,within);
+
+%%
+[within,dvn,xlabels] = make_within_table({'Condition'},2);
+varE1 = mean(arrayfun(@(x) mean(x{1}),outE1.adj_SP_corr_diag),2); varE2 = mean(arrayfun(@(x) mean(x{1}),outE2.adj_SP_corr_diag),2);
+varI1 = mean(arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag),2); varI2 = mean(arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag),2);
+between = make_between_table({varE1,varE2;varI1,varI2},dvn);
+
+ra = repeatedMeasuresAnova(between,within);
+%%
+[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+hollowsep = 19;
+hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 5 1.25],'color','w');
+hold on;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
+        'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = hollowsep:length(hbs)
+        set(hbs(ii),'facecolor','none','edgecolor',colors{ii});
+    end
+set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = xlabels; xticklabels = repmat(xticklabels,1,2);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[-0.06 0.03 0.15 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
+end
+
+%%
+if 1
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 5 1.25],'color','w');
+    hold on;
+    tcolors = colors(1:nbars); tcolors = repmat(tcolors,1,2);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    for ii = (nbars+1):length(hbs)
+        set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+    end
+    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = xlabels; xticklabels = repmat(xticklabels,1,2);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[-0.06 0.03 0.15 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
+
+    save_pdf(hf,mData.pdf_folder,'remap bar graph_trials',600);
+return;
+end
+
+
 %%
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 0.5],'color','w');
 hold on;
@@ -131,20 +197,14 @@ end
 
 %%
 if 1
-    mean_cell_corr_C = mean_cell_corr_CAE;
-    temp = mean_cell_corr_C(:,:,1);
-    mask = ones(size(temp)); mask = triu(mask,1) & ~triu(mask,2);
-    for ii = 1:size(mean_cell_corr_C,3)
-        temp = mean_cell_corr_C(:,:,ii);
-        var_CE(ii,:) = temp(mask)';
+    mean_cell_corr_C = outE.adj_SP_corr_diag;
+    for ii = 1:size(mean_cell_corr_C,1)
+        var_CE(ii,1) = mean(mean_cell_corr_C{ii});
     end
     
-    mean_cell_corr_C = mean_cell_corr_CAI;
-    temp = mean_cell_corr_C(:,:,1);
-    mask = ones(size(temp)); mask = triu(mask,1) & ~triu(mask,2);
-    for ii = 1:size(mean_cell_corr_C,3)
-        temp = mean_cell_corr_C(:,:,ii);
-        var_CI(ii,:) = temp(mask)';
+    mean_cell_corr_C = outI.adj_SP_corr_diag;
+    for ii = 1:size(mean_cell_corr_C,1)
+        var_CI(ii,1) = mean(mean_cell_corr_C{ii});
     end
     
     var_C = [var_CE var_CI];

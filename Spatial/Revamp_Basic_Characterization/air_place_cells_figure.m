@@ -3,24 +3,6 @@ function light_figure
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
 
-
-% selContexts = [2 7];
-% rasterNames = {'air55T','air55T'};
-% Rs_rest = get_rasters_data(ei,selContexts,rasterNames);
-% % Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
-% Rs_rest = find_responsive_rasters(Rs_rest,1:10);
-% mR_rest = calc_mean_rasters(Rs_rest,1:10);
-% [resp_fraction_rest,resp_vals_rest,OI_rest,mean_OI_rest,resp_OR_rest,resp_OR_fraction_rest,resp_AND_rest,resp_AND_fraction_rest] = get_responsive_fraction(Rs_rest);
-% 
-% 
-% selContexts = [3 4 5];
-% rasterNames = {'air77T','air77T','air77T'};
-% % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
-% RsT = get_rasters_data(ei,selContexts,rasterNames);
-% RsT = find_responsive_rasters(RsT,1:10);
-% [resp_fractionT,resp_valsT,OIT,mean_OIT,resp_ORT,resp_OR_fractionT,resp_ANDT,resp_AND_fractionT] = get_responsive_fraction(RsT);
-% mRT = calc_mean_rasters(RsT,1:10);
-
 selContexts = [3 4 5];
 rasterNames = {'airD','airD','airD'};
 % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
@@ -36,6 +18,78 @@ resp = resp_ORCS
 Rs = [RsS];
 mR = [mRS];
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
+
+%%
+trials = mat2cell([1:10]',ones(size([1:10]')));
+resp = get_cell_list(resp_valsCS,[]);
+out1 = find_population_vector_corr_remap_trials(Rs(:,1),resp,trials);
+out2 = find_population_vector_corr_remap_trials(Rs(:,2),resp,trials);
+out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
+
+n = 0;
+%%
+
+var1 = out1.adj_SP_corr_diag(:,1:9);
+var2 = out2.adj_SP_corr_diag(:,1:9);
+var3 = out3.adj_SP_corr_diag(:,1:9);
+%%
+if 1
+    var_1 = []; var_2 = []; var_3 = []; varNames = []; xlabels = []; xdata = [];
+    for rr = 1:size(var1,1)
+        for cc = 1:size(var1,2)
+            var_1(rr,cc) = nanmean(var1{rr,cc});
+            var_2(rr,cc) = nanmean(var2{rr,cc});
+            var_3(rr,cc) = nanmean(var3{rr,cc});
+        end
+    end
+    ind = 1; ind_val = 1;
+    for ii = 1:3
+        for cc = 1:size(var_1,2)
+            varNames{cc+(size(var_1,2)*(ii-1))} = sprintf('C%d_T%d%d',ii,cc,cc+1);
+            xlabels{cc+(size(var_1,2)*(ii-1))} = sprintf('C%d-T%d-T%d',ii,cc,cc+1);
+            xdata(ind) = ind_val;
+            ind = ind+1; ind_val = ind_val + 1;
+        end
+        ind_val = ind_val+3;
+    end
+    
+    dataT = array2table([[var_1 var_2 var_3]]);
+    dataT.Properties.VariableNames = varNames;
+    colVar1 = [1:size(var_1,2)]; colVar2 = [ones(size(colVar1)) 2*ones(size(colVar1)) 3*ones(size(colVar1))];
+    colVar1 = repmat(colVar1,1,3);
+    
+    within = array2table([colVar2' colVar1']);
+    within.Properties.VariableNames = {'Condition','TrialPairs'};
+    within.TrialPairs = categorical(within.TrialPairs);
+    within.Condition = categorical(within.Condition);
+    ra = repeatedMeasuresAnova(dataT,within);
+%     writetable(dataT,fullfile(mData.pdf_folder,'Remapping_Trials.xls'));
+
+    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    nbars = length(mVar)/3;
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 5 1.25],'color','w');
+    hold on;
+    tcolors = colors(1:nbars); tcolors = repmat(tcolors,1,3);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+%     for ii = (nbars+1):length(hbs)
+%         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+%     end
+    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = xlabels; xticklabels = repmat(xticklabels,1,2);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[-0.06 0.03 0.15 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
+
+    save_pdf(hf,mData.pdf_folder,'remap bar graph_trials_air_place',600);
+return;
+end
+
 %%
 an = 3;
 ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 3],...

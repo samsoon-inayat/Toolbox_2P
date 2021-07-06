@@ -74,6 +74,24 @@ for rr = 1:size(mRs,1)
     all_RR_SP{rr} = RR_SP;
     all_RR_score_PV_corr_diag{rr} = RR_score_PV_corr_diag;
     all_RR_score_PF_corr_diag{rr} = RR_score_PF_corr_diag;
+    
+    ind = 1; auto_SP_corr = [];
+    for cc1 = 1:size(mRs,2)
+        for cc2 = 1:size(mRs,2)
+            if cc1 == cc2
+                auto_SP_corr{ind} = SP_corr{cc1,cc2}; ind = ind + 1;
+            end
+        end
+    end
+    auto_SP_corr_corr = [];
+    mask = logical(triu(ones(size(auto_SP_corr{1})),1));
+    for cc1 = 1:length(auto_SP_corr)
+        for cc2 = 1:length(auto_SP_corr)
+            set1 = auto_SP_corr{cc1}; set2 = auto_SP_corr{cc2};
+            auto_SP_corr_corr(cc1,cc2) = corr(set1(mask),set2(mask));
+        end
+    end
+    all_auto_SP_corr_corr(:,:,rr) = auto_SP_corr_corr;
 end
 
 N = size(mRs,2);
@@ -112,6 +130,7 @@ out.adj_PV_corr_diag = adj_PV_corr_diag;
 out.adj_SP_corr_diag = adj_SP_corr_diag;
 out.adj_RR_SP = adj_RR_SP;
 out.adj_RR_PV = adj_RR_PV;
+out.all_auto_SP_corr_corr = all_auto_SP_corr_corr;
 out.xs = xso;
 
 
