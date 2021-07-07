@@ -3,8 +3,8 @@ function air_figure
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei_11_15 = evalin('base','ei'); 
 
-selContexts = [2 7];
-rasterNames = {'air55T','air55T'};
+selContexts = [3 4 5];
+rasterNames = {'air77T','air77T','air77T'};
 Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 % Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
 Rs = find_responsive_rasters(Rs,1:10);
@@ -25,9 +25,10 @@ trials = mat2cell([1:10]',ones(size([1:10]')));
 resp = get_cell_list(resp_valsC,[]);
 outE1 = find_population_vector_corr_remap_trials(Rs(:,1),respE_OR,trials);
 outE2 = find_population_vector_corr_remap_trials(Rs(:,2),respE_OR,trials);
+outE3 = find_population_vector_corr_remap_trials(Rs(:,3),respE_OR,trials);
 outI1 = find_population_vector_corr_remap_trials(Rs(:,1),respI_OR,trials);
 outI2 = find_population_vector_corr_remap_trials(Rs(:,2),respI_OR,trials);
-
+outI3 = find_population_vector_corr_remap_trials(Rs(:,3),respI_OR,trials);
 n = 0;
 %% Show stimulus train
 if 1
@@ -58,33 +59,33 @@ if 1
     ff = sample_rasters(Rs{an,cn},[140 66 162 181],ff);
     axes(ff.h_axes(1,1));
     text(0,13.5,{'Representative rasters - Condition C2'},'FontSize',7,'FontWeight','Normal');
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rasters'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rasters_PC'),600);
 end
 
 %% population vector and correlation single animal
 if 1
     an = 1;
-    ff = makeFigureRowsCols(106,[1 0.5 4 1],'RowsCols',[2 2],...
+    ff = makeFigureRowsCols(106,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.15 0.1],'widthHeightAdjustment',...
         [-80 -70]);
     set(gcf,'color','w');
-    set(gcf,'Position',[5 5 2.2 2]);
+    set(gcf,'Position',[1 1 3*3.2 3*2]);
     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
     resp = get_cell_list(resp_valsC,[1;2]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
     % ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr_PCs.pdf'),600);
 end
 %% average population correlation (from all animals)
 if 1
-    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 2],...
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 3],...
         'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.15 0.2],'widthHeightAdjustment',...
         [-70 -240]);
     set(gcf,'color','w');
-    set(gcf,'Position',[5 3 2.2 1]);
+    set(gcf,'Position',[5 3 3.2 1]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.1 1],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corr.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corr_PCs.pdf'),600);
 end
 %% population correlation clustering and showing that mean of two clusters are significantly different across animals
 if 1
@@ -130,22 +131,23 @@ if 1
 end
 %% Percentage of Responsive Cells
 if 1
-    within = make_within_table({'Cond'},2);
-    dataT = make_between_table({resp_fractionC*100},{'C21','C22'})
+    within = make_within_table({'Cond'},3);
+    dataT = make_between_table({resp_fractionC*100},{'C3','C4','C5'})
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
      hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
         'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = [xdata(1:end)]; xticklabels = {'C2','C2'''};
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = [xdata(1:end)]; xticklabels = {'C3','C4','C3'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
     any_mean = mean(100*resp_OR_fractionC);    any_sem = std(100*resp_OR_fractionC)/sqrt(5);
-    pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(0.75,25,any_text,'FontSize',6);
-    changePosition(gca,[0.2 0.03 -0.5 -0.11]);
+    pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); 
+%     text(0.75,25,any_text,'FontSize',6);
+    changePosition(gca,[0.2 0.03 -0.3 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Air Responsive','Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('percentage_air_responsive'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('percentage_air_responsive_PCs'),600);
 end
 %% Percentage of excitatory inhibitory responsive cells
 if 1
@@ -168,21 +170,25 @@ if 1
 %     for ii = [2 4]
 %         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 %     end
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata(1:end)+0; xticklabels = {'C2-Ex','C2-Su','C2''-Ex','C2''-Su'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
     changePosition(gca,[0.2 0.03 -0.25 -0.05]);
 %     changePosition(gca,[0.11 0.03 -0.2 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{[],[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,'air_responsive_exc_inh',600);
+    save_pdf(hf,mData.pdf_folder,'air_responsive_exc_inh_PCs',600);
 end
 
 %% Spatial correlation between adjacent trails and considering exc and inh as two separate groups
 if 1
-    [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[2,9]);
-    varE1 = arrayfun(@(x) mean(x{1}),outE1.adj_SP_corr_diag); varE2 = arrayfun(@(x) mean(x{1}),outE2.adj_SP_corr_diag);
-    varI1 = arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag); varI2 = arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag);
+    [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,9]);
+    varE1 = arrayfun(@(x) mean(x{1}),outE1.adj_SP_corr_diag); 
+    varE2 = arrayfun(@(x) mean(x{1}),outE2.adj_SP_corr_diag);
+    varE3 = arrayfun(@(x) mean(x{1}),outE3.adj_SP_corr_diag);
+    varI1 = arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag); 
+    varI2 = arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag);
+    varI3 = arrayfun(@(x) mean(x{1}),outI3.adj_SP_corr_diag);
 
 %     varE1 = arrayfun(@(x) mean(x{1}),outE1.adj_PV_corr_diag); varE2 = arrayfun(@(x) mean(x{1}),outE2.adj_PV_corr_diag);
 %     varI1 = arrayfun(@(x) mean(x{1}),outI1.adj_PV_corr_diag); varI2 = arrayfun(@(x) mean(x{1}),outI2.adj_PV_corr_diag);between = make_between_table({varE1,varE2;varI1,varI2},dvn);
@@ -190,7 +196,7 @@ if 1
 %     varE1 = arrayfun(@(x) nanmean(x{1}),outE1.adj_RR_SP); varE2 = arrayfun(@(x) nanmean(x{1}),outE2.adj_RR_SP);
 %     varI1 = arrayfun(@(x) nanmean(x{1}),outI1.adj_RR_SP); varI2 = arrayfun(@(x) nanmean(x{1}),outI2.adj_RR_SP);
     
-    between = make_between_table({varE1,varI1;varE2,varI2},dvn);
+    between = make_between_table({varE1,varI1;varE2,varI2;varE3,varI3},dvn);
     ra = repeatedMeasuresAnova(between,within);
     %%
     hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2 1],'color','w');
@@ -216,17 +222,21 @@ if 1
 end
 %% Spatial correlation between adjacent trails (taking mean) and considering exc and inh as within factors (not groups)
 if 1
-    [within,dvn,xlabels] = make_within_table({'Condition','EI'},[2 2]);
-    varE1 = mean(arrayfun(@(x) mean(x{1}),outE1.adj_SP_corr_diag),2); varE2 = mean(arrayfun(@(x) mean(x{1}),outE2.adj_SP_corr_diag),2);
-    varI1 = mean(arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag),2); varI2 = mean(arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag),2);
-    between = make_between_table({varE1,varI1,varE2,varI2},dvn);
+    [within,dvn,xlabels] = make_within_table({'Condition','EI'},[3 2]);
+    varE1 = mean(arrayfun(@(x) mean(x{1}),outE1.adj_SP_corr_diag),2); 
+    varE2 = mean(arrayfun(@(x) mean(x{1}),outE2.adj_SP_corr_diag),2);
+    varE3 = mean(arrayfun(@(x) mean(x{1}),outE3.adj_SP_corr_diag),2);
+    varI1 = mean(arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag),2); 
+    varI2 = mean(arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag),2);
+    varI3 = mean(arrayfun(@(x) mean(x{1}),outI3.adj_SP_corr_diag),2);
+    between = make_between_table({varE1,varI1,varE2,varI2,varE3,varI3},dvn);
     ra = repeatedMeasuresAnova(between,within);
 
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.5 1]);
     hollowsep = 19;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
-    tcolors = {colors{1},colors{1}/3,colors{2},colors{2}/3};
+    tcolors = {colors{1},colors{1}/3,colors{2},colors{2}/3,colors{3},colors{3}/3};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
             'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
             'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
@@ -240,24 +250,28 @@ if 1
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
 %     changePosition(gca,[0.1 0.11 -0.2 -0.05]);
-    changePosition(gca,[0.2 0.03 -0.2 -0.05]);
+    changePosition(gca,[0.1 0.03 -0.1 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph',600);
+    save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph_PCs',600);
 end
 
 %% Rate change score between adjacent trails (taking mean) and considering exc and inh as within factors (not groups)
 if 1
-    [within,dvn,xlabels] = make_within_table({'Condition','EI'},[2 2]);
-    varE1 = mean(arrayfun(@(x) nanmean(x{1}),outE1.adj_RR_SP),2); varE2 = mean(arrayfun(@(x) nanmean(x{1}),outE2.adj_RR_SP),2);
-    varI1 = mean(arrayfun(@(x) nanmean(x{1}),outI1.adj_RR_SP),2); varI2 = mean(arrayfun(@(x) nanmean(x{1}),outI2.adj_RR_SP),2);
-    between = make_between_table({varE1,varI1,varE2,varI2},dvn);
+    [within,dvn,xlabels] = make_within_table({'Condition','EI'},[3 2]);
+    varE1 = mean(arrayfun(@(x) nanmean(x{1}),outE1.adj_RR_SP),2); 
+    varE2 = mean(arrayfun(@(x) nanmean(x{1}),outE2.adj_RR_SP),2);
+    varE3 = mean(arrayfun(@(x) nanmean(x{1}),outE3.adj_RR_SP),2);
+    varI1 = mean(arrayfun(@(x) nanmean(x{1}),outI1.adj_RR_SP),2); 
+    varI2 = mean(arrayfun(@(x) nanmean(x{1}),outI2.adj_RR_SP),2);
+    varI3 = mean(arrayfun(@(x) nanmean(x{1}),outI3.adj_RR_SP),2);
+    between = make_between_table({varE1,varI1,varE2,varI2,varE3,varI3},dvn);
     ra = repeatedMeasuresAnova(between,within);
 
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.5 1]);
     hollowsep = 19;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
-    tcolors = {colors{1},colors{1}/3,colors{2},colors{2}/3};
+    tcolors = {colors{1},colors{1}/3,colors{2},colors{2}/3,colors{3},colors{3}/3};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
             'ySpacing',0.03,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
             'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.01);
@@ -273,23 +287,23 @@ if 1
 %     changePosition(gca,[0.1 0.11 -0.2 -0.05]);
     changePosition(gca,[0.2 0.03 -0.2 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'\Delta FR Score'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,'Rate_change_score_trials_bar_graph',600);
+    save_pdf(hf,mData.pdf_folder,'Rate_change_score_trials_bar_graph_PCs',600);
 end
 
 
 %% Spatial Correlation Between Conditions of both excitatory and inhibitory responses
 if 1
-    within = make_within_table({'EI'},2);
+    [within,dvn,xlabels] = make_within_table({'EI','Cond'},[2,2]);
     var_CE = arrayfun(@(x) mean(x{1}),outE.adj_SP_corr_diag);var_CI = arrayfun(@(x) mean(x{1}),outI.adj_SP_corr_diag);
 %     var_CE = arrayfun(@(x) mean(x{1}),outE.adj_PV_corr_diag);var_CI = arrayfun(@(x) mean(x{1}),outI.adj_PV_corr_diag);
 %     var_CE = arrayfun(@(x) mean(x{1}),outE.adj_RR_SP);var_CI = arrayfun(@(x) mean(x{1}),outI.adj_RR_SP);
-    dataT = make_between_table({var_CE,var_CI},{'E','I'});
+    dataT = make_between_table({var_CE,var_CI},dvn);
     ra = repeatedMeasuresAnova(dataT,within);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
-    tcolors ={colors{7};colors{8};};
+    tcolors ={colors{6};colors{7};colors{8};};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.02,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
@@ -301,22 +315,22 @@ if 1
 %     changePosition(gca,[0.2 0.03 -0.55 -0.05]);
     changePosition(gca,[0.1 0.03 -0.4 -0.1]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,'air_rest_cell corr remap',600);
+    save_pdf(hf,mData.pdf_folder,'air_rest_cell corr remap_PCs',600);
 return;
 end
 
 %% Delta FR Score Between Conditions of both excitatory and inhibitory responses
 if 1
-    within = make_within_table({'EI'},2);
+    [within,dvn,xlabels] = make_within_table({'EI','Cond'},[2,2]);
 %     var_CE = arrayfun(@(x) mean(x{1}),outE.adj_PV_corr_diag);var_CI = arrayfun(@(x) mean(x{1}),outI.adj_PV_corr_diag);
-    var_CE = arrayfun(@(x) mean(x{1}),outE.adj_RR_SP);var_CI = arrayfun(@(x) mean(x{1}),outI.adj_RR_SP);
-    dataT = make_between_table({var_CE,var_CI},{'E','I'});
+    var_CE = arrayfun(@(x) nanmean(x{1}),outE.adj_RR_SP);var_CI = arrayfun(@(x) nanmean(x{1}),outI.adj_RR_SP);
+    dataT = make_between_table({var_CE,var_CI},dvn);
     ra = repeatedMeasuresAnova(dataT,within);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
-    tcolors ={colors{7};colors{8};};
+    tcolors ={colors{6};colors{7};colors{8};};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.04,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.01);

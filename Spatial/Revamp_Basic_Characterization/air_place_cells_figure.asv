@@ -3,6 +3,15 @@ function light_figure
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
 
+
+selContexts = [3 4 5];
+rasterNames = {'airT','airT','airT'};
+% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
+RsT = get_rasters_data(ei,selContexts,rasterNames);
+RsT = find_responsive_rasters(RsT,1:10);
+[resp_fractionCT,resp_valsCT,OICT,mean_OICT,resp_ORCT,resp_OR_fractionCT,resp_ANDCT,resp_AND_fractionCT] = get_responsive_fraction(RsT);
+mRT = calc_mean_rasters(RsT,1:10);
+
 selContexts = [3 4 5];
 rasterNames = {'airD','airD','airD'};
 % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
@@ -24,11 +33,49 @@ out2 = find_population_vector_corr_remap_trials(Rs(:,2),resp,trials);
 out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
 
 n = 0;
-%%
 
-var1 = out1.adj_SP_corr_diag(:,1:9);
-var2 = out2.adj_SP_corr_diag(:,1:9);
-var3 = out3.adj_SP_corr_diag(:,1:9);
+%% Show sample rasters
+% an = 5; cn = 2;
+% plotRasters_simplest(Rs{an,cn})
+if 1
+   an = 3; cn = 1;
+    % plotRasters_simplest(Rs{an,cn})
+    % find(resp_valsC{an}(:,cn));
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.03],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-50 -375]);
+    gg = 1;
+    set(gcf,'color','w');
+    set(gcf,'Position',[10 4 4.25 1]);
+    ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
+    
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.03],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-50 -375]);
+    gg = 1;
+    set(gcf,'color','w');
+    set(gcf,'Position',[10 4 4.25 1]);
+    ff = sample_rasters(RsT{an,cn},[191 11 96 41],ff);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
+    
+end
+%% M
+%% population vector and correlation single animal
+if 1
+    an = 1;
+    ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 3],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
+        [0.01 -60]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 5 3.25 2]);
+    [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
+    resp = get_cell_list(resp_valsC,[1;2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
+    % ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
+end
 %%
 if 1
     var_1 = []; var_2 = []; var_3 = []; varNames = []; xlabels = []; xdata = [];
@@ -106,21 +153,7 @@ set(gcf,'Position',[5 3 3.25 1]);
 ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.2 1],[]);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD.pdf'),600);
 return;% temporary return to just run the code up
-%%
-% an = 5; cn = 2;
-% plotRasters_simplest(Rs{an,cn})
-%%
-an = 3; cn = 1;
-% plotRasters_simplest(Rs{an,cn})
-% find(resp_valsC{an}(:,cn));
-ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-    'spaceRowsCols',[0.15 0.03],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-    [-50 -375]);
-gg = 1;
-set(gcf,'color','w');
-set(gcf,'Position',[10 4 3.25 1]);
-ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
-save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
+
 %% population vector and correlation single animal
 an = 3;
 ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...

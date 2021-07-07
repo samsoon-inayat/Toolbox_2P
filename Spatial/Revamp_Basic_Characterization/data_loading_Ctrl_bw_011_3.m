@@ -31,7 +31,9 @@ Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\P
 mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedDataMatlab'];
 disp('Done');
-
+%%
+ii = 1;
+edit_define_contexts_file(ei{ii});
 %%
 if 0
 %     make_db(T_C);
@@ -41,11 +43,12 @@ disp('Done');
 
 %%
 ei = getData_py_2(T_C1);
+%%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
-
+%%
 % training
 
 training_data = behaviorProcessor;

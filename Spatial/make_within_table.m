@@ -1,36 +1,35 @@
-function [within,dataT_var_names,xlabels] = make_within_table(var_names,nc,nwf)
+function [within,dataT_var_names,xlabels] = make_within_table(var_names,nwf)
 nfac = length(var_names);
-if ~exist('nwf','var')
-    nwf = 1;
-end
-wvar1 = NaN(nc*nwf,1);
-wvar2 = wvar1;
+wvar = NaN(prod(nwf),nfac);
 ind = 1;
 for ii = 1:length(var_names)
     FL(ii) = var_names{ii}(1);
 end
-for ii = 1:nc
-    for jj = 1:nwf
-        wvar1(ind) = ii;
-        wvar2(ind) = jj;
-        if nfac == 1
-            dataT_var_names{ind} = sprintf('%s%d',FL(1),ii);
-            xlabels{ind} = sprintf('%s%d',FL(1),ii);
-        end
+for ii = 1:nwf(1)
+    if nfac == 1
+        wvar(ind,:) = ii;
+        dataT_var_names{ind} = sprintf('%s%d',FL(1),ii);
+        xlabels{ind} = sprintf('%s%d',FL(1),ii);
+        ind = ind + 1;
+        continue;
+    end
+    for jj = 1:nwf(2)
         if nfac == 2
+            wvar(ind,:) = [ii jj];
             dataT_var_names{ind} = sprintf('%s%d_%s%d',FL(1),ii,FL(2),jj);
             xlabels{ind} = sprintf('%s%d-%s%d',FL(1),ii,FL(2),jj);
+            ind = ind + 1;
+            continue;
         end
-        ind = ind + 1;
+        for kk = 1:nwf(3)
+            wvar(ind,:) = [ii jj kk];
+            dataT_var_names{ind} = sprintf('%s%d_%s%d_%s%d',FL(1),ii,FL(2),jj,FL(3),kk);
+            xlabels{ind} = sprintf('%s%d-%s%d-%s%d',FL(1),ii,FL(2),jj,FL(3),kk);
+            ind = ind + 1;
+        end
     end
 end
-
-if nfac == 2
-    within = array2table([wvar1 wvar2]);
-end
-if nfac == 1
-    within = array2table([wvar1]);
-end
+within = array2table(wvar);
 within.Properties.VariableNames = var_names;
 for ii = 1:length(var_names)
     cmdTxt = sprintf('within.%s = categorical(within.%s);',var_names{ii},var_names{ii});

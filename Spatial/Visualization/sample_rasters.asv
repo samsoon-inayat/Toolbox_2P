@@ -47,18 +47,13 @@ for rr = 2
             xticks = [1:10:size(thisRaster,2)];
             xs = R.xs;
             if isfield(R,'resp')
-                if isfield(R.resp,'cis')
-                    xs = xs - xs(cis(1,2));
-                    xticks = [cis(1,:) size(thisRaster,2)];
-                else
-                    xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
-                end
-            else
-                xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
+            if isfield(R.resp,'cis')
+                xs = xs - xs(cis(1,2));
+                xticks = [cis(1,:) size(thisRaster,2)];
             end
-%             xticks
-            if ~ismember(size(thisRaster,2),xticks)
-                xticks = [xticks size(thisRaster,2)];
+            else
+                xticks = [1:10:size(thisRaster,2)];
+            xs = R.xs;
             end
             xs = round(xs);
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
