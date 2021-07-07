@@ -76,6 +76,50 @@ if 1
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
 end
+
+%% population correlation clustering and showing that mean of two clusters are significantly different across animals
+if 1
+    an = 1:5;
+    [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
+    resp = get_cell_list(resp_valsC,[1;2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
+    mask = logical(triu(ones(size(CRc{1,1})),1));
+    for rr = 1:size(CRc,1)
+        for cc = 1:size(CRc,2)
+            tempC = CRc{rr,cc};
+            vals = tempC(mask);
+            [clusi,clusc] = kmeans(vals,2);
+%             rng('default');  % For reproducibility
+%             eva = evalclusters(vals,'kmeans','gap','KList',[1:4])
+%             optimalK(rr,cc) = eva.OptimalK;
+            if clusc(1) < clusc(2)
+                clusS(rr,cc) = clusc(1);
+                clusB(rr,cc) = clusc(2);
+                clusi1p(rr,cc) = 100*(sum(clusi == 1)/length(clusi));
+                clusi2p(rr,cc) = 100*(sum(clusi == 2)/length(clusi));
+            else
+                clusS(rr,cc) = clusc(2);
+                clusB(rr,cc) = clusc(1);
+                clusi1p(rr,cc) = 100*(sum(clusi == 2)/length(clusi));
+                clusi2p(rr,cc) = 100*(sum(clusi == 1)/length(clusi));
+            end
+        end
+    end
+    [within,dvn,xlabels] = make_within_table({'Cond','clusInd'},2,2);
+    dataT = make_between_table({clusB(:,1),clusS(:,1),clusB(:,2),clusS(:,2)},dvn);
+    ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
+        'ySpacing',0.02,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = [xdata(1:end)]; xticklabels = xlabels;
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); %     xtickangle(30)
+    changePosition(gca,[0.2 0.03 -0.5 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Air Responsive','Cells (%)'},[0 0 0]});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr_clus_ind_bar_garph.pdf'),600);
+end
 %% average population correlation (from all animals)
 if 1
     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 2],...
