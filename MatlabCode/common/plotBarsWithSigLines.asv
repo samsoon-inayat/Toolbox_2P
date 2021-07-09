@@ -41,8 +41,8 @@ barwidth = p.Results.barwidth;
 hold on;
 for ii = 1:length(xdata)
 %     hb = bar(xdata(ii),means(ii),'BaseValue',bv,'ShowBaseline','off','barwidth',barwidth);
-    hb = bar_patch(xdata(ii),means(ii),sems(ii),barwidth);
-    set(hb,'FaceColor',cols{ii},'EdgeColor',cols{ii});
+%     set(hb,'FaceColor',cols{ii},'EdgeColor',cols{ii});
+    
     errorbar(xdata(ii), means(ii), sems(ii), 'k', 'linestyle', 'none','CapSize',3);
 %     errorbar(xdata(ii), means(ii), [],sems(ii), 'k', 'linestyle', 'none','CapSize',3);
 %     errorbar(xdata(ii), means(ii), sems(ii),[], 'w', 'linestyle', 'none','CapSize',3);
@@ -145,3 +145,8 @@ end
 myys = 1.1*myys;
 
 
+function hp = bar_patch(x,m,s,color)
+barwidth = 0.7;
+X = [(x-barwidth/2) (x+barwidth/2) (x+barwidth/2) (x-barwidth/2)];
+Y = [(0) (0) (m) (m)];
+hp = patch(X,Y,color);

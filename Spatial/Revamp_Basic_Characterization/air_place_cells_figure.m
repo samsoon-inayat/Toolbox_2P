@@ -158,16 +158,17 @@ end
 %% Percentage of Responsive Cells
 if 1
     within = make_within_table({'Cond'},3);
-    dataT = make_between_table({resp_fractionC*100},{'C31','C4','C32'});
+    dataT = make_between_table({resp_fractionCS*100},{'C31','C4','C32'});
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
-    s = generate_shades(3); tcolors = mData.colors;
+    s = generate_shades(3); tcolors = s.g;
      hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
+    set(hbs(3),'EdgeColor','k');
+    hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 25],'FontSize',6,'FontWeight','Normal','TickDir','out');
-    set(hbs(end),'EdgeColor',[0.5 0.5 0.5]);
     xticks = [xdata(1:end)]; xticklabels = {'C3','C4','C3'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
     any_mean = mean(100*resp_OR_fractionC);    any_sem = std(100*resp_OR_fractionC)/sqrt(5);
