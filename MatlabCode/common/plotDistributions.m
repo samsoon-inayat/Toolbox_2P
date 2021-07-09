@@ -92,7 +92,7 @@ if isvector(distD) & strcmp(do_mean,'No')
     end
     xlim([bins(1)-(incr/2) bins(end)+(incr/2)]);
     ylim([0 maxY]);
-    set(gca,'TickDir','out','FontSize',7,'FontWeight','Normal','XTick',bins(1:2:end),'linewidth',0.5);
+    set(gca,'TickDir','out','FontSize',7,'FontWeight','Normal','XTick',bins(1:2:end),'linewidth',0.25);
     ha = gca;
     % putLegend(gca,legs,specs,'colors',cols);
     if length(cumPos) > 1
@@ -161,7 +161,7 @@ if isvector(distD) & strcmp(do_mean,'Yes')
 %     end
     xlim([bins(1)-(incr/2) bins(end)+(incr/2)]);
     ylim([0 maxY]);
-    set(gca,'TickDir','out','FontSize',7,'FontWeight','Normal','XTick',bins(1:2:end),'linewidth',0.5);
+    set(gca,'TickDir','out','FontSize',7,'FontWeight','Normal','XTick',bins(1:2:end),'linewidth',0.25);
    
     if length(distD) > 1
         sigR = significanceTesting(distD);
@@ -209,7 +209,7 @@ if ismatrix(distD) && strcmp(do_mean,'Yes')
         end
         [mDist,semDist] = findMeanAndStandardError(cumsum(allBars,2));
 %         [mDist,semDist] = findMeanAndStandardError(allBars);
-        shadedErrorBar(bins,mDist,semDist,{'color',cols{dd}},0.7);
+        shadedErrorBar(bins,mDist,semDist,{'color',cols{dd},'linewidth',0.25},0.7);
     end
     ha = gca;
 %     sigR = significanceTesting(distD);

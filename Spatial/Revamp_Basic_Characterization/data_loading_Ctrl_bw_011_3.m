@@ -24,7 +24,8 @@ colormaps = load('../MatlabCode/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
-
+mData.shades = generate_shades(3);
+display_colors(mData.shades.c);
 % Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
 Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
 % Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';

@@ -16,8 +16,8 @@ if ~isempty(allP)
         if isfield(R.resp,'cis')
                 hold on;
                 cis = R.resp.cis;
-                plot([cis(2,1) cis(2,1)]+1,[0 size(P,1)+1],'linewidth',0.5,'color','r');
-                plot([cis(1,3) cis(1,3)]+1,[0 size(P,1)+1],'linewidth',0.5,'color','m');
+                plot([cis(2,1) cis(2,1)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','m');
+                plot([cis(1,3) cis(1,3)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','c');
             end
         if sii == 1
             h = ylabel('Cell No.'); %   changePosition(h,[0 0 0]);
@@ -27,8 +27,8 @@ if ~isempty(allP)
         set(gca,'YTick',[1 size(P,1)]);
         set(gca,'XTick',[]);
 %         text(0,size(P,1)+5,{'Pop. Activity'},'FontSize',5);
-        ht = title('Pop. Activity');
-        set(ht,'FontSize',5,'FontWeight','Normal');
+%         ht = title('Pop. Activity');
+%         set(ht,'FontSize',5,'FontWeight','Normal');
 
         %% 2nd row
         axes(ff.h_axes(2,sii));
@@ -89,12 +89,10 @@ if ~isempty(allP)
                 set(gca,'YTick',[]);
             end
         end
-            set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
-            ht = title('Pop. Correlation');
-        set(ht,'FontSize',5,'FontWeight','Normal');
+%         ht = title('Pop. Correlation');
+%         set(ht,'FontSize',5,'FontWeight','Normal');
     end
 
-    colormap parula
     mI = min(minC);
     maxs = [1 1 1];
     if isempty(minmaxCorr)
@@ -173,7 +171,6 @@ if isempty(allP)
         set(ht,'FontSize',5,'FontWeight','Normal');
     end
 
-    colormap parula
     mI = min(minC);
     maxs = [1 1 1];
     if isempty(minmaxCorr)
@@ -189,3 +186,6 @@ if isempty(allP)
 end
 
 
+cm = colormap(gray);
+cm = flipud(cm(1:size(cm,1),:));
+colormap(cm);

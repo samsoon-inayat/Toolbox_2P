@@ -57,7 +57,7 @@ if 1
     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
     ff = sample_rasters(Rs{an,cn},[140 66 162 181],ff);
     axes(ff.h_axes(1,1));
-    text(0,13.5,{'Representative rasters - Condition C2'},'FontSize',7,'FontWeight','Normal');
+%     text(0,13.5,{'Representative rasters - Condition C2'},'FontSize',7,'FontWeight','Normal');
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rasters'),600);
 end
 
@@ -65,15 +65,19 @@ end
 if 1
     an = 1;
     ff = makeFigureRowsCols(106,[1 0.5 4 1],'RowsCols',[2 2],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.15 0.1],'widthHeightAdjustment',...
+        'spaceRowsCols',[0 -0.02],'rightUpShifts',[0.15 0.1],'widthHeightAdjustment',...
         [-80 -70]);
     set(gcf,'color','w');
     set(gcf,'Position',[5 5 2.2 2]);
     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
     resp = get_cell_list(resp_valsC,[1;2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
     % ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[7 0 0]);
+    set_obj(ht,'String',{'Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
 end
 %% average population correlation (from all animals)
@@ -84,6 +88,10 @@ if 1
     set(gcf,'color','w');
     set(gcf,'Position',[5 3 2.2 1]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.1 1],[]);
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[7 0 0]);
+    set_obj(ht,'String',{'Avg. Pop. Correlation','Avg. Pop.Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corr.pdf'),600);
 end
 %% population correlation clustering and showing that mean of two clusters are significantly different across animals
@@ -131,14 +139,14 @@ end
 %% Percentage of Responsive Cells
 if 1
     within = make_within_table({'Cond'},2);
-    dataT = make_between_table({resp_fractionC*100},{'C21','C22'})
+    dataT = make_between_table({resp_fractionC*100},{'C21','C22'});
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
      hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
         'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 30],'FontSize',6,'FontWeight','Normal','TickDir','out');
     xticks = [xdata(1:end)]; xticklabels = {'C2','C2'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
     any_mean = mean(100*resp_OR_fractionC);    any_sem = std(100*resp_OR_fractionC)/sqrt(5);
