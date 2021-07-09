@@ -18,7 +18,7 @@ axis off;
 hc = colorbar('location',location);
 set(hc,'EdgeColor','none');
 changePosition(ha,positionShift);
-colormap parula;
+% colormap parula;
 if iscell(minmax)
     minmaxtextN{1} = minmax{1};
     minmaxtextP{1} = minmax{1};

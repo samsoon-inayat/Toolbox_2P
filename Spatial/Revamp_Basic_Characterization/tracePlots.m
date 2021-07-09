@@ -1,6 +1,6 @@
 function tracePlots_1_C (ei)
 %%
-ei = evalin('base','d15');
+ei = evalin('base','ei');
 mData = evalin('base','mData');
 %%
 an = 3; pl = 1; cn = 1;

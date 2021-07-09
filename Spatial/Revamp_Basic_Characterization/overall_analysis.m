@@ -28,7 +28,7 @@ mRs = calc_mean_rasters(Rs,1:10);
 Rs = find_responsive_rasters(Rs,1:10);
 
 [resp_fraction,resp_vals,OI,mean_OI,resp_OR,resp_OR_fraction,resp_AND,resp_AND_fraction] = get_responsive_fraction(Rs);
-[CR,aCR] = find_population_vector_corr(Rs,mRs,1,1000);
+[CR,aCR] = find_population_vector_corr(Rs,mRs,1,0);
 % return;
 
 view_population_vector(Rs,mRs,1,100);

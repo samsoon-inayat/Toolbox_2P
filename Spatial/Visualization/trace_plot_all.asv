@@ -42,15 +42,14 @@ hold on;
 ylims = ylim;
 hold on;
 lwdth = 0.1;
-colors = {[1 0 1]/1.5;[0 0.3 1];[1 1 0]/1.75;[0 1 1]/1.25};
 if flag(1)
 if isfield(b,'air_puff_raw')
 %    plot(b.ts,(b.air_puff_raw-0.5)*ylims(2)*4,'color',mData.colors{3},'linewidth',0.5);
    for ii = 1:length(onsets)
        tt = b.ts(onsets(ii));
-       plot([tt tt],[ylims(1)-5 ylims(2)+5],'color',colors{2},'linewidth',lwdth);
+       plot([tt tt],[ylims(1)-5 ylims(2)+5],'color',[0 0.3 1],'linewidth',lwdth);
        tt = b.ts(offsets(ii));
-       plot([tt tt],[ylims(1)-5 ylims(2)+5],'color',colors{3},'linewidth',lwdth);
+       plot([tt tt],[ylims(1)-5 ylims(2)+5],'color',[1 1 0]/1.5,'linewidth',lwdth);
    end
 end
 
@@ -60,7 +59,7 @@ if isfield(b,'stim_raw')
 %    plot(b.ts,(b.stim_raw-0.5)*ylims(2)*4,'m','linewidth',0.5);
    for ii = 1:length(light_onsets)
        tt = b.ts(light_onsets(ii));
-       plot([tt tt],[ylims(1)-5 ylims(2)+5],'color',colors{1},'linewidth',lwdth);
+       plot([tt tt],[ylims(1)-5 ylims(2)+5],'color',[1 0 1]/1.5,'linewidth',lwdth);
    end
 end
 end
@@ -68,7 +67,7 @@ if flag(3)
 plot(b.ts,b.photo_sensor_raw*ylims(2),mData.colors{3},'linewidth',0.5)
 end
 if flag(4)
-plot(b.ts,b.fSpeed*0.25,'color',colors{4},'linewidth',lwdth);
+plot(b.ts,b.fSpeed*0.25,'color',[0 1 1]/1.5,'linewidth',lwdth);
 end
 numcells = 100;
 ylim([0 100]); xlim([0 traceTime(end)]);
@@ -86,12 +85,11 @@ set(gca,'Ydir','Normal');
 xlabel('Time (min)');
 ylabel('Cell Number (arranged by peaks)');
 set(gca,'FontSize',6,'FontWeight','Normal');
-changePosition(gca,[-0.075 -0.025 0.16 -0.01]);
-ht = title(sprintf('Calcium signal (%cF/Fo) of %d of %d cells from a representative animal',916,numcells,size(signals,1))); 
-changePosition(ht,[0 9 0]);
+changePosition(gca,[-0.075 -0.01 0.16 -0.01]);
+ht = title(sprintf('Calcium signal (%cF/Fo) of %d/%d cells from a representative animal',916,numcells,size(signals,1))); changePosition(ht,[0 4 0]);
 set(ht,'FontSize',6,'FontWeight','Normal');
-legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 109 0.1]};
-putLegendH(gca,legs,'colors',colors);
 hc = putColorBar(gca,[0.75 0.62 -0.8 -0.6],[0 maxSig],6,'northoutside',[0.15 0.27 0.045 0.27]);
 colormap_ig
+legs = {'Light onset','Air onset','Air offset','Speed',[-1 5 -1 5]};
+putLegendH(gca,legs,'colors',colors);
 save_pdf(hf,mData.pdf_folder,sprintf('overall_pop.pdf'),600);
