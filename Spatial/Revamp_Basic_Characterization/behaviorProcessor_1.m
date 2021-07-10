@@ -201,6 +201,7 @@ end
 set(gca,'xlim',[0.25 11.75],'ylim',[0 maxY+7],'FontSize',6,'FontWeight','Bold','TickDir','out');
 xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
+xtickangle(30);
 changePosition(gca,[0.1 0.02 -0.03 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
 rectangle(gca,'Position',[0.75 maxY+3 1 3],'edgecolor','k','facecolor','k');

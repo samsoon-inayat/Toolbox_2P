@@ -31,7 +31,7 @@ resp = get_cell_list(resp_valsCS,[]);
 out1 = find_population_vector_corr_remap_trials(Rs(:,1),resp,trials);
 out2 = find_population_vector_corr_remap_trials(Rs(:,2),resp,trials);
 out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
-
+% save(fullfile(mData.pd_folder,'air_place_cells_figure.mat'),'out1','out2','out3');
 n = 0;
 
 %% Show sample rasters

@@ -51,7 +51,7 @@ xdata = [1 2 4 5 7 8]; maxY = 25;
 colors = mData.colors;
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.35 1],'color','w');
 hold on;
-tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
+tcolors = {colors{3};colors{3};colors{4};colors{4};colors{5};colors{5};colors{6};colors{6}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0.1);
@@ -59,11 +59,12 @@ for ii = 2:2:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 end
 maxY = maxY + 6;
-set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
 xticks = [1.5 4.5 7.5]; xticklabels = {'C3','C4','C3'''};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-changePosition(gca,[0.15 0.02 -0.07 -0.011]);
-put_axes_labels(gca,{[],[0 0 0]},{{'Average','Speed (cm/sec)'},[0 0 0]});
+xtickangle(30);
+changePosition(gca,[0.1 0.05 -0.07 -0.1]);
+put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Speed (cm/sec)'},[0 0 0]});
 rectangle(gca,'Position',[0.75 maxY-4 1 2],'edgecolor','k','facecolor','k');
 text(1.85,maxY-3,'Trials','FontSize',5);
 rectangle(gca,'Position',[4 maxY-4 1 2],'edgecolor','k');

@@ -44,7 +44,6 @@ disp('Done');
 
 %%
 ei = getData_py_2(T_C1);
-caSigs = 
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)

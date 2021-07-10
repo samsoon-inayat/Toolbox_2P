@@ -27,14 +27,14 @@ onsets = b.air_puff_r;
 offsets = b.air_puff_f;
 light_onsets = b.stim_r;
 mData = evalin('base','mData');
-signals = get_calcium_data(pd_rec);
+signals = get_calcium_data(pd_rec,1);
 
 %%
 hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.95 3],'color','w'); hold on;
 spSigAllN = normalizeSignal(signals,2);
 [maxVal,maxLoc] = max(spSigAllN,[],2);
 [sorted,locs] = sort(maxLoc);
-maxSig = 0.75;
+maxSig = 0.5;
 hi = imagesc([traceTime(1), traceTime(end)],[1 size(spSigAllN,1)],spSigAllN(locs,:),[0 maxSig]);
 % colorbar;
 hold on;
@@ -71,7 +71,7 @@ if flag(4)
 plot(b.ts,b.fSpeed*0.25,'color',colors{4},'linewidth',lwdth);
 end
 numcells = 100;
-ylim([0 100]); xlim([0 traceTime(end)]);
+ylim([0 numcells]); xlim([0 traceTime(end)]);
 ylims = ylim;
 upfac = 3;
 text(b.ts(light_onsets(1)),ylims(2)+upfac,'C1','FontSize',6);
@@ -87,11 +87,11 @@ xlabel('Time (min)');
 ylabel('Cell Number (arranged by peaks)');
 set(gca,'FontSize',6,'FontWeight','Normal');
 changePosition(gca,[-0.075 -0.025 0.16 -0.01]);
-ht = title(sprintf('Calcium signal (%cF/Fo) of %d of %d cells from a representative animal',916,numcells,size(signals,1))); 
+ht = title(sprintf('Normalized Calcium signal (%cF/Fo) of %d of %d cells from a representative animal',916,numcells,size(signals,1))); 
 changePosition(ht,[0 9 0]);
 set(ht,'FontSize',6,'FontWeight','Normal');
 legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 109 0.1]};
 putLegendH(gca,legs,'colors',colors);
-hc = putColorBar(gca,[0.75 0.62 -0.8 -0.6],[0 maxSig],6,'northoutside',[0.15 0.27 0.045 0.27]);
+hc = putColorBar(gca,[0.75 0.62 -0.8 -0.6],{'0',sprintf('>%.1f',maxSig)},6,'northoutside',[0.15 0.27 0.045 0.27]);
 colormap_ig
 save_pdf(hf,mData.pdf_folder,sprintf('overall_pop.pdf'),600);
