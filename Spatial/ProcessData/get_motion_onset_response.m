@@ -65,8 +65,8 @@ end
 if ~isempty(zero_len)
     motionOnsets(zero_len(:,1)) = [];
 end
-st = motionOnsets - round(1e6 * 3/b.si);
-se = motionOnsets + round(1e6 * 3/b.si);
+st = motionOnsets - round(1e6 * 1/b.si);
+se = motionOnsets + round(1e6 * 1/b.si);
 inds = find(st<0);
 if ~isempty(inds)
     st(inds) = [];

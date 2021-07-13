@@ -36,12 +36,12 @@ for rr = 1:size(Rs,1)
 end
 
 function [resp,cis,excinh] = find_resp_motionOnset_raster(R,trials)
-SR = R.thorexp.frameRate;
-% SR = 1/R.bin_width;
+% SR = R.thorexp.frameRate;
+SR = 1/R.bin_width;
 markerType = R.marker_name;
-timeBefore = 3;
-rasters = R.fromFrames.sp_rasters;
-% rasters = R.sp_rasters1;
+timeBefore = 1;
+% rasters = R.fromFrames.sp_rasters;
+rasters = R.sp_rasters1;
 number_of_columns = size(rasters,2);
 column_index = round(timeBefore * SR);
 cis = [];

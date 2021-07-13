@@ -52,7 +52,25 @@ if 1
     set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
     save_pdf(ff.hf,mData.pdf_folder,sprintf('motion_average_population_vector_corr.pdf'),600);
 end
-
+%% Percentage of Responsive Cells
+if 1
+    within = make_within_table({'Cond'},2);
+    dataT = make_between_table({resp_fractionC*100},{'M_On','M_Off'});
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 35],'FontSize',6,'FontWeight','Normal','TickDir','out');
+    xticks = [xdata(1:end)]; xticklabels = {'C2','C2'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
+    any_mean = mean(100*resp_OR_fractionC);    any_sem = std(100*resp_OR_fractionC)/sqrt(5);
+    pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); %text(0.75,31,any_text,'FontSize',6);
+    changePosition(gca,[0.2 0.03 -0.5 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Air Responsive','Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('percentage_motion_responsive'),600);
+end
 %%
 if 1
     [within,dvn,xlabels] = make_within_table({'Conditions'},7);
