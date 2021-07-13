@@ -20,13 +20,14 @@ RsC = find_responsive_rasters(RsC,1:10);
 
 for an = 1:5
     for cn = 1:3
-        [Dist{an,cn},T{an,cn},Space{an,cn},Rasters{an,cn}] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
-%         [Dist{an,cn},T{an,cn},Space{an,cn},Rasters{an,cn}] = getXYs1(raster_data_C{an,cn},[]);
+        [Dist{an,cn},T{an,cn},Space{an,cn},Rasters{an,cn},frame_rate(an,1)] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
+%         [Dist{an,cn},T{an,cn},Space{an,cn},Rasters{an,cn},frame_rate(an,1)] = getXYs1(raster_data_C{an,cn},[]);
     end
 end
 
 fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
-save(fileName,'Dist','T','Space','Rasters','-v7.3');
+% fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_all_cells.mat'));
+save(fileName,'Dist','T','Space','Rasters','frame_rate','-v7.3');
 return
 
 
@@ -73,7 +74,7 @@ n = 0;
 % end
 % 
 
-function [dist,t,space,response] = getXYs1(raster_data,resp)
+function [dist,t,space,response,frame_rate] = getXYs1(raster_data,resp)
 rd = raster_data.fromFrames;
 dist = rd.dist;
 t = rd.duration;
@@ -83,6 +84,7 @@ if isempty(resp)
 else
     response = rd.sp_rasters(:,:,logical(resp));
 end
+frame_rate = raster_data.thorexp.frameRate;
 
 
 

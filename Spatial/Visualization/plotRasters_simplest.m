@@ -60,7 +60,7 @@ while 1
             mf_TR = angle(f_TR);
             haa = findHaFD(af_TR,1:size(thisRaster,1));
             ham = findHaFD(mf_TR,1:size(thisRaster,1));
-            htR = R.fractal_dim.HaFD(cn);
+%             htR = R.fractal_dim.HaFD(cn);
             [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
             haCRR = findHaFD(CRR,1:size(CRR,1));
             try
@@ -72,7 +72,7 @@ while 1
             end
             colorbar;hold on;
             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
-            title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
+%             title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
 %             title(sprintf('%d - %.3f - %.3f - %.3f - %.3f',cn,htR,haa,ham,haCRR));
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));
             box off;

@@ -11,7 +11,12 @@ end
 
 % figure(fn);clf;
 % b = ei.b;
+try
 axes(fn);
+catch
+figure(fn);
+clf;
+end
 
 if isfield(b,'air_puff_raw')
     plot(b.ts,b.air_puff_raw,'color','b','linewidth',1.5);hold on;

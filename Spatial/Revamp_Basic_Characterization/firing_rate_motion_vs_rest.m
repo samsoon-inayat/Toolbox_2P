@@ -11,15 +11,18 @@ typeP = 'Population';
 thr = -1;
 %%
 fileName = fullfile(mData.pd_folder,sprintf('%s_%s',mfilename,typeP));
-if 0
+if 1
     out_C = get_spike_rate(ei_C,thr);
-    save(fileName,'out_C','out_CC','thr');
+   save(fileName,'out_C','thr');
+%    save(fileName,'out_C','out_CC','thr');
 else
     temp = load(fileName);
     out_C = temp.out_C;
+%     out_CC = temp.out_CC;
     thr = temp.thr;
 end
-out_CC = get_spike_rate_conditions(ei_C,thr);
+    out_CC = get_spike_rate_conditions(ei_C,thr);
+
 tcolors = {'k','r','k','r'};
 n=0;
 %%
@@ -173,6 +176,8 @@ for ii = 1:length(ei_C)
 %     inds_motion = find(speed > 0);
     inds_motion = find(speed ~= 0);
     inds_rest = find(speed == 0);
+    inds_rest = find(speed <= 0.01);
+    inds_motion = find(speed >0.01);
     onset_first_trial = ei.b.air_puff_r(1)-1000;
     offset_last_trial = ei.b.air_puff_f(end)+1000;
     inds_motion1 = inds_motion(find(inds_motion > onset_first_trial & inds_motion < offset_last_trial));

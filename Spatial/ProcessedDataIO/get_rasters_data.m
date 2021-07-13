@@ -7,9 +7,43 @@ end
 
 rasters = cell(length(ei),length(selContexts));
 for ii = 1:length(ei)
-    rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
+    if sum(selContexts)==0
+        rasters(ii,:) = get_data_motion(ei{ii},selContexts,rasterNames);
+    else
+        rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
+    end
 end
 
+function rasters = get_data_motion(ei,selContexts,rasterNames)
+nplanes = length(ei.plane);
+for ii = 1:length(selContexts)
+    pp = 1;
+    if ii == 1
+        tempR = ei.plane{pp}.motionOnset_rasters;
+    else
+        tempR = ei.plane{pp}.motionOffset_rasters;
+    end
+    iscell1 = ei.plane{pp}.tP.iscell(:,1);
+    if nplanes == 1
+        rasters{ii,1} = tempR;
+        rasters{ii,1}.iscell = iscell1;
+    else
+        pp = 2;
+        if ii == 1
+            tempR1 = ei.plane{pp}.motionOnset_rasters;
+        else
+            tempR1 = ei.plane{pp}.motionOffset_rasters;
+        end
+        rasters{ii,1} = combine_planes_data(tempR,tempR1);
+        iscell2 = ei.plane{pp}.tP.iscell(:,1);
+        rasters{ii,1}.iscell = cat(1,iscell1,iscell2);
+        rasters{ii,1}.cns = [[1:length(rasters{ii,1}.iscell)]' [ones(length(iscell1),1);2*ones(length(iscell2),1)] [[1:length(iscell1)]';[1:length(iscell2)]']];
+    end
+    rasters{ii,1}.context_info = sprintf('%d-%s',selContexts(ii),rasterNames{ii});
+    rasters{ii,1}.marker_name = sprintf('%s',rasterNames{ii});
+    rasters{ii,1}.thorexp = ei.thorExp;
+    rasters{ii,1}.beltLength = get_belt_length(ei);
+end
 
 function rasters = get_data(ei,selContexts,rasterNames)
 
