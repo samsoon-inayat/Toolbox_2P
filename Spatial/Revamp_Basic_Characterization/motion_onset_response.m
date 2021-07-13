@@ -15,7 +15,7 @@ n = 0;
 %%
 if 1
     an = 5; 
-    plotRasters_simplest(Rs{an,1})
+    plotRasters_simplest(Rs{an,1},[])
 end
 %% population vector and correlation single animal
 if 1

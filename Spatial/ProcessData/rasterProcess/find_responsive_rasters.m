@@ -67,11 +67,11 @@ parfor ii = 1:size(rasters,3)
 %     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
     [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
     vert = nansum(thisRaster,2);
-    hv(ii) = sum(vert>0) > 5;
+    hv(ii) = sum(vert>0) > 3;
 %     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
 %     hv(ii) = findHaFD(CRR,1:size(CRR,1));
 end
-resp = p < 0.05 & hv;
+resp = p < 0.05;% & hv;
 
 
 function [resp,cis,excinh] = find_resp_time_raster_air(R,trials)
