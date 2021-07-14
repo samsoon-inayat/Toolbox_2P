@@ -18,10 +18,22 @@ mR = calc_mean_rasters(Rs,[]);
 [CRcI,aCRcI,mRRI] = find_population_vector_corr(Rs,mR,respI,0);
 
 n = 0;
+%% Show sample rasters
+an = 3; cn = 1;
+plotRasters_simplest(Rs{an,cn})
 %%
 if 1
-    an = 5; 
-    plotRasters_simplest(Rs{an,1})
+    an = 3; cn = 1;
+    % plotRasters_simplest(Rs{an,cn})
+    % find(resp_valsC{an}(:,cn));
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-75 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+    ff = sample_rasters(Rs{an,cn},[3 36 38 226],ff);
+    axes(ff.h_axes(1,1));
+%     text(0,13.5,{'Representative rasters - Condition C2'},'FontSize',7,'FontWeight','Normal');
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('motionOnset_rasters'),600);
 end
 %% population vector and correlation single animal
 if 1
@@ -93,7 +105,7 @@ if 1
 %     tcolors = {colors{3};colors{3};colors{4};colors{4};};
     tcolors = {colors{1},colors{1}/3,colors{2},colors{2}/3};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 %     for ii = [2 4]
 %         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});

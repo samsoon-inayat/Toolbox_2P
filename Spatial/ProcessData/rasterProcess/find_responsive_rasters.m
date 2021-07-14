@@ -69,7 +69,7 @@ for ii = 1:size(rasters,3)
 %     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
     [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
     vert = nansum(thisRaster,2);
-    hv(ii) = sum(vert>0) > 3;%(round(length(trials)/2)-1);
+    hv(ii) = sum(vert>0) > 1;%(round(length(trials)/2)-1);
 %     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
 %     hv(ii) = findHaFD(CRR,1:size(CRR,1));
     if p(ii) < 0.05% & hv(ii) == 1

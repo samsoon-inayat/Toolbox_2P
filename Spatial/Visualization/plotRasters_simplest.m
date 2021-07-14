@@ -64,23 +64,30 @@ while 1
             [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
             haCRR = findHaFD(CRR,1:size(CRR,1));
             try
-                imagesc(thisRaster);
+%                 imagesc(thisRaster);
 %                 imagesc(CRR);
-%                 imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);
+                imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);
             catch
-                continue;
+                imagesc(thisRaster);
+%                 continue;
             end
             colorbar;hold on;
             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
-%             title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
+            try
+                title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
+            catch
+                title(sprintf('%d ',cn));
+            end
 %             title(sprintf('%d - %.3f - %.3f - %.3f - %.3f',cn,htR,haa,ham,haCRR));
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));
             box off;
             set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
-                plot([cis(2,1) cis(2,1)],[0 11],'linewidth',1.5,'color','r');
-                plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','g');
+                plot([cis(2,1) cis(2,1)],[0 size(thisRaster,1)+1],'linewidth',1.5,'color','r');
+                if ~strfind(R.marker_name,'motion')
+                    plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','g');
+                end
             end
             A = R;
             xs = 1:length(A.xs);

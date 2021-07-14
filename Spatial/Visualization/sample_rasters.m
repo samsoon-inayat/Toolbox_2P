@@ -30,8 +30,12 @@ for rr = 2
 %         ft = fittype(A.formula);
         xs = R.xs;
 %         coeff = A.coeff(:,cn);
-        fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),R.gauss_fit_on_mean.gauss1Formula);
-        imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
+%         fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),R.gauss_fit_on_mean.gauss1Formula);
+        if strfind(R.marker_name,'motion')
+            imagesc(thisRaster,[min(thisRaster(:)) 0.5*max(thisRaster(:))]);hold on;
+        else
+            imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
+        end
 %         if rr ==1 
 %             plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
 %         end
@@ -39,11 +43,16 @@ for rr = 2
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
                 plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','m');
-                plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
+                if ~strfind(R.marker_name,'motion')
+                    plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
+                end
             end
         end
         box off;
+        try
         text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('zMI = %.2f',R.info_metrics.ShannonMI_Zsh(cn)),'FontSize',3.5,'color','k','rotation',90);
+        catch
+        end
 %         text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR = %d',round(max(thisRaster(:)))),'FontSize',5,'color','k','rotation',90);
         text(1,size(thisRaster,1)+1.5,sprintf('Cell %d, (MFR = %d)',cn,round(max(thisRaster(:)))),'FontSize',5,'color','k');
         set(gca,'FontSize',6,'linewidth',0.25,'Ydir','normal','TickDir','out');

@@ -37,7 +37,7 @@ motionOffsets = find_falling_edge(spSig > thr,-0.1,500); % find places where spe
  
 
 function [st2,se2] = get_markers_motion(ei,motionOnsets,motionOffsets)
-thr_t = 1.5;
+thr_t = 2;
 b = ei.b;
 time_mons = b.ts(motionOnsets);
 dt = diff(time_mons);
