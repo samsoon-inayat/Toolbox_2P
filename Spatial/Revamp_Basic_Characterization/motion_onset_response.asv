@@ -21,11 +21,11 @@ n = 0;
 %%
 if 1
     an = 5; 
-    plotRasters_simplest(Rs{an,1})
+    plotRasters_simplest(Rs{an,1},[])
 end
 %% population vector and correlation single animal
 if 1
-    an = 1;
+    an = 2;
     ff = makeFigureRowsCols(106,[1 0.5 4 1],'RowsCols',[2 2],...
         'spaceRowsCols',[0 -0.02],'rightUpShifts',[0.15 0.1],'widthHeightAdjustment',...
         [-80 -70]);
@@ -99,7 +99,7 @@ if 1
 %         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 %     end
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = {'MOn-Ex','MOn-Su','MOff-Ex','MOff-Su'};
+    xticks = xdata(1:end)+0; xticklabels = {'MOn-Ex','MOn-Su','MOff'-Ex','C2''-Su'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
     changePosition(gca,[0.2 0.03 -0.25 -0.05]);

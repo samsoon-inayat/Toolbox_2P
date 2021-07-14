@@ -1,6 +1,6 @@
 function ei_C = get_motion_onset_response(ei_C,owr)
 for ii = 1:length(ei_C)
-    ei_C{ii} = process_one_animal(ei_C{ii},0,owr);
+    ei_C{ii} = process_one_animal(ei_C{ii},0.25,owr);
 end
 
 function ei = process_one_animal(ei,thr,owr)
@@ -37,7 +37,7 @@ motionOffsets = find_falling_edge(spSig > thr,-0.1,500); % find places where spe
  
 
 function [st2,se2] = get_markers_motion(ei,motionOnsets,motionOffsets)
-thr_t = 1.5;
+thr_t = 2;
 b = ei.b;
 time_mons = b.ts(motionOnsets);
 dt = diff(time_mons);

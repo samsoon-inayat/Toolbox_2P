@@ -17,7 +17,9 @@ if ~isempty(allP)
                 hold on;
                 cis = R.resp.cis;
                 plot([cis(2,1) cis(2,1)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','m');
-                plot([cis(1,3) cis(1,3)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','c');
+                if ~strfind(R.marker_name,'motion')
+                    plot([cis(1,3) cis(1,3)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','c');
+                end
             end
         if sii == 1
             h = ylabel('Cell No.'); %   changePosition(h,[0 0 0]);
@@ -67,7 +69,11 @@ if ~isempty(allP)
         if isfield(R.resp,'cis')
             xs = R.xs;
             xs = xs - xs(cis(1,2));
-            xticks = [cis(1,:) size(corrPlot,2)];
+            if ~strfind(R.marker_name,'motion')
+                xticks = [cis(1,:) size(corrPlot,2)];
+            else
+                xticks = [cis(1,1:2) size(corrPlot,2)];
+            end
             xs = round(xs);
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
             if sii == 1
