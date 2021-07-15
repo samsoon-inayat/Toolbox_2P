@@ -18,8 +18,14 @@ mR = calc_mean_rasters(Rs,[]);
 [CRcI,aCRcI,mRRI] = find_population_vector_corr(Rs,mR,respI,0);
 
 n = 0;
+%% See onsets and offsets
+an = 3; cn = 1;
+motionOnsets = Rs{an,cn}.onsets;
+motionOffsets = Rs{an,cn}.offsets;
+figure(1000);clf;display_with_air_puff(ei_C{an}.b,motionOnsets,motionOffsets);
 %% Show sample rasters
 an = 3; cn = 1;
+figure(2000);clf;imagesc(Rs{an,cn}.speed);colorbar;
 plotRasters_simplest(Rs{an,cn})
 %%
 if 1
@@ -30,14 +36,14 @@ if 1
         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
         [-75 -475]);
     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(Rs{an,cn},[3 36 38 226],ff);
+    ff = sample_rasters(Rs{an,cn},[11 63 138 226],ff);
     axes(ff.h_axes(1,1));
 %     text(0,13.5,{'Representative rasters - Condition C2'},'FontSize',7,'FontWeight','Normal');
     save_pdf(ff.hf,mData.pdf_folder,sprintf('motionOnset_rasters'),600);
 end
 %% population vector and correlation single animal
 if 1
-    an = 1;
+    an = 3;
     ff = makeFigureRowsCols(106,[1 0.5 4 1],'RowsCols',[2 2],...
         'spaceRowsCols',[0 -0.02],'rightUpShifts',[0.15 0.1],'widthHeightAdjustment',...
         [-80 -70]);
@@ -105,12 +111,12 @@ if 1
 %     tcolors = {colors{3};colors{3};colors{4};colors{4};};
     tcolors = {colors{1},colors{1}/3,colors{2},colors{2}/3};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'ySpacing',4,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 %     for ii = [2 4]
 %         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 %     end
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 30],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 35],'FontSize',6,'FontWeight','Bold','TickDir','out');
     xticks = xdata(1:end)+0; xticklabels = {'MOn-Ex','MOn-Su','MOff-Ex','MOff-Su'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);

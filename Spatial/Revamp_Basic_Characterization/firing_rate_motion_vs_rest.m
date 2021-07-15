@@ -176,8 +176,6 @@ for ii = 1:length(ei_C)
 %     inds_motion = find(speed > 0);
     inds_motion = find(speed ~= 0);
     inds_rest = find(speed == 0);
-    inds_rest = find(speed <= 0.01);
-    inds_motion = find(speed >0.01);
     onset_first_trial = ei.b.air_puff_r(1)-1000;
     offset_last_trial = ei.b.air_puff_f(end)+1000;
     inds_motion1 = inds_motion(find(inds_motion > onset_first_trial & inds_motion < offset_last_trial));

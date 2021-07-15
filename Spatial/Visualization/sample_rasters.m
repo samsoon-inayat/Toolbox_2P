@@ -32,7 +32,7 @@ for rr = 2
 %         coeff = A.coeff(:,cn);
 %         fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),R.gauss_fit_on_mean.gauss1Formula);
         if strfind(R.marker_name,'motion')
-            imagesc(thisRaster,[min(thisRaster(:)) 0.5*max(thisRaster(:))]);hold on;
+            imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         else
             imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         end

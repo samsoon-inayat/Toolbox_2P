@@ -9,6 +9,15 @@ for rr = 1:size(Rs,1)
         end
         if strcmp(R.marker_name,'motionOnsets') || strcmp(R.marker_name,'motionOffsets')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis,Rs{rr,cc}.resp.excinh] = find_resp_motionOnset_raster(R,trials);
+            if 0
+                Rs{rr,cc}.sp_rasters1 = Rs{rr,cc}.fromFrames.sp_rasters;
+                Rs{rr,cc}.dist = Rs{rr,cc}.fromFrames.dist;
+                Rs{rr,cc}.speed = Rs{rr,cc}.fromFrames.speed;
+                Rs{rr,cc}.duration = Rs{rr,cc}.fromFrames.duration;
+                Rs{rr,cc}.xs = Rs{rr,cc}.fromFrames.duration(1,:);
+                Rs{rr,cc}.bin_width = 1/Rs{rr,cc}.thorexp.frameRate;
+            end
+            n = 0;
         end
         if strcmp(R.marker_name,'light22T')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light(R,trials);
@@ -37,11 +46,12 @@ end
 
 function [resp,cis,excinh] = find_resp_motionOnset_raster(R,trials)
 % SR = R.thorexp.frameRate;
-SR = 1/R.bin_width;
-markerType = R.marker_name;
-timeBefore = 2;
 % rasters = R.fromFrames.sp_rasters;
+SR = 1/R.bin_width;
 rasters = R.sp_rasters1;
+markerType = R.marker_name;
+timeBefore = 1.5;
+
 number_of_columns = size(rasters,2);
 column_index = round(timeBefore * SR);
 cis = [];
@@ -69,7 +79,7 @@ for ii = 1:size(rasters,3)
 %     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
     [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
     vert = nansum(thisRaster,2);
-    hv(ii) = sum(vert>0) > 1;%(round(length(trials)/2)-1);
+    hv(ii) = sum(vert>0) > (round(length(trials)/2)-1);
 %     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
 %     hv(ii) = findHaFD(CRR,1:size(CRR,1));
     if p(ii) < 0.05% & hv(ii) == 1
@@ -82,6 +92,7 @@ for ii = 1:size(rasters,3)
     end
 end
 % resp = p < 0.05;% & hv;
+% resp = R.activity_speed_corr > 0.1;
 
 
 function [resp,cis,excinh] = find_resp_time_raster_air(R,trials)

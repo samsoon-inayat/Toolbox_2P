@@ -156,8 +156,13 @@ if isempty(allP)
             cis = R.resp.cis;
             xs = R.xs;
             xs = xs - xs(cis(1,2));
-            xticks = [cis(1,:) size(corrPlot,2)];
+            if ~strfind(R.marker_name,'motion')
+                xticks = [cis(1,:) size(corrPlot,2)];
+            else
+                xticks = [cis(1,1:2) size(corrPlot,2)];
+            end
             xs = round(xs);
+            
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
             if sii == 1
                 set(gca,'YTick',xticks,'YTickLabel',xs(xticks));

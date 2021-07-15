@@ -31,39 +31,28 @@ RsA = find_responsive_rasters(RsA,1:10);
 % view_population_vector(Rs,mRs,400);
 [resp_fractionA,resp_valsA,OIA,mean_OIA] = get_responsive_fraction(RsA);
 
-pcs = 1;
+% an = 1; cn = 1;
 
-for an = 1:5
-    for cn = 1:4
-        if pcs
-            [DistC{an,cn},TC{an,cn},SpaceC{an,cn},RastersC{an,cn},SpeedC{an,cn},frame_rateC(an,1)] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
-            [DistA{an,cn},TA{an,cn},SpaceA{an,cn},RastersA{an,cn},SpeedA{an,cn},frame_rateA(an,1)] = getXYs1(raster_data_A{an,cn},resp_valsA{an}(:,cn));
-        else
-            [DistC{an,cn},TC{an,cn},SpaceC{an,cn},RastersC{an,cn},SpeedC{an,cn},frame_rateC(an,1)] = getXYs1(raster_data_C{an,cn},[]);
-            [DistA{an,cn},TA{an,cn},SpaceA{an,cn},RastersA{an,cn},SpeedA{an,cn},frame_rateA(an,1)] = getXYs1(raster_data_A{an,cn},[]);
-        end
-    end
-end
-
-if pcs
-    fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
-else
-    fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_all_cells.mat'));
-end
-save(fileName,'DistC','TC','SpaceC','RastersC','SpeedC','frame_rateC','DistA','TA','SpaceA','RastersA','SpeedA','frame_rateA','-v7.3');
-return
-
-% 
 % for an = 1:5
 %     for cn = 1:4
-%         [YsC{an,cn},XsC{an,cn}] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
-%         [YsA{an,cn},XsA{an,cn}] = getXYs1(raster_data_A{an,cn},resp_valsA{an}(:,cn));
+%         [YsC{an,cn},XsC{an,cn}] = getXYs1(raster_data_C{an,cn},[]);
+%         [YsA{an,cn},XsA{an,cn}] = getXYs1(raster_data_A{an,cn},[]);
 %     end
 % end
 % 
-% fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
+% fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_all_cells.mat'));
 % save(fileName,'XsC','YsC','XsA','YsA','-v7.3');
-% return
+
+for an = 1:5
+    for cn = 1:4
+        [YsC{an,cn},XsC{an,cn}] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
+        [YsA{an,cn},XsA{an,cn}] = getXYs1(raster_data_A{an,cn},resp_valsA{an}(:,cn));
+    end
+end
+
+fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
+save(fileName,'XsC','YsC','XsA','YsA','-v7.3');
+return
 
 
 train = 1:10;% test = 2:2:10;
@@ -121,6 +110,9 @@ else
 end
 frame_rate = raster_data.thorexp.frameRate;
 speed = rd.speed;
+
+
+
 
 
 function [aXs,aYs,aYs1] = getXYs(ei_C,selAnimals_C)

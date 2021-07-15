@@ -104,7 +104,11 @@ for ff = 1:length(fields)
         n = 0;
     else
         if size(thisField,3) == 1
-            thisFieldC = thisField;
+            if strcmp(fields{ff},'activity_speed_corr')
+                thisFieldC = [thisField;thisField1];
+            else
+                thisFieldC = thisField;
+            end
         else
             try
                 thisFieldC = cat(3,thisField,thisField1);
