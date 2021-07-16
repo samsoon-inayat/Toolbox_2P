@@ -13,9 +13,11 @@ for pp = 1:length(ei.plane)
     ei.deconv = ei.plane{pp}.tP.deconv;
     rasters = make_rasters(ei,pp,mOnst,mOnse,'time',binwidths);
     trials = 1:size(rasters.sp_rasters1,1);
-    rasters = findRasterProperties_1(thispFolder,0,'motionOnsets11T',rasters,'time',trials,owr);
+    rasters = findRasterProperties_1(thispFolder,0,'motionOnsets11T',rasters,'time',trials,owr(1:3));
     ei.plane{pp}.motionOnset_rasters = rasters;
-    ei.plane{pp}.motionOnset_rasters.activity_speed_corr = find_activity_speed_corr(ei.deconv.spSigAll,ei.b.fSpeed(ei.plane{pp}.b.frames_f));
+    if owr(4) == 1
+        ei.plane{pp}.motionOnset_rasters.activity_speed_corr = find_speed_response(ei,pp);
+    end
 
     rasters = make_rasters(ei,pp,mOffst,mOffse,'time',binwidths);
     trials = 1:size(rasters.sp_rasters1,1);
@@ -24,12 +26,14 @@ for pp = 1:length(ei.plane)
     ei.plane{pp}.motionOffset_rasters.activity_speed_corr = ei.plane{pp}.motionOnset_rasters.activity_speed_corr;
 end
 
-function out = find_activity_speed_corr(activity,speed)
+function out = find_speed_response(ei,pp)
+activity = ei.deconv.spSigAll;
+speed = ei.b.fSpeed(ei.plane{pp}.b.frames_f);
 speed = speed(1:size(activity,2));
 out = corr(activity',speed');
 
-min_speed = 0; max_speed = 30;
-bin_incr = 5;
+min_speed = 1; max_speed = 40;
+bin_incr = 1;
 bins = min_speed:bin_incr:max_speed;
 for ii = 1:(length(bins)-1)
     st = bins(ii);
@@ -38,10 +42,38 @@ for ii = 1:(length(bins)-1)
     inds = find(speed > st & speed < se);
     cell_act(:,ii) = nanmean(activity(:,inds),2);
 end
+fits = find_cellular_speed_tuning(ei,bin_centers,cell_act);
 
 
+function fits = find_cellular_speed_tuning(ei,bcs,cell_act)
+n = 0;
+max_fr = max(cell_act,[],2);
+mean_fr = mean(cell_act,2);
+worked = zeros(size(mean_fr));
 
-function out = find_speed_response(activity,speed)
+statsetfitnlm = statset('fitnlm');
+statsetfitnlm.MaxIter = 1000;
+statsetfitnlm.TolFun = 1e-10;
+% statsetfitnlm.Display = 'iter';
+statsetfitnlm.TolX = statsetfitnlm.TolFun;
+statsetfitnlm.UseParallel = 1;
+% statsetfitnlm.RobustWgtFun = 'welsch';
+fr = cell_act(mean_fr > 0.1,:);
+[fitted,mdl,coeffsrsM] = do_gauss_fit(bcs,fr,statsetfitnlm,[1 0]);
+[rs,MFR,centers,PWs] = get_gauss_fit_parameters(coeffsrsM,bcs(2)-bcs(1));
+centers1 = centers; PWs1 = PWs;
+inds = centers1 < 1 | centers1 > 39 | PWs1 > 20 | PWs1 < 10; centers1(inds) = []; PWs1(inds) = [];
+inds1 = find(~inds);
+for cni = 1:length(inds1)
+    cn = inds1(cni);
+    figure(100);clf;plot(bcs,fr(cn,:));hold on;
+    plot(bcs,fitted(cn,:));
+    plot(bcs,fittedS(cn,:));
+    pause(0.3);
+end
+
+[fittedS,mdlS,coeffsrsMS] = do_sigmoid_fit(bcs,fr,statsetfitnlm,[1 0]);
+
 
 
 function [mOnst,mOnse,mOffst,mOffse] = get_monoffs(ei,thr)

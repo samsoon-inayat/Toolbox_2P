@@ -57,10 +57,7 @@ end
 
 
 %%
-for ii = 1:length(ei)
-    min_speed(ii) = min(ei{ii}.b.fSpeed);
-    max_speed(ii) = max(ei{ii}.b.fSpeed);
-end
+
 %%
 
 
