@@ -11,26 +11,25 @@ for pp = 1:length(ei.plane)
     ei.tP = ei.plane{pp}.tP;
     thispFolder = ei.plane{pp}.folder;
     ei.deconv = ei.plane{pp}.tP.deconv;
+    
     rasters = make_rasters(ei,pp,mOnst,mOnse,'time',binwidths);
     trials = 1:size(rasters.sp_rasters1,1);
     rasters = findRasterProperties_1(thispFolder,0,'motionOnsets11T',rasters,'time',trials,owr(1:3));
     ei.plane{pp}.motionOnset_rasters = rasters;
-    if owr(4) == 1
-        ei.plane{pp}.motionOnset_rasters.activity_speed_corr = find_speed_response(ei,pp);
-    end
-
+    
     rasters = make_rasters(ei,pp,mOffst,mOffse,'time',binwidths);
     trials = 1:size(rasters.sp_rasters1,1);
-    rasters = findRasterProperties_1(thispFolder,0,'motionOffsets11T',rasters,'time',trials,owr);
+    rasters = findRasterProperties_1(thispFolder,0,'motionOffsets11T',rasters,'time',trials,owr(1:3));
     ei.plane{pp}.motionOffset_rasters = rasters;
-    ei.plane{pp}.motionOffset_rasters.activity_speed_corr = ei.plane{pp}.motionOnset_rasters.activity_speed_corr;
+    
+    ei.plane{pp}.speed_response = find_speed_response(ei,pp,owr(4));
 end
 
-function out = find_speed_response(ei,pp)
+function out = find_speed_response(ei,pp,owr)
 activity = ei.deconv.spSigAll;
 speed = ei.b.fSpeed(ei.plane{pp}.b.frames_f);
 speed = speed(1:size(activity,2));
-out = corr(activity',speed');
+out.corr = corr(activity',speed');
 
 min_speed = 1; max_speed = 40;
 bin_incr = 1;
@@ -42,14 +41,13 @@ for ii = 1:(length(bins)-1)
     inds = find(speed > st & speed < se);
     cell_act(:,ii) = nanmean(activity(:,inds),2);
 end
-fits = find_cellular_speed_tuning(ei,bin_centers,cell_act);
+out.fits = find_cellular_speed_tuning(ei,pp,bin_centers,cell_act,owr);
 
 
-function fits = find_cellular_speed_tuning(ei,bcs,cell_act)
+function fits = find_cellular_speed_tuning(ei,pp,bcs,cell_act,owr)
 n = 0;
 max_fr = max(cell_act,[],2);
 mean_fr = mean(cell_act,2);
-worked = zeros(size(mean_fr));
 
 statsetfitnlm = statset('fitnlm');
 statsetfitnlm.MaxIter = 1000;
@@ -58,21 +56,50 @@ statsetfitnlm.TolFun = 1e-10;
 statsetfitnlm.TolX = statsetfitnlm.TolFun;
 statsetfitnlm.UseParallel = 1;
 % statsetfitnlm.RobustWgtFun = 'welsch';
-fr = cell_act(mean_fr > 0.1,:);
-[fitted,mdl,coeffsrsM] = do_gauss_fit(bcs,fr,statsetfitnlm,[1 0]);
-[rs,MFR,centers,PWs] = get_gauss_fit_parameters(coeffsrsM,bcs(2)-bcs(1));
-centers1 = centers; PWs1 = PWs;
-inds = centers1 < 1 | centers1 > 39 | PWs1 > 20 | PWs1 < 10; centers1(inds) = []; PWs1(inds) = [];
-inds1 = find(~inds);
-for cni = 1:length(inds1)
-    cn = inds1(cni);
-    figure(100);clf;plot(bcs,fr(cn,:));hold on;
-    plot(bcs,fitted(cn,:));
-    plot(bcs,fittedS(cn,:));
-    pause(0.3);
+% fr = cell_act(mean_fr > 0.1,:);
+fr = cell_act;
+func_names = {'do_gauss_fit','do_sigmoid_fit','do_linear_fit'};
+var_names = {'gauss','sigmoid','linear'};
+for ii = 1:length(var_names)
+    file_name = fullfile(ei.plane{pp}.folder,sprintf('speed_tuning_%s.mat',var_names{ii}));
+    if exist(file_name,'file') && owr == 0
+        cmdTxt = sprintf('fits.%s = load(file_name);',var_names{ii});
+        eval(cmdTxt);
+        continue;
+    else
+        out = [];
+        cmdTxt = sprintf('[out.fitted,~,out.coeffsrs] = %s(bcs,fr,statsetfitnlm,[1 0]);',func_names{ii});
+        eval(cmdTxt);
+        save(file_name,'-struct','out','-v7.3');
+        cmdTxt = sprintf('fits.%s = out;',var_names{ii});
+        eval(cmdTxt);
+    end
 end
+% 
+% 
+% [outs.fitted,outs.mdl,outs.coeffsrs] = do_sigmoid_fit(bcs,fr,statsetfitnlm,[1 0]);
+% [outl.fitted,outl.mdl,outl.coeffsrs] = do_linear_fit(bcs,fr,statsetfitnlm,[1 0]);
+% outg.fitted = fitted; outg.mdl = mdl; outg.coeffsrs = coeffsrsM;
 
-[fittedS,mdlS,coeffsrsMS] = do_sigmoid_fit(bcs,fr,statsetfitnlm,[1 0]);
+
+
+% [rs,MFR,centers,PWs] = get_gauss_fit_parameters(coeffsrsM,bcs(2)-bcs(1));
+% centers1 = centers; PWs1 = PWs;
+% inds = centers1 < 1 | centers1 > 39 | PWs1 > 20 | PWs1 < 10; centers1(inds) = []; PWs1(inds) = [];
+% inds1 = find(~inds);
+% for cni = 1:size(fr,1)
+%     cn = cni;
+%     [fitted,mdl,coeffsrsM] = do_gauss_fit(bcs,fr(cn,:),statsetfitnlm,[1 0]);
+%     [fittedS,mdlS,coeffsrsMS] = do_sigmoid_fit(bcs,fr(cn,:),statsetfitnlm,[1 0]);
+%     [fittedL,mdlL,coeffsrsML] = do_linear_fit(bcs,fr(cn,:),statsetfitnlm,[1 0]);
+%     figure(100);clf;plot(bcs,fr(cn,:));hold on;
+%     plot(bcs,fitted);
+%     plot(bcs,fittedS);
+%     plot(bcs,fittedL);
+%     title(sprintf('%.2f, %.2f, %.2f',coeffsrsM(4),coeffsrsMS(3),coeffsrsML(3)));
+%     pause(0.3);
+% end
+
 
 
 
