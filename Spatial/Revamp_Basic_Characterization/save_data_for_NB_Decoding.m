@@ -17,7 +17,7 @@ RsC = find_responsive_rasters(RsC,1:10);
 % view_population_vector(Rs,mRs,300);
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(RsC);
 
-pcs = 0;
+pcs = 1;
 
 for an = 1:5
     for cn = 1:3
@@ -93,6 +93,7 @@ else
 end
 frame_rate = raster_data.thorexp.frameRate;
 speed = rd.speed;
+n = 0;
 
 
 

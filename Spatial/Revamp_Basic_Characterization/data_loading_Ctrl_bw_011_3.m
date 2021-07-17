@@ -53,7 +53,7 @@ end
 clc
 tic
 for ii = 1:length(ei)
-    ei(ii) = get_motion_onset_response(ei(ii),[-1 -1 -1 1]);
+    ei(ii) = get_motion_onset_response(ei(ii),[-1 -1 -1 0 0]);
 end
 toc
 
@@ -64,9 +64,16 @@ for ii = 1:length(ei)
     max_speed(ii) = max(ei{ii}.b.fSpeed);
 end
 %%
+%%
+clc
+tic
+for ii = 1:length(ei)
+    ei(ii) = get_pca(ei(ii),binwidths,[-1 -1 -1]);
+end
+toc
 
 
-% training
+%% training
 
 training_data = behaviorProcessor;
 training_data.belt_lengths = [150 150 150 150 150]';

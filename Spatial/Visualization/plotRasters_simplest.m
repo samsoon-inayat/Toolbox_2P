@@ -66,7 +66,7 @@ while 1
             try
 %                 imagesc(thisRaster);
 %                 imagesc(CRR);
-                imagesc(thisRaster,[0 0.5*max(thisRaster(:))]);
+                imagesc(thisRaster,[0 max(thisRaster(:))]);
             catch
                 imagesc(thisRaster);
 %                 continue;
@@ -82,6 +82,7 @@ while 1
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));
             box off;
             set(gca,'FontSize',10,'FontWeight','Normal','linewidth',0.75,'Ydir','normal','TickDir','out');
+            if isfield(R,'resp')
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
                 plot([cis(2,1) cis(2,1)],[0 size(thisRaster,1)+1],'linewidth',1.5,'color','r');
@@ -89,12 +90,15 @@ while 1
                     plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','g');
                 end
             end
+            end
             A = R;
             xs = 1:length(A.xs);
+            if isfield(R,'context_info')
             if strfind(R.context_info,'air') & strfind(R.context_info,'D')
                 fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
                 plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.5,'color','m');
                 
+            end
             end
 %             catch
 %             end

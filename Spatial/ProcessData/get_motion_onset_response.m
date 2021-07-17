@@ -22,6 +22,7 @@ for pp = 1:length(ei.plane)
     rasters = findRasterProperties_1(thispFolder,0,'motionOffsets11T',rasters,'time',trials,owr(1:3));
     ei.plane{pp}.motionOffset_rasters = rasters;
     
+%     ei.plane{pp}.acc_response = find_acc_response(ei,pp,owr(5));
     ei.plane{pp}.speed_response = find_speed_response(ei,pp,owr(4));
 end
 
@@ -42,7 +43,8 @@ for ii = 1:(length(bins)-1)
     cell_act(:,ii) = nanmean(activity(:,inds),2);
 end
 out.fits = find_cellular_speed_tuning(ei,pp,bin_centers,cell_act,owr);
-
+out.FR_vs_speed = cell_act;
+out.bin_centers = bin_centers;
 
 function fits = find_cellular_speed_tuning(ei,pp,bcs,cell_act,owr)
 n = 0;
@@ -75,33 +77,64 @@ for ii = 1:length(var_names)
         eval(cmdTxt);
     end
 end
+
+% function out = find_acc_response(ei,pp,owr)
+% activity = ei.deconv.spSigAll;
+% acc = diff(ei.b.speed);
 % 
+% samplingRate = floor(1/(ei.b.si*1e-6));
+% coeffs = ones(1, samplingRate)/samplingRate;
+% fAcc = filter(coeffs, 1, acc);
 % 
-% [outs.fitted,outs.mdl,outs.coeffsrs] = do_sigmoid_fit(bcs,fr,statsetfitnlm,[1 0]);
-% [outl.fitted,outl.mdl,outl.coeffsrs] = do_linear_fit(bcs,fr,statsetfitnlm,[1 0]);
-% outg.fitted = fitted; outg.mdl = mdl; outg.coeffsrs = coeffsrsM;
-
-
-
-% [rs,MFR,centers,PWs] = get_gauss_fit_parameters(coeffsrsM,bcs(2)-bcs(1));
-% centers1 = centers; PWs1 = PWs;
-% inds = centers1 < 1 | centers1 > 39 | PWs1 > 20 | PWs1 < 10; centers1(inds) = []; PWs1(inds) = [];
-% inds1 = find(~inds);
-% for cni = 1:size(fr,1)
-%     cn = cni;
-%     [fitted,mdl,coeffsrsM] = do_gauss_fit(bcs,fr(cn,:),statsetfitnlm,[1 0]);
-%     [fittedS,mdlS,coeffsrsMS] = do_sigmoid_fit(bcs,fr(cn,:),statsetfitnlm,[1 0]);
-%     [fittedL,mdlL,coeffsrsML] = do_linear_fit(bcs,fr(cn,:),statsetfitnlm,[1 0]);
-%     figure(100);clf;plot(bcs,fr(cn,:));hold on;
-%     plot(bcs,fitted);
-%     plot(bcs,fittedS);
-%     plot(bcs,fittedL);
-%     title(sprintf('%.2f, %.2f, %.2f',coeffsrsM(4),coeffsrsMS(3),coeffsrsML(3)));
-%     pause(0.3);
+% speed = ei.b.fSpeed(ei.plane{pp}.b.frames_f);
+% speed = speed(1:size(activity,2));
+% out.corr = corr(activity',speed');
+% 
+% min_speed = 1; max_speed = 40;
+% bin_incr = 1;
+% bins = min_speed:bin_incr:max_speed;
+% for ii = 1:(length(bins)-1)
+%     st = bins(ii);
+%     se = bins(ii+1);
+%     bin_centers(ii) = st + bin_incr/2;
+%     inds = find(speed > st & speed < se);
+%     cell_act(:,ii) = nanmean(activity(:,inds),2);
 % end
-
-
-
+% out.fits = find_cellular_acc_tuning(ei,pp,bin_centers,cell_act,owr);
+% out.FR_vs_speed = cell_act;
+% out.bin_centers = bin_centers;
+% 
+% function fits = find_cellular_acc_tuning(ei,pp,bcs,cell_act,owr)
+% n = 0;
+% max_fr = max(cell_act,[],2);
+% mean_fr = mean(cell_act,2);
+% 
+% statsetfitnlm = statset('fitnlm');
+% statsetfitnlm.MaxIter = 1000;
+% statsetfitnlm.TolFun = 1e-10;
+% % statsetfitnlm.Display = 'iter';
+% statsetfitnlm.TolX = statsetfitnlm.TolFun;
+% statsetfitnlm.UseParallel = 1;
+% % statsetfitnlm.RobustWgtFun = 'welsch';
+% % fr = cell_act(mean_fr > 0.1,:);
+% fr = cell_act;
+% func_names = {'do_gauss_fit','do_sigmoid_fit','do_linear_fit'};
+% var_names = {'gauss','sigmoid','linear'};
+% for ii = 1:length(var_names)
+%     file_name = fullfile(ei.plane{pp}.folder,sprintf('speed_tuning_%s.mat',var_names{ii}));
+%     if exist(file_name,'file') && owr == 0
+%         cmdTxt = sprintf('fits.%s = load(file_name);',var_names{ii});
+%         eval(cmdTxt);
+%         continue;
+%     else
+%         out = [];
+%         cmdTxt = sprintf('[out.fitted,~,out.coeffsrs] = %s(bcs,fr,statsetfitnlm,[1 0]);',func_names{ii});
+%         eval(cmdTxt);
+%         save(file_name,'-struct','out','-v7.3');
+%         cmdTxt = sprintf('fits.%s = out;',var_names{ii});
+%         eval(cmdTxt);
+%     end
+% end
 
 function [mOnst,mOnse,mOffst,mOffse] = get_monoffs(ei,thr)
 spSig = ei.b.fSpeed;
@@ -114,8 +147,6 @@ disp(sprintf('%d,%d - %d,%d',length(mOnst),length(mOnse),length(mOffst),length(m
 % n = 0;
 % diplay_with_air_puff(ei.b,mOffst,mOffse);
 % n = 0;
-
- 
 
 function [st2,se2] = get_markers_motion(ei,motionOnsets,motionOffsets)
 thr_t = 0.5;

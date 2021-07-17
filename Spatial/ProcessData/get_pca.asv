@@ -1,0 +1,23 @@
+function ei_C = get_pca(ei_C,owr)
+for ii = 1:length(ei_C)
+    ei_C{ii} = process_one_animal(ei_C{ii},owr);
+end
+
+function ei = process_one_animal(ei,thr,owr)
+binwidths = evalin('base','binwidths');
+for pp = 1:length(ei.plane)
+    ei.tP = ei.plane{pp}.tP;
+    thispFolder = ei.plane{pp}.folder;
+    ei.deconv = ei.plane{pp}.tP.deconv;
+    spSigAll = ei.deconv.spSigAll;
+%     [pc.coeff,pc.score,pc.latent,pc.tsquared,pc.explained,pc.mu] = pca(fs);
+    [coeff,score,latent,tsquared,explained,mu] = pca(spSigAll');
+    figure(10);clf;plotyy(1:length(explained),explained,1:length(explained),cumsum(explained));
+    cexplained = cumsum(explained);
+    ind = find(cexplained > 95,1,'first');
+    cexplained(ind)
+    
+    figure(100);clf;imagesc(score',[0 100]);colorbar
+    n = 0;
+end
+
