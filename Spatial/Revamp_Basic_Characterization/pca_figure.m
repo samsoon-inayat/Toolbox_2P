@@ -26,12 +26,26 @@ if 1
     set(gcf,'Position',[5 5 2.2 2]);
     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
     resp = get_cell_list(resp_valsC,[1;2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,0,0);
     % ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
     ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[7 0 0]);
     set_obj(ht,'String',{'Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation'});
     set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('pca_population_vector_corr.pdf'),600);
+end
+%% average population correlation (from all animals)
+if 1
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 2],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.15 0.2],'widthHeightAdjustment',...
+        [-70 -240]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 3 2.2 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.1 1],[]);
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[7 0 0]);
+    set_obj(ht,'String',{'Avg. Pop. Correlation','Avg. Pop.Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('pca_air_average_population_vector_corr.pdf'),600);
 end

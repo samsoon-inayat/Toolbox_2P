@@ -33,7 +33,26 @@ out2 = find_population_vector_corr_remap_trials(Rs(:,2),resp,trials);
 out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
 % save(fullfile(mData.pd_folder,'air_place_cells_figure.mat'),'out1','out2','out3');
 n = 0;
-
+%% Speed Figure
+if 1
+    for cn = 1:3
+        mean_speed_over_trials = [];
+        for an = 1:size(Rs,1)
+            mean_speed_over_trials(an,:) = nanmean(Rs{an,cn}.speed);
+        end
+        
+        hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+        hold on; 
+        xs = Rs{1,2}.xs; N = length(xs);
+        mspeed = mean(mean_speed_over_trials(:,1:N)); semspeed = std(mean_speed_over_trials(:,1:N))/sqrt(5);
+        plot(xs,mspeed);
+        shadedErrorBar(xs,mspeed,semspeed);
+        changePosition(gca,[0.1 0.15 -0.05 -0.15]);
+        put_axes_labels(gca,{'Position (cm)',[0 0 0]},{{'Speed (cm/sec)'},[0 -4 0]});
+        ylim([0 30]);
+        save_pdf(hf,mData.pdf_folder,sprintf('speed_%d',cn),600);
+    end
+end
 %% Show sample rasters
 % an = 5; cn = 2;
 % plotRasters_simplest(Rs{an,cn})

@@ -48,7 +48,7 @@ if 1
     T = size(Rs{an,1}.sp_rasters1,2);
     E = size(Rs{an,1}.sp_rasters1,1);
     C = 3;
-    firing_rates = reshape(xtck,[N T E C]);
+    firing_rates = permute(reshape(xtck,[N T E C]),[1 4 2 3]) ; 
     x = repmat(nanmean(xtck,2),[1 size(xtck,2)]);
     xt = reshape(xtck - x,[N T E C]); xt = nanmean(xt,2); xt = nanmean(xt,3);
     xt = repmat(xt,[1 T E 1]); xt = xt(:,:);
@@ -59,7 +59,17 @@ if 1
     psths = nanmean(firing_rates,3); psths = repmat(psths,[1 1 E 1]);
     psths = psths(:,:);
     etck = xtck - psths;
-    
+    firingRatesAverage = squeeze(nanmean(firing_rates,3));
+    X = firingRatesAverage(:,:);
+    X = bsxfun(@minus, X, mean(X,2));
+
+    [W,~,~] = svd(X, 'econ');
+    W = W(:,1:20);
+    combinedParams = {1,[1 2]};
+    % minimal plotting
+    dpca_plot(firingRatesAverage, W, W, @dpca_plot_default,'time',Rs{an,1}.xs);
+    explVar = dpca_explainedVariance(firingRatesAverage, W, W, ...
+    'combinedParams', combinedParams);
 end
 
 % dpca_demo(xtck,size(raster,2),3,10);
