@@ -40,9 +40,15 @@ end
 if 1
     an = 1;
     xtck = [];
+    t = [];
     for cn = 1:3
         raster = permute(Rs{an,cn}.sp_rasters1,[3 2 1]);
         xtck = [xtck raster(:,:)];
+        if cn == 1
+            t = [t Rs{an,cn}.xs];
+        else
+            t = [t Rs{an,cn}.xs+t(end)];
+        end
     end
     N = size(xtck,1);
     T = size(Rs{an,1}.sp_rasters1,2);
