@@ -48,21 +48,19 @@ if 1
     T = size(Rs{an,1}.sp_rasters1,2);
     E = size(Rs{an,1}.sp_rasters1,1);
     C = 3;
-    firing_rates = reshape(xtck,[N T E C]);
+    firing_rates = reshape(xtck,[N T E C]); firing_rates = permute(firing_rates,[1 4 2 3]);
     x = repmat(nanmean(xtck,2),[1 size(xtck,2)]);
-    xt = reshape(xtck - x,[N T E C]); xt = nanmean(xt,2); xt = nanmean(xt,3);
-    xt = repmat(xt,[1 T E 1]); xt = xt(:,:);
-    xc = reshape(xtck - x,[N T E C]); xc = nanmean(xc,4); xc = nanmean(xc,3);
-    xc = repmat(xc,[1 1 E C]); xc = xc(:,:);
-    xtc = reshape(xtck - x - xt - xc,[N T E C]); xtc = nanmean(xtc,3);
-    xtc = repmat(xtc,[1 1 E 1]); xtc = xtc(:,:);
-    psths = nanmean(firing_rates,3); psths = repmat(psths,[1 1 E 1]);
+    xt = reshape(xtck - x,[N C T E]); xt = nanmean(xt,3); xt = nanmean(xt,4); xt = repmat(xt,[1 1 T E]); xt = xt(:,:);
+    xc = reshape(xtck - x,[N C T E]); xc = nanmean(xc,2); xc = nanmean(xc,4); xc = repmat(xc,[1 C 1 E]); xc = xc(:,:);
+    xtc = reshape(xtck - x - xt - xc,[N C T E]); xtc = nanmean(xtc,4); xtc = repmat(xtc,[1 1 1 E]); xtc = xtc(:,:);
+    psths = nanmean(firing_rates,4); psths = repmat(psths,[1 1 1 E]);
     psths = psths(:,:);
     etck = xtck - psths;
-    
 end
 
-% dpca_demo(xtck,size(raster,2),3,10);
+dpca__mine(Rs(an,:),psths);
+
+
 %%
 
 trials = mat2cell([1:10]',ones(size([1:10]')));

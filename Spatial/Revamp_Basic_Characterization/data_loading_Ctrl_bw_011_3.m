@@ -27,8 +27,8 @@ mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
 mData.shades = generate_shades(3);
 display_colors(mData.shades.c);
 % Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
-% Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
+% Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
+Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
 mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
 mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
 disp('Done');
@@ -43,7 +43,8 @@ end
 disp('Done');
 
 %%
-ei = getData_py_2(T_C1);
+sel_rec = [1 3 5];
+ei = getData_py_2(T_C1(sel_rec,:));
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
