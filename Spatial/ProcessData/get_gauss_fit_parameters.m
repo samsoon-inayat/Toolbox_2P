@@ -28,7 +28,7 @@ else
     A = coeff(:,1);
     mu = coeff(:,2);
     sigma = coeff(:,3);
-    as = A'%;*exp(0.5);
+    as = A';%;*exp(0.5);
     bs = mu'*binwidth;
     cs = sigma';
     PWs = 2.36*cs./sqrt(2)*binwidth;
