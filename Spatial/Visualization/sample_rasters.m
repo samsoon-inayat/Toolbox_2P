@@ -73,7 +73,8 @@ for rr = 2
             if ~ismember(size(thisRaster,2),xticks)
                 xticks = [xticks size(thisRaster,2)];
             end
-            xs = round(xs);
+            xs = round(xs,1); 
+            xticks = unique(xticks);
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
             if strfind(R.context_info,'airT')
                 for bb = 1:length(R.lastBin)
@@ -87,7 +88,8 @@ for rr = 2
             set(gca,'YTick',[]);
         end
         if cc == 1
-            set(gca,'YTick',[1 5 10]);
+            ntrials = size(thisRaster,1);
+            set(gca,'YTick',[1  ntrials]);
             h = ylabel('Trials');
         end
         

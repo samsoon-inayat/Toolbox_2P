@@ -1,30 +1,5 @@
-function [ha,hb,hca,varargout] = plotDistributions (distD,varargin)
+function [ha,hb,hca,varargout] = plotAverageDistributions (distD,varargin)
 hb = NaN; hca = NaN; ha = NaN;
-if nargin == 1
-        distDo = [];
-        allVals = [];
-        allValsG = [];
-        for cc = 1:size(distD,2)
-            allValsGt = [];
-            for rr = 1:size(distD,1)
-                thisVal = distD{rr,cc};
-                thisVal = nanmean(thisVal,2);
-%                 thisVal = max(thisVal,[],2);
-                thisVal = thisVal(:);
-%                 thisVal = thisVal(thisVal > 0);
-                allVals = [allVals;thisVal(:)];
-                distDo{rr,cc} = thisVal;
-                allValsGt = [allValsGt;thisVal(:)];
-            end
-            allValsG{cc} = allValsGt;
-        end
-        ha = distDo;
-        hb = allVals;
-        hca = allValsG;
-    return;
-end
-
-
 p = inputParser;
 default_colors = distinguishable_colors(20);
 default_ySpacingFactor = 10;

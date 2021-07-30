@@ -118,7 +118,7 @@ if 1
         'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 40],'FontSize',6,'FontWeight','Normal','TickDir','out');
-    hatch(hbs(2),135,'k','-',2,0.1);
+    hatch(hbs(2),0,'k','-',4,0.1);
     xticks = [xdata(1:end)]; xticklabels = {'Onset','Offset'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
     any_mean = mean(100*resp_OR_fractionC);    any_sem = std(100*resp_OR_fractionC)/sqrt(5);
@@ -146,7 +146,7 @@ if 1
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    hatch(hbs(3),135,'k','-',2,0.1);hatch(hbs(4),135,'k','-',2,0.1);
+    hatch(hbs(3),0,'k','-',10,0.1);hatch(hbs(4),0,'k','-',10,0.1);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 40],'FontSize',6,'FontWeight','normal','TickDir','out');
     xticks = xdata(1:end)+0; xticklabels = {'Onset-Ex','Onset-Su','Offset-Ex','Offset-Su'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
