@@ -25,6 +25,8 @@ n = 0;
 resp = resp_ORCS
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
 
+outRemap = find_population_vector_corr_remap(Rs,mR,resp_ORCS);
+
 %%
 trials = mat2cell([1:10]',ones(size([1:10]')));
 resp = get_cell_list(resp_valsCS,[]);
@@ -213,19 +215,12 @@ if 1
     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive'),600);
 end
-%% Spatial correlation between adjacent trails and considering exc and inh as two separate groups
+%% Spatial correlation between adjacent trails
 if 1
     [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,9]);
     var1 = arrayfun(@(x) mean(x{1}),out1.adj_SP_corr_diag); 
     var2 = arrayfun(@(x) mean(x{1}),out2.adj_SP_corr_diag);
     var3 = arrayfun(@(x) mean(x{1}),out3.adj_SP_corr_diag);
-%     varI1 = arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag); varI2 = arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag);
-
-%     varE1 = arrayfun(@(x) mean(x{1}),outE1.adj_PV_corr_diag); varE2 = arrayfun(@(x) mean(x{1}),outE2.adj_PV_corr_diag);
-%     varI1 = arrayfun(@(x) mean(x{1}),outI1.adj_PV_corr_diag); varI2 = arrayfun(@(x) mean(x{1}),outI2.adj_PV_corr_diag);between = make_between_table({varE1,varE2;varI1,varI2},dvn);
-
-%     varE1 = arrayfun(@(x) nanmean(x{1}),outE1.adj_RR_SP); varE2 = arrayfun(@(x) nanmean(x{1}),outE2.adj_RR_SP);
-%     varI1 = arrayfun(@(x) nanmean(x{1}),outI1.adj_RR_SP); varI2 = arrayfun(@(x) nanmean(x{1}),outI2.adj_RR_SP);
     between = make_between_table({var1,var2,var3},dvn);
     ra = repeatedMeasuresAnova(between,within);
     %%
@@ -249,96 +244,130 @@ if 1
     put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials',600);
 end
-%% Spatial correlation between adjacent trails (taking mean) and considering exc and inh as within factors (not groups)
+%% Spatial correlation between adjacent trails (taking mean) 
 if 1
-    [within,dvn,xlabels] = make_within_table({'Condition','EI'},[2 2]);
-    varE1 = mean(arrayfun(@(x) mean(x{1}),outE1.adj_SP_corr_diag),2); varE2 = mean(arrayfun(@(x) mean(x{1}),outE2.adj_SP_corr_diag),2);
-    varI1 = mean(arrayfun(@(x) mean(x{1}),outI1.adj_SP_corr_diag),2); varI2 = mean(arrayfun(@(x) mean(x{1}),outI2.adj_SP_corr_diag),2);
-    between = make_between_table({varE1,varI1,varE2,varI2},dvn);
-    ra = repeatedMeasuresAnova(between,within);
-
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.5 1]);
     hollowsep = 19;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.25 1],'color','w');
     hold on;
-    tcolors = {colors{1},colors{1}/3,colors{2},colors{2}/3};
+    tcolors = colors(1:9); tcolors = repmat(tcolors,[1 3]);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
             'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
             'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-    for ii = hollowsep:length(hbs)
-        set(hbs(ii),'facecolor','none','edgecolor',colors{ii});
-    end
     ylims = ylim;
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[ylims(1) maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = {'C2-Ex','C2-Su','C2''-Ex','C2''-Su'};
-    xticklabels = repmat(xticklabels,1,2);
+    xticks = xdata(1:end)+0; xticklabels = {'T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10'};
+    xticklabels = repmat(xticklabels,1,3);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
 %     changePosition(gca,[0.1 0.11 -0.2 -0.05]);
-    changePosition(gca,[0.2 0.03 -0.2 -0.05]);
+    changePosition(gca,[-0.02 0.03 0.1 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph',600);
 end
-%%
+%% Rate remap (Delta FR score) between adjacent trails
 if 1
-    var_1 = []; var_2 = []; var_3 = []; varNames = []; xlabels = []; xdata = [];
-    for rr = 1:size(var1,1)
-        for cc = 1:size(var1,2)
-            var_1(rr,cc) = nanmean(var1{rr,cc});
-            var_2(rr,cc) = nanmean(var2{rr,cc});
-            var_3(rr,cc) = nanmean(var3{rr,cc});
-        end
-    end
-    ind = 1; ind_val = 1;
-    for ii = 1:3
-        for cc = 1:size(var_1,2)
-            varNames{cc+(size(var_1,2)*(ii-1))} = sprintf('C%d_T%d%d',ii,cc,cc+1);
-            xlabels{cc+(size(var_1,2)*(ii-1))} = sprintf('C%d-T%d-T%d',ii,cc,cc+1);
-            xdata(ind) = ind_val;
-            ind = ind+1; ind_val = ind_val + 1;
-        end
-        ind_val = ind_val+3;
-    end
-    
-    dataT = array2table([[var_1 var_2 var_3]]);
-    dataT.Properties.VariableNames = varNames;
-    colVar1 = [1:size(var_1,2)]; colVar2 = [ones(size(colVar1)) 2*ones(size(colVar1)) 3*ones(size(colVar1))];
-    colVar1 = repmat(colVar1,1,3);
-    
-    within = array2table([colVar2' colVar1']);
-    within.Properties.VariableNames = {'Condition','TrialPairs'};
-    within.TrialPairs = categorical(within.TrialPairs);
-    within.Condition = categorical(within.Condition);
-    ra = repeatedMeasuresAnova(dataT,within);
-%     writetable(dataT,fullfile(mData.pdf_folder,'Remapping_Trials.xls'));
-
-    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
-    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-    nbars = length(mVar)/3;
-    colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 5 1.25],'color','w');
+    [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,9]);
+    var1 = arrayfun(@(x) nanmean(x{1}),out1.adj_RR_SP); 
+    var2 = arrayfun(@(x) nanmean(x{1}),out2.adj_RR_SP);
+    var3 = arrayfun(@(x) nanmean(x{1}),out3.adj_RR_SP);
+    between = make_between_table({var1,var2,var3},dvn);
+    ra = repeatedMeasuresAnova(between,within);
+    %%
+    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2 1],'color','w');
     hold on;
-    tcolors = colors(1:nbars); tcolors = repmat(tcolors,1,3);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-%     for ii = (nbars+1):length(hbs)
-%         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
-%     end
-    % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = xlabels; xticklabels = repmat(xticklabels,1,2);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_line_graph(mData,ra,0);
+    tcolors = mData.colors;
+    ii = 1; plot(xdata,mVar(ii,:),'color',tcolors{ii},'linewidth',0.5); errorbar(xdata,mVar(ii,:),semVar(ii,:),'color',tcolors{ii},'linewidth',0.25,'linestyle','none','capsize',1);
+    ii = 2; plot(xdata,mVar(ii,:),'color',tcolors{ii},'linestyle','-.','linewidth',0.5); errorbar(xdata,mVar(ii,:),semVar(ii,:),'color',tcolors{ii},'linewidth',0.25,'linestyle','none','capsize',1);
+    ii = 3; plot(xdata,mVar(ii,:),'color',tcolors{ii},'linewidth',0.5); errorbar(xdata,mVar(ii,:),semVar(ii,:),'color',tcolors{ii},'linewidth',0.25,'linestyle','none','capsize',1);
+    legs = {'C3','C4','C3'''};
+    legs{end+1} = [1 0.2 1.05 0.25];
+    putLegendH(gca,legs,tcolors)
+    ylims = ylim;
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[ylims(1) ylims(2)],'FontSize',6,'FontWeight','Normal','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10'};
+    xticklabels = repmat(xticklabels,1,2);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
-    changePosition(gca,[-0.06 0.03 0.15 -0.05]);
+    changePosition(gca,[0.03 0.12 0.05 -0.08]);
+    put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Correlation'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,'Delta_FR_score_trials',600);
+end
+%% Spatial correlation between conditions
+if 1
+    [within,dvn,xlabels] = make_within_table({'Cond'},2);
+    var_CE = arrayfun(@(x) mean(x{1}),outRemap.adj_SP_corr_diag);
+    dataT = make_between_table({var_CE},dvn);
+    ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+    hold on;
+    tcolors ={colors{7};colors{8};};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.02,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'C3-C4','C4-C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+%     set(hbs(2),'facecolor','none','edgecolor',tcolors{2});
+    xtickangle(30);
+%     changePosition(gca,[0.2 0.03 -0.55 -0.05]);
+    changePosition(gca,[0.1 0.03 -0.4 -0.1]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
-
-    save_pdf(hf,mData.pdf_folder,'remap bar graph_trials_air_place',600);
-;
+    save_pdf(hf,mData.pdf_folder,'air_place_cell corr remap',600);
 end
 
+%% Delta FR score (RAte remap) between conditions
+if 1
+    [within,dvn,xlabels] = make_within_table({'Cond'},2);
+    var_CE = arrayfun(@(x) nanmean(x{1}),outRemap.adj_RR_SP);
+    dataT = make_between_table({var_CE},dvn);
+    ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+    hold on;
+    tcolors ={colors{7};colors{8};};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.02,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+0.1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'C3-C4','C4-C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+%     set(hbs(2),'facecolor','none','edgecolor',tcolors{2});
+    xtickangle(30);
+%     changePosition(gca,[0.2 0.03 -0.55 -0.05]);
+    changePosition(gca,[0.1 0.03 -0.4 -0.1]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,'air_place_cell rate remap (DFR)',600);
+end
 
-
+%% Popuation Vector correlation between conditions
+if 1
+    [within,dvn,xlabels] = make_within_table({'Cond'},2);
+    var_CE = arrayfun(@(x) nanmean(x{1}),outRemap.adj_PV_corr_diag);
+    dataT = make_between_table({var_CE},dvn);
+    ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
+    colors = mData.colors;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+    hold on;
+    tcolors ={colors{7};colors{8};};
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+0.1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'C3-C4','C4-C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+%     set(hbs(2),'facecolor','none','edgecolor',tcolors{2});
+    xtickangle(30);
+%     changePosition(gca,[0.2 0.03 -0.55 -0.05]);
+    changePosition(gca,[0.1 0.03 -0.4 -0.1]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,'air_place_cell PV corr',600);
+end
 
 %%
 dataT = array2table(resp_fractionC*100);
@@ -434,27 +463,3 @@ mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
     save_pdf(hf,mData.pdf_folder,sprintf('air_overlap_statsD'),600);
     
     
-%%
-    [mVar,semVar] = findMeanAndStandardError(resp_OR_fractionC*100);
-    combs = []; p = 1; h = p < 0.05;
-%     row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcGroup{1,6}; h(ii) = 1; 
-    % row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
-    % row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
-
-    xdata = [1]; 
-    colors = mData.colors;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
-    hold on;
-%     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
-    tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4};};
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
-    xticks = xdata(1:end); xticklabels = {''''};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    xtickangle(30)
-    changePosition(gca,[0.3 0.03 -0.5 -0.05]);
-    put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned Cells','in any Condition (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('air_Unique_place_Cells'),600);
