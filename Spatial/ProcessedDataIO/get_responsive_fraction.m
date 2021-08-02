@@ -17,9 +17,9 @@ for rr = 1:size(Rs,1)
             exc_inh = NaN;
         end
     end
-    resp_vals{rr} = ccs;
-    resp_exc_inh{rr,1} = exc;
-    resp_exc_inh{rr,2} = inh;
+    resp_vals{rr} = logical(ccs);
+    resp_exc_inh{rr,1} = logical(exc);
+    resp_exc_inh{rr,2} = logical(inh);
     
     resp_OR{rr} = logical(zeros(size(ccs,1),1));
     resp_AND{rr} = logical(ones(size(ccs,1),1));
