@@ -1,1 +1,0 @@
-function temporalDownSampleRawData (expInfo,downSampleNumber)

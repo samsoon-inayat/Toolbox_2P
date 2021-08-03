@@ -3,7 +3,8 @@ selpp = []; selpf = [];
 
 pp_folder_names = {'PostProcessing','PostProcessing_15','PostProcessing_16'};
 pf_folder_names = {'Protocol10_Figures','Protocol10_Figures_AD','Protocol15_1_Figures','Protocol15_Figures','Protocol_16_Figures'};
-folder_names = {'Revamp_Basic_Characterization','Path_Integration_Paper_Ctrl'};
+folder_names = {'Revamp_Basic_Characterization','Path_Integration_Paper_Ctrl','AD_Paper','Cluster_Processing_Easy',...
+    'Path_Integration_Paper'};
 
 rmp(pp_folder_names,selpp);
 rmp(pf_folder_names,selpf);
