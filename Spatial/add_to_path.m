@@ -13,7 +13,6 @@ cd(currentDir);
 temp = fullfile(interDir,'Matlab');addpath(temp);
 temp = fullfile(interDir,'Matlab','Common');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','append_pdfs');addpath(temp);
-temp = fullfile(interDir,'Matlab','Thor2P');addpath(temp);
 temp = fullfile(interDir,'Matlab','FigureFunctions');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','spatial-information-metrics');addpath(temp);
 temp = fullfile(interDir,'Matlab','Fitting');addpath(temp);
