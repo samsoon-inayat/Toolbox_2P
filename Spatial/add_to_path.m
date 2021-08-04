@@ -16,6 +16,7 @@ temp = fullfile(mainDir,'Downloaded','append_pdfs');addpath(temp);
 temp = fullfile(interDir,'Matlab','FigureFunctions');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','spatial-information-metrics');addpath(temp);
 temp = fullfile(interDir,'Matlab','Fitting');addpath(temp);
+temp = fullfile(interDir,'Matlab','Statistical_Package');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','npy-matlab');addpath(temp);
 temp = fullfile(mainDir,'Downloaded');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','CNMF_E');p = genpath(temp);addpath(p);
