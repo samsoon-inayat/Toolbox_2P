@@ -467,7 +467,7 @@ end
 end
 
 %% Place Field Properties on the belt
-props = {'Field Width (cm)','Field Center (cm)','Field FR (AU)'};
+props = {'Field Width (cm)',{'Percent of Spatially','Tuned Cells (%)'},'Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'};
 pri = 2;
 if 1
@@ -506,7 +506,7 @@ if 1
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
     hf = get_figure(5,[8 7 2.5 1]);
     s = generate_shades(length(bins)-1);
-    tcolors = [s.m;s.c;s.y];
+    tcolors = colors;%[s.m;s.c;s.y];
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
@@ -514,7 +514,29 @@ if 1
     format_axes(gca);
     xticks = xdata; xticklabels = xlabels;
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-%     changePosition(gca,[0.07 0.02 -0.4 -0.011])
-    put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 0 0]});
+    changePosition(gca,[0.03 0.02 0 -0.011])
+    put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
+end
+
+
+%% percent of spatially tuned cells on the belt
+if 1
+    [within,dvn,xlabels] = make_within_table({'Bins'},[(length(bins)-1)]);
+    dataT = make_between_table({reshape(mzMIsC,size(Rs,1)*size(sRs,2),(length(bins)-1))},dvn);
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
+    hf = get_figure(5,[8 7 2.5 1]);
+    s = generate_shades(length(bins)-1);
+    tcolors = colors;%[s.m;s.c;s.y];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    format_axes(gca);
+    xticks = xdata; xticklabels = xlabels;
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.03 0.02 0 -0.011])
+    put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
 end
