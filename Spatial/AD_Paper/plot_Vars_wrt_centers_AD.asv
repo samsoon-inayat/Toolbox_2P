@@ -23,15 +23,15 @@ n = 0;
 %%
 
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
-ylabels = {{'Mutual Information','(z-score)'},'Firing Rate (AU)','Field Widths (cm)','R-Squared','Spatially Tuned Cells (%)'};
+ylabels = {{'Mutual Information','(z-score)'},'Firing Rate (AU)','Field Widths (cm)','R-Squared',{'Spatially Tuned', 'Cells (%)'}};
 
-vn = 1;
+vn = 3;
 
-number_of_bins = 3;
+number_of_bins = 1;
 [all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn});
 [all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn});
 
-if 1
+if 0
     all_valsC = all_vals_NC;
     all_valsA = all_vals_NA;
     vn = 5;
@@ -77,7 +77,7 @@ end
 
 n = 0;
 %% average distributions w.r.t centers for the two groups
-if 0
+if 1
     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
     tcolors = [temp_tcolors temp_tcolors];
     combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.00005;
@@ -101,11 +101,7 @@ if 0
     
     xticks = xdata;%(1:2:end)+0.5; 
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    if vn < 5
-        put_axes_labels(gca,{[],[0 0 0]},{ylabels{vn},[0 0 0]});
-    else
-        put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
-    end
+    put_axes_labels(gca,{[],[0 0 0]},{ylabels{vn},[0 0 0]});
     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
     save_pdf(hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_variables{vn},number_of_bins),600);
     return;
@@ -131,8 +127,8 @@ else
 end
 xticks = xdata; xticklabels = {'B1','B2','B3'}; xticklabels = repmat(xticklabels,1,2);
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
-changePosition(gca,[-0.03 0.03 0.11 -0.01]);
-changePosition(gca,[0.0 0.03 0.11 -0.01])
+% changePosition(gca,[-0.03 0.03 0.11 -0.01]);
+changePosition(gca,[-0.03 0.03 0.11 -0.01])
 put_axes_labels(gca,{[],[0 0 0]},{'',[0 0 0]});
 
 save_pdf(hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d_pooled',all_variables{vn},number_of_bins),600);
@@ -160,7 +156,7 @@ for cc = 1:size(Rs,2)
         end
         if strcmp(var,'all_fFR')
             vals = as';
-            resp(vals>5000) = 0;
+%             resp(vals>5000) = 0;
         end
         if strcmp(var,'all_fwidths')
             vals = cs';

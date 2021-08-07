@@ -1,6 +1,8 @@
 function out = find_population_vector_corr_remap(Rs,mRs,resp)
 % function [all_corr_an,all_corr_cell_an,mean_corr,mean_corr_popV,mean_corr_cell,xso,param] = find_population_vector_corr_remap(Rs,mRs,resp)
 
+% find binwidths and column sizes of all population activity to later fill
+% in missing values and bring all correlation matrices to equal size
 for rr = 1:size(mRs,1)
     for cc1 = 1:size(mRs,2)
         cols(rr,cc1) = size(mRs{rr,cc1},2);
@@ -29,22 +31,22 @@ else
     xso.label = 'Position (cm)';
 end
 
-for rr = 1:size(mRs,1)
+for rr = 1:size(mRs,1) % for each animal
     PV_corr = []; PV_corr_diag = [];
     SP_corr =[]; SP_corr_diag = [];
     RR = []; RR_SP = []; RR_PV = []; RR_score_PV_corr_diag = []; RR_score_PF_corr_diag = [];
-    for cc1 = 1:size(mRs,2)
-        for cc2 = 1:size(mRs,2)
-            RV1 = mRs{rr,cc1}; RV2 = mRs{rr,cc2};
-            RV1 = correctsz(RV1(resp{rr},:),maxcolsz); RV2 = correctsz(RV2(resp{rr},:),maxcolsz);
-            [RV1_ordered,~,cellnums] = findPopulationVectorPlot(RV1,[]);
-            [RV2_ordered,~,~] = findPopulationVectorPlot(RV2,[],cellnums);
-            [this_PV_corr,pPV] = corr(RV1_ordered,RV2_ordered);
-            this_PV_corr = fillmissing(this_PV_corr,'linear',2,'EndValues','nearest');
+    for cc1 = 1:size(mRs,2) % for each population activity (rate vectors) matrix
+        for cc2 = 1:size(mRs,2) % for each population activity matrix --> comparison with itself and all others
+            RV1 = mRs{rr,cc1}; RV2 = mRs{rr,cc2}; % get rate vectors from two conditions
+            RV1 = correctsz(RV1(resp{rr},:),maxcolsz); RV2 = correctsz(RV2(resp{rr},:),maxcolsz); % make sizes equal
+            [RV1_ordered,~,cellnums] = findPopulationVectorPlot(RV1,[]); % order RV1 according to peak firing
+            [RV2_ordered,~,~] = findPopulationVectorPlot(RV2,[],cellnums); % order RV2 the same as RV1
+            [this_PV_corr,pPV] = corr(RV1_ordered,RV2_ordered); % find correlation
+            this_PV_corr = fillmissing(this_PV_corr,'linear',2,'EndValues','nearest'); 
             this_PV_corr = fillmissing(this_PV_corr,'linear',1,'EndValues','nearest');
             PV_corr{cc1,cc2} = this_PV_corr;
-            PV_corr_diag{cc1,cc2} = diag(this_PV_corr);
-            
+            PV_corr_diag{cc1,cc2} = diag(this_PV_corr);% length equal to number of bins (for autocorrelation all values would be 1) 
+            %the diagonal indicates the corresponding bin comparison in two conditions
 %             [param.FD(cc1,cc2,rr),param.all_bw{cc1,cc2}] = findFractalDim(this_PV_corr);
             
             % spatial correlation
@@ -52,7 +54,10 @@ for rr = 1:size(mRs,1)
             this_SP_corr = fillmissing(this_SP_corr,'linear',2,'EndValues','nearest');
             this_SP_corr = fillmissing(this_SP_corr,'linear',1,'EndValues','nearest');
             SP_corr{cc1,cc2} = this_SP_corr;
-            SP_corr_diag{cc1,cc2} = diag(this_SP_corr);
+            SP_corr_diag{cc1,cc2} = diag(this_SP_corr); % length equal to number of neurons
+            % the diagnoal corresponds to the same cell correlation
+            % comparison which means we are looking at how the same cell
+            % behaved in two conditions
             
             % RR --> rate remapping
             RR_score = abs(RV1_ordered-RV2_ordered)./(RV1_ordered+RV2_ordered);

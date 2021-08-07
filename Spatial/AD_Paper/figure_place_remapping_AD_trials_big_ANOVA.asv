@@ -173,8 +173,8 @@ if 1
     Nt = length(trials);
 %     mask = ones(Nt,Nt); 
 %     order = 1; mask = triu(mask,order) & ~triu(mask,order+1);
-    trialNum = 1;
-    mask = zeros(Nt,Nt); mask(trialNum,:) = 1; mask = mask.*triu(ones(size(mask)),1);
+    trialNum = 2;
+    mask = zeros(Nt,Nt); mask(trialNum,:) = 1; mask = mask.*triu(ones(size(mask)),trialNum);
 
     cn = 1;
     selC = out_C{cn};
@@ -182,10 +182,10 @@ if 1
     mapvcC = []; mapvcA = [];
     for ii = 1
         [apvc] = get_corr_summary(selC.all_SP_corr,mask);
-        tapvc = (arrayfun(@(x) mean(x{1}),apvc(:,1:end)));
+        tapvc = (arrayfun(@(x) mean(x{1}),apvc(:,1:(10-ii))));
         mapvcC = [mapvcC tapvc];
         [apvc] = get_corr_summary(selA.all_SP_corr,mask);
-        tapvc = (arrayfun(@(x) mean(x{1}),apvc(:,1:end)));
+        tapvc = (arrayfun(@(x) mean(x{1}),apvc(:,1:(10-ii))));
         mapvcA = [mapvcA tapvc];
     end
     N = size(mapvcC,2);

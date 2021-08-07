@@ -22,12 +22,12 @@ RsA = find_responsive_rasters(RsA,1:10);
 n = 0;
 %%
 
-all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
+all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs','P'};
 ylabels = {{'Mutual Information','(z-score)'},'Firing Rate (AU)','Field Widths (cm)','R-Squared',{'Spatially Tuned', 'Cells (%)'}};
 
-vn = 1;
+vn = 3;
 
-number_of_bins = 1;
+number_of_bins = 4;
 [all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn});
 [all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn});
 
@@ -84,7 +84,7 @@ if 1
     xdata = [1:(length(mVar)/2) ((length(mVar)/2)+1+(1:(length(mVar)/2)))];
     colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
-    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 4.55 1],'color','w');
+    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 5 1],'color','w');
     hold on;
     [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
@@ -156,7 +156,7 @@ for cc = 1:size(Rs,2)
         end
         if strcmp(var,'all_fFR')
             vals = as';
-            resp(vals>5000) = 0;
+%             resp(vals>5000) = 0;
         end
         if strcmp(var,'all_fwidths')
             vals = cs';

@@ -31,7 +31,7 @@ processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcal
 T_A1 = reduce_table(T_A,animal_list_APP,date_list_APP);
 disp('Done');
 %%
-colormaps = load('../MatlabCode/colorblind_colormap.mat');
+colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
