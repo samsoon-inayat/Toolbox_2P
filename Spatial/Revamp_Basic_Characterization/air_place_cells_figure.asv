@@ -435,7 +435,7 @@ if 1
     maxBin = max(allVals);
     incr = all_incr(pri); %maxBin =
     hf = get_figure(8,[5 7 1.25 1]);
-    [ha,hb,hca,bins] = plotAverageDistributions(distD,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
+    [ha,hb,~,bins] = plotAverageDistributions(distD,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
     format_axes(gca);
     if pri == 1
         legs = {'C3','C4','C3''',[50 3 70 5]}; putLegend(gca,legs,tcolors);
@@ -466,13 +466,63 @@ if 1
 end
 end
 
+%% Place Field Properties widths vs centers scatter plot and correlation
+props = {'Field Width (cm)','Field Center (cm)','Field FR (AU)'};
+fileNames = {'PFW','PFC','PFFR'};
+all_incr = [1 1 1];
+
+if 1
+    for rr = 1:size(Rs,1)
+        for cc = 1:size(Rs,2)
+            R = Rs{rr,cc};
+            [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
+            W{rr,cc} = PWs(resp_valsCS{rr}(:,cc))';
+            C{rr,cc} = centers(resp_valsCS{rr}(:,cc))';
+            CW_corr(rr,cc) = corr(C{rr,cc},W{rr,cc});
+        end
+    end
+    tcolors = mData.colors;
+    hf = get_figure(8,[5 7 1.25 1]);hold on;
+    an = 3; 
+    for cn = 1:3
+        scatter(C{an,cn},W{an,cn},2,tcolors{cn});
+        [x,p] = polyfit(C{an,cn},W{an,cn},1);
+        y_hat = polyval(x,C{an,cn});
+        plot(C{an,cn},y_hat,'color',tcolors{cn});
+    end
+    format_axes(gca);
+    changePosition(gca,[0.1 0.13 -0.25 -0.13]);
+    put_axes_labels(gca,{'Field Center (cm)',[0 0 0]},{'Field Width (cm)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('scatter_%s','PFW_PFC'),600);
+
+    [within,dvn,xlabels] = make_within_table({'Cond'},[3]);
+    dataT = make_between_table({CW_corr},dvn);
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    tcolors = mData.colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+    ylims = ylim;
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1)-0.1 maxY]);
+    format_axes(gca);
+    xticks = xdata; xticklabels = {'C3','C4','C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.23 0.02 -0.4 -0.011])
+    put_axes_labels(gca,{[],[0 0 0]},{{'Corr. Field Width','Vs Field Center'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells.pdf','CW_corr'),600);
+end
+
 %% Place Field Properties on the belt
 props = {'Field Width (cm)',{'Percent of Spatially','Tuned Cells (%)'},'Field FR (AU)'};
-fileNames = {'PFW','PFC','PFFR'};
+fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
 pri = 2;
 if 1
     sRs = Rs(:,1:3);
-    minBin = 0;     maxBin = 150;     incr = 37.5;
+    minBin = 0;     maxBin = 150;     incr = 50; % choosing more than 3 bins, give significant anova but not significant multcompare
+    % three bins also make sense because LED in condition 2 comes ON at
+    % 110cm
     bins = minBin:incr:maxBin;
     num_cells = []; PFW_belt = []; MFR_belt = [];
     for rr = 1:size(sRs,1)
@@ -504,39 +554,55 @@ if 1
     dataT = make_between_table({mzMIsC},dvn);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
-    hf = get_figure(5,[8 7 2.5 1]);
+    hf = get_figure(5,[8 7 1.75 1]);
     s = generate_shades(length(bins)-1);
     tcolors = colors;%[s.m;s.c;s.y];
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',yspacing(pri),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    if pri == 2
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 108]);
+    else
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    end
     format_axes(gca);
     xticks = xdata; xticklabels = xlabels;
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.03 0.02 0 -0.011])
+    if pri == 2
+        changePosition(gca,[0.11 0.02 -0.03 -0.011])
+    else
+        changePosition(gca,[0.01 0.02 -0.03 -0.011])
+    end
     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
+    ra.ranova
+    ra.mauchly
 end
 
 
 %% percent of spatially tuned cells on the belt
 if 1
     [within,dvn,xlabels] = make_within_table({'Bins'},[(length(bins)-1)]);
-    dataT = make_between_table({reshape(mzMIsC,size(Rs,1)*size(sRs,2),(length(bins)-1))},dvn);
+    dataT1 = [];
+    for ii = 1:5
+        dataT1(ii,:) = mean(reshape(mzMIsC(ii,:),size(mzMIsC,2)/3,3)');
+    end
+    dataT = make_between_table({dataT1},dvn);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
-    hf = get_figure(5,[8 7 2.5 1]);
+    hf = get_figure(5,[8 7 1.25 1]);
     s = generate_shades(length(bins)-1);
     tcolors = colors;%[s.m;s.c;s.y];
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+        'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 108]);
     format_axes(gca);
     xticks = xdata; xticklabels = xlabels;
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.03 0.02 0 -0.011])
+    changePosition(gca,[0 0.02 -0.35 -0.05])
     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt_pooled.pdf',fileNames{pri}),600);
+    ra.ranova
+    ra.mauchly
 end

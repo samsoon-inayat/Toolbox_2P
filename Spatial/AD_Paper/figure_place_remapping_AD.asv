@@ -32,14 +32,14 @@ out_A = find_population_vector_corr_remap(RsA,mRsA,respA);
 out_C_pop = find_population_vector_corr_remap(RsC,mRsC,respC_pop);
 out_A_pop = find_population_vector_corr_remap(RsA,mRsA,respA_pop);
 
-selC = out_C;
-selA = out_A;
+selC = out_C_pop;
+selA = out_A_pop;
 n = 0;
 %% Correlations across conditions
 typeCorr = {'Spatial Correlation','Pop. Vec. Correlation','\Delta FR Score'};
 FF = {'SP','PV','RR'};
 ysp = [0.05 0.05 0.1];
-for ci = 1:3;
+for ci = 1;
 if 1
     [within,dvn,xlabels] = make_within_table({'Cond'},3);
     switch ci
@@ -182,6 +182,8 @@ end
 
 %% average correlation of all animals
 if 1
+    mean_corr_popV_C = selC.mean_PV_corr;
+    xs_C = selC.xs;
     ff = makeFigureRowsCols(106,[1 0.5 4 0.5],'RowsCols',[4 4],...
         'spaceRowsCols',[0.1 0.1],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',...
         [-150 -150]);
@@ -192,7 +194,14 @@ if 1
 end
 %%
 if 1
-    
-    
+    mean_corr_popV_C = selA.mean_PV_corr;
+    xs_C = selA.xs;
+    ff = makeFigureRowsCols(105,[1 0.5 4 0.5],'RowsCols',[4 4],...
+        'spaceRowsCols',[0.1 0.1],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',...
+        [-150 -150]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 3 4 4]);
+    ff = show_remapping_corr_plots(mData,ff,mean_corr_popV_C,xs_C,[]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('remap_corr_C.pdf'),600);
 end
 %%

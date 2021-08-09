@@ -15,14 +15,14 @@ for ss = 1:length(all_selContexts)
     RsC = get_rasters_data(ei_C,selContexts,rasterNames);
     RsC = find_responsive_rasters(RsC,1:10);
     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(RsC);
-    respC = get_cell_list(resp_valsC,[1]);
+    respC = get_cell_list(resp_valsC,[]);
     out_C{ss} = find_population_vector_corr_remap_trials(RsC,respC,trials);
 
 
     RsA = get_rasters_data(ei_A,selContexts,rasterNames);
     RsA = find_responsive_rasters(RsA,1:10);
     [resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
-    respA = get_cell_list(resp_valsA,[1]);
+    respA = get_cell_list(resp_valsA,[]);
     out_A{ss} = find_population_vector_corr_remap_trials(RsA,respA,trials);
 end
 toc
