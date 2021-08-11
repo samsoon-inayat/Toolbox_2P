@@ -1,4 +1,4 @@
-function selResp = get_cell_list(resp_valsC,cond)
+function selResp = get_cell_list(resp_valsC,cond,per)
 
 if isempty(cond)
     for ii = 1:length(resp_valsC)
@@ -25,4 +25,11 @@ for ii = 1:length(resp_valsC)
         end
         selResp{ii} = selResp{ii} | temp_resp;
     end
+end
+
+if exist('per','var')
+    for rr = 1:length(selResp)
+        perc(rr) = sum(selResp{rr})/length(selResp{rr});
+    end
+    selResp = perc;
 end

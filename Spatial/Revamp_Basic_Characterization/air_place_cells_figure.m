@@ -515,6 +515,8 @@ if 1
 end
 
 %% Place Field Properties on the belt
+respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
+all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Percent of Spatially','Tuned Cells (%)'},'Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
 pri = 2;
@@ -529,7 +531,9 @@ if 1
         for cc = 1:size(sRs,2)
             R = sRs{rr,cc};
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-            resp = resp_valsCS{rr}(:,cc); centers = centers(resp)'; PWs = PWs(resp)'; MFR = MFR(resp)';
+            resp = resp_valsCS{rr}(:,cc); 
+%             resp = all_respCells{cc}{rr};
+            centers = centers(resp)'; PWs = PWs(resp)'; MFR = MFR(resp)';
             for ii = 1:(length(bins)-1)
                 binS = bins(ii); binE = bins(ii+1);
                 inds = find(centers >= binS & centers < binE);
@@ -605,4 +609,51 @@ if 1
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt_pooled.pdf',fileNames{pri}),600);
     ra.ranova
     ra.mauchly
+end
+
+%% Unique Place cells
+for tC = 1:4
+if 1
+    txtT = {'Unique','New','Disrupted','Stable'};
+    percCells = [];
+    switch tC
+        case 1 % unique place cells
+            respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);    respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);    respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
+        case 2 % new place cells
+            respCells1 = get_cell_list(resp_valsCS,[-1 2]);    respCells2 = get_cell_list(resp_valsCS,[-2 3]);    respCells3 = get_cell_list(resp_valsCS,[-1 3]);
+        case 3 % disrupted place cells
+            respCells1 = get_cell_list(resp_valsCS,[1 -2]);    respCells2 = get_cell_list(resp_valsCS,[2 -3]);    respCells3 = get_cell_list(resp_valsCS,[1 -3]);
+        case 4 % remained place cells
+            respCells1 = get_cell_list(resp_valsCS,[1 2]);    respCells2 = get_cell_list(resp_valsCS,[2 3]);    respCells3 = get_cell_list(resp_valsCS,[1 3]);
+    end
+
+    for ii = 1:length(respCells1)
+        percCells(ii,1) = sum(respCells1{ii})/length(respCells1{ii});
+        percCells(ii,2) = sum(respCells2{ii})/length(respCells2{ii});
+        percCells(ii,3) = sum(respCells3{ii})/length(respCells3{ii});
+    end
+
+    [within,dvn,xlabels] = make_within_table({'Conds'},[3]);
+    if tC > 1
+       xlabels = {'C1-C2','C2-C3','C1-C3'};
+    end
+    dataT = make_between_table({percCells},dvn);
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    tcolors = colors;%[s.m;s.c;s.y];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    format_axes(gca);
+    xticks = xdata; xticklabels = xlabels;
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.1 0.02 -0.35 -0.05])
+    put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    text(0.75,maxY+0.01,txtT{tC},'FontSize',6)
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_cells.pdf',txtT{tC}),600);
+    ra.ranova
+    ra.mauchly
+end
 end
