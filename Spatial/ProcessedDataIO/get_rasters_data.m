@@ -151,6 +151,9 @@ function thisFieldC = combine_gauss_fit(thisField,thisField1)
 thisFieldC.coefficients_Rs_mean = cat(1,thisField.coefficients_Rs_mean,thisField1.coefficients_Rs_mean);
 thisFieldC.worked = cat(1,thisField.worked,thisField1.worked);
 thisFieldC.gauss1Formula = thisField.gauss1Formula;
+if isfield(thisField,'coefficients_Rs_trials')
+    thisFieldC.coefficients_Rs_trials = cat(3,thisField.coefficients_Rs_trials,thisField1.coefficients_Rs_trials);
+end
 
 function thisFieldC = combine_fractal_dim(thisField,thisField1)
 thisFieldC.HaFD = cat(2,thisField.HaFD,thisField1.HaFD);

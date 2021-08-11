@@ -20,21 +20,22 @@ Rs = find_responsive_rasters(Rs,1:10);
 [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
 mR = calc_mean_rasters(Rs,1:10);
 n = 0;
-
-%%
-resp = resp_ORCS
+%% find correlations across conditions
+resp = resp_ORCS;
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
 
 outRemap = find_population_vector_corr_remap(Rs,mR,resp_ORCS);
 n = 0;
-%%
+
+%% find trial by trial comparison - correlations
 trials = mat2cell([1:10]',ones(size([1:10]')));
-resp = get_cell_list(resp_valsCS,[]);
+resp = get_cell_list(resp_valsCS,[1;2;3]);
 out1 = find_population_vector_corr_remap_trials(Rs(:,1),resp,trials);
 out2 = find_population_vector_corr_remap_trials(Rs(:,2),resp,trials);
 out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
 % save(fullfile(mData.pd_folder,'air_place_cells_figure.mat'),'out1','out2','out3');
 n = 0;
+
 %% Speed Figure
 if 1
     for ii = 1:length(ei)
@@ -218,6 +219,34 @@ if 1
     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive'),600);
 end
+
+%% Percentage of Responsive Cells Unique in Conditions
+if 1
+    percCells = [];
+    percCells(:,1) = get_cell_list(resp_valsCS,[1 -2 -3],1)'; percCells(:,2) = get_cell_list(resp_valsCS,[-1 2 -3],1)'; percCells(:,3) = get_cell_list(resp_valsCS,[-1 -2 3],1)';
+    within = make_within_table({'Cond'},3);
+    dataT = make_between_table({percCells*100},{'C31','C4','C32'});
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+%     s = generate_shades(3); tcolors = s.g;
+    tcolors = mData.colors;
+     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+%     set(hbs(3),'EdgeColor','k');
+%     hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
+    format_axes(gca);
+    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 25])
+    xticks = [xdata(1:end)]; xticklabels = {'C3','C4','C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    any_mean = mean(100*resp_OR_fractionCS);    any_sem = std(100*resp_OR_fractionCS)/sqrt(5);
+%     pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(0.75,20,any_text,'FontSize',6);
+    changePosition(gca,[0.17 0.02 -0.4 -0.011])
+%     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive_unique'),600);
+end
 %% Spatial correlation between adjacent trails
 if 1
     [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,9]);
@@ -262,6 +291,60 @@ if 1
     xticks = xdata(1:end)+0; xticklabels = {'T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10'};
     xticklabels = repmat(xticklabels,1,3);
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(45);
+%     changePosition(gca,[0.1 0.11 -0.2 -0.05]);
+    changePosition(gca,[-0.02 0.03 0.1 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph',600);
+end
+
+%% Spatial correlation trails with mean of trials
+if 1
+    [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,10]);
+    var1 = []; var2 = []; var3 = [];
+    for ii = 1:length(out1.all_SP_corr_diag_with_mean)
+        var1(ii,:) = (arrayfun(@(x) mean(x{1}),out1.all_SP_corr_diag_with_mean{ii}))'; 
+        var2(ii,:) = (arrayfun(@(x) mean(x{1}),out2.all_SP_corr_diag_with_mean{ii}))'; 
+        var3(ii,:) = (arrayfun(@(x) mean(x{1}),out3.all_SP_corr_diag_with_mean{ii}))'; 
+    end
+    between = make_between_table({var1,var2,var3},dvn);
+    ra = repeatedMeasuresAnova(between,within);
+    %%
+    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hold on;
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_line_graph(mData,ra,0);
+    tcolors = mData.colors;
+    ii = 1; plot(xdata,mVar(ii,:),'color',tcolors{ii},'linewidth',0.5); errorbar(xdata,mVar(ii,:),semVar(ii,:),'color',tcolors{ii},'linewidth',0.25,'linestyle','none','capsize',1);
+    ii = 2; plot(xdata,mVar(ii,:),'color',tcolors{ii},'linestyle','-.','linewidth',0.5); errorbar(xdata,mVar(ii,:),semVar(ii,:),'color',tcolors{ii},'linewidth',0.25,'linestyle','none','capsize',1);
+    ii = 3; plot(xdata,mVar(ii,:),'color',tcolors{ii},'linewidth',0.5); errorbar(xdata,mVar(ii,:),semVar(ii,:),'color',tcolors{ii},'linewidth',0.25,'linestyle','none','capsize',1);
+    legs = {'C3','C4','C3'''};
+    legs{end+1} = [1 0.2 0.25 0.25];
+    putLegendH(gca,legs,tcolors)
+    ylims = ylim;
+    set(gca,'xlim',[0.5 xdata(end)+0.5],'ylim',[ylims(1) ylims(2)],'FontSize',6,'FontWeight','Normal','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10'};
+    xticklabels = repmat(xticklabels,1,2);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(45);
+    changePosition(gca,[0.05 0.12 0.05 -0.08]);
+    put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Spatial Correlation'},[0 -0.05 0]});
+    save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials',600);
+end
+%% Spatial correlation trails with mean of trials (mean bar graph)
+if 1
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.5 1]);
+    hollowsep = 19;
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.25 1],'color','w');
+    hold on;
+    tcolors = colors(1:10); tcolors = repmat(tcolors,[1 3]);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+            'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+            'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+    ylims = ylim;
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[ylims(1) maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
+    xticks = xdata(1:end)+0; xticklabels = {'T1','T2','T3','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10'};
+    xticklabels = repmat(xticklabels,1,3);
+    set(gca,'xtick',xticks,'xticklabels',xlabels);
     xtickangle(45);
 %     changePosition(gca,[0.1 0.11 -0.2 -0.05]);
     changePosition(gca,[-0.02 0.03 0.1 -0.05]);
@@ -517,7 +600,7 @@ end
 %% Place Field Properties on the belt
 respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
 all_respCells = {respCells1,respCells2,respCells3};
-props = {'Field Width (cm)',{'Percent of Spatially','Tuned Cells (%)'},'Field FR (AU)'};
+props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
 pri = 2;
 if 1
@@ -537,7 +620,7 @@ if 1
             for ii = 1:(length(bins)-1)
                 binS = bins(ii); binE = bins(ii+1);
                 inds = find(centers >= binS & centers < binE);
-                num_cells(rr,cc,ii) = 100*length(inds)/length(centers);
+                num_cells(rr,cc,ii) = 100*length(inds)/length(resp);
                 PFW_belt(rr,cc,ii) = mean(PWs(inds));
                 MFR_belt(rr,cc,ii) = mean(MFR(inds));
             end
@@ -565,12 +648,12 @@ if 1
         'ySpacing',yspacing(pri),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
     if pri == 2
-        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 108]);
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
     else
         set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
     end
     format_axes(gca);
-    xticks = xdata; xticklabels = xlabels;
+    xticks = xdata; xticklabels = {'C3-B1','C3-B2','C3-B3','C4-B1','C4-B2','C3=4-B3','C3''-B1','C3''-B2','C3''-B3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     if pri == 2
         changePosition(gca,[0.11 0.02 -0.03 -0.011])
@@ -600,7 +683,7 @@ if 1
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 108]);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
     format_axes(gca);
     xticks = xdata; xticklabels = xlabels;
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
@@ -611,11 +694,12 @@ if 1
     ra.mauchly
 end
 
-%% Unique Place cells
+%% Place cell emergence disruption stability
 for tC = 1:4
 if 1
     txtT = {'Unique','New','Disrupted','Stable'};
-    percCells = [];
+    or_cells = get_cell_list(resp_valsCS,[1;2;3]);
+    percCells = []; 
     switch tC
         case 1 % unique place cells
             respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);    respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);    respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
@@ -628,14 +712,14 @@ if 1
     end
 
     for ii = 1:length(respCells1)
-        percCells(ii,1) = sum(respCells1{ii})/length(respCells1{ii});
-        percCells(ii,2) = sum(respCells2{ii})/length(respCells2{ii});
-        percCells(ii,3) = sum(respCells3{ii})/length(respCells3{ii});
+        percCells(ii,1) = 100*sum(respCells1{ii})/length(or_cells{ii});%length(respCells1{ii});
+        percCells(ii,2) = 100*sum(respCells2{ii})/length(or_cells{ii});%length(respCells2{ii});
+        percCells(ii,3) = 100*sum(respCells3{ii})/length(or_cells{ii});%length(respCells3{ii});
     end
 
     [within,dvn,xlabels] = make_within_table({'Conds'},[3]);
     if tC > 1
-       xlabels = {'C1-C2','C2-C3','C1-C3'};
+       xlabels = {'C3-C4','C4-C3''','C3-C3'''};
     end
     dataT = make_between_table({percCells},dvn);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
@@ -651,9 +735,94 @@ if 1
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.1 0.02 -0.35 -0.05])
     put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    text(0.75,maxY+0.01,txtT{tC},'FontSize',6)
+    text(0.75,maxY,txtT{tC},'FontSize',6)
     save_pdf(hf,mData.pdf_folder,sprintf('%s_cells.pdf',txtT{tC}),600);
     ra.ranova
     ra.mauchly
 end
 end
+
+
+%% Place cell emergence disruption stability - big combined test
+if 1
+    respCells1 = get_cell_list(resp_valsCS,[1]); respCells2 = get_cell_list(resp_valsCS,[2]);    respCells3 = get_cell_list(resp_valsCS,[3]);
+    respCells1o2 = get_cell_list(resp_valsCS,[1;2]); respCells2o3 = get_cell_list(resp_valsCS,[2;3]);    respCells1o3 = get_cell_list(resp_valsCS,[1;3]);
+    or_cells = get_cell_list(resp_valsCS,[1;2;3])
+    txtT = {'New','Disrupted'};
+    percCells = [];
+    % new place cells
+    respCells12 = get_cell_list(resp_valsCS,[-1 2]);    respCells23 = get_cell_list(resp_valsCS,[-2 3]);    respCells13 = get_cell_list(resp_valsCS,[-1 3]);
+    for ii = 1:length(respCells1)
+        percCells(ii,1) = sum(respCells12{ii})/length(or_cells{ii});
+        percCells(ii,2) = sum(respCells23{ii})/length(or_cells{ii});
+        percCells(ii,3) = sum(respCells13{ii})/length(or_cells{ii});
+    end
+    % disrupted place cells
+    respCells12 = get_cell_list(resp_valsCS,[1 -2]);    respCells23 = get_cell_list(resp_valsCS,[2 -3]);    respCells13 = get_cell_list(resp_valsCS,[1 -3]);
+    for ii = 1:length(respCells1)
+        percCells(ii,4) = sum(respCells12{ii})/length(or_cells{ii});%length(respCells1{ii});
+        percCells(ii,5) = sum(respCells23{ii})/length(or_cells{ii});%length(respCells2{ii});
+        percCells(ii,6) = sum(respCells13{ii})/length(or_cells{ii});%length(respCells3{ii});
+    end
+     % remained place cells
+    respCells12 = get_cell_list(resp_valsCS,[1 2]);    respCells23 = get_cell_list(resp_valsCS,[2 3]);    respCells13 = get_cell_list(resp_valsCS,[1 3]);
+    for ii = 1:length(respCells1)
+        percCells(ii,7) = sum(respCells12{ii})/length(or_cells{ii});%length(respCells1{ii});
+        percCells(ii,8) = sum(respCells23{ii})/length(or_cells{ii});%length(respCells2{ii});
+        percCells(ii,9) = sum(respCells13{ii})/length(or_cells{ii});%length(respCells3{ii});
+    end
+    
+
+    [within,dvn,xlabels] = make_within_table({'Conds','Type'},[3 3]);
+    dataT = make_between_table({percCells},dvn);
+    ra = repeatedMeasuresAnova(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+    hf = get_figure(5,[8 7 2.5 1]);
+    tcolors = colors;%[s.m;s.c;s.y];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    format_axes(gca);
+    xticks = xdata; xticklabels = xlabels;
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0 0.02 -0.15 -0.05])
+    put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('dynamics_cells.pdf'),600);
+    ra.ranova
+    ra.mauchly
+end
+
+%% trial by trial comparison - place location gaussian fitting
+[resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
+resp = get_cell_list(resp_valsCS,[1 -2 -3]);
+out_tt_PC = find_trial_by_trial_Gauss_Fit_Results(Rs,mR,resp);
+[within,dvn,xlabels] = make_within_table({'Conds','DC'},[3,10]);
+dataT1 = [];
+for rr = 1:size(out_tt_PC.diff_centers_from_mean,1)
+    thisD = [];
+    for cc = 1:size(out_tt_PC.diff_centers_from_mean,2)
+        thisDT = nanmean(out_tt_PC.diff_centers_from_mean{rr,cc});
+        thisD = [thisD thisDT];
+    end
+    dataT1(rr,:) = thisD;
+end
+
+dataT = make_between_table({dataT1},dvn);
+ra = repeatedMeasuresAnova(dataT,within,0.05);
+[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+hf = get_figure(5,[8 7 9 1]);
+% s = generate_shades(length(bins)-1);
+tcolors = colors;%[s.m;s.c;s.y];
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+format_axes(gca);
+xticks = xdata; xticklabels = xlabels;
+set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+changePosition(gca,[0.05 0.02 -0.35 -0.05])
+put_axes_labels(gca,{[],[0 0 0]},{'Jitter Centers (cm)',[0 0 0]});
+save_pdf(hf,mData.pdf_folder,sprintf('jitter_centers.pdf'),600);
+ra.ranova
+ra.mauchly

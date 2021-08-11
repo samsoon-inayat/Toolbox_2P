@@ -31,6 +31,30 @@ else
     xso.label = 'Position (cm)';
 end
 
+% correlations with means e.g., of all trial responses with mean of raster
+% (same thing for accross conditions) - HaoRan's idea of looking at how
+% similar each trial is to the mean
+for rr = 1:size(mRs,1) % for each animal
+    this_mean = NaN(size(mRs{rr,1},1),maxcolsz,size(mRs,2));
+    for cc1 = 1:size(mRs,2)
+        this_mean(:,1:size(mRs{rr,cc1},2),cc1) = mRs{rr,cc1};
+    end
+    mean_mRs{rr,1} = nanmean(this_mean,3);
+    for cc1 = 1:size(mRs,2)
+        RV1 = mRs{rr,cc1}; RV2 = mean_mRs{rr,1}; % get rate vectors from 1 condition and the other one is mean
+        RV1 = correctsz(RV1(resp{rr},:),maxcolsz); RV2 = correctsz(RV2(resp{rr},:),maxcolsz); % make sizes equal
+        [RV1_ordered,~,cellnums] = findPopulationVectorPlot(RV1,[]); % order RV1 according to peak firing
+        [RV2_ordered,~,~] = findPopulationVectorPlot(RV2,[],cellnums); % order RV2 the same as RV1
+        [this_SP_corr,pSP] = corr(RV1_ordered',RV2_ordered');
+        this_SP_corr = fillmissing(this_SP_corr,'linear',2,'EndValues','nearest');
+        this_SP_corr = fillmissing(this_SP_corr,'linear',1,'EndValues','nearest');
+        SP_corr_with_mean{cc1,1} = this_SP_corr;
+        SP_corr_diag_with_mean{cc1,1} = diag(this_SP_corr); % length equal to number of neurons
+    end
+    all_SP_corr_with_mean{rr} = SP_corr_with_mean;
+    all_SP_corr_diag_with_mean{rr} = SP_corr_diag_with_mean;
+end
+
 for rr = 1:size(mRs,1) % for each animal
     PV_corr = []; PV_corr_diag = [];
     SP_corr =[]; SP_corr_diag = [];
@@ -58,6 +82,7 @@ for rr = 1:size(mRs,1) % for each animal
             % the diagnoal corresponds to the same cell correlation
             % comparison which means we are looking at how the same cell
             % behaved in two conditions
+            
             
             % RR --> rate remapping
             RR_score = abs(RV1_ordered-RV2_ordered)./(RV1_ordered+RV2_ordered);
@@ -137,6 +162,8 @@ out.adj_RR_SP = adj_RR_SP;
 out.adj_RR_PV = adj_RR_PV;
 out.all_auto_SP_corr_corr = all_auto_SP_corr_corr;
 out.xs = xso;
+out.all_SP_corr_with_mean = all_SP_corr_with_mean;
+out.all_SP_corr_diag_with_mean = all_SP_corr_diag_with_mean;
 
 
 n = 0;
