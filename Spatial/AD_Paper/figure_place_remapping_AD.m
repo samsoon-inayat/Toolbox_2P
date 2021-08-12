@@ -52,6 +52,7 @@ if 1
     end
     dataT = make_between_table({var_C;var_A},dvn);
     ra = repeatedMeasuresAnova(dataT,within);
+    rar = RMA(dataT,within);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
     colors = mData.colors;
     hf = get_figure(5,[3 7 1.5 1]);

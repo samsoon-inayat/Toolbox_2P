@@ -797,27 +797,28 @@ end
 [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
 resp = get_cell_list(resp_valsCS,[1;2;3]);
 out_tt_PC = find_trial_by_trial_Gauss_Fit_Results(Rs,mR,resp);
-[within,dvn,xlabels] = make_within_table({'Conds','DC'},[3,10]);
+[within,dvn,xlabels] = make_within_table({'Conds','DC'},[3,9]);
 dataT1 = [];
 for rr = 1:size(out_tt_PC.diff_centers_from_mean,1)
     thisD = [];
     for cc = 1:size(out_tt_PC.diff_centers_from_mean,2)
-        thisDT = nanmean(out_tt_PC.diff_centers_from_mean{rr,cc});
+        thisDT = nanmean(out_tt_PC.diff_centers{rr,cc});
         thisD = [thisD thisDT];
     end
     dataT1(rr,:) = thisD;
 end
 
 dataT = make_between_table({dataT1},dvn);
-ra = repeatedMeasuresAnova(dataT,within,0.05);
-[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+ra = RMA(dataT,within,0.05);
+[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Conds_by_DC','bonferroni'},[1 1 1]);
 hf = get_figure(5,[8 7 9 1]);
 % s = generate_shades(length(bins)-1);
 tcolors = colors;%[s.m;s.c;s.y];
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+ylims = ylim;
+set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]);
 format_axes(gca);
 xticks = xdata; xticklabels = xlabels;
 set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)

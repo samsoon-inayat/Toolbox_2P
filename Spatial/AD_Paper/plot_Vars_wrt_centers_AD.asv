@@ -22,12 +22,12 @@ RsA = find_responsive_rasters(RsA,1:10);
 n = 0;
 %%
 
-all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs',''};
+all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs','P'};
 ylabels = {{'Mutual Information','(z-score)'},'Firing Rate (AU)','Field Widths (cm)','R-Squared',{'Spatially Tuned', 'Cells (%)'}};
 
 vn = 3;
 
-number_of_bins = 1;
+number_of_bins = 4;
 [all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn});
 [all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn});
 
@@ -78,13 +78,15 @@ end
 n = 0;
 %% average distributions w.r.t centers for the two groups
 if 1
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,rar,{'Group_by_Cond_Bin','bonferroni'},[1 1 1]);
+
     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
     tcolors = [temp_tcolors temp_tcolors];
     combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.00005;
     xdata = [1:(length(mVar)/2) ((length(mVar)/2)+1+(1:(length(mVar)/2)))];
     colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
-    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 4.55 1],'color','w');
+    hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 5 1],'color','w');
     hold on;
     [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
@@ -96,7 +98,7 @@ if 1
     if vn == 5
         set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 100],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     else
-        set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+        set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 39.0017],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     end
     
     xticks = xdata;%(1:2:end)+0.5; 

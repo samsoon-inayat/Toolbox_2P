@@ -78,6 +78,8 @@ end
 n = 0;
 %% average distributions w.r.t centers for the two groups
 if 1
+%     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,rar,{'Group_by_Cond_Bin','bonferroni'},[1 1 1]);
+
     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
     tcolors = [temp_tcolors temp_tcolors];
     combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.00005;
@@ -96,7 +98,7 @@ if 1
     if vn == 5
         set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 100],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     else
-        set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+        set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 39.0017],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     end
     
     xticks = xdata;%(1:2:end)+0.5; 
