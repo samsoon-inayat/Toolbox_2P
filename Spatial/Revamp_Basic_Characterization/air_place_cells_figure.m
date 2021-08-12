@@ -810,7 +810,7 @@ end
 
 dataT = make_between_table({dataT1},dvn);
 ra = RMA(dataT,within,0.05);
-[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DC','bonferroni'},[1 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Conds_by_DC','bonferroni'},[1 1 1]);
 hf = get_figure(5,[8 7 9 1]);
 % s = generate_shades(length(bins)-1);
 tcolors = colors;%[s.m;s.c;s.y];
