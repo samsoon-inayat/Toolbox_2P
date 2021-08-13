@@ -8,17 +8,31 @@ selContexts = [3 4 5];
 rasterNames = {'airT','airT','airT'};
 % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 RsT = get_rasters_data(ei,selContexts,rasterNames);
+% RsT = filterRasters(RsT);
 RsT = find_responsive_rasters(RsT,1:10);
 [resp_fractionCT,resp_valsCT,OICT,mean_OICT,resp_ORCT,resp_OR_fractionCT,resp_ANDCT,resp_AND_fractionCT] = get_responsive_fraction(RsT);
+resp_FRT = get_responsive_fraction_FR(RsT);
 mRT = calc_mean_rasters(RsT,1:10);
 
 selContexts = [3 4 5];
 rasterNames = {'airD','airD','airD'};
 % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 Rs = get_rasters_data(ei,selContexts,rasterNames);
+% Rs = filterRasters(Rs);
 Rs = find_responsive_rasters(Rs,1:10);
 [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
+resp_FR = get_responsive_fraction_FR(Rs);
 mR = calc_mean_rasters(Rs,1:10);
+
+selContexts = [3 4 5];
+rasterNames = {'beltD','beltD','beltD'};
+% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
+RsB = get_rasters_data(ei,selContexts,rasterNames);
+% Rs = filterRasters(Rs);
+RsB = find_responsive_rasters(RsB,1:10);
+[resp_fractionCSB,resp_valsCSB,OICB,mean_OICSB,resp_ORCSB,resp_OR_fractionCSB,resp_ANDCSB,resp_AND_fractionCSB] = get_responsive_fraction(RsB);
+resp_FRB = get_responsive_fraction_FR(RsB);
+mRB = calc_mean_rasters(RsB,1:10);
 n = 0;
 %% find correlations across conditions
 resp = resp_ORCS;
@@ -29,7 +43,7 @@ n = 0;
 
 %% find trial by trial comparison - correlations
 trials = mat2cell([1:10]',ones(size([1:10]')));
-resp = get_cell_list(resp_valsCS,[1;2;3]);
+resp = get_cell_list(resp_valsCS,[]);
 out1 = find_population_vector_corr_remap_trials(Rs(:,1),resp,trials);
 out2 = find_population_vector_corr_remap_trials(Rs(:,2),resp,trials);
 out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
@@ -50,11 +64,19 @@ if 1
         [-45 -250]);
     set(gcf,'color','w');
     set(gcf,'Position',[5 5 3.25 1]);
+    [Y,E] = discretize(1:49,3);
+    all_speeds = [];
     for cn = 1:3
         mean_speed_over_trials = [];
+        aThisSpeed = [];
         for an = 1:size(Rs,1)
-            mean_speed_over_trials(an,:) = nanmean(Rs{an,cn}.speed);
+            thisSpeed = nanmean(Rs{an,cn}.speed);
+            mean_speed_over_trials(an,:) = thisSpeed;
+            for bb = 1:3
+                aThisSpeed(an,bb) = nanmean(thisSpeed(Y==bb));
+            end
         end
+        all_speeds = [all_speeds aThisSpeed];
         axes(ff.h_axes(1,cn));
         hold on;
         xs = Rs{1,2}.xs; N = length(xs);
@@ -66,12 +88,35 @@ if 1
             put_axes_labels(gca,{'',[0 0 0]},{{'Speed (cm/sec)'},[0 -1 0]});
         end
         plot([ald ald],[0 30],'m:','linewidth',0.5);
+        plot([50 50],[0 30],'k--','linewidth',0.25);
+        plot([100 100],[0 30],'k--','linewidth',0.25);
         xlabel('Position (cm)');
         ylim([0 30]);
         box off;
         set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
     end
+%%
     save_pdf(ff.hf,mData.pdf_folder,sprintf('speeds_345'),600);
+    [within,dvn,xlabels] = make_within_table({'Conds','Bins'},[3,3]);
+    dataT = make_between_table({all_speeds},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Bins','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;%[s.m;s.c;s.y];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+    ylims = ylim;
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]);
+    format_axes(gca);
+    xticks = xdata; xticklabels = {'B1','B2','B3'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.02 -0.35 -0.05])
+    put_axes_labels(gca,{[],[0 0 0]},{'Avg. Speed (cm/sec)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('avg_speed_anova.pdf'),600);
+    ra.ranova
+    ra.mauchly
 end
 %% Show sample rasters
 % an = 5; cn = 2;
@@ -170,8 +215,8 @@ if 1
     set(gcf,'color','w');
     set(gcf,'Position',[5 5 3.25 2]);
     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
-    resp = get_cell_list(resp_valsC,[1;2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
+    resp = get_cell_list(resp_valsC,[]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
     ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
@@ -196,12 +241,12 @@ end
 
 %% Percentage of Responsive Cells
 if 1
-    within = make_within_table({'Cond'},3);
-    dataT = make_between_table({resp_fractionCS*100},{'C31','C4','C32'});
-    ra = repeatedMeasuresAnova(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]);
+    dataT = make_between_table({resp_fractionCS*100,resp_fractionCSB*100},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond','bonferroni'},[1 1 1]);
 %     s = generate_shades(3); tcolors = s.g;
-    tcolors = mData.colors;
+    tcolors = colors;%mData.colors(1:3);
      hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
@@ -214,7 +259,9 @@ if 1
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     any_mean = mean(100*resp_OR_fractionCS);    any_sem = std(100*resp_OR_fractionCS)/sqrt(5);
     pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(0.75,20,any_text,'FontSize',6);
-    changePosition(gca,[0.17 0.02 -0.4 -0.011])
+    any_mean = mean(100*resp_OR_fractionCSB);    any_sem = std(100*resp_OR_fractionCSB)/sqrt(5);
+    pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(4.75,20,any_text,'FontSize',6);
+    changePosition(gca,[0.17 0.02 -0.1 -0.011])
 %     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive'),600);
@@ -254,7 +301,7 @@ if 1
     var2 = arrayfun(@(x) mean(x{1}),out2.adj_SP_corr_diag);
     var3 = arrayfun(@(x) mean(x{1}),out3.adj_SP_corr_diag);
     between = make_between_table({var1,var2,var3},dvn);
-    ra = repeatedMeasuresAnova(between,within);
+    ra = RMA(between,within);
     %%
     hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
     hold on;
@@ -278,9 +325,9 @@ if 1
 end
 %% Spatial correlation between adjacent trails (taking mean) 
 if 1
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.5 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'TrialPairs','bonferroni'},[1 0.5 1]);
     hollowsep = 19;
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.25 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.75 1],'color','w');
     hold on;
     tcolors = colors(1:9); tcolors = repmat(tcolors,[1 3]);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -293,8 +340,8 @@ if 1
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(45);
 %     changePosition(gca,[0.1 0.11 -0.2 -0.05]);
-    changePosition(gca,[-0.02 0.03 0.1 -0.05]);
-    put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
+    changePosition(gca,[0.0 0.03 0.08 -0.05]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Spatial','Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph',600);
 end
 
@@ -810,7 +857,7 @@ end
 
 dataT = make_between_table({dataT1},dvn);
 ra = RMA(dataT,within,0.05);
-[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Conds_by_DC','bonferroni'},[1 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DC','bonferroni'},[1 1 1]);
 hf = get_figure(5,[8 7 9 1]);
 % s = generate_shades(length(bins)-1);
 tcolors = colors;%[s.m;s.c;s.y];

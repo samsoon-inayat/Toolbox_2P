@@ -1,0 +1,21 @@
+function resp = get_responsive_fraction_FR(Rs)
+
+% for rr = 1:size(Rs,1)
+%     for cc = 1:size(Rs,2)
+%         R = Rs{rr,cc};
+%         rasters = permute(R.sp_rasters1,[2 1 3]);
+%         sR = sum(squeeze(nansum(rasters,1))>0);
+%         R.resp.FR_based = (sR)>3;
+%         Rs{rr,cc} = R;
+%     end
+% end
+
+% resp_exc_inh = NaN;
+
+for rr = 1:size(Rs,1)
+    respT = zeros(size(Rs{rr,1}.resp.FR_based'));
+    for cc = 1:size(Rs,2)
+        respT = respT | Rs{rr,cc}.resp.FR_based';
+    end
+    resp{rr} = respT;
+end

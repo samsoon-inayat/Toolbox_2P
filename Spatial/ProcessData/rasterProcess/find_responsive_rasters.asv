@@ -4,9 +4,8 @@ for rr = 1:size(Rs,1)
     for cc = 1:size(Rs,2)
         R = Rs{rr,cc};
         rasters = permute(R.sp_rasters1,[2 1 3]);
-        sR = sum(squeeze(nansum(rasters,1))>0);
-        R.resp.FR_based = (sR)>3;
-        Rs{rr,cc} = R;
+        sR = sum(squeeze(nansum(rasters,1)));
+        
     end
 end
 
@@ -52,8 +51,6 @@ for rr = 1:size(Rs,1)
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 150 & centers > 0 & centers < 150 & MFR < 10000;
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
-        Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals;% & Rs{rr,cc}.resp.FR_based;
-        n = 0;
     end
 end
 

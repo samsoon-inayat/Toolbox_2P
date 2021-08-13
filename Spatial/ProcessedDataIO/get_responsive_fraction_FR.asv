@@ -1,0 +1,11 @@
+function resp = get_responsive_fraction_FR(Rs)
+
+% resp_exc_inh = NaN;
+
+for rr = 1:size(Rs,1)
+    respT = zeros(size(Rs{rr,1}.resp.FR_based'));
+    for cc = 1:size(Rs,2)
+        respT = respT | Rs{rr,cc}.resp.FR_based';
+    end
+    resp{rr} = respT;
+end
