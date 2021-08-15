@@ -40,7 +40,7 @@ end
 if exist('per','var')
     if per == 0
         return;
-    end
+end
     for rr = 1:length(selResp)
         perc(rr) = sum(selResp{rr})/length(selResp{rr});
     end

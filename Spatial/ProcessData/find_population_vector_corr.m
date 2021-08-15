@@ -12,7 +12,7 @@ for rr = 1:size(mRs,1)
                 accsr{rr,cc} = find(resp.vals);
             end
         else
-            accsr{rr,cc} = find(ccs{rr});
+            accsr{rr,cc} = find(ccs{rr,cc});
         end
         ccsr = accsr{rr,cc};
         ptc = mRs{rr,cc};

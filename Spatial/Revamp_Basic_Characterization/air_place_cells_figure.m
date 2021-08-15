@@ -10,7 +10,7 @@ rasterNames = {'airT','airT','airT'};
 RsT = get_rasters_data(ei,selContexts,rasterNames);
 % RsT = filterRasters(RsT);
 RsT = find_responsive_rasters(RsT,1:10);
-[resp_fractionCT,resp_valsCT,OICT,mean_OICT,resp_ORCT,resp_OR_fractionCT,resp_ANDCT,resp_AND_fractionCT] = get_responsive_fraction(RsT);
+respT = get_responsive_cells(RsT);
 resp_FRT = get_responsive_fraction_FR(RsT);
 mRT = calc_mean_rasters(RsT,1:10);
 
@@ -20,7 +20,7 @@ rasterNames = {'airD','airD','airD'};
 Rs = get_rasters_data(ei,selContexts,rasterNames);
 % Rs = filterRasters(Rs);
 Rs = find_responsive_rasters(Rs,1:10);
-[resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
+respA = get_responsive_cells(Rs);
 resp_FR = get_responsive_fraction_FR(Rs);
 mR = calc_mean_rasters(Rs,1:10);
 
@@ -30,9 +30,11 @@ rasterNames = {'beltD','beltD','beltD'};
 RsB = get_rasters_data(ei,selContexts,rasterNames);
 % Rs = filterRasters(Rs);
 RsB = find_responsive_rasters(RsB,1:10);
-[resp_fractionCSB,resp_valsCSB,OICB,mean_OICSB,resp_ORCSB,resp_OR_fractionCSB,resp_ANDCSB,resp_AND_fractionCSB] = get_responsive_fraction(RsB);
+respB = get_responsive_cells(RsB);
 resp_FRB = get_responsive_fraction_FR(RsB);
 mRB = calc_mean_rasters(RsB,1:10);
+
+respAnB = sep_cell_list(respA.vals,respB.vals);
 n = 0;
 %% find correlations across conditions
 resp = resp_ORCS;
@@ -256,9 +258,9 @@ if 1
         [0.01 -60]);
     set(gcf,'color','w');
     set(gcf,'Position',[5 5 3.25 2]);
-    [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
-    resp = get_cell_list(resp_valsC,[]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
+%     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
+%     resp = get_cell_list(resp_valsC,[]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respAnB,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
     ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
@@ -591,11 +593,11 @@ if 1
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
             switch pri
                 case 1
-                    zMIsC{rr,cc} = PWs(resp_valsCS{rr}(:,cc))';
+                    zMIsC{rr,cc} = PWs(respAnB{rr,cc})';
                 case 2
-                    zMIsC{rr,cc} = centers(resp_valsCS{rr}(:,cc))';
+                    zMIsC{rr,cc} = centers(respAnB{rr,cc})';
                 case 3
-                    zMIsC{rr,cc} = MFR(resp_valsCS{rr}(:,cc))';
+                    zMIsC{rr,cc} = MFR(respAnB{rr,cc})';
             end
         end
     end
@@ -648,8 +650,8 @@ if 1
         for cc = 1:size(Rs,2)
             R = Rs{rr,cc};
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-            W{rr,cc} = PWs(resp_valsCS{rr}(:,cc))';
-            C{rr,cc} = centers(resp_valsCS{rr}(:,cc))';
+            W{rr,cc} = PWs(respAnB{rr,cc})';
+            C{rr,cc} = centers(respAnB{rr,cc})';
             CW_corr(rr,cc) = corr(C{rr,cc},W{rr,cc});
         end
     end
@@ -687,7 +689,7 @@ if 1
 end
 
 %% Place Field Properties on the belt
-respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
+respCells1 = get_cell_list(respAnB,[1 -2 -3]);     respCells2 = get_cell_list(respAnB,[-1 2 -3]);     respCells3 = get_cell_list(respAnB,[-1 -2 3]);
 all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
@@ -703,7 +705,7 @@ if 1
         for cc = 1:size(sRs,2)
             R = sRs{rr,cc};
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-            resp = resp_valsCS{rr}(:,cc); 
+            resp = respAnB{rr,cc}; 
 %             resp = all_respCells{cc}{rr};
             centers = centers(resp)'; PWs = PWs(resp)'; MFR = MFR(resp)';
             for ii = 1:(length(bins)-1)
@@ -728,8 +730,8 @@ if 1
     end
     [within,dvn,xlabels] = make_within_table({'Cond','Bins'},[size(sRs,2),(length(bins)-1)]);
     dataT = make_between_table({mzMIsC},dvn);
-    ra = repeatedMeasuresAnova(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_Bins','bonferroni'},[1 0.25 1]);
     hf = get_figure(5,[8 7 1.75 1]);
     s = generate_shades(length(bins)-1);
     tcolors = colors;%[s.m;s.c;s.y];
@@ -742,7 +744,7 @@ if 1
         set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
     end
     format_axes(gca);
-    xticks = xdata; xticklabels = {'C3-B1','C3-B2','C3-B3','C4-B1','C4-B2','C3=4-B3','C3''-B1','C3''-B2','C3''-B3'};
+    xticks = xdata; xticklabels = {'C3-B1','C3-B2','C3-B3','C4-B1','C4-B2','C4-B3','C3''-B1','C3''-B2','C3''-B3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     if pri == 2
         changePosition(gca,[0.11 0.02 -0.03 -0.011])
@@ -758,14 +760,7 @@ end
 
 %% percent of spatially tuned cells on the belt
 if 1
-    [within,dvn,xlabels] = make_within_table({'Bins'},[(length(bins)-1)]);
-    dataT1 = [];
-    for ii = 1:5
-        dataT1(ii,:) = mean(reshape(mzMIsC(ii,:),size(mzMIsC,2)/3,3)');
-    end
-    dataT = make_between_table({dataT1},dvn);
-    ra = repeatedMeasuresAnova(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Bins','bonferroni'},[1 0.25 1]);
     hf = get_figure(5,[8 7 1.25 1]);
     s = generate_shades(length(bins)-1);
     tcolors = colors;%[s.m;s.c;s.y];
@@ -787,17 +782,17 @@ end
 for tC = 1:4
 if 1
     txtT = {'Unique','New','Disrupted','Stable'};
-    or_cells = get_cell_list(resp_valsCS,[1;2;3]);
+    or_cells = get_cell_list(respAnB,[1;2;3]);
     percCells = []; 
     switch tC
         case 1 % unique place cells
-            respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);    respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);    respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
+            respCells1 = get_cell_list(respAnB,[1 -2 -3]);    respCells2 = get_cell_list(respAnB,[-1 2 -3]);    respCells3 = get_cell_list(respAnB,[-1 -2 3]);
         case 2 % new place cells
-            respCells1 = get_cell_list(resp_valsCS,[-1 2]);    respCells2 = get_cell_list(resp_valsCS,[-2 3]);    respCells3 = get_cell_list(resp_valsCS,[-1 3]);
+            respCells1 = get_cell_list(respAnB,[-1 2]);    respCells2 = get_cell_list(respAnB,[-2 3]);    respCells3 = get_cell_list(respAnB,[-1 3]);
         case 3 % disrupted place cells
-            respCells1 = get_cell_list(resp_valsCS,[1 -2]);    respCells2 = get_cell_list(resp_valsCS,[2 -3]);    respCells3 = get_cell_list(resp_valsCS,[1 -3]);
+            respCells1 = get_cell_list(respAnB,[1 -2]);    respCells2 = get_cell_list(respAnB,[2 -3]);    respCells3 = get_cell_list(respAnB,[1 -3]);
         case 4 % remained place cells
-            respCells1 = get_cell_list(resp_valsCS,[1 2]);    respCells2 = get_cell_list(resp_valsCS,[2 3]);    respCells3 = get_cell_list(resp_valsCS,[1 3]);
+            respCells1 = get_cell_list(respAnB,[1 2]);    respCells2 = get_cell_list(respAnB,[2 3]);    respCells3 = get_cell_list(respAnB,[1 3]);
     end
 
     for ii = 1:length(respCells1)
@@ -834,27 +829,27 @@ end
 
 %% Place cell emergence disruption stability - big combined test
 if 1
-    respCells1 = get_cell_list(resp_valsCS,[1]); respCells2 = get_cell_list(resp_valsCS,[2]);    respCells3 = get_cell_list(resp_valsCS,[3]);
-    respCells1o2 = get_cell_list(resp_valsCS,[1;2]); respCells2o3 = get_cell_list(resp_valsCS,[2;3]);    respCells1o3 = get_cell_list(resp_valsCS,[1;3]);
-    or_cells = get_cell_list(resp_valsCS,[1;2;3])
+    respCells1 = get_cell_list(respAnB,[1]); respCells2 = get_cell_list(respAnB,[2]);    respCells3 = get_cell_list(respAnB,[3]);
+    respCells1o2 = get_cell_list(respAnB,[1;2]); respCells2o3 = get_cell_list(respAnB,[2;3]);    respCells1o3 = get_cell_list(respAnB,[1;3]);
+    or_cells = get_cell_list(respAnB,[1;2;3])
     txtT = {'New','Disrupted'};
     percCells = [];
     % new place cells
-    respCells12 = get_cell_list(resp_valsCS,[-1 2]);    respCells23 = get_cell_list(resp_valsCS,[-2 3]);    respCells13 = get_cell_list(resp_valsCS,[-1 3]);
+    respCells12 = get_cell_list(respAnB,[-1 2]);    respCells23 = get_cell_list(respAnB,[-2 3]);    respCells13 = get_cell_list(respAnB,[-1 3]);
     for ii = 1:length(respCells1)
         percCells(ii,1) = sum(respCells12{ii})/length(or_cells{ii});
         percCells(ii,2) = sum(respCells23{ii})/length(or_cells{ii});
         percCells(ii,3) = sum(respCells13{ii})/length(or_cells{ii});
     end
     % disrupted place cells
-    respCells12 = get_cell_list(resp_valsCS,[1 -2]);    respCells23 = get_cell_list(resp_valsCS,[2 -3]);    respCells13 = get_cell_list(resp_valsCS,[1 -3]);
+    respCells12 = get_cell_list(respAnB,[1 -2]);    respCells23 = get_cell_list(respAnB,[2 -3]);    respCells13 = get_cell_list(respAnB,[1 -3]);
     for ii = 1:length(respCells1)
         percCells(ii,4) = sum(respCells12{ii})/length(or_cells{ii});%length(respCells1{ii});
         percCells(ii,5) = sum(respCells23{ii})/length(or_cells{ii});%length(respCells2{ii});
         percCells(ii,6) = sum(respCells13{ii})/length(or_cells{ii});%length(respCells3{ii});
     end
      % remained place cells
-    respCells12 = get_cell_list(resp_valsCS,[1 2]);    respCells23 = get_cell_list(resp_valsCS,[2 3]);    respCells13 = get_cell_list(resp_valsCS,[1 3]);
+    respCells12 = get_cell_list(respAnB,[1 2]);    respCells23 = get_cell_list(respAnB,[2 3]);    respCells13 = get_cell_list(respAnB,[1 3]);
     for ii = 1:length(respCells1)
         percCells(ii,7) = sum(respCells12{ii})/length(or_cells{ii});%length(respCells1{ii});
         percCells(ii,8) = sum(respCells23{ii})/length(or_cells{ii});%length(respCells2{ii});
@@ -883,8 +878,8 @@ if 1
 end
 
 %% trial by trial comparison - place location gaussian fitting
-[resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
-resp = get_cell_list(resp_valsCS,[1;2;3]);
+[resp_fractionCS,respAnB,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
+resp = get_cell_list(respAnB,[1;2;3]);
 out_tt_PC = find_trial_by_trial_Gauss_Fit_Results(Rs,mR,resp);
 [within,dvn,xlabels] = make_within_table({'Conds','DC'},[3,9]);
 dataT1 = [];

@@ -1,4 +1,14 @@
-function [all_OI] = get_overlap_index(resp_vals)
+function [all_OI] = get_overlap_index(resp_valsi)
+
+% resp_valsCi = resp_valsC;
+for rr = 1:size(resp_valsi,1)
+    ccs = [];
+    for cc = 1:size(resp_valsi,2)
+        ccs(:,cc) = resp_valsi{rr,cc};
+    end
+    resp_vals{rr} = ccs;
+end
+
 
 for ii = 1:length(resp_vals)
     ccs = resp_vals{ii};
