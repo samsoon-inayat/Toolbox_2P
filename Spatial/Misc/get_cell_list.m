@@ -1,4 +1,4 @@
-function selResp = get_cell_list(resp_valsCi,cond,per)
+function [selResp,selResp2] = get_cell_list(resp_valsCi,cond,per)
 
 % resp_valsCi = resp_valsC;
 for rr = 1:size(resp_valsCi,1)
@@ -7,6 +7,13 @@ for rr = 1:size(resp_valsCi,1)
         ccs(:,cc) = resp_valsCi{rr,cc};
     end
     resp_valsC{rr} = ccs;
+end
+
+
+for rr = 1:size(resp_valsCi,1)
+    for cc = 1:size(resp_valsCi,2)
+        selResp2{rr,cc} = resp_valsCi{rr,cc};
+    end
 end
 
 
@@ -46,3 +53,6 @@ if exist('per','var')
     end
     selResp = perc;
 end
+
+selResp = selResp';
+selResp = repmat(selResp,1,size(resp_valsCi,2));

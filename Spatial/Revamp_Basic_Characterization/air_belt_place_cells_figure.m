@@ -9,10 +9,15 @@ rasterNames = {'airD','airD','airD','beltD','beltD','beltD'};
 Rs = get_rasters_data(ei,selContexts,rasterNames);
 % Rs = filterRasters(Rs);
 Rs = find_responsive_rasters(Rs,1:10);
-[resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
+% [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
 resp_FR = get_responsive_fraction_FR(Rs);
-[resp_fractionCSA,resp_valsCSA,OICA,mean_OICSA,resp_ORCSA,resp_OR_fractionCSA,resp_ANDCSA,resp_AND_fractionCSA] = get_responsive_fraction(Rs(:,1:3));
-[resp_fractionCSB,resp_valsCSB,OICB,mean_OICSB,resp_ORCSB,resp_OR_fractionCSB,resp_ANDCSB,resp_AND_fractionCSB] = get_responsive_fraction(Rs(:,4:6));
+respAB = get_responsive_cells(Rs); respA = get_responsive_cells(Rs(:,1:3)); respB = get_responsive_cells(Rs(:,4:6));
+respAnB = sep_cell_list(respA,respB); respBnA = sep_cell_list(respB,respA); respAandB = cell_list_op(respA,respB,'and'); respAandB = [respAandB respAandB];
+respAsB = [respAnB respBnA];
+respAnB = [respAnB respAnB];
+respBnA = [respBnA respBnA];
+% [resp_fractionCSA,resp_valsCSA,OICA,mean_OICSA,resp_ORCSA,resp_OR_fractionCSA,resp_ANDCSA,resp_AND_fractionCSA] = get_responsive_fraction(Rs(:,1:3));
+% [resp_fractionCSB,resp_valsCSB,OICB,mean_OICSB,resp_ORCSB,resp_OR_fractionCSB,resp_ANDCSB,resp_AND_fractionCSB] = get_responsive_fraction(Rs(:,4:6));
 mR = calc_mean_rasters(Rs,1:10);
 n = 0;
 %% Speed Figure
@@ -110,6 +115,7 @@ if 1
 end
 %% Air Belt mismatch
 if 1
+    all_air_belt_distance = [];
     sRs = Rs(:,1:3);
 %     sRs = Rs(:,4:6);
     for rr = 1:size(sRs,1)
@@ -117,7 +123,8 @@ if 1
             R = sRs{rr,cc};
             sp = R.space;
             [msp,mspi] = min(sp,[],2);
-            air_belt_distance(rr,cc) = median((mspi-1) * R.bin_width);
+            air_belt_distance(rr,cc) = mean((mspi-1) * R.bin_width);
+            all_air_belt_distance(rr,:,cc) = (mspi-1) * R.bin_width;
 %             figure(1000);clf;imagesc(R.space);
         end
     end
@@ -141,6 +148,31 @@ if 1
 %     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Air-Onset to Belt', 'Marker Dist (cm)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Air_Belt_Mismatch'),600);
+
+    [within,dvn,xlabels] = make_within_table({'Cond','Trials'},[3,10]);
+    all_air_belt_distance1 = reshape(all_air_belt_distance,5,3*10);
+    dataT = make_between_table({all_air_belt_distance1},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_Trials','bonferroni'},[1 1 1]);
+%     s = generate_shades(3); tcolors = s.g;
+    tcolors = [repmat(mData.colors(1),10,1);repmat(mData.colors(2),10,1);repmat(mData.colors(3),10,1);];
+     hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[11 7 3.25 1],'color','w'); hold on;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+%     set(hbs(3),'EdgeColor','k');
+%     hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
+    format_axes(gca);
+    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 maxY])
+    xticks = [xdata(1:end)];
+	xticklabels = {'C3-T1','C3-T2','C3-T3','C3-T4','C3-T5','C3-T6','C3-T7','C3-T8','C3-T9','C3-T10',...
+                    'C4-T1','C4-T2','C4-T3','C4-T4','C4-T5','C-T6','C4-T7','C4-T8','C4-T9','C4-T10',...
+                    'C3''-T1','C3''-T2','C3''-T3','C3''-T4','C3''-T5','C3''-T6','C3''-T7','C3''-T8','C3''-T9','C3''-T10'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.01 0.02 -0.001 -0.011])
+%     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Air-Onset to Belt', 'Marker Dist (cm)'},[0 -3 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Air_Belt_Mismatch_all'),600);
 end
 %% Show sample rasters
 % an = 5; cn = 2;
@@ -165,9 +197,8 @@ if 1
         [0.01 -60]);
     set(gcf,'color','w');
     set(gcf,'Position',[5 5 7 2]);
-    [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
-    resp = get_cell_list(resp_valsC,[1]); resp = get_cell_list(resp_valsC,[1 4]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
+    resp = get_cell_list(respAsB,[1;2;3]); resp = get_cell_list(respAsB,[4;5;6]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respAsB,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
     ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
@@ -192,8 +223,13 @@ end
 
 %% Percentage of Responsive Cells
 if 1
+    respT = exec_fun_on_cell_mat(respA.vals,{'sum','length'}); respFA = respT.sum./respT.length;
+    respT = exec_fun_on_cell_mat(respB.vals,{'sum','length'}); respFB = respT.sum./respT.length;
+    respORA = get_cell_list(respA.vals,[1;2;3]); respORB = get_cell_list(respB.vals,[1;2;3]);
+    respT = exec_fun_on_cell_mat(respORA,{'sum','length'}); respF_ORA = mean(respT.sum./respT.length,2);
+    respT = exec_fun_on_cell_mat(respORB,{'sum','length'}); respF_ORB = mean(respT.sum./respT.length,2);
     [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]);
-    dataT = make_between_table({resp_fractionCSA*100,resp_fractionCSB*100},dvn);
+    dataT = make_between_table({respFA*100,respFB*100},dvn);
     ra = RMA(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond','bonferroni'},[1 1 1]);
 %     s = generate_shades(3); tcolors = s.g;
@@ -209,9 +245,9 @@ if 1
     set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 25])
     xticks = [xdata(1:end)]; xticklabels = {'C3','C4','C3'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    any_mean = mean(100*resp_OR_fractionCSA);    any_sem = std(100*resp_OR_fractionCSA)/sqrt(5);
+    any_mean = mean(100*respF_ORA);    any_sem = std(100*respF_ORA)/sqrt(5);
     pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(0.75,20,any_text,'FontSize',6);
-    any_mean = mean(100*resp_OR_fractionCSB);    any_sem = std(100*resp_OR_fractionCSB)/sqrt(5);
+    any_mean = mean(100*respF_ORB);    any_sem = std(100*respF_ORB)/sqrt(5);
     pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(4.75,20,any_text,'FontSize',6);
     changePosition(gca,[0.17 0.02 -0.1 -0.011])
     set_title(gca,'AFoR',[1.3,25],5); set_title(gca,'BFoR',[5.3,25],5,'r');
@@ -590,8 +626,9 @@ if 1
     hold on;
     mOI = NaN(6,6,5);
     mask = triu(ones(6,6),3) & ~triu(ones(6,6),4);
-    mask = logical(zeros(6,6)); mask(1,[2 3 4 5]) = 1;
-    OI_E = get_overlap_index(resp_valsCS);
+%     mask = logical(zeros(6,6)); mask(1,[2 3 4 5]) = 1;
+    ois = [];
+    OI_E = get_overlap_index(respAB.vals);
     for ii = 1:5
         C12(ii,1) = OI_E{ii}(1,2);
         C12(ii,2) = OI_E{ii}(2,3);
@@ -599,11 +636,11 @@ if 1
         ois(ii,:) = OI_E{ii}(mask);
     end
     figure(100);clf;imagesc(nanmean(mOI,3));colorbar
-    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,2]);
+    [within,dvn,xlabels] = make_within_table({'Cond'},[3]);
     var_CE = ois;
     dataT = make_between_table({var_CE},dvn);
     ra = RMA(dataT,within);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond','bonferroni'},[1 0 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','bonferroni'},[1 0 1]);
     h(h==1) = 0;
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
@@ -613,7 +650,7 @@ if 1
         'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-    xticks = xdata(1:end)+0; xticklabels = {'C3-C4','C1-C4','C3'''};
+    xticks = xdata(1:end)+0; xticklabels = {'C3','C4','C3'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     set(hbs(2),'facecolor','none','edgecolor',tcolors{2});
     xtickangle(45);
@@ -629,19 +666,20 @@ props = {'Field Width (cm)','Field Center (cm)','Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'};
 all_incr = [1 1 1];
 % legs_v = 
-for pri = 1%:3;
+for pri = 3%:3;
 if 1
     for rr = 1:size(Rs,1)
         for cc = 1:size(Rs,2)
             R = Rs{rr,cc};
+            resp = respAsB{rr,cc};
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
             switch pri
                 case 1
-                    zMIsC{rr,cc} = PWs(resp_valsCS{rr}(:,cc))';
+                    zMIsC{rr,cc} = PWs(resp)';
                 case 2
-                    zMIsC{rr,cc} = centers(resp_valsCS{rr}(:,cc))';
+                    zMIsC{rr,cc} = centers(resp)';
                 case 3
-                    zMIsC{rr,cc} = MFR(resp_valsCS{rr}(:,cc))';
+                    zMIsC{rr,cc} = MFR(resp)';
             end
         end
     end
@@ -665,7 +703,7 @@ end
 
 if 1
     mzMIsC = arrayfun(@(x) nanmean(x{1}),zMIsC);
-    [within,dvn,xlabels] = make_within_table({'Cond'},[3]);
+    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]);
     dataT = make_between_table({mzMIsC},dvn);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
@@ -693,9 +731,10 @@ if 1
     for rr = 1:size(Rs,1)
         for cc = 1:size(Rs,2)
             R = Rs{rr,cc};
+            resp = respAnB{rr,cc};
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-            W{rr,cc} = PWs(resp_valsCS{rr}(:,cc))';
-            C{rr,cc} = centers(resp_valsCS{rr}(:,cc))';
+            W{rr,cc} = PWs(resp)';
+            C{rr,cc} = centers(resp)';
             CW_corr(rr,cc) = corr(C{rr,cc},W{rr,cc});
         end
     end
@@ -713,7 +752,7 @@ if 1
     put_axes_labels(gca,{'Field Center (cm)',[0 0 0]},{'Field Width (cm)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('scatter_%s','PFW_PFC'),600);
 
-    [within,dvn,xlabels] = make_within_table({'Cond'},[3]);
+    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]);
     dataT = make_between_table({CW_corr},dvn);
     ra = repeatedMeasuresAnova(dataT,within,0.05);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
@@ -737,14 +776,9 @@ end
 % all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
-pri = 1;
+pri = 2;
 Air = 0;
 if 1
-%     if Air
-%         sRs = Rs(:,1:3);
-%     else
-%         sRs = Rs(:,4:6);
-%     end
     sRs = Rs;
     minBin = 0;     maxBin = 150;     incr = 50; % choosing more than 3 bins, give significant anova but not significant multcompare
     % three bins also make sense because LED in condition 2 comes ON at
@@ -755,18 +789,12 @@ if 1
         for cc = 1:size(sRs,2)
             R = sRs{rr,cc};
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-%             if Air
-%                 resp = resp_valsCSA{rr}(:,cc); 
-%             else
-%                 resp = resp_valsCSB{rr}(:,cc); 
-%             end
-            resp = resp_valsCS{rr}(:,cc); 
-%             resp = all_respCells{cc}{rr};
+            resp = respAsB{rr,cc}; 
             centers = centers(resp)'; PWs = PWs(resp)'; MFR = MFR(resp)';
             for ii = 1:(length(bins)-1)
                 binS = bins(ii); binE = bins(ii+1);
                 inds = find(centers >= binS & centers < binE);
-                num_cells(rr,cc,ii) = 100*length(inds)/length(resp);
+                num_cells(rr,cc,ii) = 100*length(inds)/sum(resp);
                 PFW_belt(rr,cc,ii) = mean(PWs(inds));
                 MFR_belt(rr,cc,ii) = mean(MFR(inds));
             end
@@ -783,193 +811,273 @@ if 1
                 mzMIsC(rr,:) = reshape(squeeze(MFR_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
         end
     end
-    [within,dvn,xlabels] = make_within_table({'FR','Cond','Bins'},[2,3,3]);
+    [within,dvn,xlabels] = make_within_table({'FR','Cond','Bins'},[2,3,length(bins)-1]);
     dataT = make_between_table({mzMIsC},dvn);
     ra = RMA(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond_Bins','bonferroni'},[1 0.25 1]);
-    hf = get_figure(5,[8 7 3.49 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond_Bins','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[5 7 2.5 1]);
     s = generate_shades(length(bins)-1);
-    tcolors = colors;%[s.m;s.c;s.y];
+    tcolors = [mData.colors(1);mData.colors(1);mData.colors(1);mData.colors(2);mData.colors(2);mData.colors(2);mData.colors(3);mData.colors(3);mData.colors(3)]; tcolors = repmat(tcolors,2,1);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',yspacing(pri),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
     if pri == 2
-        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 85]);
     else
         set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
     end
     format_axes(gca);
+    make_bars_hollow(hbs(10:end));
     xticks = xdata; xticklabels = {'C3-B1','C3-B2','C3-B3','C4-B1','C4-B2','C4-B3','C3''-B1','C3''-B2','C3''-B3'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 25 50 75]); xtickangle(45)
     if pri == 2
-        changePosition(gca,[0.11 0.02 -0.03 -0.011])
+        changePosition(gca,[0.02 0.02 0.01 -0.011])
     else
         changePosition(gca,[0.01 0.02 -0.03 -0.011])
     end
     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    set_title(gca,'AFoR',[4.25,75],5); set_title(gca,'BFoR',[14.25,75],5)
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
-    ra.ranova
-    ra.mauchly
-end
 
 
-%% percent of spatially tuned cells on the belt
-if 1
-    [within,dvn,xlabels] = make_within_table({'Bins'},[(length(bins)-1)]);
-    dataT1 = [];
-    for ii = 1:5
-        dataT1(ii,:) = mean(reshape(mzMIsC(ii,:),size(mzMIsC,2)/3,3)');
-    end
-    dataT = make_between_table({dataT1},dvn);
-    ra = repeatedMeasuresAnova(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
-    hf = get_figure(5,[8 7 1.25 1]);
+%%
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Bins','bonferroni'},[1 1 1]);
+    hf = get_figure(6,[11 7 1.25 1]);
     s = generate_shades(length(bins)-1);
-    tcolors = colors;%[s.m;s.c;s.y];
+    tcolors = [s.y;s.y];%;s.y;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    set_axes_limits(gca,[0.25 xdata(end)+.75],[0 85]);
     format_axes(gca);
-    xticks = xdata; xticklabels = xlabels;
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0 0.02 -0.35 -0.05])
-    put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    make_bars_hollow(hbs(4:6))
+    xticks = xdata; xticklabels = {'B1','B2','B3'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 25 50 75]); xtickangle(45)
+    changePosition(gca,[0.2 0.02 -0.2 -0.05])
+%     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    set_title(gca,'AFoR',[1.25,75],5); set_title(gca,'BFoR',[5.25,75],5)
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt_pooled.pdf',fileNames{pri}),600);
     ra.ranova
     ra.mauchly
 end
 
-%% Place cell emergence disruption stability
-for tC = 1:4
+%% Place Field Properties on the belt
+% respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
+% all_respCells = {respCells1,respCells2,respCells3};
+props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
+fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
+pri = 1;
+Air = 0;
 if 1
-    txtT = {'Unique','New','Disrupted','Stable'};
-    or_cells = get_cell_list(resp_valsCS,[1;2;3]);
-    percCells = []; 
-    switch tC
-        case 1 % unique place cells
-            respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);    respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);    respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
-        case 2 % new place cells
-            respCells1 = get_cell_list(resp_valsCS,[-1 2]);    respCells2 = get_cell_list(resp_valsCS,[-2 3]);    respCells3 = get_cell_list(resp_valsCS,[-1 3]);
-        case 3 % disrupted place cells
-            respCells1 = get_cell_list(resp_valsCS,[1 -2]);    respCells2 = get_cell_list(resp_valsCS,[2 -3]);    respCells3 = get_cell_list(resp_valsCS,[1 -3]);
-        case 4 % remained place cells
-            respCells1 = get_cell_list(resp_valsCS,[1 2]);    respCells2 = get_cell_list(resp_valsCS,[2 3]);    respCells3 = get_cell_list(resp_valsCS,[1 3]);
+    sRs = Rs;
+    minBin = 0;     maxBin = 150;     incr = 50; % choosing more than 3 bins, give significant anova but not significant multcompare
+    % three bins also make sense because LED in condition 2 comes ON at
+    % 110cm
+    bins = minBin:incr:maxBin;
+    num_cells = []; PFW_belt = []; MFR_belt = [];
+    for rr = 1:size(sRs,1)
+        for cc = 1:size(sRs,2)
+            R = sRs{rr,cc};
+            [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
+            resp = respAsB{rr,cc}; 
+            centers = centers(resp)'; PWs = PWs(resp)'; MFR = MFR(resp)';
+            for ii = 1:(length(bins)-1)
+                binS = bins(ii); binE = bins(ii+1);
+                inds = find(centers >= binS & centers < binE);
+                num_cells(rr,cc,ii) = 100*length(inds)/sum(resp);
+                PFW_belt(rr,cc,ii) = mean(PWs(inds));
+                MFR_belt(rr,cc,ii) = mean(MFR(inds));
+            end
+        end
     end
-
-    for ii = 1:length(respCells1)
-        percCells(ii,1) = 100*sum(respCells1{ii})/length(or_cells{ii});%length(respCells1{ii});
-        percCells(ii,2) = 100*sum(respCells2{ii})/length(or_cells{ii});%length(respCells2{ii});
-        percCells(ii,3) = 100*sum(respCells3{ii})/length(or_cells{ii});%length(respCells3{ii});
+    mzMIsC = [];
+    for rr = 1:size(sRs,1)
+        switch pri
+            case 1
+                mzMIsC(rr,:) = reshape(squeeze(PFW_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));                
+            case 2
+                mzMIsC(rr,:) = reshape(squeeze(num_cells(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
+            case 3
+                mzMIsC(rr,:) = reshape(squeeze(MFR_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
+        end
     end
-
-    [within,dvn,xlabels] = make_within_table({'Conds'},[3]);
-    if tC > 1
-       xlabels = {'C3-C4','C4-C3''','C3-C3'''};
-    end
-    dataT = make_between_table({percCells},dvn);
-    ra = repeatedMeasuresAnova(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.25 1]);
-    hf = get_figure(5,[8 7 1.25 1]);
-    tcolors = colors;%[s.m;s.c;s.y];
+    [within,dvn,xlabels] = make_within_table({'FR','Cond','Bins'},[2,3,length(bins)-1]);
+    dataT = make_between_table({mzMIsC},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond_Bins','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[5 7 2.5 1]);
+    s = generate_shades(length(bins)-1);
+    tcolors = [mData.colors(1);mData.colors(1);mData.colors(1);mData.colors(2);mData.colors(2);mData.colors(2);mData.colors(3);mData.colors(3);mData.colors(3)]; tcolors = repmat(tcolors,2,1);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+        'ySpacing',yspacing(pri),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 45]);
+
     format_axes(gca);
-    xticks = xdata; xticklabels = xlabels;
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.1 0.02 -0.35 -0.05])
-    put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    text(0.75,maxY,txtT{tC},'FontSize',6)
-    save_pdf(hf,mData.pdf_folder,sprintf('%s_cells.pdf',txtT{tC}),600);
+    make_bars_hollow(hbs(10:end));
+    xticks = xdata; xticklabels = {'C3-B1','C3-B2','C3-B3','C4-B1','C4-B2','C4-B3','C3''-B1','C3''-B2','C3''-B3'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 25 50]); xtickangle(45)
+    changePosition(gca,[0.01 0.02 -0.03 -0.011])
+    put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    set_title(gca,'AFoR',[4.25,45],5); set_title(gca,'BFoR',[14.25,45],5)
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
+
+
+%%
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond','bonferroni'},[1 1 1]);
+    hf = get_figure(6,[11 7 1.25 1]);
+    s = generate_shades(length(bins)-1);
+    tcolors = mData.colors(1:3); tcolors = repmat(tcolors,2,1);%[s.m;s.m];%;s.y;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set_axes_limits(gca,[0.25 xdata(end)+.75],[0 45]);
+    format_axes(gca);
+    make_bars_hollow(hbs(4:6))
+    xticks = xdata; xticklabels = {'C3','C4','C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 25 50]); xtickangle(45)
+    changePosition(gca,[0.2 0.02 -0.2 -0.05])
+%     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    set_title(gca,'AFoR',[1.25,45],5); set_title(gca,'BFoR',[5.25,45],5)
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt_pooled.pdf',fileNames{pri}),600);
     ra.ranova
-    ra.mauchly
-end
+%     ra.mauchly
 end
 
-
-%% Place cell emergence disruption stability - big combined test
+%% Place Field Properties on the belt
+% respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
+% all_respCells = {respCells1,respCells2,respCells3};
+props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
+fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
+pri = 3;
+Air = 0;
 if 1
-    respCells1 = get_cell_list(resp_valsCS,[1]); respCells2 = get_cell_list(resp_valsCS,[2]);    respCells3 = get_cell_list(resp_valsCS,[3]);
-    respCells1o2 = get_cell_list(resp_valsCS,[1;2]); respCells2o3 = get_cell_list(resp_valsCS,[2;3]);    respCells1o3 = get_cell_list(resp_valsCS,[1;3]);
-    or_cells = get_cell_list(resp_valsCS,[1;2;3])
-    txtT = {'New','Disrupted'};
-    percCells = [];
-    % new place cells
-    respCells12 = get_cell_list(resp_valsCS,[-1 2]);    respCells23 = get_cell_list(resp_valsCS,[-2 3]);    respCells13 = get_cell_list(resp_valsCS,[-1 3]);
-    for ii = 1:length(respCells1)
-        percCells(ii,1) = sum(respCells12{ii})/length(or_cells{ii});
-        percCells(ii,2) = sum(respCells23{ii})/length(or_cells{ii});
-        percCells(ii,3) = sum(respCells13{ii})/length(or_cells{ii});
+    sRs = Rs;
+    minBin = 0;     maxBin = 150;     incr = 50; % choosing more than 3 bins, give significant anova but not significant multcompare
+    % three bins also make sense because LED in condition 2 comes ON at
+    % 110cm
+    bins = minBin:incr:maxBin;
+    num_cells = []; PFW_belt = []; MFR_belt = [];
+    for rr = 1:size(sRs,1)
+        for cc = 1:size(sRs,2)
+            R = sRs{rr,cc};
+            [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
+            resp = respAsB{rr,cc}; 
+            centers = centers(resp)'; PWs = PWs(resp)'; MFR = MFR(resp)';
+            for ii = 1:(length(bins)-1)
+                binS = bins(ii); binE = bins(ii+1);
+                inds = find(centers >= binS & centers < binE);
+                num_cells(rr,cc,ii) = 100*length(inds)/sum(resp);
+                PFW_belt(rr,cc,ii) = mean(PWs(inds));
+                MFR_belt(rr,cc,ii) = mean(MFR(inds));
+            end
+        end
     end
-    % disrupted place cells
-    respCells12 = get_cell_list(resp_valsCS,[1 -2]);    respCells23 = get_cell_list(resp_valsCS,[2 -3]);    respCells13 = get_cell_list(resp_valsCS,[1 -3]);
-    for ii = 1:length(respCells1)
-        percCells(ii,4) = sum(respCells12{ii})/length(or_cells{ii});%length(respCells1{ii});
-        percCells(ii,5) = sum(respCells23{ii})/length(or_cells{ii});%length(respCells2{ii});
-        percCells(ii,6) = sum(respCells13{ii})/length(or_cells{ii});%length(respCells3{ii});
+    mzMIsC = [];
+    for rr = 1:size(sRs,1)
+        switch pri
+            case 1
+                mzMIsC(rr,:) = reshape(squeeze(PFW_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));                
+            case 2
+                mzMIsC(rr,:) = reshape(squeeze(num_cells(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
+            case 3
+                mzMIsC(rr,:) = reshape(squeeze(MFR_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
+        end
     end
-     % remained place cells
-    respCells12 = get_cell_list(resp_valsCS,[1 2]);    respCells23 = get_cell_list(resp_valsCS,[2 3]);    respCells13 = get_cell_list(resp_valsCS,[1 3]);
-    for ii = 1:length(respCells1)
-        percCells(ii,7) = sum(respCells12{ii})/length(or_cells{ii});%length(respCells1{ii});
-        percCells(ii,8) = sum(respCells23{ii})/length(or_cells{ii});%length(respCells2{ii});
-        percCells(ii,9) = sum(respCells13{ii})/length(or_cells{ii});%length(respCells3{ii});
-    end
+    [within,dvn,xlabels] = make_within_table({'FR','Cond','Bins'},[2,3,length(bins)-1]);
+    dataT = make_between_table({mzMIsC},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond_Bins','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[5 7 2.5 1]);
+    s = generate_shades(length(bins)-1);
+    tcolors = [mData.colors(1);mData.colors(1);mData.colors(1);mData.colors(2);mData.colors(2);mData.colors(2);mData.colors(3);mData.colors(3);mData.colors(3)]; tcolors = repmat(tcolors,2,1);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',yspacing(pri),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 15]);
+
+    format_axes(gca);
+    make_bars_hollow(hbs(10:end));
+    xticks = xdata; xticklabels = {'C3-B1','C3-B2','C3-B3','C4-B1','C4-B2','C4-B3','C3''-B1','C3''-B2','C3''-B3'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 7 14]); xtickangle(45)
+    changePosition(gca,[0.01 0.02 -0.03 -0.011])
+    put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 0 0]});
+    set_title(gca,'AFoR',[4.25,15],5); set_title(gca,'BFoR',[14.25,15],5)
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
+
+
+%%
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Bins','bonferroni'},[1 1 1]);
+    hf = get_figure(6,[11 7 1.25 1]);
+    s = generate_shades(length(bins)-1);
+    tcolors = mData.colors(1:3); tcolors = repmat(tcolors,2,1);%[s.m;s.m];%;s.y;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set_axes_limits(gca,[0.25 xdata(end)+.75],[0 15]);
+    format_axes(gca);
+    make_bars_hollow(hbs(4:6))
+    xticks = xdata; xticklabels = {'C3','C4','C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15]); xtickangle(45)
+    changePosition(gca,[0.2 0.02 -0.2 -0.05])
+%     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    set_title(gca,'AFoR',[1.25,15],5); set_title(gca,'BFoR',[5.25,15],5)
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt_pooled.pdf',fileNames{pri}),600);
+    ra.ranova
+%     ra.mauchly
+end
+
+%% Percentage of Responsive Cells AsB ([AnotB BnotA])
+if 1
+    respT = exec_fun_on_cell_mat(respAsB,{'sum','length'}); respFA = respT.sum./respT.length;
+    respORA = get_cell_list(respAsB(:,[1,2,3]),[1;2;3]); respORB = get_cell_list(respAsB(:,[4,5,6]),[1;2;3]);
+    respT = exec_fun_on_cell_mat(respORA,{'sum','length'}); respF_ORA = mean(respT.sum./respT.length,2);
+    respT = exec_fun_on_cell_mat(respORB,{'sum','length'}); respF_ORB = mean(respT.sum./respT.length,2);
+    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]);
+    dataT = make_between_table({respFA*100},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond','bonferroni'},[1 1 1]);
+%     s = generate_shades(3); tcolors = s.g;
+    tcolors = colors;%mData.colors(1:3);
+     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+%     set(hbs(3),'EdgeColor','k');
+%     hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
+    make_bars_hollow(hbs(4:6))
+    format_axes(gca);
+    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 25])
+    xticks = [xdata(1:end)]; xticklabels = {'C3','C4','C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    any_mean = mean(100*respF_ORA);    any_sem = std(100*respF_ORA)/sqrt(5);
+    pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(0.75,20,any_text,'FontSize',6);
+    any_mean = mean(100*respF_ORB);    any_sem = std(100*respF_ORB)/sqrt(5);
+    pmchar=char(177); any_text = sprintf('%.0f%c%.0f%%',any_mean,pmchar,any_sem); text(4.75,20,any_text,'FontSize',6);
+    changePosition(gca,[0.17 0.02 -0.1 -0.011])
+    set_title(gca,'AFoR',[1.3,25],5); set_title(gca,'BFoR',[5.3,25],5,'r');
+%     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive_AsB'),600);
+
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR','bonferroni'},[1 1 1]);
+%     s = generate_shades(3); tcolors = s.g;
+    tcolors = {'k','r'};%mData.colors(1:3);
+     hf = get_figure(500,[7 7 1.25 1]);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+%     set(hbs(3),'EdgeColor','k');
+%     hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
+    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 25])
+    xticks = [xdata(1:end)]; xticklabels = {'AFoR','BFoR'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     
-
-    [within,dvn,xlabels] = make_within_table({'Conds','Type'},[3 3]);
-    dataT = make_between_table({percCells},dvn);
-    ra = repeatedMeasuresAnova(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
-    hf = get_figure(5,[8 7 2.5 1]);
-    tcolors = colors;%[s.m;s.c;s.y];
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]);
+    changePosition(gca,[0.17 -0.07 -0.5 0.1])
+%     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
+%     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     format_axes(gca);
-    xticks = xdata; xticklabels = xlabels;
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0 0.02 -0.15 -0.05])
-    put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('dynamics_cells.pdf'),600);
-    ra.ranova
-    ra.mauchly
+    save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive_AsB_pooled'),600);
 end
-
-%% trial by trial comparison - place location gaussian fitting
-[resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
-resp = get_cell_list(resp_valsCS,[1;2;3]);
-out_tt_PC = find_trial_by_trial_Gauss_Fit_Results(Rs,mR,resp);
-[within,dvn,xlabels] = make_within_table({'Conds','DC'},[3,9]);
-dataT1 = [];
-for rr = 1:size(out_tt_PC.diff_centers_from_mean,1)
-    thisD = [];
-    for cc = 1:size(out_tt_PC.diff_centers_from_mean,2)
-        thisDT = nanmean(out_tt_PC.diff_centers{rr,cc});
-        thisD = [thisD thisDT];
-    end
-    dataT1(rr,:) = thisD;
-end
-
-dataT = make_between_table({dataT1},dvn);
-ra = RMA(dataT,within,0.05);
-[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DC','bonferroni'},[1 1 1]);
-hf = get_figure(5,[8 7 9 1]);
-% s = generate_shades(length(bins)-1);
-tcolors = colors;%[s.m;s.c;s.y];
-[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
-ylims = ylim;
-set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]);
-format_axes(gca);
-xticks = xdata; xticklabels = xlabels;
-set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-changePosition(gca,[0.05 0.02 -0.35 -0.05])
-put_axes_labels(gca,{[],[0 0 0]},{'Jitter Centers (cm)',[0 0 0]});
-save_pdf(hf,mData.pdf_folder,sprintf('jitter_centers.pdf'),600);
-ra.ranova
-ra.mauchly

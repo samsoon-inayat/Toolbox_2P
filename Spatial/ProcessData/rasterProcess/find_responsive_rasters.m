@@ -5,7 +5,7 @@ for rr = 1:size(Rs,1)
         R = Rs{rr,cc};
         rasters = permute(R.sp_rasters1,[2 1 3]);
         sR = sum(squeeze(nansum(rasters,1))>0);
-        R.resp.FR_based = (sR)>3;
+        R.resp.FR_based = (sR)>5;
         Rs{rr,cc} = R;
     end
 end

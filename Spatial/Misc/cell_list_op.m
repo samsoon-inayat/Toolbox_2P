@@ -1,5 +1,4 @@
-function resp = sep_cell_list(resp_valsCi,resp_valsC1i)
-
+function resp = cell_list_op(resp_valsCi,resp_valsC1i,fun)
 
 
 if isstruct(resp_valsCi)
@@ -13,6 +12,11 @@ end
 for rr = 1:size(resp_valsC,1)
     for cc = 1:size(resp_valsC,2)
         c = resp_valsC{rr,cc}; c1 = resp_valsC1{rr,cc};
-        resp{rr,cc} = c & ~c1;
+        if strcmp(fun,'and')
+            resp{rr,cc} = c & c1;
+        end
+        if strcmp(fun,'or')
+            resp{rr,cc} = c | c1;
+        end
     end
 end

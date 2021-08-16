@@ -135,7 +135,7 @@ if 1
             R = sRs{rr,cc};
             sp = R.space;
             [msp,mspi] = min(sp,[],2);
-            air_belt_distance(rr,cc) = median((mspi-1) * R.bin_width);
+            air_belt_distance(rr,cc) = mean((mspi-1) * R.bin_width);
 %             figure(1000);clf;imagesc(R.space);
         end
     end
@@ -154,7 +154,7 @@ if 1
     format_axes(gca);
     set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 maxY])
     xticks = [xdata(1:end)]; xticklabels = {'C3','C4','C3'''};
-    set_title(gca,'Air-Belt Mismatch',[-0.35,100],5)
+    set_title(gca,'Air-Belt Mismatch',[-0.35,95],5)
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.17 0.02 -0.45 -0.011])
     

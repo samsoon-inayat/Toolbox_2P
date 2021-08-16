@@ -26,7 +26,11 @@ resp_FR = get_responsive_fraction_FR(Rs);
 mR = calc_mean_rasters(Rs,1:10);
 
 respBnA = sep_cell_list(respB.vals,respA.vals);
-
+respBnAandFR = cell_list_op(respBnA,resp_FR,'and');
+sum_respBnAandFR = exec_fun_on_cell_mat(respBnAandFR,'sum');
+length_respBnAandFR = exec_fun_on_cell_mat(respBnAandFR,'length');
+frac_respBnAandFR = sum_respBnAandFR./length_respBnAandFR;
+n = 0;
 %% find correlations across conditions
 resp = get_cell_list(respBnA,[1;2;3],0);
 [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
@@ -43,6 +47,9 @@ out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
 % save(fullfile(mData.pd_folder,'air_place_cells_figure.mat'),'out1','out2','out3');
 
 n = 0;
+%%
+% an = 1; cn = 1;
+% plotRasters_simplest(Rs{an,cn})
 %% Speed Figure
 if 1
     for ii = 1:length(ei)
@@ -140,15 +147,13 @@ if 1
         [0.01 -60]);
     set(gcf,'color','w');
     set(gcf,'Position',[5 5 3.25 2]);
-    [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
-%     resp = respBnA;%get_cell_list(respBnA,[1;2;3]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respBnA,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
     ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
     set_obj(ht,'String',{'Pop. Activity','Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation','Pop.Correlation'});
     set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr_B.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_B.pdf'),600);
 end
 %% average correlation of all animals
 if 1
@@ -162,7 +167,7 @@ if 1
     ht = get_obj(ff,'title'); 
     set_obj(ht,'String',{'Avg. Pop. Correlation','Avg. Pop. Correlation','Avg. Pop. Correlation'});
     set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD_B.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corrD_B.pdf'),600);
 end
 
 %% Percentage of Responsive Cells
