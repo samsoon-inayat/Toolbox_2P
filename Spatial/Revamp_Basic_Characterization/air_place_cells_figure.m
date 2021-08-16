@@ -1,4 +1,4 @@
-function light_figure
+function air_place_cells_figure
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
