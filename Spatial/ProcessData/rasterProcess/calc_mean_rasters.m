@@ -15,7 +15,7 @@ if ~iscell(trialsi)
                 temp1 = (squeeze(nanmean(Rs{ii,cc}.sp_rasters1(trials,:,:),1)))';
                 mRsi{ii,cc} = normalizeSignal(temp1,2);
             end
-            if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD')
+            if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
                 temp1 = (squeeze(nanmean(Rs{ii,cc}.sp_rasters1(trials,:,:),1)))';
                 mRsi{ii,cc} = normalizeSignal(temp1,2);
             end

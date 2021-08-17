@@ -4,8 +4,8 @@ for rr = 1:size(Rs,1)
     for cc = 1:size(Rs,2)
         R = Rs{rr,cc};
         rasters = permute(R.sp_rasters1,[2 1 3]);
-        sR = sum(squeeze(nansum(rasters,1))>0);
-        R.resp.FR_based = (sR)>5;
+        sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+        R.resp.FR_based = (sR)>5; % see if cell responded in at least half trials.
         Rs{rr,cc} = R;
     end
 end
@@ -44,7 +44,7 @@ for rr = 1:size(Rs,1)
             zMIs = R.info_metrics.ShannonMI_Zsh;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96;
         end
-        if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD')
+        if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
             zMIs = R.info_metrics.ShannonMI_Zsh;

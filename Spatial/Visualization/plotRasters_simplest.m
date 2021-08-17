@@ -1,7 +1,7 @@
 function plotRasters_simplest(R,ccs)
 rasters = R.sp_rasters1;
 if ~exist('ccs','var')
-    ccs = find(R.resp.vals);
+    ccs = find(R.resp.vals);% & R.resp.FR_based);
 else
     if isempty(ccs)
         ccs = 1:length(R.resp.vals);
@@ -94,7 +94,7 @@ while 1
             A = R;
             xs = 1:length(A.xs);
             if isfield(R,'context_info')
-            if strfind(R.context_info,'air') & strfind(R.context_info,'D')
+            if (~isempty(strfind(R.context_info,'air')) | ~isempty(strfind(R.context_info,'belt'))) & ~isempty(strfind(R.context_info,'D'))
                 fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
                 plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.5,'color','m');
                 

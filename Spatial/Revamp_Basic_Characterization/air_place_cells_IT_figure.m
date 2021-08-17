@@ -1,14 +1,14 @@
-function air_belt_place_cells_figure
+function air_place_cells_IT_figure
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
 
 selContexts = [3 4 5 3 4 5];
-rasterNames = {'airD','airD','airD','beltD','beltD','beltD'};
+rasterNames = {'airID','airID','airID','airIT','airIT','airIT'};
 % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 Rs = get_rasters_data(ei,selContexts,rasterNames);
 % Rs = filterRasters(Rs);
-Rs = find_responsive_rasters(Rs,1:10);
+Rs = find_responsive_rasters(Rs,1:9);
 % [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
 resp_FR = get_responsive_fraction_FR(Rs);
 respAB = get_responsive_cells(Rs); respA = get_responsive_cells(Rs(:,1:3)); respB = get_responsive_cells(Rs(:,4:6));
@@ -18,7 +18,7 @@ respAnB = [respAnB respAnB];
 respBnA = [respBnA respBnA];
 % [resp_fractionCSA,resp_valsCSA,OICA,mean_OICSA,resp_ORCSA,resp_OR_fractionCSA,resp_ANDCSA,resp_AND_fractionCSA] = get_responsive_fraction(Rs(:,1:3));
 % [resp_fractionCSB,resp_valsCSB,OICB,mean_OICSB,resp_ORCSB,resp_OR_fractionCSB,resp_ANDCSB,resp_AND_fractionCSB] = get_responsive_fraction(Rs(:,4:6));
-mR = calc_mean_rasters(Rs,1:10);
+mR = calc_mean_rasters(Rs,1:9);
 n = 0;
 %% Speed Figure
 if 1
@@ -174,19 +174,31 @@ if 1
     put_axes_labels(gca,{[],[0 0 0]},{{'Air-Onset to Belt', 'Marker Dist (cm)'},[0 -3 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Air_Belt_Mismatch_all'),600);
 end
+%% 
+an = 1; cn = 5;
+plotRasters_simplest(Rs{an,cn})
 %% Show sample rasters
-% an = 5; cn = 2;
-% plotRasters_simplest(Rs{an,cn})
 if 1
    an = 3; cn = 1;
     % plotRasters_simplest(Rs{an,cn})
-    % find(resp_valsC{an}(:,cn));
+    % find(respAsB{an,cn});
+    tr = respAsB{an,cn};
     ff = makeFigureRowsCols(2021,[0.5 0.5 4 1],'RowsCols',[1 4],...
         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
         [-75 -475]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+    set(gcf,'color','w'); set(gcf,'Position',[5 4 3.25 1]);
     ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD_A'),600);
+
+    an = 3; cn = 4;
+    % plotRasters_simplest(Rs{an,cn})
+    % find(resp_valsC{an}(:,cn));
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-75 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+    ff = sample_rasters(Rs{an,cn},[142 217 262 302],ff);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('belt_rastersD_A'),600);
 end
 %% population vector and correlation single animal
 % For belt FoR, exclude cells that are also PCs for Air FoR
@@ -221,6 +233,30 @@ if 1
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD.pdf'),600);
 end
 
+%% population vector and correlation single animal TRIAL WISE trial wise
+% For belt FoR, exclude cells that are also PCs for Air FoR
+if 1
+    an = 1;
+    ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 10],...
+        'spaceRowsCols',[0 -0.07],'rightUpShifts',[0.03 0.1],'widthHeightAdjustment',...
+        [+60 -90]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 5 13 5]);
+    tR = Rs(an,:)'; [tR,tmR] = separate_into_trials(tR,{1;2;3;4;5;6;7;8;9;10});
+    respAsB_T = respAsB(an,:)';respAsB_T = repmat(respAsB_T,1,10);
+    cn = 6;
+    [CRc,aCRc,mRR] = find_population_vector_corr(tR,tmR,respAsB_T,3);
+    ff = show_population_vector_and_corr(mData,ff,tR(cn,:),mRR(cn,:),CRc(cn,:),[],[]);
+    for ii = 1:10
+        axes(ff.h_axes(2,ii)); plot(nanmean(mRR{cn,ii}));
+    end
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
+%     colormap jet
+%     set_obj(ht,'String',{'Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation','Pop.Correlation','Pop. Correlation','Pop.Correlation','Pop.Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr_trial_wise.pdf'),600);
+end
 %% Percentage of Responsive Cells
 if 1
     respT = exec_fun_on_cell_mat(respA.vals,{'sum','length'}); respFA = respT.sum./respT.length;
@@ -1019,6 +1055,93 @@ if 1
     set_axes_limits(gca,[0.25 xdata(end)+.75],[0 15]);
     format_axes(gca);
     make_bars_hollow(hbs(4:6))
+    xticks = xdata; xticklabels = {'C3','C4','C3'''};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15]); xtickangle(45)
+    changePosition(gca,[0.2 0.02 -0.2 -0.05])
+%     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
+    set_title(gca,'AFoR',[1.25,15],5); set_title(gca,'BFoR',[5.25,15],5)
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt_pooled.pdf',fileNames{pri}),600);
+    ra.ranova
+%     ra.mauchly
+end
+
+%% Place Field Properties on the belt
+% respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
+% all_respCells = {respCells1,respCells2,respCells3};
+props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)','zMI'};
+fileNames = {'PFW','PFC','PFFR','zMI'}; yspacing = [10 5 5 1]; 
+pri = 4;
+Air = 0;
+if 1
+    sRs = Rs;
+    minBin = 0;     maxBin = 150;     incr = 50; % choosing more than 3 bins, give significant anova but not significant multcompare
+    % three bins also make sense because LED in condition 2 comes ON at
+    % 110cm
+    bins = minBin:incr:maxBin;
+    num_cells = []; PFW_belt = []; MFR_belt = [];
+    for rr = 1:size(sRs,1)
+        for cc = 1:size(sRs,2)
+            R = sRs{rr,cc};
+            tzMI = R.info_metrics.ShannonMI_Zsh;
+            [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
+            resp = respAsB{rr,cc}; 
+            centers = centers(resp)'; PWs = PWs(resp)'; MFR = MFR(resp)'; tzMI = tzMI(resp)';
+            for ii = 1:(length(bins)-1)
+                binS = bins(ii); binE = bins(ii+1);
+                inds = find(centers >= binS & centers < binE);
+                num_cells(rr,cc,ii) = 100*length(inds)/sum(resp);
+                PFW_belt(rr,cc,ii) = mean(PWs(inds));
+                MFR_belt(rr,cc,ii) = mean(MFR(inds));
+                zMI_belt(rr,cc,ii) = mean(tzMI(inds));
+            end
+        end
+    end
+    mzMIsC = [];
+    for rr = 1:size(sRs,1)
+        switch pri
+            case 1
+                mzMIsC(rr,:) = reshape(squeeze(PFW_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));                
+            case 2
+                mzMIsC(rr,:) = reshape(squeeze(num_cells(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
+            case 3
+                mzMIsC(rr,:) = reshape(squeeze(MFR_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
+            case 4
+                mzMIsC(rr,:) = reshape(squeeze(zMI_belt(rr,:,:))',1,(length(bins)-1)*size(sRs,2));
+        end
+    end
+    [within,dvn,xlabels] = make_within_table({'FR','Cond','Bins'},[2,3,length(bins)-1]);
+    dataT = make_between_table({mzMIsC},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond_Bins','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[5 7 2.5 1]);
+    s = generate_shades(length(bins)-1);
+    tcolors = [mData.colors(1);mData.colors(1);mData.colors(1);mData.colors(2);mData.colors(2);mData.colors(2);mData.colors(3);mData.colors(3);mData.colors(3)]; tcolors = repmat(tcolors,2,1);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',yspacing(pri),'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[0 15]);
+
+    format_axes(gca);
+    make_bars_hollow(hbs(10:end));
+    xticks = xdata; xticklabels = {'C3-B1','C3-B2','C3-B3','C4-B1','C4-B2','C4-B3','C3''-B1','C3''-B2','C3''-B3'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 7 14]); xtickangle(45)
+    changePosition(gca,[0.01 0.02 -0.03 -0.011])
+    put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 0 0]});
+    set_title(gca,'AFoR',[4.25,15],5); set_title(gca,'BFoR',[14.25,15],5)
+    save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
+
+
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR','bonferroni'},[1 1 1]);
+    hf = get_figure(6,[11 7 1.25 1]);
+    s = generate_shades(length(bins)-1);
+    tcolors = mData.colors(1:3); tcolors = repmat(tcolors,2,1);%[s.m;s.m];%;s.y;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    set_axes_limits(gca,[0.25 xdata(end)+.75],[0 15]);
+    format_axes(gca);
+%     make_bars_hollow(hbs(4:6))
     xticks = xdata; xticklabels = {'C3','C4','C3'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15]); xtickangle(45)
     changePosition(gca,[0.2 0.02 -0.2 -0.05])
