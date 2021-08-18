@@ -42,7 +42,7 @@ for rr = 1:size(Rs,1)
         end
         if strcmp(R.marker_name,'airIT') || strcmp(R.marker_name,'airT')
             zMIs = R.info_metrics.ShannonMI_Zsh;
-            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96;
+            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & R.resp.FR_based;
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);

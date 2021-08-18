@@ -285,7 +285,7 @@ end
 
 %% spatial and population vector correlation single animal
 if 1
-    an = 5; cn = 2;
+    an = 5; cn = 3;
     ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 2],...
         'spaceRowsCols',[0.09 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
         [-100 -150]);

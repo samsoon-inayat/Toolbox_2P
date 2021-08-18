@@ -255,7 +255,7 @@ mzMIsA = arrayfun(@(x) nanmean(x{1}),zMIsA);
 [within,dvn,xlabels] = make_within_table({'DT','Cond'},[2,3]);
 dataT = make_between_table({mzMIsC,mzMIsA},dvn);
 ra = RMA(dataT,within,0.05);
-[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DT_by_Cond','bonferroni'},[1 0.25 1]);
+[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DT','bonferroni'},[1 0.25 1]);
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = [mData.shades.m;mData.shades.c];
@@ -264,7 +264,7 @@ tcolors = [mData.shades.m;mData.shades.c];
     'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 set(gca,'xlim',[0.35 xdata(end)+.65],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-xticks = xdata; xticklabels = {'Dist','Time'};%xticklabels = {'C3-D','C4-D','C3''-D','C3-T','C4-T','C3''-T'}; xticklabels = repmat(xticklabels,1,2);
+xticks = xdata; %xticklabels = {'C3-D','C4-D','C3''-D','C3-T','C4-T','C3''-T'}; xticklabels = repmat(xticklabels,1,2);
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(45)
 changePosition(gca,[0.05 0.02 -0.05 -0.011])
