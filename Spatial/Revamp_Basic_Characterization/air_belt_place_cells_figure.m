@@ -19,6 +19,21 @@ respBnA = [respBnA respBnA];
 % [resp_fractionCSA,resp_valsCSA,OICA,mean_OICSA,resp_ORCSA,resp_OR_fractionCSA,resp_ANDCSA,resp_AND_fractionCSA] = get_responsive_fraction(Rs(:,1:3));
 % [resp_fractionCSB,resp_valsCSB,OICB,mean_OICSB,resp_ORCSB,resp_OR_fractionCSB,resp_ANDCSB,resp_AND_fractionCSB] = get_responsive_fraction(Rs(:,4:6));
 mR = calc_mean_rasters(Rs,1:10);
+
+rasterNames = {'airT','airT','airT','beltT','beltT','beltT'};
+% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
+RsT = get_rasters_data(ei,selContexts,rasterNames);
+% Rs = filterRasters(Rs);
+RsT = find_responsive_rasters(RsT,1:10);
+% [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
+resp_FRT = get_responsive_fraction_FR(RsT);
+respABT = get_responsive_cells(RsT); respAT = get_responsive_cells(RsT(:,1:3)); respBT = get_responsive_cells(RsT(:,4:6));
+respAnBT = sep_cell_list(respAT,respBT); respBnAT = sep_cell_list(respBT,respAT); respAandBT = cell_list_op(respAT,respBT,'and'); respAandBT = [respAandB respAandBT];
+respAsBT = [respAnBT respBnAT];
+respAnBT = [respAnBT respAnBT];
+respBnAT = [respBnAT respBnAT];
+mRT = calc_mean_rasters(RsT,1:10);
+
 n = 0;
 %% Speed Figure
 if 1
@@ -203,7 +218,7 @@ end
 %% population vector and correlation single animal
 % For belt FoR, exclude cells that are also PCs for Air FoR
 if 1
-    an = 1;
+    an = 5;
     ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 6],...
         'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
         [0.01 -60]);
@@ -236,7 +251,7 @@ end
 %% population vector and correlation single animal TRIAL WISE trial wise
 % For belt FoR, exclude cells that are also PCs for Air FoR
 if 1
-    an = 1;
+    an = 5;
     ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 10],...
         'spaceRowsCols',[0 -0.07],'rightUpShifts',[0.03 0.1],'widthHeightAdjustment',...
         [+60 -90]);
@@ -245,10 +260,10 @@ if 1
     tR = Rs(an,:)'; [tR,tmR] = separate_into_trials(tR,{1;2;3;4;5;6;7;8;9;10});
     respAsB_T = respAsB(an,:)';respAsB_T = repmat(respAsB_T,1,10);
     cn = 6;
-    [CRc,aCRc,mRR] = find_population_vector_corr(tR,tmR,respAsB_T,3);
+    [CRc,aCRc,mRR] = find_population_vector_corr(tR,tmR,respAsB_T,1);
     ff = show_population_vector_and_corr(mData,ff,tR(cn,:),mRR(cn,:),CRc(cn,:),[],[]);
     for ii = 1:10
-        axes(ff.h_axes(2,ii)); plot(nanmean(mRR{cn,ii}));
+%         axes(ff.h_axes(2,ii)); plot(nanmean(mRR{cn,ii}));
     end
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
     ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);

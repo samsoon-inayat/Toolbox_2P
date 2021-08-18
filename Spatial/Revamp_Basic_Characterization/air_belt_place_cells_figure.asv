@@ -203,7 +203,7 @@ end
 %% population vector and correlation single animal
 % For belt FoR, exclude cells that are also PCs for Air FoR
 if 1
-    an = 4;
+    an = 5;
     ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 6],...
         'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
         [0.01 -60]);
@@ -236,7 +236,7 @@ end
 %% population vector and correlation single animal TRIAL WISE trial wise
 % For belt FoR, exclude cells that are also PCs for Air FoR
 if 1
-    an = 2;
+    an = 5;
     ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 10],...
         'spaceRowsCols',[0 -0.07],'rightUpShifts',[0.03 0.1],'widthHeightAdjustment',...
         [+60 -90]);
