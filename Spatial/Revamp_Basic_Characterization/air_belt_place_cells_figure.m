@@ -1,5 +1,6 @@
 function air_belt_place_cells_figure
-
+%% Load the Data
+while 1
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
 
@@ -33,10 +34,72 @@ respAsBT = [respAnBT respBnAT];
 respAnBT = [respAnBT respAnBT];
 respBnAT = [respBnAT respBnAT];
 mRT = calc_mean_rasters(RsT,1:10);
-
+break;
+end
 n = 0;
+%% binarize cells by finding which ones have higher mutual information for distance or time
+while 1
+    for rr = 1:size(Rs,1)
+        for cc = 1:size(Rs,2)
+            R = Rs{rr,cc}; zMI_D = R.info_metrics.ShannonMI_Zsh'; zMIsC{rr,cc} = zMI_D;
+            R = RsT{rr,cc}; zMI_T = R.info_metrics.ShannonMI_Zsh'; zMIsCT{rr,cc} = zMI_T;
+            diff_D_T{rr,cc} = zMI_D - zMI_T; mean_diff_D_T = nanmean(zMI_D - zMI_T); std_diff_D_T = nanstd(zMI_D - zMI_T);
+            resp_diff_D_g_T{rr,cc} = diff_D_T{rr,cc} > 0.25; resp_diff_T_g_D{rr,cc} = diff_D_T{rr,cc} < -0.25;
+            per_resp_d_D_g_T(rr,cc) = 100*sum(resp_diff_D_g_T{rr,cc})/length((resp_diff_D_g_T{rr,cc}));
+            per_resp_d_T_g_D(rr,cc) = 100*sum(resp_diff_T_g_D{rr,cc})/length((resp_diff_T_g_D{rr,cc}));
+        end
+    end
+    
+    
+    CN = 1;
+    tcolors = {'c'};
+    distD(:,1) = diff_D_T(:,CN);
+    [distDo,allVals] = getAveragesAndAllValues(distD);
+    minBin = min(allVals);
+    maxBin = max(allVals);
+    incr = 1; %maxBin =
+    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hold on;
+    %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+    [ha,hb,hca] = plotAverageDistributions(distD,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','pdf');
+    break;
+end
+%% Find the peak of mean response location of cells on the belt which have higher distance MI versus which have higher time MI
+while 1
+     for rr = 1:size(Rs,1)
+        for cc = 1:size(Rs,2)
+            R = Rs{rr,cc}; 
+            vals = R.peak_location(resp_diff_D_g_T{rr,cc}); mvalsD(rr,cc) = mean(vals);
+            vals = R.peak_location(resp_diff_T_g_D{rr,cc}); mvalsT(rr,cc) = mean(vals);
+        end
+     end
+     [within,dvn,xlabels] = make_within_table({'DT','Cond'},[2,3]);
+    dataT = make_between_table({mvalsD(:,1:3),mvalsT(:,1:3)},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DT','bonferroni'},[1 1 1]);
+%     s = generate_shades(3); tcolors = s.g;
+    tcolors = colors;%mData.colors(1:3);
+     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+%     set(hbs(3),'EdgeColor','k');
+%     hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
+%     make_bars_hollow(hbs(4:6))
+    format_axes(gca);
+    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 maxY])
+    xticks = [xdata(1:end)]; xticklabels = {'D-A','D-B','T-A','T-B'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.17 0.02 -0.1 -0.011])
+%     set_title(gca,'AFoR',[1.3,25],5); set_title(gca,'BFoR',[5.3,25],5,'r');
+%     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
+%     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('peak_location_D_vs_T'),600);
+    break;
+end
+
 %% Speed Figure
-if 1
+while 1
     for ii = 1:length(ei)
         b1 = ei{ii}.b;
         for jj = 1:10
@@ -126,10 +189,10 @@ if 1
     put_axes_labels(gca,{[],[0 0 0]},{'Avg. Speed (cm/sec)',[0 -2 0]});
     format_axes(gca);
     save_pdf(hf,mData.pdf_folder,sprintf('avg_speed_anova_AB_pooled'),600);
-
+    break;
 end
 %% Air Belt mismatch
-if 1
+while 1
     all_air_belt_distance = [];
     sRs = Rs(:,1:3);
 %     sRs = Rs(:,4:6);
@@ -188,12 +251,13 @@ if 1
 %     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Air-Onset to Belt', 'Marker Dist (cm)'},[0 -3 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Air_Belt_Mismatch_all'),600);
+    break;
 end
-%% 
+%% for seeing how the rasters look like
 an = 1; cn = 5;
 plotRasters_simplest(Rs{an,cn})
 %% Show sample rasters
-if 1
+while 1
    an = 3; cn = 1;
     % plotRasters_simplest(Rs{an,cn})
     % find(respAsB{an,cn});
@@ -214,27 +278,30 @@ if 1
     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
     ff = sample_rasters(Rs{an,cn},[142 217 262 302],ff);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('belt_rastersD_A'),600);
+    break;
 end
 %% population vector and correlation single animal
 % For belt FoR, exclude cells that are also PCs for Air FoR
-if 1
-    an = 5;
-    ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 6],...
+while 1
+    an = 1;
+    tRs = Rs(:,1:3); tRs = [tRs RsT(:,1:3)]; tmR = mR(:,1:3); tmR = [tmR mRT(:,1:3)];
+    ff = makeFigureRowsCols(107,[1 0.5 6 1],'RowsCols',[2 6],...
         'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
         [0.01 -60]);
     set(gcf,'color','w');
     set(gcf,'Position',[5 5 7 2]);
-    resp = get_cell_list(respAsB,[1;2;3]); resp = get_cell_list(respAsB,[4;5;6]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respAsB,0);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
+%     resp = get_cell_list(respAsB,[1;2;3]); resp = get_cell_list(respAsB,[4;5;6]); resp = cell_list_op(respAsB,MI_D_g_T,'and');
+    [CRc,aCRc,mRR] = find_population_vector_corr(tRs,tmR,0,4);
+    ff = show_population_vector_and_corr(mData,ff,tRs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
     ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
     set_obj(ht,'String',{'Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation','Pop.Correlation','Pop. Correlation','Pop.Correlation','Pop.Correlation'});
     set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
+    break;
 end
 %% average correlation of all animals
-if 1
+while 1
     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],...
         'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.075 0.2],'widthHeightAdjustment',...
         [0.01 -250]);
@@ -246,11 +313,47 @@ if 1
     set_obj(ht,'String',{'Avg. Pop. Correlation','Avg. Pop. Correlation','Avg. Pop. Correlation'});
     set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD.pdf'),600);
+    break;
+end
+
+%% population vector and correlation single animal for Time based rasters
+% For belt FoR, exclude cells that are also PCs for Air FoR
+while 1
+    an = 5;
+    ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 6],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
+        [0.01 -60]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 5 7 2]);
+    resp = get_cell_list(respAsBT,[1;2;3]); resp = get_cell_list(respAsBT,[4;5;6]); resp = cell_list_op(respAsBT,MI_D_g_T,'and');
+    [CRcT,aCRcT,mRRT] = find_population_vector_corr(RsT,mRT,resp_diff_T_g_D,0);
+    ff = show_population_vector_and_corr(mData,ff,RsT(an,:),mRRT(an,:),CRcT(an,:),[-0.1 1],[]);
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
+    set_obj(ht,'String',{'Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation','Pop.Correlation','Pop. Correlation','Pop.Correlation','Pop.Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
+    break;
+end
+%% average correlation of all animals for time based rasters
+while 1
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.075 0.2],'widthHeightAdjustment',...
+        [0.01 -250]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 5 6.99 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.1 1],[]);
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); 
+    set_obj(ht,'String',{'Avg. Pop. Correlation','Avg. Pop. Correlation','Avg. Pop. Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD.pdf'),600);
+    break;
 end
 
 %% population vector and correlation single animal TRIAL WISE trial wise
 % For belt FoR, exclude cells that are also PCs for Air FoR
-if 1
+while 1
     an = 5;
     ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 10],...
         'spaceRowsCols',[0 -0.07],'rightUpShifts',[0.03 0.1],'widthHeightAdjustment',...
@@ -271,9 +374,10 @@ if 1
 %     set_obj(ht,'String',{'Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation','Pop.Correlation','Pop. Correlation','Pop.Correlation','Pop.Correlation'});
     set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr_trial_wise.pdf'),600);
+    break;
 end
 %% Percentage of Responsive Cells
-if 1
+while 1
     respT = exec_fun_on_cell_mat(respA.vals,{'sum','length'}); respFA = respT.sum./respT.length;
     respT = exec_fun_on_cell_mat(respB.vals,{'sum','length'}); respFB = respT.sum./respT.length;
     respORA = get_cell_list(respA.vals,[1;2;3]); respORB = get_cell_list(respB.vals,[1;2;3]);
@@ -324,40 +428,44 @@ if 1
 %     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     format_axes(gca);
     save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive_AB_pooled'),600);
+    break;
 end
 
 %% Mutual Information comparison
-if 1
+while 1
     for rr = 1:size(Rs,1)
         for cc = 1:size(Rs,2)
             R = Rs{rr,cc};
             zMIsC{rr,cc} = R.info_metrics.ShannonMI_Zsh';
+            R = RsT{rr,cc};
+            zMIsCT{rr,cc} = R.info_metrics.ShannonMI_Zsh';
         end
     end
-    data = arrayfun(@(x) nanmean(x{1}),zMIsC);
-    dataM = arrayfun(@(x) max(x{1}),zMIsC);
-    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]);
-    dataT = make_between_table({data},dvn);
-    ra = RMA(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond','bonferroni'},[1 1 1]);
+    data = arrayfun(@(x) nanmean(x{1}),zMIsC); dataM = arrayfun(@(x) max(x{1}),zMIsC);
+    data1 = arrayfun(@(x) nanmean(x{1}),zMIsCT); %dataM = arrayfun(@(x) max(x{1}),zMIsC);
+    [within,dvn,xlabels] = make_within_table({'DT','FR','Cond'},[2,2,3]); dataT = make_between_table({data,data1},dvn); ra = RMA(dataT,within,0.05);
+    %%
+%     [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]); dataT = make_between_table({data},dvn); ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DT_by_FR_Cond','bonferroni'},[1 1 1]);
 %     s = generate_shades(3); tcolors = s.g;
     tcolors = colors;%mData.colors(1:3);
-     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
+     hf = get_figure(5,[5 7 2.25 1]);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
 %     set(hbs(3),'EdgeColor','k');
 %     hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
-    make_bars_hollow(hbs(4:6))
+%     make_bars_hollow(hbs(4:6))
     format_axes(gca);
-    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 1.7])
+    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 maxY])
     xticks = [xdata(1:end)]; xticklabels = {'C3','C4','C3'''};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.17 0.02 -0.1 -0.011])
-    set_title(gca,'AFoR',[1.3,1.6],5); set_title(gca,'BFoR',[5.3,1.6],5,'r');
+%     set_title(gca,'AFoR',[1.3,1.6],5); set_title(gca,'BFoR',[5.3,1.6],5,'r');
 %     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'zMI'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('zMI_AB'),600);
+    %%
 
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR','bonferroni'},[1 1 1]);
 %     s = generate_shades(3); tcolors = s.g;
@@ -377,10 +485,11 @@ if 1
 %     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     format_axes(gca);
     save_pdf(hf,mData.pdf_folder,sprintf('zMI_AB_pooled'),600);
+    break;
 end
 
 %% r-squared
-if 1
+while 1
     for rr = 1:size(Rs,1)
         for cc = 1:size(Rs,2)
             R = Rs{rr,cc};
@@ -432,11 +541,11 @@ if 1
 %     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     format_axes(gca);
     save_pdf(hf,mData.pdf_folder,sprintf('rsquared_AB_pooled'),600);
+    break;
 end
 
-
 %% Percentage of Responsive Cells Unique in Conditions
-if 1
+while 1
     percCells = [];
     percCells(:,1) = get_cell_list(resp_valsCS,[1 -2 -3],1)'; percCells(:,2) = get_cell_list(resp_valsCS,[-1 2 -3],1)'; percCells(:,3) = get_cell_list(resp_valsCS,[-1 -2 3],1)';
     within = make_within_table({'Cond'},3);
@@ -461,9 +570,10 @@ if 1
 %     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive_unique'),600);
+    break;
 end
 %% Spatial correlation between adjacent trails
-if 1
+while 1
     [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,9]);
     var1 = arrayfun(@(x) mean(x{1}),out1.adj_SP_corr_diag); 
     var2 = arrayfun(@(x) mean(x{1}),out2.adj_SP_corr_diag);
@@ -490,9 +600,10 @@ if 1
     changePosition(gca,[0.05 0.12 0.05 -0.08]);
     put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Spatial Correlation'},[0 -0.05 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials',600);
+    break;
 end
 %% Spatial correlation between adjacent trails (taking mean) 
-if 1
+while 1
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'TrialPairs','bonferroni'},[1 0.5 1]);
     hollowsep = 19;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.75 1],'color','w');
@@ -511,10 +622,11 @@ if 1
     changePosition(gca,[0.0 0.03 0.08 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Spatial','Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph',600);
+    break;
 end
 
 %% Spatial correlation trails with mean of trials
-if 1
+while 1
     [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,10]);
     var1 = []; var2 = []; var3 = [];
     for ii = 1:length(out1.all_SP_corr_diag_with_mean)
@@ -544,9 +656,10 @@ if 1
     changePosition(gca,[0.05 0.12 0.05 -0.08]);
     put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Spatial Correlation'},[0 -0.05 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials',600);
+    break;
 end
 %% Spatial correlation trails with mean of trials (mean bar graph)
-if 1
+while 1
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0.5 1]);
     hollowsep = 19;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 3.25 1],'color','w');
@@ -565,9 +678,10 @@ if 1
     changePosition(gca,[-0.02 0.03 0.1 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph',600);
+    break;
 end
 %% Rate remap (Delta FR score) between adjacent trails
-if 1
+while 1
     [within,dvn,xlabels] = make_within_table({'Condition','TrialPairs'},[3,9]);
     var1 = arrayfun(@(x) nanmean(x{1}),out1.adj_RR_SP); 
     var2 = arrayfun(@(x) nanmean(x{1}),out2.adj_RR_SP);
@@ -594,9 +708,10 @@ if 1
     changePosition(gca,[0.065 0.12 0.05 -0.08]);
     put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'\Delta FR Score'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'Delta_FR_score_trials',600);
+    break;
 end
 %% Spatial correlation between conditions
-if 1
+while 1
     [within,dvn,xlabels] = make_within_table({'Cond'},2);
     var_CE = arrayfun(@(x) mean(x{1}),outRemap.adj_SP_corr_diag);
     dataT = make_between_table({var_CE},dvn);
@@ -618,10 +733,11 @@ if 1
     changePosition(gca,[0.1 0.03 -0.4 -0.1]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Spatial Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'air_place_cell corr remap',600);
+    break;
 end
 
 %% Delta FR score (RAte remap) between conditions
-if 1
+while 1
     [within,dvn,xlabels] = make_within_table({'Cond'},2);
     var_CE = arrayfun(@(x) nanmean(x{1}),outRemap.adj_RR_SP);
     dataT = make_between_table({var_CE},dvn);
@@ -643,10 +759,11 @@ if 1
     changePosition(gca,[0.1 0.03 -0.4 -0.1]);
     put_axes_labels(gca,{[],[0 0 0]},{{'\Delta FR Score'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'air_place_cell rate remap (DFR)',600);
+    break;
 end
 
 %% Popuation Vector correlation between conditions
-if 1
+while 1
     [within,dvn,xlabels] = make_within_table({'Cond'},2);
     var_CE = arrayfun(@(x) nanmean(x{1}),outRemap.adj_PV_corr_diag);
     dataT = make_between_table({var_CE},dvn);
@@ -668,11 +785,12 @@ if 1
     changePosition(gca,[0.2 0.03 -0.4 -0.1]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Pop. Vec.','Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'air_place_cell PV corr',600);
+    break;
 end
 
 %%
 %% overlap RM bar graph
-if 1
+while 1
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
     mOI = NaN(6,6,5);
@@ -710,9 +828,11 @@ if 1
     changePosition(gca,[0.1 0.03 -0.25 -0.1]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Overlap Index'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('air_overlap_stats_place_cells'),600);
+    break;
 end
 
 %% Place Field Properties
+while 1
 props = {'Field Width (cm)','Field Center (cm)','Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'};
 all_incr = [1 1 1];
@@ -772,8 +892,10 @@ if 1
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells.pdf',fileNames{pri}),600);
 end
 end
-
+break;
+end
 %% Place Field Properties widths vs centers scatter plot and correlation
+while 1
 props = {'Field Width (cm)','Field Center (cm)','Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'};
 all_incr = [1 1 1];
@@ -821,8 +943,10 @@ if 1
     put_axes_labels(gca,{[],[0 0 0]},{{'Corr. Field Width','Vs Field Center'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells.pdf','CW_corr'),600);
 end
-
+break;
+end
 %% Place Field Properties on the belt
+while 1
 % respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
 % all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
@@ -911,8 +1035,10 @@ if 1
     ra.ranova
     ra.mauchly
 end
-
+break;
+end
 %% Place Field Properties on the belt
+while 1
 % respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
 % all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
@@ -995,8 +1121,10 @@ if 1
     ra.ranova
 %     ra.mauchly
 end
-
+break;
+end
 %% Place Field Properties on the belt
+while 1
 % respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
 % all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
@@ -1079,8 +1207,10 @@ if 1
     ra.ranova
 %     ra.mauchly
 end
-
+break;
+end
 %% Place Field Properties on the belt
+while 1
 % respCells1 = get_cell_list(resp_valsCS,[1 -2 -3]);     respCells2 = get_cell_list(resp_valsCS,[-1 2 -3]);     respCells3 = get_cell_list(resp_valsCS,[-1 -2 3]);
 % all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)','zMI'};
@@ -1166,9 +1296,10 @@ if 1
     ra.ranova
 %     ra.mauchly
 end
-
+break;
+end
 %% Percentage of Responsive Cells AsB ([AnotB BnotA])
-if 1
+while 1
     respT = exec_fun_on_cell_mat(respAsB,{'sum','length'}); respFA = respT.sum./respT.length;
     respORA = get_cell_list(respAsB(:,[1,2,3]),[1;2;3]); respORB = get_cell_list(respAsB(:,[4,5,6]),[1;2;3]);
     respT = exec_fun_on_cell_mat(respORA,{'sum','length'}); respF_ORA = mean(respT.sum./respT.length,2);
@@ -1218,10 +1349,11 @@ if 1
 %     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     format_axes(gca);
     save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive_AsB_pooled'),600);
+    break;
 end
 
 %% Percentage of Responsive Cells Unique in Conditions
-if 1
+while 1
     percCells = [];
     cn = 1; cols = [1,2,3]; condOp = [1 -2 -3]; respT = exec_fun_on_cell_mat(get_cell_list(respAsB(:,cols),condOp),{'sum'}); respT1 = exec_fun_on_cell_mat(get_cell_list(respAsB(:,cols),cn),{'sum'}); respT = respT.sum./respT1.sum; percCells(:,1) = respT(:,1);
     cn = 2; cols = [1,2,3]; condOp = [-1 2 -3]; respT = exec_fun_on_cell_mat(get_cell_list(respAsB(:,cols),condOp),{'sum'}); respT1 = exec_fun_on_cell_mat(get_cell_list(respAsB(:,cols),cn),{'sum'}); respT = respT.sum./respT1.sum; percCells(:,2) = respT(:,1);
@@ -1268,10 +1400,11 @@ if 1
 %     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
     format_axes(gca);
     save_pdf(hf,mData.pdf_folder,sprintf('percentage_PCs_responsive_unique_AsB_pooled'),600);
+    break;
 end    
     
 %% Place cell emergence disruption stability - big combined test
-if 1
+while 1
     
     percCells = [];
     indp = 0; cols = [1,2,3];
@@ -1325,6 +1458,7 @@ if 1
     save_pdf(hf,mData.pdf_folder,sprintf('dynamics_cells.pdf'),600);
     ra.ranova
     ra.mauchly
+    break;
 end
 
 

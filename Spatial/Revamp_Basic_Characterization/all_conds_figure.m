@@ -1,36 +1,40 @@
 function light_figure
+%%
+while 1
+    mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+    ei = evalin('base','ei'); 
+    selContexts = [1 2 3 3 4 4 5 5 6 7];
+    rasterNames = {'light22T','air55T','airD','airIT','airD','airIT','airD','airIT','light22T','air55T'};
+    o = get_data(ei,selContexts,rasterNames);
+    selContexts = [1 4 6];
+    rasterNames = {'light22T','light22T','light22T'};
+    oLight = get_data(ei,selContexts,rasterNames);
+    break;
+end
+n = 0;
+%%
 
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','ei'); 
+resp_OR = cell_list_op(oLight.resp.vals(:,:),[],'or');
+resp_OR = cell_list_op(o.resp.vals(:,[2 7]),[],'or');
+resp_OR = repmat(resp_OR(:,1),1,10);
 
+[CRc,aCRc,mRR] = find_population_vector_corr(o.Rs,o.mR,resp_OR,3);
 
-selContexts = [1 2 3 4 4 5 6 7];
-rasterNames = {'light22T','air55T','airD','airD','light22T','airD','light22T','air55T'};
-Rs = get_rasters_data(ei,selContexts,rasterNames);
-Rs = find_responsive_rasters(Rs,1:10);
-[resp_fraction,resp_vals,OI,mean_OI,resp_OR,resp_OR_fraction,resp_AND,resp_AND_fraction] = get_responsive_fraction(Rs);
-mR = calc_mean_rasters(Rs,1:10);
+an = 1;
+ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 10],...
+    'spaceRowsCols',[-0.03 -0.06],'rightUpShifts',[0.02 0.1],'widthHeightAdjustment',...
+    [50 -60]);
+set(gcf,'color','w'); set(gcf,'Position',[1 5 20 4]);
+ff = show_population_vector_and_corr(mData,ff,o.Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vec_all.pdf'),600);
 
 %%
-resp = resp_AND;
-[CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp_AND,0);
-
-an = 3;
-ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 8],...
-    'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
-    [0.01 -60]);
-set(gcf,'color','w');
-set(gcf,'Position',[5 5 6.9 2]);
-ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corrD.pdf'),600);
-
-
 ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 8],...
     'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.075 0.2],'widthHeightAdjustment',...
     [0.01 -220]);
 set(gcf,'color','w');
 set(gcf,'Position',[5 3 6.9 1]);
-ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.2 1],[]);
+ff = show_population_vector_and_corr(mData,ff,o.Rs(an,:),[],aCRc,[-0.2 1],[]);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD.pdf'),600);
 return;% temporary return to just run the code up
 %%

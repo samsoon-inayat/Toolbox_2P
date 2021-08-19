@@ -149,7 +149,7 @@ parfor ii = 1:size(rasters,3)
     end
 end
 
-
+resp = resp';
 
 
 % resp = p<0.05 & (R.info_metrics.ShannonMI_Zsh > 1.96)';
@@ -196,6 +196,7 @@ parfor ii = 1:size(rasters,3)
 %     hv(ii) = findHaFD(CRR,1:size(CRR,1));
 end
 resp = p < 0.05 & hv;
+resp = resp';
 
 
 function [resp,cis] = find_resp_time_raster_light_fractal(R,trials)

@@ -1,40 +1,16 @@
 function air_place_cells_figure
-
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','ei'); 
-
-
-selContexts = [3 4 5];
-rasterNames = {'airT','airT','airT'};
-% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
-RsT = get_rasters_data(ei,selContexts,rasterNames);
-% RsT = filterRasters(RsT);
-RsT = find_responsive_rasters(RsT,1:10);
-respT = get_responsive_cells(RsT);
-resp_FRT = get_responsive_fraction_FR(RsT);
-mRT = calc_mean_rasters(RsT,1:10);
-
-selContexts = [3 4 5];
-rasterNames = {'airD','airD','airD'};
-% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
-Rs = get_rasters_data(ei,selContexts,rasterNames);
-% Rs = filterRasters(Rs);
-Rs = find_responsive_rasters(Rs,1:10);
-respA = get_responsive_cells(Rs);
-resp_FR = get_responsive_fraction_FR(Rs);
-mR = calc_mean_rasters(Rs,1:10);
-
-selContexts = [3 4 5];
-rasterNames = {'beltD','beltD','beltD'};
-% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
-RsB = get_rasters_data(ei,selContexts,rasterNames);
-% Rs = filterRasters(Rs);
-RsB = find_responsive_rasters(RsB,1:10);
-respB = get_responsive_cells(RsB);
-resp_FRB = get_responsive_fraction_FR(RsB);
-mRB = calc_mean_rasters(RsB,1:10);
-
-respAnB = sep_cell_list(respA.vals,respB.vals);
+%%
+while 1
+    mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+    ei = evalin('base','ei'); 
+    selContexts = [3 4 5]; rasterNames = {'airT','airT','airT'};
+    oT = get_data(ei,selContexts,rasterNames);
+    selContexts = [3 4 5]; rasterNames = {'airD','airD','airD'};
+    oD = get_data(ei,selContexts,rasterNames);
+    selContexts = [3 4 5 3 4 5]; rasterNames = {'airD','airD','airD','airT','airT','airT'};
+    oDT = get_data(ei,selContexts,rasterNames);
+    break;
+end
 n = 0;
 %% find correlations across conditions
 resp = resp_ORCS;
@@ -54,6 +30,7 @@ n = 0;
 
 %% Speed Figure
 if 1
+    Rs = oD.Rs;
     for ii = 1:length(ei)
         b1 = ei{ii}.b;
         for jj = 1:10
@@ -285,7 +262,7 @@ end
 
 %% spatial and population vector correlation single animal
 if 1
-    an = 5; cn = 3;
+    an = 1; cn = 2;
     ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 2],...
         'spaceRowsCols',[0.09 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
         [-100 -150]);

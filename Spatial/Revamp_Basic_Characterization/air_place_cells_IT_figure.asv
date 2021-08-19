@@ -1,25 +1,101 @@
 function air_place_cells_IT_figure
 
+while 1
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
 
-selContexts = [3 4 5 3 4 5];
-rasterNames = {'airID','airID','airID','airIT','airIT','airIT'};
+selContexts = [3 4 5];
+rasterNames = {'airIT','airIT','airIT'};
+% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
+RsT = get_rasters_data(ei,selContexts,rasterNames);
+% Rs = filterRasters(Rs);
+RsT = find_responsive_rasters(RsT,1:9);
+% [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
+resp_FRT = get_responsive_fraction_FR(RsT);
+respAT = get_responsive_cells(RsT);
+mRT = calc_mean_rasters(RsT,1:9);
+
+
+selContexts = [3 4 5];
+rasterNames = {'airID','airID','airID'};
 % Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
 Rs = get_rasters_data(ei,selContexts,rasterNames);
 % Rs = filterRasters(Rs);
 Rs = find_responsive_rasters(Rs,1:9);
 % [resp_fractionCS,resp_valsCS,OIC,mean_OICS,resp_ORCS,resp_OR_fractionCS,resp_ANDCS,resp_AND_fractionCS] = get_responsive_fraction(Rs);
 resp_FR = get_responsive_fraction_FR(Rs);
-respAB = get_responsive_cells(Rs); respA = get_responsive_cells(Rs(:,1:3)); respB = get_responsive_cells(Rs(:,4:6));
-respAnB = sep_cell_list(respA,respB); respBnA = sep_cell_list(respB,respA); respAandB = cell_list_op(respA,respB,'and'); respAandB = [respAandB respAandB];
-respAsB = [respAnB respBnA];
-respAnB = [respAnB respAnB];
-respBnA = [respBnA respBnA];
-% [resp_fractionCSA,resp_valsCSA,OICA,mean_OICSA,resp_ORCSA,resp_OR_fractionCSA,resp_ANDCSA,resp_AND_fractionCSA] = get_responsive_fraction(Rs(:,1:3));
+respA = get_responsive_cells(Rs); % [resp_fractionCSA,resp_valsCSA,OICA,mean_OICSA,resp_ORCSA,resp_OR_fractionCSA,resp_ANDCSA,resp_AND_fractionCSA] = get_responsive_fraction(Rs(:,1:3));
 % [resp_fractionCSB,resp_valsCSB,OICB,mean_OICSB,resp_ORCSB,resp_OR_fractionCSB,resp_ANDCSB,resp_AND_fractionCSB] = get_responsive_fraction(Rs(:,4:6));
 mR = calc_mean_rasters(Rs,1:9);
+
+break
+end
 n = 0;
+
+%% binarize cells by finding which ones have higher mutual information for distance or time
+while 1
+    for rr = 1:size(Rs,1)
+        for cc = 1:size(Rs,2)
+            R = Rs{rr,cc}; zMI_D = R.info_metrics.ShannonMI_Zsh'; zMIsC{rr,cc} = zMI_D;
+            R = RsT{rr,cc}; zMI_T = R.info_metrics.ShannonMI_Zsh'; zMIsCT{rr,cc} = zMI_T;
+            MI_D_g_T{rr,cc} = zMI_D > zMI_T; MI_T_g_D{rr,cc} = zMI_T > zMI_D;
+            D_g_T(rr,cc) = 100*sum(MI_D_g_T{rr,cc} == 1)/length(zMI_D); T_g_D(rr,cc) = 100*sum(MI_T_g_D{rr,cc} == 1)/length(zMI_D);
+            diff_D_T{rr,cc} = zMI_D - zMI_T;
+            resp_diff_D_g_T{rr,cc} = diff_D_T{rr,cc} > 1.65; resp_diff_T_g_D{rr,cc} = diff_D_T{rr,cc} < -1.65;
+        end
+    end
+    
+    
+    CN = 1;
+    tcolors = {'c'};
+    distD(:,1) = diff_D_T(:,CN);
+    [distDo,allVals] = getAveragesAndAllValues(distD);
+    minBin = min(allVals);
+    maxBin = max(allVals);
+    incr = 1; %maxBin =
+    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hold on;
+    %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+    [ha,hb,hca] = plotAverageDistributions(distD,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','pdf');
+    break;
+end
+
+%% Find the peak of mean response location of cells on the belt which have higher distance MI versus which have higher time MI
+
+while 1
+     for rr = 1:size(Rs,1)
+        for cc = 1:size(Rs,2)
+            R = Rs{rr,cc}; 
+            vals = R.peak_location(resp_diff_D_g_T{rr,cc}); mvalsD(rr,cc) = mean(vals);
+            vals = R.peak_location(resp_diff_T_g_D{rr,cc}); mvalsT(rr,cc) = mean(vals);
+            mzMIsC(rr,cc) = nanmean(zMIsC{rr,cc}); mzMIsCT(rr,cc) = nanmean(zMIsCT{rr,cc});
+        end
+     end
+     [within,dvn,xlabels] = make_within_table({'DT','Cond'},[2,3]);
+     dataT = make_between_table({mvalsD,mvalsT},dvn);
+    dataT = make_between_table({mzMIsC,mzMIsCT},dvn);
+    ra = RMA(dataT,within,0.05);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DT','bonferroni'},[1 1 1]);
+%     s = generate_shades(3); tcolors = s.g;
+    tcolors = colors;%mData.colors(1:3);
+     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+%     set(hbs(3),'EdgeColor','k');
+%     hatch(hbs(3),45,'k','-',3,0.5); hatch(hbs(3),45,'k','-',3,0.5);
+%     make_bars_hollow(hbs(4:6))
+    format_axes(gca);
+    set_axes_limits(gca,[0.25 xdata(end)+0.75],[0 maxY])
+    xticks = [xdata(1:end)]; xticklabels = {'D-A','D-B','T-A','T-B'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.17 0.02 -0.1 -0.011])
+%     set_title(gca,'AFoR',[1.3,25],5); set_title(gca,'BFoR',[5.3,25],5,'r');
+%     changePosition(gca,[0.2 0.03 -0.4 -0.11]);
+%     put_axes_labels(gca,{[],[0 0 0]},{{'Spatially Tuned','Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('peak_location_IT_D_vs_T'),600);
+    break;
+end
 %% Speed Figure
 if 1
     for ii = 1:length(ei)

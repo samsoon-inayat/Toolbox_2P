@@ -26,12 +26,19 @@ else
         ptc = ptc(cellNums,:);
     end
 end
-% ptc = fillmissing(ptc,'linear',2,'EndValues','nearest');
-% if sum(isnan(ptc),'all')> 0
-%     n = 0;
-% end
+ptc = fillmissing(ptc,'linear',2,'EndValues','nearest');
+if sum(isnan(ptc),'all')> 0
+    n = 0;
+end
 % GF = gausswin(3);
 % ptc = filter(GF,1,ptc,[],2);
 % [ptco,window] = smoothdata(ptc,2,'gaussian',[2 2]);
+
 ptco = ptc;
 CRc = corr(ptco);
+CRc = fillmissing(CRc,'linear',2,'EndValues','nearest');
+CRc = fillmissing(CRc','linear',2,'EndValues','nearest');
+CRc = CRc';
+if sum(isnan(CRc),'all')> 0
+    n = 0;
+end

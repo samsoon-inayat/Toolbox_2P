@@ -6,11 +6,11 @@ for rr = 1:size(Rs,1)
         out.vals{rr,cc} = R.resp.vals';
         out.fraction(rr,cc) = R.resp.fraction;
         if isfield(R.resp,'excinh')
-            out.exc(:,cc) = R.resp.excinh==1;
-            out.inh(:,cc) = R.resp.excinh==0;
+            out.exc{rr,cc} = R.resp.excinh==1;
+            out.inh{rr,cc} = R.resp.excinh==0;
         else
-            out.exc(:,cc) = NaN;
-            out.inh(:,cc) = NaN;
+            out.exc{rr,cc} = NaN;
+            out.inh{rr,cc} = NaN;
         end
     end
 end

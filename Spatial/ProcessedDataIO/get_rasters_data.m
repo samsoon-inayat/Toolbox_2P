@@ -73,6 +73,10 @@ for ii = 1:length(selContexts)
     rasters{ii,1}.marker_name = sprintf('%s',rasterNames{ii});
     rasters{ii,1}.thorexp = ei.thorExp;
     rasters{ii,1}.beltLength = get_belt_length(ei);
+    spR = rasters{ii,1}.sp_rasters1; mspR = squeeze(nanmean(spR,1));
+    [vals,valsi] = max(mspR);
+    rasters{ii,1}.peak_location = valsi * rasters{ii,1}.bin_width;
+    n = 0;
 end
 
 function tempRC = combine_planes_data(tempR,tempR1)
