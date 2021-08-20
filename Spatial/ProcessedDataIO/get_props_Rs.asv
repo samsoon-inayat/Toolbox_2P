@@ -8,8 +8,7 @@ for rr = 1:size(Rs,1)
         o.rs{rr,cc} = rs'; o.MFR{rr,cc} = MFR'; o.centers{rr,cc} = centers'; o.PWs{rr,cc} = PWs';
         o.peak_locations{rr,cc} = R.peak_location';
         xs = R.xs;
-        p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers > xs(1)  & centers < xs(end) & MFR < 10000;
-        o.good{rr,cc} = p';
+        p = rs > 0.25 & PWs > 1 & PWs < 150 & centers > 0 & centers < 150 & MFR < 10000;
     end
 end
 

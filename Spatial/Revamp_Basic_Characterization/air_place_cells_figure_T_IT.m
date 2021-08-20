@@ -19,28 +19,133 @@ while 1
 
     dzMI = prop_op(oD.props.zMI,oT.props.zMI,0.25);
     
-    selContexts = [3 4 5]; rasterNames = {'airT','airT','airT'};
-    oTo = get_data(ei,selContexts,rasterNames);
+    selContexts = [3 4 5]; rasterNames = {'airT','airT','airT'}; oTo = get_data(ei,selContexts,rasterNames);
 
-    selContexts = [3 4 5]; rasterNames = {'airD','airD','airD'};
-    oDo = get_data(ei,selContexts,rasterNames);
+    selContexts = [3 4 5]; rasterNames = {'airD','airD','airD'}; oDo = get_data(ei,selContexts,rasterNames);
     
-    dzMIo = prop_op(oDo.props.zMI,oTo.props.zMI,0.25);
+    selContexts = [3 4 5]; rasterNames = {'airIT','airIT','airIT'}; oITo = get_data(ei,selContexts,rasterNames);
+
+    selContexts = [3 4 5]; rasterNames = {'airID','airID','airID'}; oIDo = get_data(ei,selContexts,rasterNames);
+    
+    dzMIo = prop_op(oDo.props.zMI,oTo.props.zMI,0);
+    dzMIoI = prop_op(oIDo.props.zMI,oITo.props.zMI,0);
     
     break
 end
 n = 0;
+%% compare percentages
+while 1
+%     oT = oIDo; dzMIT = dzMIoI;
+    oT = oDo; respT1 = dzMIo.resp_D_g_T; respT2 = dzMIo.resp_T_g_D; 
+    popDT = cell_list_op(respT1,oT.props.good,'and'); popTD = cell_list_op(respT2,oT.props.good,'and');
+    mZMIsD = 100*exec_fun_on_cell_mat(popDT,'sum')./exec_fun_on_cell_mat(popDT,'length');
+    mZMIsT = 100*exec_fun_on_cell_mat(popTD,'sum')./exec_fun_on_cell_mat(popTD,'length');
+    
+%     oT = oITo; 
+    respT1 = dzMIoI.resp_D_g_T; respT2 = dzMIoI.resp_T_g_D; 
+    popDTI = cell_list_op(respT1,oT.props.good,'and'); popTDI = cell_list_op(respT2,oT.props.good,'and');
+    mZMIsDI = 100*exec_fun_on_cell_mat(popDTI,'sum')./exec_fun_on_cell_mat(popDTI,'length');
+    mZMIsTI = 100*exec_fun_on_cell_mat(popTDI,'sum')./exec_fun_on_cell_mat(popTDI,'length');
+    
+    [within,dvn,xlabels] = make_within_table({'TI','DT','Cond'},[2,2,3]);
+    dataT = make_between_table({mZMIsD,mZMIsT,mZMIsDI,mZMIsTI},dvn);
+    ra = RMA(dataT,within,0.05);
 
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[8 7 3.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+    ylims = ylim;
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = xlabels; set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.02 -0.35 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('avg_speed_anova.pdf'),600);
+    ra.ranova
+    ra.mauchly
+    %%
+    break;
+end
+%% Population vectors and correlation
+while 1
+    %% population vector and correlation single animal
+    Rs = oDo.Rs; mR = oDo.mR; resp = cell_list_op(dzMIo.resp_T_g_D,[],'or');
+    an = 1; R = Rs{an,1};
+    ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 3],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
+        [0.01 -60]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 5 3.25 2]);
+%     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
+%     resp = get_cell_list(resp_valsC,[]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,1);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
+    set_obj(ht,'String',{'Pop. Activity','Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation','Pop.Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
+
+%% average correlation of all animals
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 3],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.075 0.2],'widthHeightAdjustment',...
+        [0.01 -250]);
+    set(gcf,'color','w');
+    set(gcf,'Position',[5 5 3.25 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.1 1],[]);
+    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
+    ht = get_obj(ff,'title'); 
+    set_obj(ht,'String',{'Avg. Pop. Correlation','Avg. Pop. Correlation','Avg. Pop. Correlation'});
+    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD.pdf'),600);
+
+    break;
+end
 %% compare zMIs
 while 1
-    popDT = dzMIo.resp_D_g_T; popTD = dzMIo.resp_T_g_D;
-    zMIsD = reduce_Rs(oDo.props.peak_locations,popDT); zMIsT = reduce_Rs(oDo.props.peak_locations,popTD);
+    oT = oIDo; dzMIT = dzMIoI;
+    oT = oDo; dzMIT = dzMIo;
+    popDT = cell_list_op(dzMIT.resp_D_g_T,oT.props.good,'and'); popTD = cell_list_op(dzMIT.resp_T_g_D,oT.props.good,'and');
+    zMIsD = reduce_Rs(oT.props.zMI,popDT); zMIsT = reduce_Rs(oT.props.zMI,popTD);
     mZMIsD = exec_fun_on_cell_mat(zMIsD,'nanmean'); mZMIsT = exec_fun_on_cell_mat(zMIsT,'nanmean');
     
     [within,dvn,xlabels] = make_within_table({'DT','Cond'},[2,3]);
     dataT = make_between_table({mZMIsD,mZMIsT},dvn);
     ra = RMA(dataT,within,0.05);
+
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DT_by_Cond','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[8 7 3.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+    ylims = ylim;
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'D-T','D-IT','T-T','T-IT'}; set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.02 -0.35 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'zMI',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('avg_speed_anova.pdf'),600);
+    ra.ranova
+    ra.mauchly
     %%
+    break;
+end
+
+%% compare PWs
+while 1
+%     oT = oIDo; dzMIT = dzMIoI;
+    oT = oDo; respT1 = dzMIo.resp_D_g_T; respT2 = dzMIo.resp_T_g_D; 
+    popDT = cell_list_op(respT1,oT.props.good,'and'); popTD = cell_list_op(respT2,oT.props.good,'and');
+    zMIsD = reduce_Rs(oT.props.MFR,popDT); zMIsT = reduce_Rs(oT.props.MFR,popTD);
+    
+    mZMIsD = exec_fun_on_cell_mat(zMIsD,'nanmean'); mZMIsT = exec_fun_on_cell_mat(zMIsT,'nanmean');
+    
+    [within,dvn,xlabels] = make_within_table({'DT','Cond'},[2,3]);
+    dataT = make_between_table({mZMIsD,mZMIsT},dvn);
+    ra = RMA(dataT,within,0.05);
+
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'DT','bonferroni'},[1 1 1]);
     hf = get_figure(5,[8 7 3.25 1]);
     % s = generate_shades(length(bins)-1);
@@ -315,38 +420,7 @@ put_axes_labels(gca,{[],[0 0 0]},{{'zMI'},[0 0 0]});
 
 save_pdf(hf,mData.pdf_folder,'zMI_bar_graph_all_cells.pdf',600);
 
-%% population vector and correlation single animal
-if 1
-    an = 1;
-    ff = makeFigureRowsCols(106,[1 0.5 6 1],'RowsCols',[2 3],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
-        [0.01 -60]);
-    set(gcf,'color','w');
-    set(gcf,'Position',[5 5 3.25 2]);
-%     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
-%     resp = get_cell_list(resp_valsC,[]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respAnB,0);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
-    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
-    ht = get_obj(ff,'title'); hyl = get_obj(ff,'ylabel'); changePosition(hyl(1,1),[4 0 0]);
-    set_obj(ht,'String',{'Pop. Activity','Pop. Activity','Pop. Activity';'Pop. Correlation','Pop.Correlation','Pop.Correlation'});
-    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_population_vector_corr.pdf'),600);
-end
-%% average correlation of all animals
-if 1
-    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 3],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.075 0.2],'widthHeightAdjustment',...
-        [0.01 -250]);
-    set(gcf,'color','w');
-    set(gcf,'Position',[5 5 3.25 1]);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[-0.1 1],[]);
-    set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});
-    ht = get_obj(ff,'title'); 
-    set_obj(ht,'String',{'Avg. Pop. Correlation','Avg. Pop. Correlation','Avg. Pop. Correlation'});
-    set_obj(ht,{'FontSize',5,'FontWeight','Normal'});
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_average_population_vector_corrD.pdf'),600);
-end
+
 
 %% spatial and population vector correlation single animal
 if 1
