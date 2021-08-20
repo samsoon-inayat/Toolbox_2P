@@ -14,10 +14,9 @@ end
 n = 0;
 %% Percentage of Responsive Cells overall for all conditions
 while 1
-    o.props = get_props_Rs(o.Rs);
 %     resp_vals = cell_list_op(o.resp.vals,o.resp_FR_ei,'and');
     resp_test = (cell_list_op(o.props.good_zMI,o.resp.vals,'and'));
-    resp = cell_list_op(o.props.good_zMI,o.props.good_FR,'and');
+    resp = o.props.good_zMI;
 %     resp = o.resp.vals;
     resp_OR = cell_list_op(resp,[],'or');
     per_resp = find_percent(resp);

@@ -46,7 +46,7 @@ disp('Done');
 sel_rec = [1 3 5];
 sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
-%%
+
 binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
@@ -55,7 +55,7 @@ end
 clc
 tic
 for ii = 1:length(ei)
-    ei(ii) = get_motion_onset_response(ei(ii),[-1 -1 -1 0 0]);
+    ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 end
 toc
 

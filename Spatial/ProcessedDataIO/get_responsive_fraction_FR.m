@@ -1,4 +1,4 @@
-function resp = get_responsive_fraction_FR(Rs)
+function [resp,respei] = get_responsive_fraction_FR(ei,Rs,sp_threshold)
 
 % for rr = 1:size(Rs,1)
 %     for cc = 1:size(Rs,2)
@@ -18,4 +18,15 @@ for rr = 1:size(Rs,1)
         resp{rr,cc} = Rs{rr,cc}.resp.FR_based';
     end
 end
+
+for ii = 1:length(ei)
+    spSignals = ei{ii}.plane{1}.tP.deconv.spSigAll;
+    if length(ei{ii}.plane) > 1
+        spSignals = [spSignals;ei{ii}.plane{2}.tP.deconv.spSigAll];
+    end
+    minSp = min(spSignals,[],2);
+    maxSp = max(spSignals,[],2);
+    respei{ii,1} = maxSp < sp_threshold;
+end
+respei = repmat(respei,1,size(Rs,2));
 

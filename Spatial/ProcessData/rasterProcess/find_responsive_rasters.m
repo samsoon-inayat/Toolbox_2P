@@ -5,7 +5,7 @@ for rr = 1:size(Rs,1)
         R = Rs{rr,cc};
         rasters = permute(R.sp_rasters1,[2 1 3]);
         sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
-        R.resp.FR_based = (sR)>5; % see if cell responded in at least half trials.
+        R.resp.FR_based = (sR)>4; % see if cell responded in at least half trials.
         Rs{rr,cc} = R;
     end
 end

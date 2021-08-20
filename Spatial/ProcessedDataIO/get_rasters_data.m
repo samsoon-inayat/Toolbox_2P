@@ -43,12 +43,19 @@ for ii = 1:length(selContexts)
     rasters{ii,1}.marker_name = sprintf('%s',rasterNames{ii});
     rasters{ii,1}.thorexp = ei.thorExp;
     rasters{ii,1}.beltLength = get_belt_length(ei);
+    spR = rasters{ii,1}.sp_rasters1; mspR = squeeze(nanmean(spR,1));
+    [vals,valsi] = max(mspR);
+    rasters{ii,1}.peak_location = valsi * rasters{ii,1}.bin_width;
 end
 
 function rasters = get_data(ei,selContexts,rasterNames)
 
 nplanes = length(ei.plane);
 for ii = 1:length(selContexts)
+    if selContexts(ii) == 0
+        rasters(ii,1) = get_data_motion(ei,selContexts(ii),rasterNames(ii));
+        continue;
+    end
     pp = 1;
     thisContext = ei.plane{pp}.contexts(selContexts(ii));
     disp(sprintf('%s - plane-%d',thisContext.name,pp));

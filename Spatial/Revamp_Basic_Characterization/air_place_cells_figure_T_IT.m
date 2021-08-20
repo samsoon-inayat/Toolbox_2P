@@ -27,25 +27,23 @@ while 1
 
     selContexts = [3 4 5]; rasterNames = {'airID','airID','airID'}; oIDo = get_data(ei,selContexts,rasterNames);
     
-    dzMIo = prop_op(oDo.props.zMI,oTo.props.zMI,0);
-    dzMIoI = prop_op(oIDo.props.zMI,oITo.props.zMI,0);
+    dzMIo = prop_op(oDo.props.zMI,oTo.props.zMI,0.01);
+    dzMIoI = prop_op(oIDo.props.zMI,oITo.props.zMI,0.01);
     
     break
 end
 n = 0;
 %% compare percentages
 while 1
-%     oT = oIDo; dzMIT = dzMIoI;
-    oT = oDo; respT1 = dzMIo.resp_D_g_T; respT2 = dzMIo.resp_T_g_D; 
-    popDT = cell_list_op(respT1,oT.props.good,'and'); popTD = cell_list_op(respT2,oT.props.good,'and');
-    mZMIsD = 100*exec_fun_on_cell_mat(popDT,'sum')./exec_fun_on_cell_mat(popDT,'length');
-    mZMIsT = 100*exec_fun_on_cell_mat(popTD,'sum')./exec_fun_on_cell_mat(popTD,'length');
+    % for trials
+    respT1 = dzMIo.resp_D_g_T; respT2 = dzMIo.resp_T_g_D; 
+%     respT1 = cell_list_op(respT1,oDo.props.good_zMI,'and'); respT2 = cell_list_op(respT2,oTo.props.good_zMI,'and'); 
+    mZMIsD = find_percent(respT1); mZMIsT = find_percent(respT2)
     
-%     oT = oITo; 
-    respT1 = dzMIoI.resp_D_g_T; respT2 = dzMIoI.resp_T_g_D; 
-    popDTI = cell_list_op(respT1,oT.props.good,'and'); popTDI = cell_list_op(respT2,oT.props.good,'and');
-    mZMIsDI = 100*exec_fun_on_cell_mat(popDTI,'sum')./exec_fun_on_cell_mat(popDTI,'length');
-    mZMIsTI = 100*exec_fun_on_cell_mat(popTDI,'sum')./exec_fun_on_cell_mat(popTDI,'length');
+    
+    respT1I = dzMIoI.resp_D_g_T; respT2I = dzMIoI.resp_T_g_D;
+%     respT1I = cell_list_op(respT1I,oIDo.props.good_zMI,'and'); respT2I = cell_list_op(respT2I,oITo.props.good_zMI,'and'); 
+    mZMIsDI = find_percent(respT1I); mZMIsTI = find_percent(respT2I);
     
     [within,dvn,xlabels] = make_within_table({'TI','DT','Cond'},[2,2,3]);
     dataT = make_between_table({mZMIsD,mZMIsT,mZMIsDI,mZMIsTI},dvn);
@@ -68,6 +66,43 @@ while 1
     %%
     break;
 end
+
+
+%% compare percentages
+while 1
+    % for trials
+    respT1 = dzMIo.resp_D_g_T; respT2 = dzMIo.resp_T_g_D; 
+%     respT1 = cell_list_op(respT1,oDo.props.good_zMI,'and'); respT2 = cell_list_op(respT2,oTo.props.good_zMI,'and'); 
+    reduce_Rs(
+    mZMIsD = find_percent(respT1); mZMIsT = find_percent(respT2)
+    
+    
+    respT1I = dzMIoI.resp_D_g_T; respT2I = dzMIoI.resp_T_g_D;
+%     respT1I = cell_list_op(respT1I,oIDo.props.good_zMI,'and'); respT2I = cell_list_op(respT2I,oITo.props.good_zMI,'and'); 
+    mZMIsDI = find_percent(respT1I); mZMIsTI = find_percent(respT2I);
+    
+    [within,dvn,xlabels] = make_within_table({'TI','DT','Cond'},[2,2,3]);
+    dataT = make_between_table({mZMIsD,mZMIsT,mZMIsDI,mZMIsTI},dvn);
+    ra = RMA(dataT,within,0.05);
+
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT','bonferroni'},[1 1 1]);
+    hf = get_figure(5,[8 7 3.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+    ylims = ylim;
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = xlabels; set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.02 -0.35 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('avg_speed_anova.pdf'),600);
+    ra.ranova
+    ra.mauchly
+    %%
+    break;
+end
+
 %% Population vectors and correlation
 while 1
     %% population vector and correlation single animal
