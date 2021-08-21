@@ -17,16 +17,19 @@ for rr = 1:size(Rs,1)
         o.rs{rr,cc} = rs'; o.MFR{rr,cc} = MFR'; o.centers{rr,cc} = centers'; o.PWs{rr,cc} = PWs';
         o.peak_locations{rr,cc} = R.peak_location';
         xs = R.xs;
-        if ~isempty(strfind(R.marker_name,'D'))
+%         if ~isempty(strfind(R.marker_name,'D'))
             p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers > xs(1)  & centers < xs(end) & MFR < 10000;
-        end
-        if ~isempty(strfind(R.marker_name,'T'))
-            p = (ones(size(o.zMI{rr,cc})))';
-        end
-        o.good{rr,cc} = p';
+%         end
+%         if ~isempty(strfind(R.marker_name,'T'))
+%             p = (ones(size(o.zMI{rr,cc})))';
+%         end
+        o.good_Gauss{rr,cc} = p';
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65
         o.good_FR{rr,cc} = get_FR_based(R.sp_rasters1,ntrials);
         o.good_zMI_FR{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
+        o.centers{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
+        o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
+        o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
     end
 end
 
