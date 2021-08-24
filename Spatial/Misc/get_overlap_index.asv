@@ -27,10 +27,7 @@ for ii = 1:length(resp_vals)
     all_OI{ii} = OI;
 end
 
-mOI = NaN(size(all_OI{1},1),size(all_OI{1},2),length(all_OI));
+mOI = zeros(size(all_OI{1}));
 
 for ii = 1:length(all_OI)
-    mOI(:,:,ii) = all_OI{ii};
 end
-semOI = std(mOI,[],3)/sqrt(length(all_OI));
-mOI = mean(mOI,3);
