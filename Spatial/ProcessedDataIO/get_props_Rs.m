@@ -16,6 +16,10 @@ for rr = 1:size(Rs,1)
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
         o.rs{rr,cc} = rs'; o.MFR{rr,cc} = MFR'; o.centers{rr,cc} = centers'; o.PWs{rr,cc} = PWs';
         o.peak_locations{rr,cc} = R.peak_location';
+        
+        o.HaFD{rr,cc} = R.fractal_dim.HaFD';
+        o.HiFD{rr,cc} = R.fractal_dim.HiFD';
+        
         xs = R.xs;
 %         if ~isempty(strfind(R.marker_name,'D'))
             p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers > xs(1)  & centers < xs(end) & MFR < 10000;

@@ -15,3 +15,4 @@ o.resp_D_g_T = resp_diff_D_g_T;
 o.resp_T_g_D = resp_diff_T_g_D;
 o.resp_D_g_T_perc = per_resp_d_D_g_T;
 o.resp_T_g_D_perc = per_resp_d_T_g_D;
+o.diff_D_T = diff_D_T;

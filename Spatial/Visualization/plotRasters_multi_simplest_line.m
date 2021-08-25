@@ -34,18 +34,22 @@ while 1
             cn = ccs(cni);
             Rs = rasters{rr};
             thisRaster = Rs(:,:,cn);
+%             thisRaster = fillmissing(thisRaster,'linear',2,'EndValues','nearest');
+            xs = 1:size(thisRaster,2); xs = repmat(xs,1,size(thisRaster,1));
+            ys = reshape(thisRaster',[1,size(thisRaster,1)*size(thisRaster,2)]);
             if sum(thisRaster(:)) == 0
                 continue;
             end
 %             mdata = Rs.mdata;
             mSig = nanmean(thisRaster);
             axes(ff.h_axes(rr,cc));
-            mtr = 1;%mode(thisRaster(thisRaster(:)>nanmean(thisRaster(:))));
-            try
-                imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);colorbar;hold on;
-            catch
-                imagesc(thisRaster);colorbar;hold on;
-            end
+            plot(thisRaster');
+%             mtr = 1;%mode(thisRaster(thisRaster(:)>nanmean(thisRaster(:))));
+%             try
+%                 imagesc(thisRaster,[0 mtr*max(thisRaster(:))]);colorbar;hold on;
+%             catch
+%                 imagesc(thisRaster);colorbar;hold on;
+%             end
 %             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
             title(sprintf('%d - %s',cn,''));
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));

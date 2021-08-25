@@ -219,9 +219,9 @@ while 1
     % for trials
     props = oTo.props; propsI = oITo.props;
     respT = dzMIo.resp_T_g_D; respTI = dzMIoI.resp_T_g_D;
-    mZMIsD = exec_fun_on_cell_mat(reduce_Rs(props.zMI,respT),'nanmean');
+    mZMIsD = exec_fun_on_cell_mat(reduce_Rs(props.HaFD,respT),'nanmean');
     
-    mZMIsDI = exec_fun_on_cell_mat(reduce_Rs(propsI.zMI,respTI),'nanmean');
+    mZMIsDI = exec_fun_on_cell_mat(reduce_Rs(propsI.HaFD,respTI),'nanmean');
    
     [within,dvn,xlabels] = make_within_table({'T','C'},[2,3]);
     dataT = make_between_table({mZMIsD,mZMIsDI},dvn);
