@@ -77,7 +77,7 @@ upfac = 3;
 text(b.ts(light_onsets(1)),ylims(2)+upfac,'C1','FontSize',6);
 text(b.ts(light_onsets(21)),ylims(2)+upfac,'C1''','FontSize',6);
 text(b.ts(onsets(1)),ylims(2)+upfac,'C2','FontSize',6);
-text(b.ts(onsets(11)),ylims(2)+upfac,'C3''','FontSize',6);
+text(b.ts(onsets(11)),ylims(2)+upfac,'C3','FontSize',6);
 text(b.ts(onsets(21)),ylims(2)+upfac,'C4','FontSize',6);
 text(b.ts(onsets(31)),ylims(2)+upfac,'C3''','FontSize',6);
 text(b.ts(onsets(41)),ylims(2)+upfac,'C2''','FontSize',6);

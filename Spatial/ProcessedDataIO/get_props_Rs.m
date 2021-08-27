@@ -28,7 +28,7 @@ for rr = 1:size(Rs,1)
 %             p = (ones(size(o.zMI{rr,cc})))';
 %         end
         o.good_Gauss{rr,cc} = p';
-        o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65
+        o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
         o.good_FR{rr,cc} = get_FR_based(R.sp_rasters1,ntrials);
         o.good_zMI_FR{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
         o.centers{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;

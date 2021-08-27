@@ -1,15 +1,14 @@
 function light_figure
 
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_11_15 = evalin('base','ei'); 
-
-selContexts = [1 4 6];
-rasterNames = {'light22T','light22T','light22T'};
-Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
-% Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
-Rs = find_responsive_rasters(Rs,1:10);
-mR = calc_mean_rasters(Rs,1:10);
-[CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
+while 1
+    mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+    ei = evalin('base','ei'); 
+    selContexts = [1 4 6]; rasterNames = {'light22T','light22T','light22T'};
+    oL = get_data(ei,selContexts,rasterNames);
+    Rs = oL.Rs;
+    resp_L = oL.resp;
+    break;
+end
 n = 0;
 %%
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
@@ -18,7 +17,7 @@ out = find_population_vector_corr_remap(Rs,mR,resp_ORC);
 
 n = 0;
 %% Speed Figure
-if 1
+while 1
     for an = 1:size(Rs,1)
         mean_speed_over_trials(an,:) = nanmean(Rs{an,2}.speed);
     end
@@ -35,9 +34,10 @@ if 1
     changePosition(gca,[0.07 0.15 -0.1 -0.15]);
     put_axes_labels(gca,{'Time (sec)',[0 0 0]},{{'Speed (cm/sec)'},[0 -4 0]});
     save_pdf(hf,mData.pdf_folder,'LED_speed',600);
+    break;
 end
 %%
-if 1
+while 1
     an = 1;
     xtck = [];
     t = [];
@@ -62,29 +62,25 @@ if 1
     psths = nanmean(firing_rates,4); psths = repmat(psths,[1 1 1 E]);
     psths = psths(:,:);
     etck = xtck - psths;
+    dpca__mine(Rs(an,:),psths);
+    break;
 end
 
-dpca__mine(Rs(an,:),psths);
-
-
 %%
-
+resp_valsC = resp_L.vals;
 trials = mat2cell([1:10]',ones(size([1:10]')));
 resp = get_cell_list(resp_valsC,[1;2;3]);
 out1 = find_population_vector_corr_remap_trials(Rs(:,1),resp,trials);
 out2 = find_population_vector_corr_remap_trials(Rs(:,2),resp,trials);
 out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
-
-
 n = 0;
 
 %%
-
 var1 = out1.adj_SP_corr_diag;
 var2 = out2.adj_SP_corr_diag;
 var3 = out3.adj_SP_corr_diag;
 %%
-if 1
+while 1
     for rr = 1:size(var1,1)
         for cc = 1:size(var1,2)
             var_1(rr,cc) = nanmean(var1{rr,cc});
@@ -137,7 +133,7 @@ if 1
     put_axes_labels(gca,{[],[0 0 0]},{{'Correlation'},[0 0 0]});
 
     save_pdf(hf,mData.pdf_folder,'remap bar graph_trials_light',600);
-return;
+	break;
 end
 %%
 an = 1; cn = 2;

@@ -126,6 +126,7 @@ while 1
     ITPC = [find_percent(pop_DgT_IT) find_percent(pop_TgD_IT)] ;
     dataT = make_between_table({TPC,ITPC},dvn);
     ra = RMA(dataT,within,0.05);
+    writetable(dataT,'spss_three_way_anova.xls');
 %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'T_by_P','bonferroni'},[1 1 1]);
     hf = get_figure(5,[8 7 1.25 1]);
@@ -219,9 +220,9 @@ while 1
     % for trials
     props = oTo.props; propsI = oITo.props;
     respT = dzMIo.resp_T_g_D; respTI = dzMIoI.resp_T_g_D;
-    mZMIsD = exec_fun_on_cell_mat(reduce_Rs(props.HaFD,respT),'nanmean');
+    mZMIsD = exec_fun_on_cell_mat(reduce_Rs(props.zMI,respT),'nanmean');
     
-    mZMIsDI = exec_fun_on_cell_mat(reduce_Rs(propsI.HaFD,respTI),'nanmean');
+    mZMIsDI = exec_fun_on_cell_mat(reduce_Rs(propsI.zMI,respTI),'nanmean');
    
     [within,dvn,xlabels] = make_within_table({'T','C'},[2,3]);
     dataT = make_between_table({mZMIsD,mZMIsDI},dvn);

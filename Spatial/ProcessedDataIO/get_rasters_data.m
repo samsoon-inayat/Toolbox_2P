@@ -18,7 +18,7 @@ function rasters = get_data_motion(ei,selContexts,rasterNames)
 nplanes = length(ei.plane);
 for ii = 1:length(selContexts)
     pp = 1;
-    if ii == 1
+    if strcmp(rasterNames{ii},'motionOnsets')
         tempR = ei.plane{pp}.motionOnset_rasters;
     else
         tempR = ei.plane{pp}.motionOffset_rasters;
@@ -29,7 +29,7 @@ for ii = 1:length(selContexts)
         rasters{ii,1}.iscell = iscell1;
     else
         pp = 2;
-        if ii == 1
+        if strcmp(rasterNames{ii},'motionOnsets')
             tempR1 = ei.plane{pp}.motionOnset_rasters;
         else
             tempR1 = ei.plane{pp}.motionOffset_rasters;

@@ -24,6 +24,23 @@ for ii = 1:length(ei)
     end
 end
 n = 0;
+%% Percentage speed responsive
+
+while 1
+    for an = 1:5
+        d.bcs = speedRs{an}.bin_centers;
+        d.FR = speedRs{an}.FR_vs_speed;
+        fitg = speedRs{an}.fits.gauss; fits = speedRs{an}.fits.sigmoid; fitl = speedRs{an}.fits.linear;
+        d.fFRl = fitl.fitted; d.fFRs = fits.fitted; d.fFRg = fitg.fitted;
+        d.cl = fitl.coeffsrs(:,3); d.cs = fits.coeffsrs(:,3); d.cg = fitg.coeffsrs(:,3);
+        [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
+        inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
+        inds = ~inds;
+        pR(an) = 100*sum(inds)/length(inds);
+        resp_speed{an} = inds';
+    end
+    break;
+end
 %% visualize the data
 if 1
     an = 2;
