@@ -27,6 +27,8 @@ for ii = 1:length(ei)
     minSp = min(spSignals,[],2);
     maxSp = max(spSignals,[],2);
     respei{ii,1} = maxSp < sp_threshold;
+    all_maxSp(ii) = max(maxSp);
 end
 respei = repmat(respei,1,size(Rs,2));
+
 

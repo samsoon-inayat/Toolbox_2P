@@ -1,4 +1,4 @@
-function [all_OI,mOI,semOI,all_OI_mat,p_vals,h] = get_overlap_index(resp_valsi)
+function [all_OI,mOI,semOI,all_OI_mat,p_vals,h] = get_overlap_index(resp_valsi,thr,alpha)
 
 % resp_valsCi = resp_valsC;
 for rr = 1:size(resp_valsi,1)
@@ -43,6 +43,6 @@ for rr = 1:size(all_OI_mat,1)
         if isnan(all_OI_mat(rr,cc,1))
             continue;
         end
-        [h(rr,cc),p_vals(rr,cc)] = ttest(squeeze(all_OI_mat(rr,cc,:)),0.01);
+        [h(rr,cc),p_vals(rr,cc)] = ttest(squeeze(all_OI_mat(rr,cc,:)),thr,'Alpha',alpha);
     end
 end

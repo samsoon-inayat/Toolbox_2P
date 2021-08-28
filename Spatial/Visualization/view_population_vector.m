@@ -18,9 +18,17 @@ if iscell(mRs)
             R = Rs{rr,cc};
             resp = R.resp;
             if ~isempty(ccs)
-                ccsr = find(resp.vals);
+                if iscell(ccs)
+                    ccsr = ccs{rr,cc};
+                else
+                    if ccs == 1
+                        ccsr = find(resp.vals);
+                    else
+                        ccsr = ccs;
+                    end
+                end
             else
-                ccsr = ccs;
+                ccsr = ones(size(1:length(resp.vals)));
             end
             [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccsr)
             imagesc(ptco);
