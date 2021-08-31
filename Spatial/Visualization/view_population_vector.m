@@ -40,7 +40,7 @@ if iscell(mRs)
             if cc == 1
                 ylabel(sprintf('Animal # %d',rr));
             end
-            xlabel(sprintf('%.2f',resp.fraction));
+            xlabel(sprintf('%.2f',sum(ccsr)/length(ccsr)));
         end
     end
 else

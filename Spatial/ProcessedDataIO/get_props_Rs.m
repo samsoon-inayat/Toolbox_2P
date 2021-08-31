@@ -9,6 +9,7 @@ for rr = 1:size(Rs,1)
         R = Rs{rr,cc};
 %         if isempty(strfind(R.marker_name,'motion'))
             o.zMI{rr,cc} = R.info_metrics.ShannonMI_Zsh';
+            o.MI{rr,cc} = R.info_metrics.ShannonMI';
 %         else
 %             o.good_zMI_FR{rr,cc} = R.resp.vals & R.resp.FR_based';
 %             continue;
@@ -34,12 +35,13 @@ for rr = 1:size(Rs,1)
         o.centers{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
+        o.trial_scores{rr,cc} = R.resp.trial_scores';
     end
 end
 
 function FR_based = get_FR_based(rasters,ntrials)
 rasters = permute(rasters,[2 1 3]);
-sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
 FR_based = (sR)>ntrials; % see if cell responded in at least half trials.
 FR_based = FR_based';
 

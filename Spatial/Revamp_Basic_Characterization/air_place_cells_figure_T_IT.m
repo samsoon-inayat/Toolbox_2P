@@ -126,7 +126,7 @@ while 1
     ITPC = [find_percent(pop_DgT_IT) find_percent(pop_TgD_IT)] ;
     dataT = make_between_table({TPC,ITPC},dvn);
     ra = RMA(dataT,within,0.05);
-    writetable(dataT,'spss_three_way_anova.xls');
+%     writetable(dataT,'spss_three_way_anova.xls');
 %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'T_by_P','bonferroni'},[1 1 1]);
     hf = get_figure(5,[8 7 1.25 1]);
