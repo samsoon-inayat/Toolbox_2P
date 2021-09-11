@@ -17,11 +17,14 @@ for ii = 1:length(resp_vals)
     for rr = 1:size(ccs,2)
         ccs1 = ccs(:,rr);
         for cc = 1:size(ccs,2)
-            if mask(rr,cc)
+            if rr == cc
+                continue;
+            end
+%             if mask(rr,cc)
                 ccs2 = ccs(:,cc);
                 shared = ccs1 & ccs2;
                 OI(rr,cc) = sum(shared)/(sum(ccs1)+sum(ccs2)-sum(shared));
-            end
+%             end
         end
     end
     all_OI{ii} = OI;
