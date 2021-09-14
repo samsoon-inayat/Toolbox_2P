@@ -186,11 +186,11 @@ data = [this_moas this_moasi];
 data1 = data(:,[1 5 2 6 3 7 4 8]);
 [within,dvn,xlabels] = make_within_table({'Day','TI'},[4 2]);
 dataT = make_between_table({data1},dvn);
-ra = RMA(dataT,within,{'bonferroni','hsd'});
+ra = RMA(dataT,within,{'tukey-kramer','hsd'});
 ra.ranova
 raO = repeatedMeasuresAnova(dataT,within);
 
-[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_Day','bonferroni'},[1 1 1]);
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day_by_TI','hsd'},[1 1 1]);
 % 
 % mVar = ra.est_marginal_means.Mean;
 % semVar = ra.est_marginal_means.Formula_StdErr;
@@ -201,7 +201,7 @@ hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'co
 hold on;
 tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',6,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+    'ySpacing',6,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0.1);
 for ii = 2:2:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
@@ -229,17 +229,11 @@ for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
 data = [this_moas];
-dataT = array2table(data);
-dataT.Properties.VariableNames = varNames;
-within = table([1 2 3 4]');
-within.Properties.VariableNames = {'Day'};
-within.Day = categorical(within.Day);
-ra = repeatedMeasuresAnova(dataT,within);
-
-mVar = ra.est_marginal_means.Mean;
-semVar = ra.est_marginal_means.Formula_StdErr;
-combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-xdata = [1 2 3 4]; maxY = 50;
+[within,dvn,xlabels] = make_within_table({'Day'},[4]);
+dataT = make_between_table({data},dvn);
+ra = RMA(dataT,within);
+ra.ranova
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day','hsd'},[1 1 1]);
 
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
@@ -385,23 +379,17 @@ for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
 data = [this_moas];
-dataT = array2table(data);
-dataT.Properties.VariableNames = varNames;
-within = table([1 2 3 4]');
-within.Properties.VariableNames = {'Day'};
-within.Day = categorical(within.Day);
-ra = repeatedMeasuresAnova(dataT,within);
-
-mVar = ra.est_marginal_means.Mean;
-semVar = ra.est_marginal_means.Formula_StdErr;
-combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-xdata = [1 2 3 4]; maxY = 50;
+[within,dvn,xlabels] = make_within_table({'Day'},[4]);
+dataT = make_between_table({data},dvn);
+ra = RMA(dataT,within);
+ra.ranova
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day','hsd'},[1 1 1]);
 
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = {colors{1};colors{2};colors{3};colors{4}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
+    'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
@@ -424,23 +412,28 @@ for ii = 1:size(this_moas,2)
     varNames{ii} = sprintf('Trials_Day%d',ii);
 end
 data = [this_moas];
-dataT = array2table(data);
-dataT.Properties.VariableNames = varNames;
-within = table([1 2 3 4]');
-within.Properties.VariableNames = {'Day'};
-within.Day = categorical(within.Day);
-ra = repeatedMeasuresAnova(dataT,within);
-
-mVar = ra.est_marginal_means.Mean;
-semVar = ra.est_marginal_means.Formula_StdErr;
-combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-xdata = [1 2 3 4]; maxY = 50;
+[within,dvn,xlabels] = make_within_table({'Day'},[4]);
+dataT = make_between_table({data},dvn);
+ra = RMA(dataT,within);
+ra.ranova
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day','hsd'},[1 1 1]);
+% dataT = array2table(data);
+% dataT.Properties.VariableNames = varNames;
+% within = table([1 2 3 4]');
+% within.Properties.VariableNames = {'Day'};
+% within.Day = categorical(within.Day);
+% ra = repeatedMeasuresAnova(dataT,within);
+% 
+% mVar = ra.est_marginal_means.Mean;
+% semVar = ra.est_marginal_means.Formula_StdErr;
+% combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+% xdata = [1 2 3 4]; maxY = 50;
 
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = {colors{1};colors{2};colors{3};colors{4}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
 set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
