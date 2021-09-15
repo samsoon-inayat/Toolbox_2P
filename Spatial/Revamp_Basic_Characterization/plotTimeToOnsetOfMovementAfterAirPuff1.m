@@ -48,27 +48,33 @@ for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
 end
 data = [moas];
-dataT = array2table(data);
-dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
-within = table([1 2 3]');
-within.Properties.VariableNames = {'Condition'};
-within.Condition = categorical(within.Condition);
+[within,dvn,xlabels] = make_within_table({'Cond'},[3]);
+dataT = make_between_table({data},dvn);
+ra = RMA(dataT,within,{'tukey-kramer','hsd'});
+ra.ranova
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
 
-ra = repeatedMeasuresAnova(dataT,within);
-
-mVar = ra.est_marginal_means.Mean;
-semVar = ra.est_marginal_means.Formula_StdErr;
-combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-% xdata = [1 2 3]; maxY = 50;
-
-xdata = [1:1.15:6]; xdata = xdata(1:3);
-maxY = 1;
+% dataT = array2table(data);
+% dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
+% within = table([1 2 3]');
+% within.Properties.VariableNames = {'Condition'};
+% within.Condition = categorical(within.Condition);
+% 
+% ra = repeatedMeasuresAnova(dataT,within);
+% 
+% mVar = ra.est_marginal_means.Mean;
+% semVar = ra.est_marginal_means.Formula_StdErr;
+% combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+% % xdata = [1 2 3]; maxY = 50;
+% 
+% xdata = [1:1.15:6]; xdata = xdata(1:3);
+% maxY = 1;
 colors = mData.colors(3:end);
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = colors;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.005,...
+    'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.005,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.051);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
 xticks = xdata; xticklabels = {'C3','C4','C3'''};
@@ -86,26 +92,31 @@ for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
 end
 data = [moas];
-dataT = array2table(data);
-dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
-within = table([1 2 3]');
-within.Properties.VariableNames = {'Condition'};
-within.Condition = categorical(within.Condition);
-
-ra = repeatedMeasuresAnova(dataT,within);
-
-mVar = ra.est_marginal_means.Mean;
-semVar = ra.est_marginal_means.Formula_StdErr;
-combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-
-xdata = [1:1.15:6]; xdata = xdata(1:3);
-maxY = 15;
+[within,dvn,xlabels] = make_within_table({'Cond'},[3]);
+dataT = make_between_table({data},dvn);
+ra = RMA(dataT,within,{'tukey-kramer','hsd'});
+ra.ranova
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+% dataT = array2table(data);
+% dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
+% within = table([1 2 3]');
+% within.Properties.VariableNames = {'Condition'};
+% within.Condition = categorical(within.Condition);
+% 
+% ra = repeatedMeasuresAnova(dataT,within);
+% 
+% mVar = ra.est_marginal_means.Mean;
+% semVar = ra.est_marginal_means.Formula_StdErr;
+% combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+% 
+% xdata = [1:1.15:6]; xdata = xdata(1:3);
+% maxY = 15;
 colors = mData.colors(3:end);
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = colors;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
 xticks = xdata; xticklabels = {'C3','C4','C3'''};

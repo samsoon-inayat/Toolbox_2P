@@ -1,7 +1,7 @@
 function tracePlots_1_C (ei)
 %%
 
-ei = evalin('base','d15');
+ei = evalin('base','ei');
 % data = evalin('base','data');
 % dataB = evalin('base','datab');
 % dataAOn = evalin('base','dataAOn010');
@@ -378,7 +378,7 @@ ff = makeFigureRowsCols(100,[1 5 5.4 1.5],'RowsCols',[(length(ccsi))+1 1],'space
 set(gcf,'Position',[10 8 4.8 1]);
 set(gcf,'color','w');
 spSigAll = tei.plane{pl}.tP.deconv.spSigAll;
-caSigAll = tei.plane{pl}.tP.deconv.caSigAll;
+% caSigAll = tei.plane{pl}.tP.deconv.caSigAll;
 signals = tei.plane{pl}.tP.signals;
 ccs = find(tei.plane{pl}.tP.iscell(:,1));
 lengthSigs = size(signals,2);

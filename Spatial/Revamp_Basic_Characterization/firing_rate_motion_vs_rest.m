@@ -29,15 +29,18 @@ n=0;
 if 1
     [within,dvn,xlabels] = make_within_table({'Conditions'},7);
     dataT = make_between_table({out_CC.mean_mcr*100},dvn);
-    ra = repeatedMeasuresAnova(dataT,within);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+    ra = RMA(dataT,within);
+%     ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Conditions','hsd'},[1 1 1]);
+%     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+    
     
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 9 1.35 1],'color','w');
 
     hold on;
 %     tcolors ={colors{1};colors{2};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
-        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'ySpacing',100,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.0001);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
     xticks = xdata; xticklabels = {'C1','C2','C3','C4','C3''','C1''','C2'''};
@@ -52,8 +55,9 @@ end
 if 1
     [within,dvn,xlabels] = make_within_table({'Conditions'},7);
     dataT = make_between_table({out_CC.mean_msr},dvn);
-    ra = repeatedMeasuresAnova(dataT,within);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+    ra = RMA(dataT,within);
+%     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Conditions','hsd'},[1 1 1]);
     
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 9 1.5 1],'color','w');
 
