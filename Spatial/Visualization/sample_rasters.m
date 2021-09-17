@@ -1,4 +1,17 @@
 function ff = sample_rasters(R,ccs,ff)
+
+if iscell(R)
+    for cns = 1:length(ccs)
+        tff = ff;
+        for rr = 1:length(R)
+            tff.h_axes = ff.h_axes(cns,rr);
+            tff.axesPos = ff.axesPos(cns,rr);
+            sample_rasters(R{rr},ccs(cns),tff);
+        end
+    end
+    return;
+end
+
 n = 0;
 if isfield(R,'fromFrames')
     ff = plot_time_rasters(R,ccs,ff);
@@ -43,7 +56,7 @@ for rr = 2
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
                 plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','m');
-                if ~strfind(R.marker_name,'motion')
+                if isempty(strfind(R.marker_name,'motion'))
                     plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
                 end
             end
@@ -76,7 +89,7 @@ for rr = 2
             xs = round(xs,1); 
             xticks = unique(xticks);
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
-            if strfind(R.context_info,'airT')
+            if ~isempty(strfind(R.context_info,'airT'))
                 for bb = 1:length(R.lastBin)
                     xvalbin = R.lastBin(bb)-1;
                     plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'c','linewidth',0.25);
@@ -95,7 +108,7 @@ for rr = 2
         
         if cc == length(ff.h_axes)
             hca = gca;
-            hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
+            ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
         end
         cols = size(thisRaster,2);
         colsHalf = ceil(cols/2);
@@ -109,7 +122,7 @@ function ff = plot_dist_rasters(R,ccsi,ff)
 cellList = ccsi;
 ddtt = 1;
 A = R;
-for cc = 1:4
+for cc = 1:length(ccsi)
     cn = cellList(cc);
     thisRaster = A.sp_rasters1(:,:,cn);
     minRasters(cc) = min(thisRaster(:));
@@ -118,7 +131,7 @@ end
 minmin = min(minRasters(:));
 maxmax = max(maxRasters(:));
 for rr = 1
-    for cc = 1:4
+    for cc = 1:length(ccsi)
         cn = cellList(cc);
         axes(ff.h_axes(rr,cc));
 %         thisRaster = A.rasters(:,:,cn);
@@ -161,7 +174,7 @@ for rr = 1
 %             text
         end
         
-        if cc == 4 && rr == 1
+        if cc == length(ff.h_axes) && rr == 1
             hca = gca;
 %             hc = putColorBar(hca,[0 0 -0.05 0],{'0','Max FR'},6,'northoutside',[0.15 0.22 0.05 0.22]);
         end

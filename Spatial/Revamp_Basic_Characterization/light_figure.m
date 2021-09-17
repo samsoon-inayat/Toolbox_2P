@@ -10,6 +10,13 @@ while 1
     break;
 end
 n = 0;
+%% light duration
+for ii = 1:length(ei)
+    tei = ei{ii};
+    for jj = 1:length(tei.b.stim_r)
+        dur_ligh(ii,jj) = tei.b.ts(tei.b.stim_f(jj))-tei.b.ts(tei.b.stim_r(jj));
+    end
+end
 %%
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
 resp = get_cell_list(resp_valsC,[]);
@@ -140,12 +147,13 @@ an = 1; cn = 2;
 % plotRasters_simplest(Rs{an,cn})
 % find(resp_valsC{an}(:,cn));
 ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-    'spaceRowsCols',[0.15 0.03],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-    [-50 -375]);
+    'spaceRowsCols',[0.15 0.09],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+    [-100 -475]);
 gg = 1;
 set(gcf,'color','w');
 set(gcf,'Position',[10 4 3.25 1]);
 ff = sample_rasters(Rs{an,cn},[558 328 168 55],ff);
+set_obj(ff,{'xtick',[1 18 38],'xticklabels',[-2 0 2.2]})
 save_pdf(ff.hf,mData.pdf_folder,sprintf('light_rastgers'),600);
 %% population vector and correlation single animal
 an = 2;

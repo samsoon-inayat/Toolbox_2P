@@ -56,8 +56,9 @@ if 1
         [-75 -475]);
     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
     ff = sample_rasters(Rs{an,cn},[140 66 162 181],ff);
-    axes(ff.h_axes(1,1));
-%     text(0,13.5,{'Representative rasters - Condition C2'},'FontSize',7,'FontWeight','Normal');
+    for ii = 1:length(ff.h_axes)
+        set_obj(ff.h_axes(ii),{'xticklabels',{'-5','0','5','10'}})
+    end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rasters'),600);
 end
 

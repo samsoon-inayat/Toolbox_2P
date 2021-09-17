@@ -205,7 +205,7 @@ end
 %% compare percent silent cells
 while 1
     props1 = get_props_Rs(o.Rs,5);
-    good_FR = props1.N_Resp_Trials(:,si_seq);
+    good_FR = props1.N_Resp_Trials(:,:);
     per_silent =[]; per_active = [];
     for rr = 1:size(good_FR,1)
         for cc = 1:size(good_FR,2)
@@ -213,7 +213,7 @@ while 1
             per_silent(rr,cc) = 100*sum(tts == 0)/length(tts);
         end
     end
-    [within,dvn,xlabels] = make_within_table({'Cond'},[13]);
+    [within,dvn,xlabels] = make_within_table({'Cond'},[19]);
     dataT = make_between_table({per_silent},dvn);
     ra = RMA(dataT,within);
     ra.ranova

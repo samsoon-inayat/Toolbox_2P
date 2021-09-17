@@ -733,22 +733,41 @@ ccs = o77T.resp.vals;
 plotRasters_multi_simplest_line({Rs77T{an,cn}.sp_rasters,RsT{an,cn}.sp_rasters},find(ccs{an,cn}))
 %% Show sample rasters
 while 1
-   an = 3; cn = 1;
+    Rs = oDT.Rs;
+    props1 = get_props_Rs(Rs,5); 
+    an = 2; cn = 1;
+    good_FR = props1.good_FR(an,[1:2:6]);
+    gfr = cell_list_op(good_FR,[],'and');
     % plotRasters_simplest(Rs{an,cn})
     % find(resp_valsC{an}(:,cn));
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-        [-75 -475]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
-    
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-        [-75 -475]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(RsT{an,cn},[191 11 96 41],ff);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[3 6],...
+        'spaceRowsCols',[0.1 0.055],'rightUpShifts',[0.05 0.09],'widthHeightAdjustment',...
+        [-60 -130]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 6.99 3]);
+%     ff = sample_rasters(Rs(an,:),[24 96 41],ff);
+    ff = sample_rasters(Rs(an,:),[512 451 191],ff);
+    tff = ff; tff.h_axes = ff.h_axes(1,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string',''); 
+    cTxt = {'C3-Trial','C3-Inter-Trial','C4-Trial','C4-Inter-Trial','C3''-Trial','C3''-Inter-Trial'}; 
+    for ii = 1:length(tff.h_axes)
+        axes(tff.h_axes(ii));
+        ylims = ylim;
+        if mod(ii,2)
+            text(12,14,cTxt{ii},'FontSize',6);
+        else
+            text(5,12.5,cTxt{ii},'FontSize',6);
+        end
+    end
+    tff = ff; tff.h_axes = ff.h_axes(2,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string','');
+    for ii = 1:2:6
+        tff = ff; tff.h_axes = ff.h_axes(:,ii); xls = get_obj(tff,'xtick'); set_obj(tff,{'xtick',[1 25 49],'xticklabel',{'0','75','150'}});
+    end
+    for ii = 2:2:6
+        tff = ff; tff.h_axes = ff.h_axes(:,ii); xls = get_obj(tff,'xtick'); set_obj(tff,{'xtick',[1 25 50],'xticklabel',{'0','7.5','15'}});
+    end
+    tff = ff; tff.h_axes = ff.h_axes(1,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
+    tff = ff; tff.h_axes = ff.h_axes(2,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
+    tff = ff; tff.h_axes = ff.h_axes(3,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDIT'),600);
     break;
 end
 %% Mutual Information Time versus Distance Distributions
