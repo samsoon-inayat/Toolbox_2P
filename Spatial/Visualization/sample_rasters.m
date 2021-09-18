@@ -108,7 +108,7 @@ for rr = 2
         
         if cc == length(ff.h_axes)
             hca = gca;
-            ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
+%             ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
         end
         cols = size(thisRaster,2);
         colsHalf = ceil(cols/2);

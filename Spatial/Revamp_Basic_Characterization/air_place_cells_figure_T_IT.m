@@ -740,10 +740,7 @@ while 1
     gfr = cell_list_op(good_FR,[],'and');
     % plotRasters_simplest(Rs{an,cn})
     % find(resp_valsC{an}(:,cn));
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[3 6],...
-        'spaceRowsCols',[0.1 0.055],'rightUpShifts',[0.05 0.09],'widthHeightAdjustment',...
-        [-60 -130]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 6.99 3]);
+    ff = makeFigureRowsCols(2020,[10 4 6.99 3],'RowsCols',[3 6],'spaceRowsCols',[0.1 0.055],'rightUpShifts',[0.05 0.09],'widthHeightAdjustment',[-60 -130]);
 %     ff = sample_rasters(Rs(an,:),[24 96 41],ff);
     ff = sample_rasters(Rs(an,:),[512 451 191],ff);
     tff = ff; tff.h_axes = ff.h_axes(1,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string',''); 
@@ -762,7 +759,7 @@ while 1
         tff = ff; tff.h_axes = ff.h_axes(:,ii); xls = get_obj(tff,'xtick'); set_obj(tff,{'xtick',[1 25 49],'xticklabel',{'0','75','150'}});
     end
     for ii = 2:2:6
-        tff = ff; tff.h_axes = ff.h_axes(:,ii); xls = get_obj(tff,'xtick'); set_obj(tff,{'xtick',[1 25 50],'xticklabel',{'0','7.5','15'}});
+        tff = ff; tff.h_axes = ff.h_axes(:,ii); xls = get_obj(tff,'xtick'); set_obj(tff,{'xtick',[1 68 136],'xticklabel',{'0','7.5','15'}});
     end
     tff = ff; tff.h_axes = ff.h_axes(1,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
     tff = ff; tff.h_axes = ff.h_axes(2,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
