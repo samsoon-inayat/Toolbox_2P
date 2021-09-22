@@ -20,6 +20,24 @@ if strcmp(lower(markerType),'air')
 %     end
 end
 
+
+if strcmp(lower(markerType),'airr')
+%     if strcmp(lower(context),'air - brake') %size(trials,1) > 1 | 
+%         trials = trials(1,:);
+%         onsets = ei.b.air_puff_r(trials);
+%         offsets = ei.b.air_puff_f(trials);
+%         toffsets = offsets + round(1e6 * 1/ei.b.si);
+%         tonsets = onsets - round(1e6 * 1/ei.b.si);
+%         markersOn = tonsets;
+%         markersOff = toffsets;
+%     else
+        onsets = ei.b.air_puff_r(trials);
+        offsets = ei.b.air_puff_f(trials);
+        markersOn = onsets;
+        markersOff = offsets;
+%     end
+end
+
 if strcmp(lower(markerType),'air44')
     onsets = ei.b.air_puff_r(trials);
     offsets = ei.b.air_puff_f(trials);
@@ -173,7 +191,19 @@ if strcmp(lower(markerType),'airi')
     offsets = ei.b.air_puff_f(trials);
     tonsets = offsets;%(1:(end-1));% + round(1e6 * 3/ei.b.si);
     toffsets = onsets(2:end);% - round(1e6 * 0.5/ei.b.si);
-    toffsets(length(toffsets)+1) = tonsets(end) + round(1e6 * 15/ei.b.si);
+    dur = mean(ei.b.ts(toffsets(1:5))-ei.b.ts(tonsets(1:5)));
+    toffsets(length(toffsets)+1) = tonsets(end) + round(1e6 * dur/ei.b.si);
+    markersOn = tonsets;
+    markersOff = toffsets;
+end
+
+if strcmp(lower(markerType),'airir')
+    onsets = ei.b.air_puff_r(trials);
+    offsets = ei.b.air_puff_f(trials);
+    tonsets = offsets;%(1:(end-1));% + round(1e6 * 3/ei.b.si);
+    toffsets = onsets(2:end);% - round(1e6 * 0.5/ei.b.si);
+    dur = mean(ei.b.ts(toffsets(1:5))-ei.b.ts(tonsets(1:5)));
+    toffsets(length(toffsets)+1) = tonsets(end) + round(1e6 * dur/ei.b.si);
     markersOn = tonsets;
     markersOff = toffsets;
 end

@@ -60,6 +60,11 @@ for aa = 1:length(ei)
                         cmdTxt = sprintf('contexts(contextNumber).rasters.%sD = rasters;',thisStimMarker); eval(cmdTxt);
                     end
                    if strcmp(thisRasterType,'time')
+                       if strcmp(thisStimMarker,'airI')
+                           owr(1) = 1;
+                       else
+                           owr(1) = 0;
+                       end
                         rasters = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owr);
                         if double(rasters.bin_width) == double(binwidths(1))
                         else

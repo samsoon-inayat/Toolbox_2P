@@ -64,12 +64,12 @@ ei_C = getData_py_2(T_Ca);
 ei_A = getData_py_2(T_Aa);
 ei_A(1) = [];
 %%
-ii = 1;
+ii = 5;
 edit_define_contexts_file(ei_C{ii});
 plotMarkers(ei_C{ii}.b,ei_C{ii}.b.stim_r,[],100,0)
 plotMarkers(ei_C{ii}.b,ei_C{ii}.b.air_puff_r,[],101,0)
 %%
-ii = 1;
+ii = 5;
 edit_define_contexts_file(ei_A{ii});
 plotMarkers(ei_A{ii}.b,ei_A{ii}.b.stim_r,[],100,0)
 plotMarkers(ei_A{ii}.b,ei_A{ii}.b.air_puff_r,[],101,0)

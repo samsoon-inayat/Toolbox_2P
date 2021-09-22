@@ -192,7 +192,7 @@ while 1
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30 40 100]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
     changePosition(gca,[0.01 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Responsive Trials (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('average_responsive_trials_%d.pdf',ntrials),600);
     %%
@@ -244,11 +244,12 @@ while 1
     tcolors = colors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',5,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 5;
     ylims = ylim;
     format_axes(gca);
-        text(15,maxY,sprintf('%d\x00B1%d %%',round(mra),round(semra)),'FontSize',6);
-        text(15,maxY-7,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
+    htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+%     text(13,maxY-9,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
@@ -310,10 +311,41 @@ while 1
     view_population_vector(o.Rs(:,si),o.mR(:,si),resp,100);
 break;
 end
+
+%% Overlap Indices ImageSC Single animal
+while 1
+    ntrials = 50;
+    si = si_seq;
+    props1 = get_props_Rs(o.Rs,ntrials);
+    resp = [props1.good_FR(:,si)];% resp_speed];
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
+    mOI = OI_mat(:,:,4);
+    maxI = max([mOI(:);semOI(:)]);    
+    minI = 0;%min([mOI(:);semOI(:)]);
+    txl = rasterNamesTxt(si); 
+    imAlpha=ones(size(mOI));    imAlpha(isnan(mOI))=0;
+    ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+    %
+    axes(ff.h_axes(1));
+    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    axis equal
+    format_axes(gca);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
+    %
+    axes(ff.h_axes(2));
+    im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    axis equal
+    format_axes(gca);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',[],'Ydir','reverse'); xtickangle(90);
+    hc = putColorBar(gca,[0.06 0.02 -0.06 -0.07],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_%d.pdf',ntrials),600);
+    break;
+end
+
 %% Overlap Indices ImageSC
 while 1
-    ntrials = 80;
-    si = si_seq_m;
+    ntrials = 50;
+    si = si_seq;
     props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
@@ -321,13 +353,13 @@ while 1
     minI = 0;%min([mOI(:);semOI(:)]);
     txl = rasterNamesTxt(si); 
     imAlpha=ones(size(mOI));    imAlpha(isnan(mOI))=0;
-    ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.12],'widthHeightAdjustment',[-240 -150]);
+    ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
     %
     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    axis equal
     format_axes(gca);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(90);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
     %
     axes(ff.h_axes(2));
     im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
