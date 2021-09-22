@@ -39,9 +39,11 @@ for rr = 1:size(Rs,1)
     end
 end
 
-function [FR_based,sR] = get_FR_based(rasters,ntrials)
+function [FR_based,sR,sRp] = get_FR_based(rasters,ntrials)
 rasters = permute(rasters,[2 1 3]);
 sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sR';
+sR = 100*sR./size(rasters,2);
 FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
 FR_based = FR_based';
-sR = sR';
+

@@ -748,11 +748,8 @@ while 1
     for ii = 1:length(tff.h_axes)
         axes(tff.h_axes(ii));
         ylims = ylim;
-        if mod(ii,2)
             text(12,14,cTxt{ii},'FontSize',6);
-        else
-            text(5,12.5,cTxt{ii},'FontSize',6);
-        end
+
     end
     tff = ff; tff.h_axes = ff.h_axes(2,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string','');
     for ii = 1:2:6

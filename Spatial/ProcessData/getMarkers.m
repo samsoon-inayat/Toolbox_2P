@@ -171,8 +171,9 @@ end
 if strcmp(lower(markerType),'airi')
     onsets = ei.b.air_puff_r(trials);
     offsets = ei.b.air_puff_f(trials);
-    tonsets = offsets(1:(end-1));% + round(1e6 * 3/ei.b.si);
+    tonsets = offsets;%(1:(end-1));% + round(1e6 * 3/ei.b.si);
     toffsets = onsets(2:end);% - round(1e6 * 0.5/ei.b.si);
+    toffsets(length(toffsets)+1) = tonsets(end) + round(1e6 * 15/ei.b.si);
     markersOn = tonsets;
     markersOff = toffsets;
 end
