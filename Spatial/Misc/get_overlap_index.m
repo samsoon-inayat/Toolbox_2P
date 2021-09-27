@@ -17,9 +17,9 @@ for ii = 1:length(resp_vals)
     for rr = 1:size(ccs,2)
         ccs1 = ccs(:,rr);
         for cc = 1:size(ccs,2)
-            if rr == cc
-                continue;
-            end
+%             if rr == cc
+%                 continue;
+%             end
 %             if mask(rr,cc)
                 ccs2 = ccs(:,cc);
                 shared = ccs1 & ccs2;

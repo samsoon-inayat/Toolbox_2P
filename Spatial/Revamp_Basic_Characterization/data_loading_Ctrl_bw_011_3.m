@@ -33,9 +33,6 @@ mData.pdf_folder = [Uleth_one_drive '\PDFs15'];
 mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
 disp('Done');
 %%
-ii = 5;
-edit_define_contexts_file(ei{ii});
-%%
 if 0
 %     make_db(T_C);
     process_abf(T_C,0);
@@ -47,6 +44,12 @@ sel_rec = [1 3 5];
 sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
 
+%%
+if 0
+    ii = 5;
+    edit_define_contexts_file(ei{ii});
+end
+%%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);

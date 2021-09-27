@@ -4,17 +4,32 @@ while 1
     Rs = o.Rs(:,si_air_rest);
     mR = o.mR(:,si_air_rest);
     ntrials = 50; props1 = get_props_Rs(Rs,ntrials);
-    good_FR = props1.good_FR;
+    good_FR = props1.vals;
     resp_fractionC = exec_fun_on_cell_mat(good_FR,'sum')./exec_fun_on_cell_mat(good_FR,'length')
     good_FR_OR = cell_list_op(good_FR,[],'or');
     resp_OR_fractionC = exec_fun_on_cell_mat(good_FR_OR(:,1),'sum')./exec_fun_on_cell_mat(good_FR_OR(:,1),'length');
-    exc = o.resp.exc(:,si_air_rest); inh = o.resp.inh(:,si_air_rest);
-%     polarity = find_resp_polarity(Rs,good_FR);
     break;
 end
 %%
-respE_OR = cell_list_op(exc,[],'or');
-respI_OR = cell_list_op(inh,[],'or');
+% mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+% ei_11_15 = evalin('base','ei'); 
+% 
+% selContexts = [2 7];
+% rasterNames = {'air55T','air55T'};
+% Rs = get_rasters_data(ei_11_15,selContexts,rasterNames);
+% % Rs = get_rasters_data(ei_2_3,selContexts,rasterNames);
+% Rs = find_responsive_rasters(Rs,1:10);
+% mR = calc_mean_rasters(Rs,1:10);
+[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
+
+[respE,respE_OR,respE_AND,respE_fraction] = get_cell_list_exc_inh(resp_exc_inh,1,1);
+[CRcE,aCRcE,mRRE] = find_population_vector_corr(Rs,mR,respE,0);
+
+[respI,respI_OR,respI_AND,respI_fraction] = get_cell_list_exc_inh(resp_exc_inh,1,0);
+% [CRcI,aCRcI,mRRI] = find_population_vector_corr(Rs,mR,respI,0);
+
+respE_OR = repmat(respE_OR',1,2);
+respI_OR = repmat(respI_OR',1,2);
 
 outE = find_population_vector_corr_remap(Rs,mR,respE_OR);
 outI = find_population_vector_corr_remap(Rs,mR,respI_OR);

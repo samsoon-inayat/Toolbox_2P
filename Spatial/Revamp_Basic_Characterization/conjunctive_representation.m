@@ -69,12 +69,13 @@ while 1
     break;
 end
 
-%% compare the MIs
+%% compare the zMIs
 while 1
-    props1 = get_props_Rs(o.Rs,3);
-    si = si_no_brake;
+    ntrials = 50;
+    props1 = get_props_Rs(o.Rs,ntrials);
+    si = si_no_brake_time;
     good_FR = props1.good_FR(:,si);
-    all_zMIs = props1.MI(:,si);
+    all_zMIs = props1.zMI(:,si);
     zMIs = [];
     for rr = 1:size(all_zMIs,1)
         for cc = 1:size(all_zMIs,2)
@@ -89,7 +90,7 @@ while 1
     ra.ranova
     ra.mauchly
     
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'DT','bonferroni'},[1 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_DT','hsd'},[1 1 1]);
 %     h(h==1) = 0;
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
@@ -102,7 +103,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNames(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Active Cells (%)',[0 0 0]});
+    changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('zMIs_good_FR_all_Conditions.pdf'),600);
     %%
     break;
@@ -181,36 +182,50 @@ while 1
     dataT = make_between_table({mean_N_trials_resp},dvn);
     ra = RMA(dataT,within);
     ra.ranova
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
-%     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2 1.5]);
+    
+     %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    h(h==1) = 0;
+    hf = get_figure(5,[8 7 1.7 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
-    changePosition(gca,[0.01 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Responsive Trials (%)',[0 0 0]});
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 20 40]); xtickangle(45);
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Responsive Trials (%)',[-0.7 +25 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    
+%     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+%     hf = get_figure(5,[8 7 1.75 1.5]);
+%     % s = generate_shades(length(bins)-1);
+%     tcolors = colors;
+%     [hbs,maxY] = plot_bars_sig_lines(mVar,semVar,combs,[p],'colors',tcolors,'sigColor','k',...
+%         'ySpacing',15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+%         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     ylims = ylim;
+%     format_axes(gca);
+%     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 260]); format_axes(gca);
+%     xticks = xdata; xticklabels = rasterNamesTxt(si);
+%     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
+%     changePosition(gca,[0.03 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Responsive Trials (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('average_responsive_trials_%d.pdf',ntrials),600);
     %%
 %     ff = makeFigureRowsCols(2020,[10 4 6.99 3],'RowsCols',[length(mVar) length(mVar)],'spaceRowsCols',[0 0],'rightUpShifts',[0 0],'widthHeightAdjustment',[0 0]);
     hf = get_figure(2020,[10 3 5.5 3.5]);%axis off;
-    [xs,ys] = display_p_table(gca,extras.pvalsTableTxt,[3.5 2.5 0.5 0.7],'');
+    [xs,ys] = display_p_table_independent(gca,extras.pvalsTableTxt,[3.5 2.5 0.5 0.7],'');
     xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xs,'xticklabels',xticklabels,'ytick',ys,'yticklabels',xticklabels); xtickangle(45);ytickangle(45);
     format_axes(gca);
     changePosition(gca,[-0.05 0.01 0.1 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{[],[0 0 0]});
     format_axes(gca);
     save_pdf(hf,mData.pdf_folder,sprintf('average_responsive_trials_%d_p_value_table.pdf',ntrials),600);
-%     
-%     hf = get_figure(3,[4 3 6.5 3.5]);axis off;
-%     uit = uitable(hf,'Data',extras.pvalsTableTxt,'FontSize',7);
-%     uit.ColumnEditable = [true];    uit.ColumnWidth = mat2cell(40*ones(1,length(mVar)),1,ones(1,13));    uit.RowName = xticklabels; uit.ColumnName = xticklabels;
-%     uit.Position = uit.Position + [0 0 300 -40];
     %%
     break;
 end
@@ -238,23 +253,39 @@ while 1
     ra.mauchly
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
-%     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2 1.5]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    h(h==1) = 0;
+    hf = get_figure(5,[8 7 1.7 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 5;
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
     ylims = ylim;
     format_axes(gca);
-    htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-%     text(13,maxY-9,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
-    changePosition(gca,[0.01 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[0 0 0]});
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    ha = display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+%     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
+% %     h(h==1) = 0;
+%     hf = get_figure(5,[8 7 2 1.5]);
+%     % s = generate_shades(length(bins)-1);
+%     tcolors = colors;
+%     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+%         'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+%         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     maxY = maxY + 5;
+%     ylims = ylim;
+%     format_axes(gca);
+%     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+% %     text(13,maxY-9,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
+%     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+%     xticks = xdata; xticklabels = rasterNamesTxt(si);
+%     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
+%     changePosition(gca,[0.01 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d.pdf',ntrials),600);
     %%
     break;
@@ -262,7 +293,7 @@ end
 
 %% compare percent silent cells
 while 1
-    props1 = get_props_Rs(o.Rs,5); si = si_seq;
+    props1 = get_props_Rs(o.Rs,50); si = si_seq;
     good_FR = props1.N_Resp_Trials(:,si);
     per_silent =[]; per_active = [];
     for rr = 1:size(good_FR,1)
@@ -273,7 +304,128 @@ while 1
     end
     [within,dvn,xlabels] = make_within_table({'Cond'},[size(good_FR,2)]);
     dataT = make_between_table({per_silent},dvn);
+    ra = RMA(dataT,within,{'lsd','hsd'});
+    ra.ranova
+    ra.mauchly
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    h(h==1) = 0;
+    hf = get_figure(5,[8 7 1.7 1.5]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = rasterNamesTxt(si);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[-0.5 0 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    save_pdf(hf,mData.pdf_folder,sprintf('silent_cells_across_conditions.pdf'),600);
+    %%
+    break;
+end
+
+
+%% compare percent unique cells
+while 1
+     ntrials = 50; si = si_seq;
+    props1 = get_props_Rs(o.Rs,ntrials);
+    good_FR = props1.good_FR(:,si);
+    per_unique =[];
+    for rr = 1:size(good_FR,2)
+        for cc = 1:size(good_FR,2)
+            if rr == cc
+                condMat(cc) = cc;
+            else
+                condMat(cc) = -cc;
+            end
+        end
+        temp_unique = get_cell_list(good_FR,condMat,1);
+        per_unique(:,rr) = temp_unique(:,1)*100;
+    end
+    [within,dvn,xlabels] = make_within_table({'Cond'},[length(si)]);
+    dataT = make_between_table({per_unique},dvn);
     ra = RMA(dataT,within);
+    ra.ranova
+    ra.mauchly
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    h(h==1) = 0;
+    hf = get_figure(5,[8 7 1.7 1.5]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = rasterNamesTxt(si);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 3 100]); xtickangle(45);
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Unique Responsive Cells (%)',[-1 3 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    save_pdf(hf,mData.pdf_folder,sprintf('unique_cells_across_conditions.pdf'),600);
+    %%
+    break;
+end
+
+
+%% compare percent unique cells in sets of conditions
+while 1
+     ntrials = 50; si = si_seq;
+    props1 = get_props_Rs(o.Rs,ntrials);
+    good_FR = props1.good_FR(:,si);
+    per_unique =[];
+    condMat = [-1 -2 3 -4 -5 -6 -7 -8 -9 -10 -11;...
+                -1 -2 -3 -4 5 -6 -7 -8 -9 -10 -11;...
+                -1 -2 -3 -4 -5 -6 7 -8 -9 -10 -11];
+    per_unique = get_cell_list(good_FR,condMat,1)*100;
+    [within,dvn,xlabels] = make_within_table({'Cond'},[length(si)]);
+    dataT = make_between_table({per_unique},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    ra.mauchly
+    
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    h(h==1) = 0;
+    hf = get_figure(5,[8 7 1.7 1.5]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = rasterNamesTxt(si);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Unique Responsive Cells (%)',[-1 3 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    save_pdf(hf,mData.pdf_folder,sprintf('unique_cells_across_conditions.pdf'),600);
+    %%
+    break;
+end
+
+%% compare diference number of responsive trials across conditions
+while 1
+    props1 = get_props_Rs(o.Rs,50); si = si_seq;
+    good_FR = props1.N_Resp_Trials(:,si);
+    per_silent =[]; per_active = [];
+    for rr = 1:size(good_FR,1)
+        for cc = 1:size(good_FR,2)
+            tts = good_FR{rr,cc};
+            per_silent(rr,cc) = 100*sum(tts == 10)/length(tts);
+        end
+    end
+    [within,dvn,xlabels] = make_within_table({'Cond'},[size(good_FR,2)]);
+    dataT = make_between_table({per_silent},dvn);
+    ra = RMA(dataT,within,{'lsd','hsd'});
     ra.ranova
     ra.mauchly
     
@@ -284,17 +436,20 @@ while 1
     tcolors = colors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.17);
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 100]); xtickangle(45)
     changePosition(gca,[0.035 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[0 0 0]});
+    pos = get(gca,'Position');
+    
     save_pdf(hf,mData.pdf_folder,sprintf('silent_cells_across_conditions.pdf'),600);
     %%
     break;
 end
+
 
 %% view all population vectors
 while 1 
@@ -321,27 +476,25 @@ while 1
     resp = [props1.good_FR(:,si)];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     mOI = OI_mat(:,:,4);
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);    
-    minI = 0;%min([mOI(:);semOI(:)]);
+    minI = 0;%min([mOI(:);semOI(:)])
+    
+    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
     txl = rasterNamesTxt(si); 
-    imAlpha=ones(size(mOI));    imAlpha(isnan(mOI))=0;
+%     mOI = mOI .* mask;
+    imAlpha=ones(size(mOI));    imAlpha(isnan(mask))=0.25; imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.75 1.5]);
+    hf = get_figure(5,[8 7 1.6 1.5]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    axis equal
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
+    set_axes_limits(gca,[0.5 11.5],[0.5 11.5]);
     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
-    text(0,-0.1,'Overlap Index (Representative Animal)','FontSize',5);
+    text(0.5,-0.1,'Overlap Index (Representative Animal)','FontSize',5);
     box on;
-    %
-%     axes(ff.h_axes(2));
-%     im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-%     set(gca,'color',0.5*[1 1 1]);    colormap parula;    axis equal
-%     format_axes(gca);
-%     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',[],'Ydir','reverse'); xtickangle(90);
-%     hc = putColorBar(gca,[0.02 0.04 -0.06 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d.pdf',ntrials),600);
     break;
 end
@@ -353,32 +506,32 @@ while 1
     props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
+%     mOI = OI_mat(:,:,4);
+    oM = ones(size(mOI));
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);    
-    minI = 0;%min([mOI(:);semOI(:)]);
+    minI = 0;%min([mOI(:);semOI(:)])
+    
+    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
     txl = rasterNamesTxt(si); 
-    imAlpha=ones(size(mOI));    imAlpha(isnan(mOI))=0;
+%     mOI = mOI .* mask;
+    imAlpha=ones(size(mOI));    imAlpha(isnan(mask))=0.25; imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.75 1.5]);
+    hf = get_figure(5,[8 7 1.6 1.5]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    axis equal
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
+    set_axes_limits(gca,[0.5 11.5],[0.5 11.5]);
     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',[],'Ydir','reverse'); xtickangle(45);
-    text(0,-0.1,'Average Overlap Index (N = 5 animals)','FontSize',5);
+    text(0.5,-0.1,'Average Overlap Index (N = 5 animals)','FontSize',5);
     box on
-    hc = putColorBar(gca,[0.02 0.04 -0.06 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
-    %
-%     axes(ff.h_axes(2));
-%     im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-%     set(gca,'color',0.5*[1 1 1]);    colormap parula;    axis equal
-%     format_axes(gca);
-%     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',[],'Ydir','reverse'); xtickangle(90);
-%     hc = putColorBar(gca,[0.06 0.02 -0.06 -0.07],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
+    hc = putColorBar(gca,[0.08 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
     %%
     %
-    maxYss = [maxYs(9) maxYs(2) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(9) maxYs(2) maxYs(11)];
+%     maxYss = [maxYs(9) maxYs(2) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(9) maxYs(2) maxYs(11)];
     for sel_row = 1:11
         sel_row
         for rr = 1:size(OI_mat,1)
@@ -397,24 +550,40 @@ while 1
         dataT = make_between_table({OIs},dvn);
         ra = RMA(dataT,within);
         ra.ranova
-        [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+%         [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+%         xdata = 1:11; xdata(sel_row) = [];
+% 
+%     %     h(h==1) = 0;
+%         hf = get_figure(5,[8 7 1.95 1.5]);
+%         % s = generate_shades(length(bins)-1);
+%         tcolors = mData.colors(setdiff(1:11,sel_row));
+%         [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+%             'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+%             'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.01,'capsize',3);
+%         ylims = ylim;
+% %         maxY = maxYss(sel_row);
+%         format_axes(gca); set(gca,'FontSize',16,'ytick',[0 0.2 0.4 0.6 0.8 1]);
+%         set_axes_limits(gca,[0.35 11+.65],[ylims(1) maxY]); format_axes(gca);
+%         xticks = xdata; xticklabels = txl;
+%         set(gca,'xtick',1:11,'xticklabels',xticklabels); xtickangle(45)
+%         changePosition(gca,[0.025 -0.01 0.05 0.05]); 
+        [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
         xdata = 1:11; xdata(sel_row) = [];
-
-    %     h(h==1) = 0;
-        hf = get_figure(5,[8 7 1.75 1.5]);
+        h(h==1) = 0;
+        hf = get_figure(5,[8 7 1.95 1.5]);
         % s = generate_shades(length(bins)-1);
         tcolors = mData.colors(setdiff(1:11,sel_row));
-        [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-            'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-            'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.01,'capsize',3);
+        [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+            'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+
         ylims = ylim;
-        maxY = maxYss(sel_row);
-        format_axes(gca); set(gca,'FontSize',16,'ytick',[0 0.2 0.4 0.6 0.8 1]);
-        set_axes_limits(gca,[0.35 11+.65],[ylims(1) maxY]); format_axes(gca);
+        format_axes(gca);
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
         xticks = xdata; xticklabels = txl;
-        set(gca,'xtick',1:11,'xticklabels',xticklabels); xtickangle(45)
-        changePosition(gca,[0.025 -0.01 0.05 0.05]); 
-        put_axes_labels(gca,{[],[0 0 0]},{sprintf('Overlap Index of %s',txl{sel_row}),[0 0 0]});
+        set(gca,'xtick',1:11,'xticklabels',xticklabels); xtickangle(45);
+        changePosition(gca,[0.03 0.01 0.045 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{sprintf('Overlap Index of %s',txl{sel_row}),[-0.1 0.15 0]});
+        ha = gca; ptable = extras.pvalsTable;
+        display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
         save_pdf(hf,mData.pdf_folder,sprintf('OI_bar_%d.pdf',sel_row),600);
         maxYs(sel_row) = maxY;
     end
