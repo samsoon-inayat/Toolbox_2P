@@ -4,7 +4,10 @@ while 1
     Rs = o.Rs(:,si_air_rest);
     mR = o.mR(:,si_air_rest);
     ntrials = 50; props1 = get_props_Rs(Rs,ntrials);
-    good_FR = props1.good_FR;
+    untuned = cell_list_op(props1.vals,[],'not');
+    tuned = props1.vals;    good_FR = props1.good_FR;
+    good_FR_tuned = cell_list_op(good_FR,tuned,'and');
+    good_FR_untuned = cell_list_op(good_FR,untuned,'and');
     resp_fractionC = exec_fun_on_cell_mat(good_FR,'sum')./exec_fun_on_cell_mat(good_FR,'length')
     good_FR_OR = cell_list_op(good_FR,[],'or');
     resp_OR_fractionC = exec_fun_on_cell_mat(good_FR_OR(:,1),'sum')./exec_fun_on_cell_mat(good_FR_OR(:,1),'length');
@@ -71,7 +74,7 @@ while 1
     set(gcf,'Position',[5 5 2.2 2]);
 %     [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(Rs);
 %     resp = get_cell_list(resp_valsC,[1;2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR_untuned,0);
     % ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[-0.1 1],[]);
     set_obj(ff,{'FontWeight','Normal','FontSize',6,'LineWidth',0.25});

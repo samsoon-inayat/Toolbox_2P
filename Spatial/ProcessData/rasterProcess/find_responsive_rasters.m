@@ -145,7 +145,7 @@ parfor ii = 1:size(rasters,3)
 %     vert = nansum(thisRaster,2);
 %     hv(ii) = sum(vert>0) >= 5;
     hv(ii) = sum(vert) >= 5;
-    if p(ii) < 0.05 & hv(ii) == 1
+    if p(ii) < 0.05% & hv(ii) == 1
         resp(ii) = 1;
         if mean(m_thisRaster(group==1)) > mean(m_thisRaster(group==2)) && mean(m_thisRaster(group==3)) > mean(m_thisRaster(group==2))
             excinh(ii) = 0;
@@ -196,12 +196,13 @@ parfor ii = 1:size(rasters,3)
 %     [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
 %     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
     [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
+%     [p(ii),~] = ttest2(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
     vert = nansum(thisRaster,2);
     hv(ii) = sum(vert>0) > 5;
 %     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
 %     hv(ii) = findHaFD(CRR,1:size(CRR,1));
 end
-resp = p < 0.05 & hv;
+resp = p < 0.05;% & hv;
 resp = resp';
 
 

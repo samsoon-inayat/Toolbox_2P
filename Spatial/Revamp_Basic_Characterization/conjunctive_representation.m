@@ -73,9 +73,9 @@ end
 while 1
     ntrials = 50;
     props1 = get_props_Rs(o.Rs,ntrials);
-    si = si_no_brake_time;
+    si = si_seq;%si_no_brake_dist;
     good_FR = props1.good_FR(:,si);
-    all_zMIs = props1.zMI(:,si);
+    all_zMIs = props1.rs(:,si);
     zMIs = [];
     for rr = 1:size(all_zMIs,1)
         for cc = 1:size(all_zMIs,2)
@@ -84,19 +84,19 @@ while 1
             zMIs(rr,cc) = nanmean(tzmis(resp));
         end
     end
-    [within,dvn,xlabels] = make_within_table({'Cond','DT'},[3,2]);
+    [within,dvn,xlabels] = make_within_table({'Cond'},[11]);
     dataT = make_between_table({zMIs},dvn);
     ra = RMA(dataT,within);
     ra.ranova
-    ra.mauchly
+%     ra.mauchly
     
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_DT','hsd'},[1 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
 %     h(h==1) = 0;
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',0.561,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
     ylims = ylim;
     format_axes(gca);

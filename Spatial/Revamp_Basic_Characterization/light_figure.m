@@ -17,7 +17,7 @@ for ii = 1:length(ei)
         dur_ligh(ii,jj) = tei.b.ts(tei.b.stim_f(jj))-tei.b.ts(tei.b.stim_r(jj));
     end
     for jj = 2:length(tei.b.stim_r)
-        i_dur_ligh(ii,jj) = tei.b.ts(tei.b.stim_r(jj-1))-tei.b.ts(tei.b.stim_f(jj));
+        i_dur_ligh(ii,jj) = tei.b.ts(tei.b.stim_r(jj))-tei.b.ts(tei.b.stim_f(jj-1));
     end
 end
 %%
@@ -46,7 +46,7 @@ while 1
     save_pdf(hf,mData.pdf_folder,'LED_speed',600);
     break;
 end
-%%
+%% dpca trying
 while 1
     an = 1;
     xtck = [];
@@ -161,13 +161,15 @@ set_obj(ff,{'xtick',[1 18 38],'xticklabels',[-2 0 2.2]})
 save_pdf(ff.hf,mData.pdf_folder,sprintf('light_rastgers'),600);
 %% population vector and correlation single animal
 an = 2;
-si = si_light
+si = si_light;
 Rs = o.Rs(:,si);mR = o.mR(:,si);
 ntrials = 50;
 props1 = get_props_Rs(o.Rs,ntrials);
 % si = si_light;
-good_FR = cell_list_op(props1.good_FR(:,si),props1.vals(:,si),'and');
-good_FR = props1.good_FR;
+untuned = cell_list_op(props1.vals(:,si),[],'not');
+tuned = props1.vals(:,si);
+good_FR = cell_list_op(props1.good_FR(:,si),tuned,'and');
+% good_FR = props1.good_FR;
 ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
     'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
     [0.01 -60]);
