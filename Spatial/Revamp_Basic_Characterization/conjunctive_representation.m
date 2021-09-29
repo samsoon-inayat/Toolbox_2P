@@ -46,7 +46,63 @@ while 1
     
     break
 end
-n = 0;
+%% trial formation
+    if 1
+        si = si_seq;
+        Rs = o.Rs(:,si);
+        trials = mat2cell([1:10]',ones(size([1:10]')));
+        props1 = get_props_Rs(Rs,50);
+        parfor ii = 1:size(Rs,2)
+            outTrials{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR(:,ii),trials);
+        end
+        parfor ii = 1:size(Rs,2)
+            outTrials_tuned{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR_and_tuned(:,ii),trials);
+        end
+        n = 0;
+    else
+    end
+    n = 0;
+    %%
+while 1
+    meancorr_trials = [];
+    for ii = 1:11
+        toutTrials = outTrials{ii};
+        meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(toutTrials.adj_SP_corr_diag,'nanmean')];
+    end
+    [within,dvn,xlabels] = make_within_table({'Cond','TP'},[11,9]);
+    dataT = make_between_table({meancorr_trials},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    ptab = 0;
+    if ptab h(h==1) = 0; end
+    hf = get_figure(5,[8 7 6.99 1.5]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    
+    if ptab
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    else
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',0.1);
+    end
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 (maxY)]); xtickangle(45);
+    if 0
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[-1 3 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    else
+    changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[0 0 0]});
+    end
+    %%
+break;
+end
 %% Show sample rasters
 while 1
     Rs = o.Rs;
@@ -69,13 +125,77 @@ while 1
     break;
 end
 
+%% population vector and correlation sensory
+while 1
+    an = 4;
+    titles = {'C1-Light','C4-Light','C1''-Light','C2-Air','C2''-Air'};
+    si = si_seq([1 11 9 2 10]);
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    % si = si_light;
+    untuned = cell_list_op(props1.vals,[],'not');
+    tuned = props1.vals;
+    good_FR = cell_list_op(props1.good_FR,untuned,'and');
+%     good_FR = props1.good_FR(:,si);
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 5],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.1 0.1],'widthHeightAdjustment',...
+        [0.01 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 6.99 2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_sensory.pdf'),600);
+
+    % average correlation of all animals
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 5],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.1 0.2],'widthHeightAdjustment',...
+        [0.01 -240]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 6.99 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_sensory.pdf'),600);
+    %%
+    break;
+end
+
+%% population vector and correlation spatial temporal
+while 1
+    titles = {'C3t-Dist','C4t-Dist','C3''t-Dist','C3it-Time','C4it-Time','C3''it-Time'};
+    an = 4;
+    si = si_seq(setdiff(1:11,[1 11 9 2 10]));
+    si = si([1 3 5 2 4 6]);
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    % si = si_light;
+    untuned = cell_list_op(props1.vals,[],'not');
+    tuned = props1.vals;
+    good_FR = cell_list_op(props1.good_FR,tuned,'and');
+%     good_FR = props1.good_FR;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 6],...
+        'spaceRowsCols',[0 -0.04],'rightUpShifts',[0.05 0.1],'widthHeightAdjustment',...
+        [30 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 6.99 2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr.pdf'),600);
+
+   % average correlation of all animals
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 6],...
+        'spaceRowsCols',[0 -0.04],'rightUpShifts',[0.05 0.2],'widthHeightAdjustment',...
+        [30 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 6.99 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr.pdf'),600);
+    %%
+    break;
+end
+
 %% compare the zMIs
 while 1
     ntrials = 50;
-    props1 = get_props_Rs(o.Rs,ntrials);
-    si = si_seq;%si_no_brake_dist;
-    good_FR = props1.good_FR(:,si);
-    all_zMIs = props1.rs(:,si);
+    si = si_seq;%si_no_brake_dist; 
+    Rs = o.Rs(:,si)
+    props1 = get_props_Rs(Rs,ntrials);
+    good_FR = props1.good_FR;
+    all_zMIs = props1.zMI;
     zMIs = [];
     for rr = 1:size(all_zMIs,1)
         for cc = 1:size(all_zMIs,2)
@@ -90,20 +210,32 @@ while 1
     ra.ranova
 %     ra.mauchly
     
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-%     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    ptab = 0;
+    if ptab h(h==1) = 0; end
+    hf = get_figure(5,[8 7 1.7 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
+    
+    if ptab
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    else
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.561,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',0.1);
+    end
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = rasterNames(si);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    xticks = xdata; xticklabels = rasterNamesTxt(si);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 round(maxY/2) round(maxY)]); xtickangle(45);
+    if 0
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[-1 3 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    else
     changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[0 0 0]});
+    end
     save_pdf(hf,mData.pdf_folder,sprintf('zMIs_good_FR_all_Conditions.pdf'),600);
     %%
     break;

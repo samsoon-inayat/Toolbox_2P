@@ -17,7 +17,7 @@ if ~isempty(allP)
                 hold on;
                 cis = R.resp.cis;
                 plot([cis(2,1) cis(2,1)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','m');
-                if ~strfind(R.marker_name,'motion')
+                if strcmp(R.marker_name,'air55T') 
                     plot([cis(1,3) cis(1,3)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','c');
                 end
             end
@@ -47,9 +47,9 @@ if ~isempty(allP)
         maxC(sii) = max(corrPlot(:));
         box off;
         set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
-        if sii == 1
+        if sii == 1 || (sii == 4 && strcmp(R.marker_name,'airIT'))
            if  isfield(R,'fromFrames')
-            h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
+                h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
            else
                h = ylabel('Position (cm)');    changePosition(h,[0 0 0]);
             end
@@ -76,11 +76,7 @@ if ~isempty(allP)
             end
             xs = round(xs);
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
-            if sii == 1
-                set(gca,'YTick',xticks,'YTickLabel',xs(xticks));
-            else
-                set(gca,'YTick',[]);
-            end
+            set(gca,'YTick',xticks,'YTickLabel',xs(xticks));
             hold on;
             cis = R.resp.cis;
 %             plot([cis(2,1) cis(2,1)]+1,[0 size(corrPlot,1)+1],'linewidth',0.5,'color','r');
@@ -88,12 +84,13 @@ if ~isempty(allP)
 %             plot([0 size(corrPlot,2)+1],[cis(2,1) cis(2,1)]+1,'linewidth',0.5,'color','r');
 %             plot([0 size(corrPlot,2)+1],[cis(1,3) cis(1,3)]+1,'linewidth',0.5,'color','m');
         else
-            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
-            if sii == 1
-                set(gca,'YTick',[1 colsHalf cols],'YTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
+            if max(ts) < 50
+                tlabels = {'0','7.5','15'};
             else
-                set(gca,'YTick',[]);
+                tlabels = {'0','75','150'};
             end
+            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',tlabels);
+            set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
         end
 %         ht = title('Pop. Correlation');
 %         set(ht,'FontSize',5,'FontWeight','Normal');
@@ -134,7 +131,7 @@ if isempty(allP)
         maxC(sii) = max(corrPlot(:));
         box off;
         set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
-        if sii == 1
+        if sii == 1 || (sii == 4 && strcmp(R.marker_name,'airIT'))
            if  isfield(R,'fromFrames')
             h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
            else
@@ -164,18 +161,16 @@ if isempty(allP)
             xs = round(xs);
             
             set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
-            if sii == 1
-                set(gca,'YTick',xticks,'YTickLabel',xs(xticks));
-            else
-                set(gca,'YTick',[]);
-            end
+            set(gca,'YTick',xticks,'YTickLabel',xs(xticks));
+
         else
-            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
-            if sii == 1
-                set(gca,'YTick',[1 colsHalf cols],'YTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
+             if max(ts) < 50
+                tlabels = {'0','7.5','15'};
             else
-                set(gca,'YTick',[]);
+                tlabels = {'0','75','150'};
             end
+            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',tlabels);
+            set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
         end
             set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
             ht = title('Avg. Pop. Correlation');

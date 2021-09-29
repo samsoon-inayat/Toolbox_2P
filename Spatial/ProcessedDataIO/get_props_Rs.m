@@ -37,6 +37,8 @@ for rr = 1:size(Rs,1)
         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.trial_scores{rr,cc} = R.resp.trial_scores';
         o.vals{rr,cc} = R.resp.vals';
+        temp_cl = cell_list_op(o.good_FR(rr,cc),o.vals(rr,cc),'and');
+        o.good_FR_and_tuned{rr,cc} = temp_cl{1};
     end
 end
 
