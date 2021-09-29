@@ -128,8 +128,8 @@ end
 %% population vector and correlation sensory
 while 1
     an = 4;
-    titles = {'C1-Light','C4-Light','C1''-Light','C2-Air','C2''-Air'};
-    si = si_seq([1 11 9 2 10]);
+    titles = {'C1-Light','C4-Light','C1''-Light'};
+    si = si_seq([1 11 9]);
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
@@ -137,31 +137,62 @@ while 1
     untuned = cell_list_op(props1.vals,[],'not');
     tuned = props1.vals;
     good_FR = cell_list_op(props1.good_FR,untuned,'and');
-%     good_FR = props1.good_FR(:,si);
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 5],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.1 0.1],'widthHeightAdjustment',...
-        [0.01 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 6.99 2]);
+    good_FR = props1.good_Gauss;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.14 0.1],'widthHeightAdjustment',...
+        [-50 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 4 2]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_sensory.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_sensory_light.pdf'),600);
 
     % average correlation of all animals
-    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 5],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.1 0.2],'widthHeightAdjustment',...
-        [0.01 -240]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 6.99 1]);
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.14 0.2],'widthHeightAdjustment',...
+        [-50 -240]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 4 1]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_sensory.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_sensory_light.pdf'),600);
+    %%
+    break;
+end
+
+%% population vector and correlation sensory
+while 1
+    an = 4;
+    titles = {'C2-Air','C2''-Air'};
+    si = si_seq([2 10]);
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    % si = si_light;
+    untuned = cell_list_op(props1.vals,[],'not');
+    tuned = props1.vals;
+    good_FR = cell_list_op(props1.good_FR,untuned,'and');
+    good_FR = props1.good_Gauss;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 2],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.2 0.1],'widthHeightAdjustment',...
+        [-150 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3 2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_sensory_air.pdf'),600);
+
+    % average correlation of all animals
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 2],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.2 0.2],'widthHeightAdjustment',...
+        [-150 -240]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 3 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_sensory_air.pdf'),600);
     %%
     break;
 end
 
 %% population vector and correlation spatial temporal
 while 1
-    titles = {'C3t-Dist','C4t-Dist','C3''t-Dist','C3it-Time','C4it-Time','C3''it-Time'};
+    titles = {'C3it-Time','C4it-Time','C3''it-Time'};
     an = 4;
     si = si_seq(setdiff(1:11,[1 11 9 2 10]));
-    si = si([1 3 5 2 4 6]);
+    si = si([2 4 6]);
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
@@ -169,21 +200,54 @@ while 1
     untuned = cell_list_op(props1.vals,[],'not');
     tuned = props1.vals;
     good_FR = cell_list_op(props1.good_FR,tuned,'and');
-%     good_FR = props1.good_FR;
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 6],...
-        'spaceRowsCols',[0 -0.04],'rightUpShifts',[0.05 0.1],'widthHeightAdjustment',...
-        [30 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 6.99 2]);
+    good_FR = props1.good_Gauss;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.1],'widthHeightAdjustment',...
+        [-35 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.45 2]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_time.pdf'),600);
 
    % average correlation of all animals
-    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 6],...
-        'spaceRowsCols',[0 -0.04],'rightUpShifts',[0.05 0.2],'widthHeightAdjustment',...
-        [30 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 6.99 1]);
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.2],'widthHeightAdjustment',...
+        [-35 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 3.45 1]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr.pdf'),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_time.pdf'),600);
+    %%
+    break;
+end
+
+
+%% population vector and correlation spatial temporal
+while 1
+    titles = {'C3t-Dist','C4t-Dist','C3''t-Dist','C3it-Time','C4it-Time','C3''it-Time'};
+    an = 4;
+    si = si_seq(setdiff(1:11,[1 11 9 2 10]));
+    si = si([1 3 5]);
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    % si = si_light;
+    untuned = cell_list_op(props1.vals,[],'not');
+    tuned = props1.vals;
+    good_FR = cell_list_op(props1.good_FR,tuned,'and');
+    good_FR = props1.good_Gauss;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.08 0.1],'widthHeightAdjustment',...
+        [-35 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.45 2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_dist.pdf'),600);
+
+   % average correlation of all animals
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.08 0.2],'widthHeightAdjustment',...
+        [-35 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 3.45 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_dist.pdf'),600);
     %%
     break;
 end

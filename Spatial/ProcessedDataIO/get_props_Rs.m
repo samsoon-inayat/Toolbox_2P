@@ -31,7 +31,7 @@ for rr = 1:size(Rs,1)
         o.good_Gauss{rr,cc} = p';
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
         [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc}] = get_FR_based(R.sp_rasters1,ntrials);
-        o.good_zMI_FR{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
+        o.good_FR_and_zMI{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
         o.centers{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
@@ -39,6 +39,9 @@ for rr = 1:size(Rs,1)
         o.vals{rr,cc} = R.resp.vals';
         temp_cl = cell_list_op(o.good_FR(rr,cc),o.vals(rr,cc),'and');
         o.good_FR_and_tuned{rr,cc} = temp_cl{1};
+        o.good_HaFD{rr,cc} = o.HaFD{rr,cc} > 1;
+        o.good_HiFD{rr,cc} = o.HiFD{rr,cc} > 1;
+        o.bad_FR{rr,cc} = ~o.good_FR{rr,cc};
     end
 end
 
