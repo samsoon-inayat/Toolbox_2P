@@ -46,6 +46,7 @@ while 1
     
     break
 end
+n = 0;
 %% trial formation
     if 1
         si = si_seq;
@@ -187,7 +188,7 @@ while 1
     break;
 end
 
-%% population vector and correlation spatial temporal
+%% population vector and correlation  temporal
 while 1
     titles = {'C3it-Time','C4it-Time','C3''it-Time'};
     an = 4;
@@ -220,7 +221,7 @@ while 1
 end
 
 
-%% population vector and correlation spatial temporal
+%% population vector and correlation spatial 
 while 1
     titles = {'C3t-Dist','C4t-Dist','C3''t-Dist','C3it-Time','C4it-Time','C3''it-Time'};
     an = 4;
@@ -251,6 +252,35 @@ while 1
     %%
     break;
 end
+
+%% population vector and correlation spatial temporal
+while 1
+    titles = {'C3t-Dist','C4t-Dist','C3''t-Dist','C3it-Dist','C4it-Dist','C3''it-Dist'};
+    an = 2;
+    si1 = si_seq(setdiff(1:11,[1 11 9 2 10]));
+    Rs1 = o.Rs(:,si1); mR1 = o.mR(:,si1);     ntrials = 50;     props1 = get_props_Rs(Rs1,ntrials);
+
+    si = [si_air_dist_trials si_air_dist_itrials];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    good_FR = props1.good_FR;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 6],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.05 0.1],'widthHeightAdjustment',...
+        [25 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 6.99 2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+%     save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_time.pdf'),600);
+
+   % average correlation of all animals
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 6],...
+        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.05 0.2],'widthHeightAdjustment',...
+        [20 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 6.99 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
+%     save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_time.pdf'),600);
+    %%
+    break;
+end
+
 
 %% compare the zMIs
 while 1

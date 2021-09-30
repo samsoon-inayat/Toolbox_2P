@@ -87,7 +87,11 @@ if ~isempty(allP)
             if max(ts) < 50
                 tlabels = {'0','7.5','15'};
             else
-                tlabels = {'0','75','150'};
+                if strcmp(R.marker_name,'airD')
+                    tlabels = {'0','75','150'};
+                else
+                    tlabels = [];
+                end
             end
             set(gca,'XTick',[1 colsHalf cols],'XTickLabel',tlabels);
             set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
