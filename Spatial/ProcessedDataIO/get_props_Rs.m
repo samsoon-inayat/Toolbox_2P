@@ -7,6 +7,7 @@ end
 for rr = 1:size(Rs,1)
     for cc = 1:size(Rs,2)
         R = Rs{rr,cc};
+        o.all{rr,cc} = logical(ones(size(R.info_metrics.ShannonMI_Zsh')));
 %         if isempty(strfind(R.marker_name,'motion'))
             o.zMI{rr,cc} = R.info_metrics.ShannonMI_Zsh';
             o.MI{rr,cc} = R.info_metrics.ShannonMI';
@@ -38,7 +39,9 @@ for rr = 1:size(Rs,1)
         o.trial_scores{rr,cc} = R.resp.trial_scores';
         o.vals{rr,cc} = R.resp.vals';
         temp_cl = cell_list_op(o.good_FR(rr,cc),o.vals(rr,cc),'and');
+        temp_c2 = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.vals(rr,cc),[],'not'),'and');
         o.good_FR_and_tuned{rr,cc} = temp_cl{1};
+        o.good_FR_and_untuned{rr,cc} = temp_c2{1};
         o.good_HaFD{rr,cc} = o.HaFD{rr,cc} > 1;
         o.good_HiFD{rr,cc} = o.HiFD{rr,cc} > 1;
         o.bad_FR{rr,cc} = ~o.good_FR{rr,cc};

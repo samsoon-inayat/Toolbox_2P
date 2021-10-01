@@ -23,6 +23,7 @@ disp('Done');
 colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
+mData.dcolors = mat2cell(distinguishable_colors(20,'w'),[ones(1,20)]);
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
 mData.shades = generate_shades(3);
 display_colors(mData.shades.c);

@@ -126,160 +126,6 @@ while 1
     break;
 end
 
-%% population vector and correlation sensory
-while 1
-    an = 4;
-    titles = {'C1-Light','C4-Light','C1''-Light'};
-    si = si_seq([1 11 9]);
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
-    props1 = get_props_Rs(Rs,ntrials);
-    % si = si_light;
-    untuned = cell_list_op(props1.vals,[],'not');
-    tuned = props1.vals;
-    good_FR = cell_list_op(props1.good_FR,untuned,'and');
-    good_FR = props1.good_Gauss;
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.14 0.1],'widthHeightAdjustment',...
-        [-50 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 4 2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_sensory_light.pdf'),600);
-
-    % average correlation of all animals
-    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.14 0.2],'widthHeightAdjustment',...
-        [-50 -240]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 4 1]);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_sensory_light.pdf'),600);
-    %%
-    break;
-end
-
-%% population vector and correlation sensory
-while 1
-    an = 4;
-    titles = {'C2-Air','C2''-Air'};
-    si = si_seq([2 10]);
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
-    props1 = get_props_Rs(Rs,ntrials);
-    % si = si_light;
-    untuned = cell_list_op(props1.vals,[],'not');
-    tuned = props1.vals;
-    good_FR = cell_list_op(props1.good_FR,untuned,'and');
-    good_FR = props1.good_Gauss;
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 2],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.2 0.1],'widthHeightAdjustment',...
-        [-150 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3 2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_sensory_air.pdf'),600);
-
-    % average correlation of all animals
-    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 2],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.2 0.2],'widthHeightAdjustment',...
-        [-150 -240]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 3 1]);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_sensory_air.pdf'),600);
-    %%
-    break;
-end
-
-%% population vector and correlation  temporal
-while 1
-    titles = {'C3it-Time','C4it-Time','C3''it-Time'};
-    an = 4;
-    si = si_seq(setdiff(1:11,[1 11 9 2 10]));
-    si = si([2 4 6]);
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
-    props1 = get_props_Rs(Rs,ntrials);
-    % si = si_light;
-    untuned = cell_list_op(props1.vals,[],'not');
-    tuned = props1.vals;
-    good_FR = cell_list_op(props1.good_FR,tuned,'and');
-    good_FR = props1.good_Gauss;
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
-        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.1],'widthHeightAdjustment',...
-        [-35 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.45 2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_time.pdf'),600);
-
-   % average correlation of all animals
-    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
-        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.2],'widthHeightAdjustment',...
-        [-35 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 3.45 1]);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_time.pdf'),600);
-    %%
-    break;
-end
-
-
-%% population vector and correlation spatial 
-while 1
-    titles = {'C3t-Dist','C4t-Dist','C3''t-Dist','C3it-Time','C4it-Time','C3''it-Time'};
-    an = 4;
-    si = si_seq(setdiff(1:11,[1 11 9 2 10]));
-    si = si([1 3 5]);
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
-    props1 = get_props_Rs(Rs,ntrials);
-    % si = si_light;
-    untuned = cell_list_op(props1.vals,[],'not');
-    tuned = props1.vals;
-    good_FR = cell_list_op(props1.good_FR,tuned,'and');
-    good_FR = props1.good_Gauss;
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
-        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.08 0.1],'widthHeightAdjustment',...
-        [-35 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.45 2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_dist.pdf'),600);
-
-   % average correlation of all animals
-    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
-        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.08 0.2],'widthHeightAdjustment',...
-        [-35 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 3.45 1]);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_dist.pdf'),600);
-    %%
-    break;
-end
-
-%% population vector and correlation spatial temporal
-while 1
-    titles = {'C3t-Dist','C4t-Dist','C3''t-Dist','C3it-Dist','C4it-Dist','C3''it-Dist'};
-    an = 2;
-    si1 = si_seq(setdiff(1:11,[1 11 9 2 10]));
-    Rs1 = o.Rs(:,si1); mR1 = o.mR(:,si1);     ntrials = 50;     props1 = get_props_Rs(Rs1,ntrials);
-
-    si = [si_air_dist_trials si_air_dist_itrials];
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
-    good_FR = props1.good_FR;
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 6],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.05 0.1],'widthHeightAdjustment',...
-        [25 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 6.99 2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-%     save_pdf(ff.hf,mData.pdf_folder,sprintf('population_vector_corr_time.pdf'),600);
-
-   % average correlation of all animals
-    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 6],...
-        'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.05 0.2],'widthHeightAdjustment',...
-        [20 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 6.99 1]);
-    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
-%     save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr_time.pdf'),600);
-    %%
-    break;
-end
 
 
 %% compare the zMIs
@@ -305,7 +151,7 @@ while 1
 %     ra.mauchly
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-    ptab = 0;
+    ptab = 1;
     if ptab h(h==1) = 0; end
     hf = get_figure(5,[8 7 1.7 1.5]);
     % s = generate_shades(length(bins)-1);
@@ -323,7 +169,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 round(maxY/2) round(maxY)]); xtickangle(45);
-    if 0
+    if ptab
     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[-1 3 0]});
     ha = gca; ptable = extras.pvalsTable;
     display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
@@ -460,7 +306,7 @@ end
 while 1
     ntrials = 50; si = si_seq;
     props1 = get_props_Rs(o.Rs,ntrials);
-    good_FR = props1.good_FR(:,si);
+    good_FR = props1.good_FR_and_untuned(:,si);
     good_FR_any = cell_list_op(good_FR,[],'or');
     good_FR_all = cell_list_op(good_FR,[],'and');
     per_active =[]; per_active = [];
@@ -703,7 +549,7 @@ while 1
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     mOI = OI_mat(:,:,4);
     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);    
+    maxI = 0.6;%max([mOI(:);semOI(:)]);    
     minI = 0;%min([mOI(:);semOI(:)])
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
@@ -732,10 +578,11 @@ while 1
     props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
+    sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);    
+    maxI = 0.6;%max([mOI(:);semOI(:)]);    
     minI = 0;%min([mOI(:);semOI(:)])
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
@@ -749,8 +596,8 @@ while 1
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
-    set_axes_limits(gca,[0.5 11.5],[0.5 11.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',[],'Ydir','reverse'); xtickangle(45);
+    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
     text(0.5,-0.1,'Average Overlap Index (N = 5 animals)','FontSize',5);
     box on
     hc = putColorBar(gca,[0.08 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
@@ -758,7 +605,7 @@ while 1
     %%
     %
 %     maxYss = [maxYs(9) maxYs(2) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(9) maxYs(2) maxYs(11)];
-    for sel_row = 1:11
+    for sel_row = 1:13
         sel_row
         for rr = 1:size(OI_mat,1)
             for cc = 1:size(OI_mat,2)
@@ -772,7 +619,7 @@ while 1
         end
     %     sel_row = 4;
         OIs = squeeze(OI_mat(sel_row,:,:))'; OIs(:,sel_row) = [];
-        [within,dvn,xlabels1] = make_within_table({'Cond'},[11-1]);
+        [within,dvn,xlabels1] = make_within_table({'Cond'},[size(OI_mat,1)-1]);
         dataT = make_between_table({OIs},dvn);
         ra = RMA(dataT,within);
         ra.ranova
@@ -794,11 +641,11 @@ while 1
 %         set(gca,'xtick',1:11,'xticklabels',xticklabels); xtickangle(45)
 %         changePosition(gca,[0.025 -0.01 0.05 0.05]); 
         [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-        xdata = 1:11; xdata(sel_row) = [];
+        xdata = 1:size(OI_mat,1); xdata(sel_row) = [];
         h(h==1) = 0;
         hf = get_figure(5,[8 7 1.95 1.5]);
         % s = generate_shades(length(bins)-1);
-        tcolors = mData.colors(setdiff(1:11,sel_row));
+        tcolors = mData.dcolors(setdiff(1:size(OI_mat,1),sel_row));
         [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
             'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
 
@@ -806,7 +653,7 @@ while 1
         format_axes(gca);
         set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
         xticks = xdata; xticklabels = txl;
-        set(gca,'xtick',1:11,'xticklabels',xticklabels); xtickangle(45);
+        set(gca,'xtick',1:size(OI_mat,1),'xticklabels',xticklabels); xtickangle(45);
         changePosition(gca,[0.03 0.01 0.045 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{sprintf('Overlap Index of %s',txl{sel_row}),[-0.1 0.15 0]});
         ha = gca; ptable = extras.pvalsTable;
         display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
