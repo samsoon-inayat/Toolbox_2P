@@ -70,7 +70,7 @@ for ii = 2:2:length(hbs)
 end
 maxY = maxY + 6;
 set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-xticks = [1.5 4.5 7.5]; xticklabels = {'C3','C4','C3'''};
+xticks = [1.5 4.5 7.5]; xticklabels = {'R','V','R*'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
 changePosition(gca,[0.1 0.05 -0.07 -0.1]);

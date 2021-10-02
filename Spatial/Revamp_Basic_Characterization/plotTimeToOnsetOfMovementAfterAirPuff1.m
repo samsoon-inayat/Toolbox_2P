@@ -77,7 +77,7 @@ tcolors = colors;
     'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.005,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.051);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-xticks = xdata; xticklabels = {'C3','C4','C3'''};
+xticks = xdata; xticklabels = {'R','V','R*'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
 changePosition(gca,[0.19 0.05 -0.4 -0.1])
@@ -119,7 +119,7 @@ tcolors = colors;
     'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-xticks = xdata; xticklabels = {'C3','C4','C3'''};
+xticks = xdata; xticklabels = {'R','V','R*'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
 changePosition(gca,[0.13 0.05 -0.4 -0.1])

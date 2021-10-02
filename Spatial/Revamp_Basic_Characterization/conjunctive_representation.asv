@@ -48,6 +48,7 @@ while 1
 end
 n = 0;
 %% trial formation
+    filename = fullfile(mData.pd_folder,sprintf('%s_trials_formation',mfilename));
     if 1
         si = si_seq;
         Rs = o.Rs(:,si);
@@ -60,6 +61,7 @@ n = 0;
             outTrials_tuned{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR_and_tuned(:,ii),trials);
         end
         n = 0;
+        save(filename,'outTrials','outTrials_tuned','trials');
     else
     end
     n = 0;
@@ -72,7 +74,7 @@ while 1
     end
     [within,dvn,xlabels] = make_within_table({'Cond','TP'},[11,9]);
     dataT = make_between_table({meancorr_trials},dvn);
-    ra = RMA(dataT,within);
+    ra = RMA(dataT,within);air
     ra.ranova
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
