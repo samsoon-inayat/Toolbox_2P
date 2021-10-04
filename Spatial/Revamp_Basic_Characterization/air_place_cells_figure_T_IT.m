@@ -600,7 +600,7 @@ while 1
      ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],'spaceRowsCols',[0 0],'rightUpShifts',[-0.05 0.13],'widthHeightAdjustment',[-3 -350]);
     set(gcf,'color','w'); set(gcf,'Position',[5 5 5.60 1]);
     [Y,E] = discretize(1:49,3);
-    all_speeds = []; bTxt = {'B1','B2','B3'}; cTxt = {'R-Trial','R-Inter-Trial','V-Trial','V-Inter-Trial','R*-Trial','R*-Inter-Trial'}; 
+    all_speeds = []; bTxt = {'B1','B2','B3'}; cTxt = {'Ar-Trial','Ar-Inter-Trial','ArL-Trial','ArL-Inter-Trial','Ar*-Trial','Ar*-Inter-Trial'}; 
     for cn = 1:6
         mean_speed_over_trials = [];
         aThisSpeed = [];
@@ -744,7 +744,7 @@ while 1
 %     ff = sample_rasters(Rs(an,:),[24 96 41],ff);
     ff = sample_rasters(Rs(an,:),[512 451 191],ff);
     tff = ff; tff.h_axes = ff.h_axes(1,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string',''); 
-    cTxt = {'C3-Trial','C3-Inter-Trial','C4-Trial','C4-Inter-Trial','C3''-Trial','C3''-Inter-Trial'}; 
+    cTxt = {'Ar-Trial','Ar-Inter-Trial','ArL-Trial','ArL-Inter-Trial','Ar*-Trial','Ar*-Inter-Trial'}; 
     for ii = 1:length(tff.h_axes)
         axes(tff.h_axes(ii));
         ylims = ylim;

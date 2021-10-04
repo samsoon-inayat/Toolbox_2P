@@ -7,7 +7,7 @@ while 1
     
     selContexts = [1 4 6 2 7 3 3 4 4 5 5 3 3 4 4 5 5 0 0 2 2 7 7];
     rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airID','airD','airID','airD','airID','airT','airIT','airT','airIT','airT','airIT','motionOnsets','motionOffsets','airRT','airIRT','airRT','airIRT'};
-    rasterNamesTxt = {'C1-T','C4L-T','C1''-T','C2-T','C2''-T','C3t-D','C3it-D','C4t-D','C4it-D','C3''t-D','C3''it-D','C3t-T','C3it-T','C4t-T','C4it-T','C3''t-T','C3''it-T','MOn-T','MOff-T','C2t-T','C2it-T','C2''t-T','C2''it-T'};
+    rasterNamesTxt = {'L-T','ArL-T','L*-T','A-T','A*-T','Art-D','Arit-D','ArLt-D','ArLit-D','Ar*t-D','Ar*it-D','Art-T','Arit-T','ArLt-T','ArLit-T','Ar*t-T','Ar*it-T','MOn-T','MOff-T','At-T','Ait-T','A*t-T','A*it-T'};
     o = get_data(ei,selContexts,rasterNames);
     
 %     selContexts = [3 4 5];
@@ -49,9 +49,8 @@ end
 n = 0;
 %% trial formation
     filename = fullfile(mData.pd_folder,sprintf('%s_trials_formation',mfilename));
-    if 1
-        si = si_seq;
-        Rs = o.Rs(:,si);
+    if 0
+        si = si_seq;        Rs = o.Rs(:,si);
         trials = mat2cell([1:10]',ones(size([1:10]')));
         props1 = get_props_Rs(Rs,50);
         parfor ii = 1:size(Rs,2)
@@ -63,6 +62,9 @@ n = 0;
         n = 0;
         save(filename,'outTrials','outTrials_tuned','trials');
     else
+        trials = mat2cell([1:10]',ones(size([1:10]'))); props1 = get_props_Rs(Rs,50);
+        si = si_seq;        Rs = o.Rs(:,si);
+        load(filename);
     end
     n = 0;
     %%
@@ -260,7 +262,7 @@ while 1
      %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 1.7 1.5]);
+    hf = get_figure(5,[8 7 2.25 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -271,7 +273,8 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 20 40]); xtickangle(45);
-    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Responsive Trials (%)',[-0.7 +25 0]});
+%     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Responsive Trials (%)',[-0.7 +25 0]});
+    changePosition(gca,[0.03 0.01 0.05 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Responsive Trials (%)',[-0.7 25 0]});
     ha = gca; ptable = extras.pvalsTable;
     display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
     
@@ -329,7 +332,7 @@ while 1
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 1.7 1.5]);
+    hf = get_figure(5,[8 7 2.25 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -339,7 +342,8 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
-    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
+%     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
+    changePosition(gca,[0.01 0.01 0.07 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 15 0]});
     ha = gca; ptable = extras.pvalsTable;
     ha = display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
@@ -384,7 +388,7 @@ while 1
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 1.7 1.5]);
+    hf = get_figure(5,[8 7 2.25 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -395,7 +399,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
-    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[-0.5 0 0]});
+    changePosition(gca,[0.01 0.01 0.07 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[-0.3 0 0]});
     ha = gca; ptable = extras.pvalsTable;
     display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
     save_pdf(hf,mData.pdf_folder,sprintf('silent_cells_across_conditions.pdf'),600);
