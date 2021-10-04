@@ -69,8 +69,12 @@ while 1
         'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.0001);
     make_bars_hollow(hbs(2:2:end));
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-    xticks = xdata; xticklabels = {'Ar-T','Ar-IT','ArL-T','ArL-IT','Ar*-T','Ar*-IT'};
+    rectangle(gca,'Position',[0.75 maxY+0.01 1 0.025],'edgecolor','k','facecolor','k');
+    text(1.85,maxY+0.02,'Trials','FontSize',5);
+    rectangle(gca,'Position',[4 maxY+0.01 1 0.025],'edgecolor','k');
+    text(5.2,maxY+0.02,'Inter-Trials','FontSize',5);
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+0.051],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
+    xticks = [1.5 4.5 7.5]; xticklabels = {'Ar','ArL','Ar*'};
     xtickangle(30)
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     changePosition(gca,[0.1 0.05 -0.08 -0.1]);

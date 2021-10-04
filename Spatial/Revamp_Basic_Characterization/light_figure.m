@@ -169,7 +169,7 @@ props1 = get_props_Rs(o.Rs,ntrials);
 untuned = cell_list_op(props1.vals(:,si),[],'not');
 tuned = props1.vals(:,si);
 good_FR = cell_list_op(props1.good_FR(:,si),tuned,'and');
-% good_FR = props1.good_FR;
+good_FR = props1.good_FR;
 ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
     'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.07 0.1],'widthHeightAdjustment',...
     [0.01 -60]);

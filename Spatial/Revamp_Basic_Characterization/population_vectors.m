@@ -4,7 +4,7 @@ cmdTxt = sprintf('good_FR = props1.%s;',selected_property);
 %% population vector and correlation sensory
 while 1
     an = 4;
-    titles = {'C1-Light','C4-Light','C1''-Light'};
+    titles = {'L','ArL-L','L*'};
     si = si_seq([1 11 9]);
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
@@ -15,7 +15,7 @@ while 1
         [-20 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3 2]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set(ht,'String',titles{ii}); end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_light_%s.pdf',selected_property),600);
 
     % average correlation of all animals
@@ -31,7 +31,7 @@ end
 %% population vector and correlation sensory
 while 1
     an = 4;
-    titles = {'C2-Air','C2''-Air'};
+    titles = {'A','A*'};
     si = si_seq([2 10]);
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
@@ -42,7 +42,7 @@ while 1
         [-150 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3 2]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set(ht,'String',titles{ii}); end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_air_%s.pdf',selected_property),600);
 
     % average correlation of all animals
@@ -57,7 +57,7 @@ end
 
 %% population vector and correlation  temporal
 while 1
-    titles = {'C3it-Time','C4it-Time','C3''it-Time'};
+    titles = {'Ar-it-Time','ArL-it-Time','Ar*-it-Time'};
     an = 4;
     si = si_seq(setdiff(1:11,[1 11 9 2 10]));
     si = si([2 4 6]);
@@ -86,7 +86,7 @@ end
 
 %% population vector and correlation spatial 
 while 1
-    titles = {'C3t-Dist','C4t-Dist','C3''t-Dist'};
+    titles = {'Ar-t-Dist','ArL-t-Dist','Ar*-t-Dist'};
     an = 4;
     si = si_seq(setdiff(1:11,[1 11 9 2 10]));
     si = si([1 3 5]);

@@ -50,6 +50,9 @@ end
 % an = 5; cn = 2;
 % plotRasters_simplest(Rs{an,cn})
 if 1
+    titles = {'A','A*'};
+    si = si_seq([2 10]);
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
     an = 1; cn = 1;
     % plotRasters_simplest(Rs{an,cn})
     % find(resp_valsC{an}(:,cn));

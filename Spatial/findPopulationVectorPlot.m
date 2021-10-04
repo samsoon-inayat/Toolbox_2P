@@ -27,7 +27,15 @@ else
     end
 end
 ptc = fillmissing(ptc,'linear',2,'EndValues','nearest');
-if sum(isnan(ptc),'all')> 0
+try
+    if sum(isnan(ptc),'all')> 0
+        n = 0;
+    end
+catch
+    indsnan = isnan(ptc);
+    if sum(sum(ptc(indsnan)))> 0
+        n = 0;
+    end
     n = 0;
 end
 % GF = gausswin(3);
@@ -39,6 +47,14 @@ CRc = corr(ptco);
 CRc = fillmissing(CRc,'linear',2,'EndValues','nearest');
 CRc = fillmissing(CRc','linear',2,'EndValues','nearest');
 CRc = CRc';
-if sum(isnan(CRc),'all')> 0
+try
+    if sum(isnan(CRc),'all')> 0
+        n = 0;
+    end
+catch
+    indsnan = isnan(CRc);
+    if sum(sum(CRc(indsnan)))> 0
+        n = 0;
+    end
     n = 0;
 end

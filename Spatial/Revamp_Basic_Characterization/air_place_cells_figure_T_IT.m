@@ -744,12 +744,11 @@ while 1
 %     ff = sample_rasters(Rs(an,:),[24 96 41],ff);
     ff = sample_rasters(Rs(an,:),[512 451 191],ff);
     tff = ff; tff.h_axes = ff.h_axes(1,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string',''); 
-    cTxt = {'Ar-Trial','Ar-Inter-Trial','ArL-Trial','ArL-Inter-Trial','Ar*-Trial','Ar*-Inter-Trial'}; 
+    cTxt = {'Ar-Trials (t)','Ar-Inter-Trials (it)','ArL-Trials','ArL-Inter-Trials','Ar*-Trials','Ar*-Inter-Trials'}; 
     for ii = 1:length(tff.h_axes)
         axes(tff.h_axes(ii));
         ylims = ylim;
-            text(12,14,cTxt{ii},'FontSize',6);
-
+        text(12,14,cTxt{ii},'FontSize',6);
     end
     tff = ff; tff.h_axes = ff.h_axes(2,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string','');
     for ii = 1:2:6

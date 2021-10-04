@@ -7,7 +7,9 @@ while 1
     
     selContexts = [1 4 6 2 7 3 3 4 4 5 5 3 3 4 4 5 5 0 0 2 2 7 7];
     rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airID','airD','airID','airD','airID','airT','airIT','airT','airIT','airT','airIT','motionOnsets','motionOffsets','airRT','airIRT','airRT','airIRT'};
-    rasterNamesTxt = {'L-T','ArL-T','L*-T','A-T','A*-T','Art-D','Arit-D','ArLt-D','ArLit-D','Ar*t-D','Ar*it-D','Art-T','Arit-T','ArLt-T','ArLit-T','Ar*t-T','Ar*it-T','MOn-T','MOff-T','At-T','Ait-T','A*t-T','A*it-T'};
+%     rasterNamesTxt = {'L-T','ArL-T','L*-T','A-T','A*-T','Art-D','Arit-D','ArLt-D','ArLit-D','Ar*t-D','Ar*it-D','Art-T','Arit-T','ArLt-T','ArLit-T','Ar*t-T','Ar*it-T','MOn-T','MOff-T','At-T','Ait-T','A*t-T','A*it-T'};
+    rasterNamesTxt = {'L-(T)','ArL-L-(T)','L*-(T)','A-(T)','A*-(T)','Ar-t-(D)','Ar-it-(D)','ArL-t-(D)','ArL-it-(D)','Ar*-t-(D)','Ar*-it-(D)',...
+                'Ar-t-(T)','Ar-it-(T)','ArL-t-(T)','ArL-it-(T)','Ar*-t-(T)','Ar*-it-(T)','MOn-T','MOff-T','A-t-(T)','Ai-t-(T)','A*-t-(T)','A*-it-(T)'};
     o = get_data(ei,selContexts,rasterNames);
     
 %     selContexts = [3 4 5];
@@ -384,7 +386,7 @@ while 1
     dataT = make_between_table({per_silent},dvn);
     ra = RMA(dataT,within,{'lsd','hsd'});
     ra.ranova
-    ra.mauchly
+%     ra.mauchly
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     h(h==1) = 0;

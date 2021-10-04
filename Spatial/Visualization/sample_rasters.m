@@ -103,7 +103,7 @@ for rr = 2
         if cc == 1
             ntrials = size(thisRaster,1);
             set(gca,'YTick',[1  ntrials]);
-            h = ylabel('Trials');
+            h = ylabel('Trial #');
         end
         
         if cc == length(ff.h_axes)
@@ -169,7 +169,7 @@ for rr = 1
         end
         if cc == 1
             set(gca,'YTick',[1 5 10]);
-            h = ylabel('Trials');
+            h = ylabel('Trial #');
 %             changePosition(h,[3 0 0]);
 %             text
         end
