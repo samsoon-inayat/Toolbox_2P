@@ -57,6 +57,7 @@ n = 0;
         props1 = get_props_Rs(Rs,50);
         parfor ii = 1:size(Rs,2)
             outTrials{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR(:,ii),trials);
+%             outTrials_C{ii} = find_population_vector_trial_to_trial_corr(Rs(:,ii),props1.good_FR(:,ii));
         end
         parfor ii = 1:size(Rs,2)
             outTrials_tuned{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR_and_tuned(:,ii),trials);
