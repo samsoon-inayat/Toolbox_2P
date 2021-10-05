@@ -183,7 +183,7 @@ while 1
         'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.4,'sigLinesStartYFactor',0.0001);
     set(gca,'xlim',[0.5 xdata(end)+0.5],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-    xticks = xdata; xticklabels = {'Rest','Motion'};
+    xticks = xdata; xticklabels = {'Rest','Run'};
     hatch(hbs(2),30,'k','-',4,0.1); %angle,color,style,step,width
 %     hatch(hbs(1),150,'k','-',2,0.1); %angle,color,style,step,width
     xtickangle(30)
@@ -215,7 +215,7 @@ while 1
         'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.4,'sigLinesStartYFactor',0.0001);
     set(gca,'xlim',[0.5 xdata(end)+0.5],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-    xticks = xdata; xticklabels = {'Rest','Motion'};
+    xticks = xdata; xticklabels = {'Rest','Run/Walk'};
     hatch(hbs(2),30,'k','-',4,0.1); %angle,color,style,step,width
 %     hatch(hbs(1),150,'k','-',2,0.1); %angle,color,style,step,width
     xtickangle(30)
