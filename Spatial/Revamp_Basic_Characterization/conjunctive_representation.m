@@ -10,6 +10,7 @@ while 1
 %     rasterNamesTxt = {'L-T','ArL-T','L*-T','A-T','A*-T','Art-D','Arit-D','ArLt-D','ArLit-D','Ar*t-D','Ar*it-D','Art-T','Arit-T','ArLt-T','ArLit-T','Ar*t-T','Ar*it-T','MOn-T','MOff-T','At-T','Ait-T','A*t-T','A*it-T'};
     rasterNamesTxt = {'L-(T)','ArL-L-(T)','L*-(T)','A-(T)','A*-(T)','Ar-t-(D)','Ar-it-(D)','ArL-t-(D)','ArL-it-(D)','Ar*-t-(D)','Ar*-it-(D)',...
                 'Ar-t-(T)','Ar-it-(T)','ArL-t-(T)','ArL-it-(T)','Ar*-t-(T)','Ar*-it-(T)','MOn-T','MOff-T','A-t-(T)','Ai-t-(T)','A*-t-(T)','A*-it-(T)'};
+
     o = get_data(ei,selContexts,rasterNames);
     
 %     selContexts = [3 4 5];
@@ -33,6 +34,9 @@ while 1
     si_motion = [18 19];
     si_seq_m = [1 4 6 13 8 15 10 17 3 5 2 18 19];
     si_seq = [1 4 6 13 8 15 10 17 3 5 2];
+    si_seqG = [1 2 3 4 5 6 8 10 13 15 17]; 
+    rNaG = {'L','ArL','L*','A','A*','Ar','ArL','Ar*','Ar','ArL','Ar*'};
+    xdataG = [1 2 3 [5 6]-0.5 [8 9 10]-1 [12 13 14]-1.5];
     si_seqT = [1 4 12 13 14 15 16 17 3 5 2 18 19];
     si_seq_f = [1 20 21 6 13 8 15 10 17 3 22 23 2];
     si_no_brake = [6 13 8 15 10 17];
@@ -70,7 +74,7 @@ n = 0;
         load(filename);
     end
     n = 0;
-    %%
+    %% avg correlation of across trials
 while 1
     meancorr_trials = [];
     for ii = 1:11
@@ -85,13 +89,13 @@ while 1
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     ptab = 0;
     if ptab h(h==1) = 0; end
-    hf = get_figure(5,[8 7 6.99 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     
     if ptab
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
-        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+        'BaseValue',0.01,'xdata',xdatag,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
     else
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',0.1);
@@ -101,14 +105,9 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     txl = rasterNamesTxt(si); 
     xticks = xdata; xticklabels = txl;
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 (maxY)]); xtickangle(45);
-    if 0
-    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Correlation',[-1 3 0]});
-    ha = gca; ptable = extras.pvalsTable;
-    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
-    else
-    changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Correlation',[0 0 0]});
-    end
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 0.1]); xtickangle(45);
+    changePosition(gca,[0.01 -0.01 0.06 0.01]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Correlation',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('avg correlation'),600);
     %%
 break;
 end
@@ -134,8 +133,6 @@ while 1
     break;
 end
 
-
-
 %% compare the zMIs
 while 1
     ntrials = 50;
@@ -159,19 +156,15 @@ while 1
 %     ra.mauchly
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-    ptab = 1;
+    ptab = 0;
     if ptab h(h==1) = 0; end
-    hf = get_figure(5,[8 7 1.7 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     
-    if ptab
-    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
-        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
-    else
+
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',0.1);
-    end
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',0.5);
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
@@ -182,7 +175,7 @@ while 1
     ha = gca; ptable = extras.pvalsTable;
     display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
     else
-    changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[0 0 0]});
+    changePosition(gca,[0.01 -0.01 0.06 0.01]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[0 0 0]});
     end
     save_pdf(hf,mData.pdf_folder,sprintf('zMIs_good_FR_all_Conditions.pdf'),600);
     %%
@@ -315,7 +308,7 @@ end
 while 1
     ntrials = 50; si = si_seq;
     props1 = get_props_Rs(o.Rs,ntrials);
-    good_FR = props1.good_FR_and_untuned(:,si);
+    good_FR = props1.good_FR(:,si);
     good_FR_any = cell_list_op(good_FR,[],'or');
     good_FR_all = cell_list_op(good_FR,[],'and');
     per_active =[]; per_active = [];
@@ -347,9 +340,9 @@ while 1
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
 %     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
-    changePosition(gca,[0.01 0.01 0.07 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 15 0]});
+    changePosition(gca,[0.07 0.01 0.02 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-1.25 15 0]});
     ha = gca; ptable = extras.pvalsTable;
-    ha = display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    ha = display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable); ytickangle(20)
     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
 %     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
 % %     h(h==1) = 0;
@@ -375,7 +368,7 @@ end
 
 %% compare percent silent cells
 while 1
-    props1 = get_props_Rs(o.Rs,50); si = si_seq;
+    props1 = get_props_Rs(o.Rs,50); si = si_seqG;
     good_FR = props1.N_Resp_Trials(:,si);
     per_silent =[]; per_active = [];
     for rr = 1:size(good_FR,1)
@@ -391,6 +384,7 @@ while 1
 %     ra.mauchly
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = xdataG;
     h(h==1) = 0;
     hf = get_figure(5,[8 7 2.25 1.5]);
     % s = generate_shades(length(bins)-1);
@@ -401,11 +395,11 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = rasterNamesTxt(si);
+    xticks = xdata; xticklabels = rNaG;
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
-    changePosition(gca,[0.01 0.01 0.07 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[-0.3 0 0]});
+    changePosition(gca,[0.04 0.01 0.07 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[-1 0 0]});
     ha = gca; ptable = extras.pvalsTable;
-    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);ytickangle(20)
     save_pdf(hf,mData.pdf_folder,sprintf('silent_cells_across_conditions.pdf'),600);
     %%
     break;
@@ -496,18 +490,18 @@ end
 
 %% compare diference number of responsive trials across conditions
 while 1
-    props1 = get_props_Rs(o.Rs,50); si = si_seq;
+    props1 = get_props_Rs(o.Rs,50); si = si_seq(1:10);
     good_FR = props1.N_Resp_Trials(:,si);
-    per_silent =[]; per_active = [];
     for rr = 1:size(good_FR,1)
-        for cc = 1:size(good_FR,2)
-            tts = good_FR{rr,cc};
-            per_silent(rr,cc) = 100*sum(tts == 10)/length(tts);
+        for cc = 2:size(good_FR,2)
+            ttsp = good_FR{rr,cc-1}; tts = good_FR{rr,cc};
+            diff_resp_trials{rr,cc-1} = tts-ttsp;
         end
     end
-    [within,dvn,xlabels] = make_within_table({'Cond'},[size(good_FR,2)]);
-    dataT = make_between_table({per_silent},dvn);
-    ra = RMA(dataT,within,{'lsd','hsd'});
+    var1 = exec_fun_on_cell_mat(diff_resp_trials,'mean');
+    [within,dvn,xlabels] = make_within_table({'Cond'},[size(good_FR,2)-1]);
+    dataT = make_between_table({var1},dvn);
+    ra = RMA(dataT,within);
     ra.ranova
     ra.mauchly
     
@@ -527,7 +521,7 @@ while 1
     changePosition(gca,[0.035 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[0 0 0]});
     pos = get(gca,'Position');
     
-    save_pdf(hf,mData.pdf_folder,sprintf('silent_cells_across_conditions.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('diff_responsive_trials.pdf'),600);
     %%
     break;
 end
