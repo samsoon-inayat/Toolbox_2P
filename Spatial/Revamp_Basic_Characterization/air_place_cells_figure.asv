@@ -23,26 +23,12 @@ catch
 end
 props1 = get_props_Rs(Rs,50);
 gFR = props1.good_FR;
-gFR_OR = cell_list_op(gFR,[],'or');
-
+gFR_OR = cell_list_op(gFR,[],'or'
 % resp = resp_ORCS;
 % [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1,0);
 
-outRemap = find_population_vector_corr_remap(Rs,mR,gFR_OR);
+outRemap = find_population_vector_corr_remap(Rs,mR,gFR);
 n = 0;
-%% look at PV correlation across conditions
-% average correlation of all animals
-while 1
-    ff = makeFigureRowsCols(106,[1 0.5 9 9],'RowsCols',[3 3],...
-        'spaceRowsCols',[0.1 0.1],'rightUpShifts',[0.1 0.1],'widthHeightAdjustment',...
-        [-130 -130]);
-    set(gcf,'color','w');
-    set(gcf,'Position',[5 3 3 3]);
-    ff = show_remapping_corr_plots(mData,ff,outRemap.mean_PV_corr,outRemap.xs,[]);
-    colormap_ig
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('remap_corr_C.pdf'),600);
-    break;
-end
 
 %% find trial by trial comparison - correlations
 trials = mat2cell([1:10]',ones(size([1:10]')));
@@ -474,14 +460,13 @@ if 1
     put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'\Delta FR Score'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'Delta_FR_score_trials',600);
 end
-%% Spatial correlation across conditions
+%% Spatial correlation between conditions
 if 1
     [within,dvn,xlabels] = make_within_table({'Cond'},2);
     var_CE = arrayfun(@(x) mean(x{1}),outRemap.adj_SP_corr_diag);
     dataT = make_between_table({var_CE},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 0 1]);
+    ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
@@ -505,9 +490,8 @@ if 1
     [within,dvn,xlabels] = make_within_table({'Cond'},2);
     var_CE = arrayfun(@(x) nanmean(x{1}),outRemap.adj_RR_SP);
     dataT = make_between_table({var_CE},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 0 1]);
+    ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;
@@ -531,9 +515,8 @@ if 1
     [within,dvn,xlabels] = make_within_table({'Cond'},2);
     var_CE = arrayfun(@(x) nanmean(x{1}),outRemap.adj_PV_corr_diag);
     dataT = make_between_table({var_CE},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 0 1]);
+    ra = repeatedMeasuresAnova(dataT,within);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 0 1]);
     colors = mData.colors;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
     hold on;

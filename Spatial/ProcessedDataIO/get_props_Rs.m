@@ -18,6 +18,7 @@ for rr = 1:size(Rs,1)
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
         o.rs{rr,cc} = rs'; o.MFR{rr,cc} = MFR'; o.centers{rr,cc} = centers'; o.PWs{rr,cc} = PWs';
         o.peak_locations{rr,cc} = R.peak_location';
+        o.peak_locations_trials{rr,cc} = R.peak_location_trials';
         
         o.HaFD{rr,cc} = R.fractal_dim.HaFD';
         o.HiFD{rr,cc} = R.fractal_dim.HiFD';
@@ -45,6 +46,7 @@ for rr = 1:size(Rs,1)
         o.good_HaFD{rr,cc} = o.HaFD{rr,cc} > 1;
         o.good_HiFD{rr,cc} = o.HiFD{rr,cc} > 1;
         o.bad_FR{rr,cc} = ~o.good_FR{rr,cc};
+        o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} &o.good_Gauss{rr,cc}
     end
 end
 

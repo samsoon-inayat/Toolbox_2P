@@ -1,4 +1,5 @@
-selected_property = 'good_FR';
+%% run conjunctive_representation file first to load data
+selected_property = 'good_FR_and_Gauss';
 cmdTxt = sprintf('good_FR = props1.%s;',selected_property);
 
 %% population vector and correlation sensory
