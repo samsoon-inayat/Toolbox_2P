@@ -1,5 +1,5 @@
 function air_figure
-
+n = 0;
 while 1
     Rs = o.Rs(:,si_air_rest);
     mR = o.mR(:,si_air_rest);
@@ -42,7 +42,7 @@ if 1
     ts = b.ts(ss:ee)-b.ts(ss);
     plot(ts,air_rest_sig);
     axis off;
-    text(1,1.5,{'Ten 5sec air pulses with', '10sec inter-trial interval'},'FontSize',5);
+    text(1,1.5,{'5sec air pulse', '10sec inter-trial interval'},'FontSize',5);
     changePosition(gca,[-0.07 -0.13 -0.15 -0.1]);
     save_pdf(hf,mData.pdf_folder,sprintf('air_signal_train'),600);
 end

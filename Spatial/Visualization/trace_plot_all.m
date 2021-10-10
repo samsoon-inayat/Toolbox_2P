@@ -102,7 +102,7 @@ end
 %%
 %%
 while 1
-    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.95 3],'color','w'); hold on;
+    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 5.5 3],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
     [maxVal,maxLoc] = max(spSigAllN,[],2);
     [sorted,locs] = sort(maxLoc);
@@ -146,13 +146,13 @@ while 1
     ylim([0 numcells]); xlim([0 traceTime(end)]);
     ylims = ylim;
     upfac = 3;
-    text(b.ts(light_onsets(1)),ylims(2)+upfac,'L','FontSize',6);
-    text(b.ts(light_onsets(21)),ylims(2)+upfac,'L*','FontSize',6);
-    text(b.ts(onsets(1)),ylims(2)+upfac,'A','FontSize',6);
+    text(b.ts(light_onsets(1)),ylims(2)+upfac,'Lb','FontSize',6);
+    text(b.ts(light_onsets(21)),ylims(2)+upfac,'Lb*','FontSize',6);
+    text(b.ts(onsets(1)),ylims(2)+upfac,'Ab','FontSize',6);
     text(b.ts(onsets(11)),ylims(2)+upfac,'Ar','FontSize',6);
     text(b.ts(onsets(21)),ylims(2)+upfac,'ArL','FontSize',6);
     text(b.ts(onsets(31)),ylims(2)+upfac,'Ar*','FontSize',6);
-    text(b.ts(onsets(41)),ylims(2)+upfac,'A*','FontSize',6);
+    text(b.ts(onsets(41)),ylims(2)+upfac,'Ab*','FontSize',6);
     text(b.ts(light_onsets(1))-1.45,ylims(2)+upfac+2,'Conditions','FontSize',6);
     set(gca,'Ydir','Normal');
     xlabel('Time (min)');
