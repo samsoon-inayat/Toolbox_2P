@@ -259,7 +259,7 @@ while 1
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     xdata = xdataG;
     h(h==1) = 0;
-    hf = get_figure(5,[10 7 2.3 1.5]);
+    hf = get_figure(5,[10 7 2.2 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -333,7 +333,7 @@ while 1
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     xdata = xdataG;
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2.3 1.5]);
+    hf = get_figure(5,[8 7 2.2 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -344,7 +344,7 @@ while 1
     xticks = xdata; xticklabels = rNaG;
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(30);
 %     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
-    changePosition(gca,[0.05 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-1.25 15 0]});
+    changePosition(gca,[0.06 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-1.25 15 0]});
     ha = gca; ptable = extras.pvalsTable;
     ha = display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable); %ytickangle(20)
     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
@@ -391,7 +391,7 @@ while 1
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     xdata = xdataG;
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2.3 1.5]);
+    hf = get_figure(5,[8 7 2.2 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -654,26 +654,28 @@ while 1
 %         set(gca,'xtick',1:11,'xticklabels',xticklabels); xtickangle(45)
 %         changePosition(gca,[0.025 -0.01 0.05 0.05]); 
         [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-        xdata = 1:size(OI_mat,1); xdata(sel_row) = [];
+        xdata = xdataG;%1:size(OI_mat,1); 
+        xdata(sel_row) = [];
+%         xdata = xdataG;
         h(h==1) = 0;
         hf = get_figure(5,[8 7 1.95 1.5]);
         % s = generate_shades(length(bins)-1);
         tcolors = mData.colors(setdiff(1:size(OI_mat,1),sel_row));
         [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
-            'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+            'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.45);
 
         ylims = ylim;
         format_axes(gca);
-        if ii < 11
-        set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-        else
-        set_axes_limits(gca,[0.35 11.65],[ylims(1) maxY]); format_axes(gca);
-        end
-        xticks = xdata; xticklabels = txl;
-        set(gca,'xtick',1:size(OI_mat,1),'xticklabels',xticklabels); xtickangle(45);
-        changePosition(gca,[0.09 0.01 -0.01 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{sprintf('Overlap Index of %s',txl{sel_row}),[-1 0.15 0]});
+%         if ii < 11
+        set_axes_limits(gca,[0.35 xdataG(end)+.65],[ylims(1) maxY]); format_axes(gca);
+%         else
+%         set_axes_limits(gca,[0.35 11.65],[ylims(1) maxY]); format_axes(gca);
+%         end
+        xticks = xdataG; xticklabels = txl;
+        set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+        changePosition(gca,[0.09 0.01 -0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{sprintf('Overlap Index of %s',txl{sel_row}),[-1.45 0.1 0]});
         ha = gca; ptable = extras.pvalsTable;
-        display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);ytickangle(20);
+        display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable);ytickangle(0);
         save_pdf(hf,mData.pdf_folder,sprintf('OI_bar_%d.pdf',sel_row),600);
         maxYs(sel_row) = maxY;
     end
