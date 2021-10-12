@@ -1,11 +1,11 @@
 %% run conjunctive_representation file first to load data
-selected_property = 'good_FR_and_Gauss';
+selected_property = 'good_FR';
 cmdTxt = sprintf('good_FR = props1.%s;',selected_property);
 
 %% population vector and correlation sensory
 while 1
     an = 4;
-    titles = {'L','ArL-L','L*'};
+    titles = {'Lb','ArL-L','Lb*'};
     si = si_seq([1 11 9]);
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
@@ -32,7 +32,7 @@ end
 %% population vector and correlation sensory
 while 1
     an = 4;
-    titles = {'A','A*'};
+    titles = {'Ab','Ab*'};
     si = si_seq([2 10]);
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
@@ -58,7 +58,7 @@ end
 
 %% population vector and correlation  temporal
 while 1
-    titles = {'Ar-it-Time','ArL-it-Time','Ar*-it-Time'};
+    titles = {'Ar-i-T','ArL-i-T','Ar*-i-T'};
     an = 4;
     si = si_seq(setdiff(1:11,[1 11 9 2 10]));
     si = si([2 4 6]);
@@ -87,7 +87,7 @@ end
 
 %% population vector and correlation spatial 
 while 1
-    titles = {'Ar-t-Dist','ArL-t-Dist','Ar*-t-Dist'};
+    titles = {'Ar-t-D','ArL-t-D','Ar*-t-D'};
     an = 4;
     si = si_seq(setdiff(1:11,[1 11 9 2 10]));
     si = si([1 3 5]);

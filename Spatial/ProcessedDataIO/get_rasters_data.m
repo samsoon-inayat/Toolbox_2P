@@ -44,8 +44,10 @@ for ii = 1:length(selContexts)
     rasters{ii,1}.thorexp = ei.thorExp;
     rasters{ii,1}.beltLength = get_belt_length(ei);
     spR = rasters{ii,1}.sp_rasters1; mspR = squeeze(nanmean(spR,1));
+    [valsT,valsTi] = (max(spR,[],2));
     [vals,valsi] = max(mspR);
     rasters{ii,1}.peak_location = valsi * rasters{ii,1}.bin_width;
+    rasters{ii,1}.peak_location_trials = squeeze(valsTi) * rasters{ii,1}.bin_width;
 end
 
 function rasters = get_data(ei,selContexts,rasterNames)
