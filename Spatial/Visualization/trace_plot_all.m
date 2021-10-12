@@ -153,7 +153,7 @@ while 1
     text(b.ts(onsets(21)),ylims(2)+upfac,'ArL','FontSize',6);
     text(b.ts(onsets(31)),ylims(2)+upfac,'Ar*','FontSize',6);
     text(b.ts(onsets(41)),ylims(2)+upfac,'Ab*','FontSize',6);
-    text(b.ts(light_onsets(1))-1.45,ylims(2)+upfac+2,'Conditions','FontSize',6);
+    text(b.ts(light_onsets(1))-1.45,ylims(2)+upfac+3,'Conditions','FontSize',6);
     set(gca,'Ydir','Normal');
     xlabel('Time (min)');
     ylabel('Cell Number (arranged by peaks)');

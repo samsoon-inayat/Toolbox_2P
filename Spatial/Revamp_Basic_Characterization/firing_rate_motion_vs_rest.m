@@ -129,7 +129,7 @@ while 1
         'ySpacing',100,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.0001);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-    xticks = xdata; xticklabels = {'L','A','Ar','ArL','Ar*','L*','A*'};
+    xticks = xdata; xticklabels = {'Lb','Ab','Ar','ArL','Ar*','Lb*','Ab*'};
     xtickangle(30)
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     changePosition(gca,[0.1 0.05 -0.08 -0.1]);
@@ -153,7 +153,7 @@ while 1
         'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.0001);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-    xticks = xdata; xticklabels = {'L','A','Ar','ArL','Ar*','L*','A*'};
+    xticks = xdata; xticklabels = {'Lb','Ab','Ar','ArL','Ar*','Lb*','Ab*'};
     xtickangle(30)
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     changePosition(gca,[0.1 0.05 -0.08 -0.1]);
