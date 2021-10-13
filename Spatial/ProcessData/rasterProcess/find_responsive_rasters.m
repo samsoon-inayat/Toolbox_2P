@@ -44,8 +44,9 @@ for rr = 1:size(Rs,1)
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_air(R,trials);
         end
         if strcmp(R.marker_name,'airIT') || strcmp(R.marker_name,'airT') || strcmp(R.marker_name,'beltT') || strcmp(R.marker_name,'airIRT') || strcmp(R.marker_name,'airRT')
-            zMIs = R.info_metrics.ShannonMI_Zsh;
-            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
+%             zMIs = R.info_metrics.ShannonMI_Zsh;
+%             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
+            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_intertrial(R,trials);
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
@@ -110,6 +111,47 @@ end
 resp = resp'; excinh = excinh';
 % resp = p < 0.05;% & hv;
 % resp = R.activity_speed_corr > 0.1;
+
+
+function [resp,cis,excinh] = find_resp_time_raster_intertrial(R,trials)
+SR = 1/R.bin_width;
+markerType = R.marker_name;
+timeBefore = 7.5;
+% rasters = R.fromFrames.sp_rasters;
+rasters = R.sp_rasters1;
+number_of_columns = size(rasters,2);
+column_index = round(timeBefore * SR);
+cis = [];
+cis(1,:) = [1 column_index (number_of_columns-column_index+1)];
+column_index = cis - 1; column_index(1) = []; column_index(3) = number_of_columns;
+cis(2,:) = column_index;
+
+% resp = (R.info_metrics.ShannonMI_Zsh > 0)';
+% return;
+group = [];
+for ii = 1:size(cis,2)
+    group = [group ii*ones(1,length(cis(1,ii):cis(2,ii)))];
+end
+group(group==3) = 2;
+p = NaN(size(rasters,3),1);
+p1 = NaN(size(rasters,3),1);
+hv = NaN(size(rasters,3),1);
+parfor ii = 1:size(rasters,3)
+    thisRaster = rasters(trials,:,ii);
+    m_thisRaster = nanmean(thisRaster);
+%     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
+%     [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
+%     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
+    [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
+%     [p(ii),~] = ttest2(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
+    vert = nansum(thisRaster,2);
+    hv(ii) = sum(vert>0) > 5;
+%     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
+%     hv(ii) = findHaFD(CRR,1:size(CRR,1));
+end
+resp = p < 0.05;% & hv;
+resp = resp';
+
 
 
 function [resp,cis,excinh] = find_resp_time_raster_air(R,trials)

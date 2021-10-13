@@ -32,8 +32,8 @@ for rr = 1:size(remap_corrs,1)
         set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS-1,'FontWeight','Bold');
         if rr == cc
             ts = xs.vals;
-            set(gca,'YTick',xs.ticks,'YTickLabel',{'0','75','150'});
-            set(gca,'XTick',xs.ticks,'XTickLabel',{'0','75','150'});
+            set(gca,'YTick',xs.ticks([1 2 4]),'YTickLabel',{'0','7.5','15'});
+            set(gca,'XTick',xs.ticks([1 2 4]),'XTickLabel',{'0','7.5','15'});
             xlabel(xs.label);
             ylabel(xs.label);
         else

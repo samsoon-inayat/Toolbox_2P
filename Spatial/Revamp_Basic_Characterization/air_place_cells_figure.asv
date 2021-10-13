@@ -82,7 +82,7 @@ while 1
             trs = rs{rr,cc}; tpropI = propI{rr,cc};
             tBinV = []; tBinV_rs = []; tBinV_propI = [];
             for bb = 2:length(bins)
-                tBinV(bb-1) = 100*length(find(tpL > bins(bb-1) & tpL <= bins(bb)))/length(tgFR);
+                tBinV(bb-1) = 100*length(find(tpL > bins(bb-1) & tpL <= bins(bb)))/sum(tgFR);
                 inds_cells = find(tpL > bins(bb-1) & tpL <= bins(bb));
                 tBinV_rs(bb-1) = nanmean(trs(inds_cells)-tpL(inds_cells));
                 tBinV_propI(bb-1) = nanmean(tpropI(inds_cells));

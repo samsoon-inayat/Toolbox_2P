@@ -54,20 +54,21 @@ n = 0;
 %% trial formation
     filename = fullfile(mData.pd_folder,sprintf('%s_trials_formation',mfilename));
     if 0
-        si = si_seq;        Rs = o.Rs(:,si);
+        si = si_seqG;        Rs = o.Rs(:,si);
         trials = mat2cell([1:10]',ones(size([1:10]')));
         props1 = get_props_Rs(Rs,50);
         parfor ii = 1:size(Rs,2)
             outTrials{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR(:,ii),trials);
 %             outTrials_C{ii} = find_population_vector_trial_to_trial_corr(Rs(:,ii),props1.good_FR(:,ii));
         end
-        parfor ii = 1:size(Rs,2)
-            outTrials_tuned{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR_and_tuned(:,ii),trials);
-        end
+        outTrials_tuned = [];
+%         parfor ii = 1:size(Rs,2)
+%             outTrials_tuned{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),props1.good_FR_and_tuned(:,ii),trials);
+%         end
         n = 0;
         save(filename,'outTrials','outTrials_tuned','trials');
     else
-        si = si_seq;        Rs = o.Rs(:,si);
+        si = si_seqG;        Rs = o.Rs(:,si);
         trials = mat2cell([1:10]',ones(size([1:10]'))); props1 = get_props_Rs(Rs,50);
         load(filename);
     end
@@ -85,9 +86,10 @@ while 1
     ra.ranova
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = xdataG;
     ptab = 0;
     if ptab h(h==1) = 0; end
-    hf = get_figure(5,[8 7 2 1]);
+    hf = get_figure(5,[8 7 1.75 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     
@@ -104,7 +106,7 @@ while 1
     txl = rasterNamesTxt(si); 
     xticks = xdata; xticklabels = txl;
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 0.1]); xtickangle(45);
-    changePosition(gca,[0.01 -0.01 0.06 0.01]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Correlation',[0 0 0]});
+    changePosition(gca,[0.02 -0.01 0.06 0.01]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Correlation',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('avg correlation'),600);
     %%
 break;
@@ -134,7 +136,7 @@ end
 %% compare the zMIs
 while 1
     ntrials = 50;
-    si = si_seq;%si_no_brake_dist; 
+    si = si_seqG;%si_no_brake_dist; 
     Rs = o.Rs(:,si)
     props1 = get_props_Rs(Rs,ntrials);
     good_FR = props1.good_FR;
@@ -154,9 +156,10 @@ while 1
 %     ra.mauchly
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = xdataG;
     ptab = 0;
     if ptab h(h==1) = 0; end
-    hf = get_figure(5,[8 7 2 1]);
+    hf = get_figure(5,[8 7 1.75 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     

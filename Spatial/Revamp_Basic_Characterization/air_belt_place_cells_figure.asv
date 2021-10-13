@@ -458,18 +458,18 @@ while 1
         end
         grand_zMIs = [grand_zMIs zMIs];
     end
-    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]);
+    [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,2,3]);
     dataT = make_between_table({grand_zMIs},dvn);
     ra = RMA(dataT,within);
     ra.ranova
      
     %%
 %     [within,dvn,xlabels] = make_within_table({'FR','Cond'},[2,3]); dataT = make_between_table({data},dvn); ra = RMA(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'FR_by_Cond','hsd'},[1 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_FR_Cond','hsd'},[1 1 1]);
     h(h==1) = 0;
 %     s = generate_shades(3); tcolors = s.g;
-    tcolors = mData.colors(6:8); tcolors = repmat(tcolors,1,2);
-     hf = get_figure(5,[5 7 1.25 1]);
+    tcolors = mData.colors;%(6:8); tcolors = repmat(tcolors,1,2);
+     hf = get_figure(5,[5 7 2.25 1]);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);

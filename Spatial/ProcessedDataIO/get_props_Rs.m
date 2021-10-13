@@ -46,7 +46,7 @@ for rr = 1:size(Rs,1)
         o.good_HaFD{rr,cc} = o.HaFD{rr,cc} > 1;
         o.good_HiFD{rr,cc} = o.HiFD{rr,cc} > 1;
         o.bad_FR{rr,cc} = ~o.good_FR{rr,cc};
-        o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} &o.good_Gauss{rr,cc}
+        o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} &o.good_Gauss{rr,cc};
     end
 end
 
