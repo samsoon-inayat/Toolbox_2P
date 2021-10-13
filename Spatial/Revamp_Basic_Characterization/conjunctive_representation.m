@@ -41,7 +41,9 @@ while 1
     si_no_brake_dist = [6 7 8 9 10 11];
     si_no_brake_time = [12 13 14 15 16 17];
     
-    dzMI = prop_op(o.props.zMI(:,[si_air_dist_trials si_air_dist_itrials]),o.props.zMI(:,[si_air_time_trials si_air_time_itrials]),0.1);
+    dzMI_m = prop_op(o.props.zMI(:,[si_air_dist_trials si_air_dist_itrials]),o.props.zMI(:,[si_air_time_trials si_air_time_itrials]),0.1);
+    dzMI_T = prop_op(o.props.zMI(:,[si_air_dist_trials]),o.props.zMI(:,[si_air_time_trials]),0.5);
+    dzMI_I = prop_op(o.props.zMI(:,[si_air_dist_itrials]),o.props.zMI(:,[si_air_time_itrials]),0.5);
     
     resp = [resp dzMI.resp_D_g_T(:,1) dzMI.resp_T_g_D(:,1)];
     resp_OR = cell_list_op(resp,[],'or');
