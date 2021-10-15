@@ -8,6 +8,7 @@ while 1
     selContexts = [1 4 6 2 7 3 3 4 4 5 5 3 3 4 4 5 5 0 0 2 2 7 7];
     rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airID','airD','airID','airD','airID','airT','airIT','airT','airIT','airT','airIT','motionOnsets','motionOffsets','airRT','airIRT','airRT','airIRT'};
     rasterNamesTxt = {'Lb-T','ArL-L-T','Lb*-T','Ab-T','Ab*-T','Ar-t-D','Ar-i-D','ArL-t-D','ArL-i-D','Ar*-t-D','Ar*-i-D','Ar-t-T','Ar-i-T','ArL-t-T','ArL-i-T','Ar*-t-T','Ar*-i-T','MOn-T','MOff-T','Ab-t-T','Ab-i-T','Ab*-t-T','Ab*-i-T'};
+    xlabelsSeq = {'Lb','ArL-L','Lb*','Ab','Ab*','Ar-t','ArL-t','Ar*-t','Ar-i','ArL-i','Ar*-i'};
 
     o = get_data(ei,selContexts,rasterNames);
     
@@ -25,8 +26,8 @@ while 1
 %     resp_o = cell_list_op(resp,[],'xor')
     si_light = [1 2 3];
     si_air_rest = [4 5];
-    si_air_dist_trials = [6 8 10];
-    si_air_dist_itrials = [7 9 11];
+    si_air_dist_trials = [6 8 10]; si_air_run_trials_Ar = [6 12]; si_air_run_trials_ArL = [8 14]; si_air_run_trials_Ars = [10 16];
+    si_air_dist_itrials = [7 9 11]; si_air_run_itrials_Ar = [7 13]; si_air_run_itrials_ArL = [9 15]; si_air_run_itrials_Ars = [11 17];
     si_air_time_trials = [12 14 16];
     si_air_time_itrials = [13 15 17];
     si_motion = [18 19];
@@ -34,7 +35,9 @@ while 1
     si_seq = [1 4 6 13 8 15 10 17 3 5 2];
     si_seqG = [1 2 3 4 5 6 8 10 13 15 17];
     rNaG = rasterNamesTxt(si_seqG);%{'L','ArL','L*','A','A*','Ar','ArL','Ar*','Ar','ArL','Ar*'};
+    rNaG1 = rasterNamesTxt(si_seqG1);%{'L','ArL','L*','A','A*','Ar','ArL','Ar*','Ar','ArL','Ar*'};
     xdataG = [1 2 3 [5 6]-0.5 [8 9 10]-1 [12 13 14]-1.5];
+    xdataG1 = [1 2 3 [5 6]-0.5 [8 9 10]-1 [12 13 14]-1.5 [16 17 18]-2 [20 21 22]-2.5];
     si_seqT = [1 4 12 13 14 15 16 17 3 5 2 18 19];
     si_seq_f = [1 20 21 6 13 8 15 10 17 3 22 23 2];
     si_no_brake = [6 13 8 15 10 17];
@@ -45,6 +48,9 @@ while 1
     si_no_brake_timeG = [12 14 16 13 15 17];
     si_no_brake_allG = [si_no_brake_distG si_no_brake_timeG];
     xdata_no_brake_allG  = [1 2 3 5 6 7 9 10 11 13 14 15];
+    
+    si_seqG1 = [si_light si_air_rest si_air_dist_trials si_air_time_trials si_air_dist_itrials si_air_time_itrials];
+    
     
     dzMI_m = prop_op(o.props.zMI(:,[si_air_dist_trials si_air_dist_itrials]),o.props.zMI(:,[si_air_time_trials si_air_time_itrials]),0.1);
     dzMI_T = prop_op(o.props.zMI(:,[si_air_dist_trials]),o.props.zMI(:,[si_air_time_trials]),0.5);
@@ -319,7 +325,7 @@ end
 
 %% compare percent responsive cells
 while 1
-    ntrials = 50; si = si_seqG;
+    ntrials = 50; si = si_seqG1;
     props1 = get_props_Rs(o.Rs,ntrials);
     good_FR = props1.good_FR(:,si);
     good_FR_any = cell_list_op(good_FR,[],'or');
@@ -341,9 +347,9 @@ while 1
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-    xdata = xdataG;
+    xdata = xdataG1;
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2.2 1.5]);
+    hf = get_figure(5,[8 7 2.2 2]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -351,8 +357,8 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = rNaG;
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(30);
+    xticks = xdata; xticklabels = rNaG1;
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
 %     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
     changePosition(gca,[0.06 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-1.25 15 0]});
     ha = gca; ptable = extras.pvalsTable;
@@ -381,15 +387,35 @@ while 1
     break;
 end
 
-
-%% compare percent responsive cells - no brake conditions both trials and inter trials
+%% compare percent responsive cells (considering both distance and time rasters of trials and intertrials)
 while 1
-    ntrials = 50; si = si_no_brake_allG;%([4 5 6 10 11 12]);
-    props1 = get_props_Rs(o.Rs,ntrials);
-    good_FR = props1.good_FR(:,si);
+    ntrials = 50; 
+    si = si_light; props_light = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_rest; props_air_rest = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_Ar; props_air_run_trials_Ar = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_ArL; props_air_run_trials_ArL = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_Ars; props_air_run_trials_Ars = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_Ar; props_air_run_itrials_Ar = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_ArL; props_air_run_itrials_ArL = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_Ars; props_air_run_itrials_Ars = get_props_Rs(o.Rs(:,si),ntrials);
+    
+    gFR_Lb = props_light.good_FR; gFR_Ab = props_air_rest.good_FR;
+    gFR_tAr = cell_list_op(props_air_run_trials_Ar.good_FR,[],'or');
+    gFR_tArL = cell_list_op(props_air_run_trials_ArL.good_FR,[],'or');
+    gFR_tArs = cell_list_op(props_air_run_trials_Ars.good_FR,[],'or');
+    gFR_iAr = cell_list_op(props_air_run_itrials_Ar.good_FR,[],'or');
+    gFR_iArL = cell_list_op(props_air_run_itrials_ArL.good_FR,[],'or');
+    gFR_iArs = cell_list_op(props_air_run_itrials_Ars.good_FR,[],'or');
+    
+    gFR_Ar = cell_list_op(gFR_tAr,gFR_iAr,'or');
+    gFR_ArL = cell_list_op(gFR_tArL,gFR_iArL,'or'); gFR_ArL = cell_list_op(gFR_ArL(:,1),gFR_Lb(:,2),'or');
+    gFR_Ars = cell_list_op(gFR_tArs,gFR_iArs,'or');
+    
+    
+    good_FR = [gFR_Lb(:,[1 3]) gFR_Ab gFR_Ar(:,1) gFR_ArL(:,1) gFR_Ars(:,1)];
     good_FR_any = cell_list_op(good_FR,[],'or');
     good_FR_all = cell_list_op(good_FR,[],'and');
-    per_active =[]; per_active = [];
+    per_active= [];
     for rr = 1:size(good_FR,1)
         for cc = 1:size(good_FR,2)
             tts = good_FR{rr,cc};
@@ -398,19 +424,18 @@ while 1
         tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
         tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
     end
-    [within,dvn,xlabels] = make_within_table({'DT','TI','Cond'},[2,2,3]);
-    dataT = make_between_table({per_active},dvn);
+    per_active1 = per_active(:,[1 3 5 6 7 2 4]);
+    [within,dvn,xlabels] = make_within_table({'Cond'},[7]);
+    dataT = make_between_table({per_active1},dvn);
     ra = RMA(dataT,within);
     ra.ranova
-%     ra.mauchly
-%%
+    %%
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DT_by_TI','hsd'},[1 1 1]);
-%     xdata = xdata_no_brake_allG;
-
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = [1 2 [4 5 6]-0.5 [8 9]-1];
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2.2 1.5]);
+    hf = get_figure(5,[8 7 1.5 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -418,12 +443,12 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'D-E','T-E'};%rasterNamesTxt(si);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(30);
+    xticks = xdata; xticklabels = {'Lb','Ab','Ar','ArL','Ar*','Lb*','Ab*'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
 %     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
-    changePosition(gca,[0.06 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-1.25 15 0]});
+    changePosition(gca,[0.06 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.25 15 0]});
     ha = gca; ptable = extras.pvalsTable;
-    ha = display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable); %ytickangle(20)
+    ha = display_p_table_img(ha,hbs,[0 0.25 0 0.35],ptable); %ytickangle(20)
     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     
 %     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
@@ -443,7 +468,122 @@ while 1
 %     xticks = xdata; xticklabels = rasterNamesTxt(si);
 %     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
 %     changePosition(gca,[0.01 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_no_brake.pdf',ntrials),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d.pdf',ntrials),600);
+    %%
+    break;
+end
+
+%% compare percent silent cells (combined)
+while 1
+    ntrials = 50; 
+    si = si_light; props_light = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_rest; props_air_rest = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_Ar; props_air_run_trials_Ar = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_ArL; props_air_run_trials_ArL = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_Ars; props_air_run_trials_Ars = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_Ar; props_air_run_itrials_Ar = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_ArL; props_air_run_itrials_ArL = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_Ars; props_air_run_itrials_Ars = get_props_Rs(o.Rs(:,si),ntrials);
+    
+    gFR_Lb = props_light.silent_cells; gFR_Ab = props_air_rest.silent_cells;
+    gFR_tAr = cell_list_op(props_air_run_trials_Ar.silent_cells,[],'and');
+    gFR_tArL = cell_list_op(props_air_run_trials_ArL.silent_cells,[],'and');
+    gFR_tArs = cell_list_op(props_air_run_trials_Ars.silent_cells,[],'and');
+    gFR_iAr = cell_list_op(props_air_run_itrials_Ar.silent_cells,[],'and');
+    gFR_iArL = cell_list_op(props_air_run_itrials_ArL.silent_cells,[],'and');
+    gFR_iArs = cell_list_op(props_air_run_itrials_Ars.silent_cells,[],'and');
+    
+    gFR_Ar = cell_list_op(gFR_tAr,gFR_iAr,'and');
+    gFR_ArL = cell_list_op(gFR_tArL,gFR_iArL,'and'); gFR_ArL = cell_list_op(gFR_ArL(:,1),gFR_Lb(:,2),'and');
+    gFR_Ars = cell_list_op(gFR_tArs,gFR_iArs,'and');
+    
+    
+    good_FR = [gFR_Lb(:,[1 3]) gFR_Ab gFR_Ar(:,1) gFR_ArL(:,1) gFR_Ars(:,1)];
+    per_silent = [];
+    for rr = 1:size(good_FR,1)
+        for cc = 1:size(good_FR,2)
+            tts = good_FR{rr,cc};
+            per_silent(rr,cc) = 100*sum(tts)/length(tts);
+        end
+    end
+    per_silent1 = per_silent(:,[1 3 5 6 7 2 4]);
+    [within,dvn,xlabels] = make_within_table({'Cond'},[7]);
+    dataT = make_between_table({per_silent1},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = [1 2 [4 5 6]-0.5 [8 9]-1];
+    h(h==1) = 0;
+    hf = get_figure(5,[8 7 1.5 1.5]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Lb','Ab','Ar','ArL','Ar*','Lb*','Ab*'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
+%     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
+    changePosition(gca,[0.06 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[-0.25 15 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    ha = display_p_table_img(ha,hbs,[0 0.25 0 0.35],ptable); %ytickangle(20)
+    save_pdf(hf,mData.pdf_folder,sprintf('silent_cells_across_conditions_%d.pdf',ntrials),600);
+    %%
+    break;
+end
+
+%% compare percent average percentage of responsive trials cells (combined)
+while 1
+    ntrials = 50; 
+    si = si_light;                          props_light = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_rest;                       props_air_rest = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_Ar;              props_air_run_trials_Ar = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_ArL;             props_air_run_trials_ArL = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_trials_Ars;             props_air_run_trials_Ars = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_Ar;             props_air_run_itrials_Ar = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_ArL;            props_air_run_itrials_ArL = get_props_Rs(o.Rs(:,si),ntrials);
+    si = si_air_run_itrials_Ars;            props_air_run_itrials_Ars = get_props_Rs(o.Rs(:,si),ntrials);
+    
+    gFR_Lb = cell2mat(props_light.N_Resp_Trials); gFR_Ab = cell2mat(props_air_rest.N_Resp_Trials);
+    gFR_tAr = mean(cell2mat(props_air_run_trials_Ar.N_Resp_Trials),2);
+    gFR_tArL = mean(cell2mat(props_air_run_trials_ArL.N_Resp_Trials),2);
+    gFR_tArs = mean(cell2mat(props_air_run_trials_Ars.N_Resp_Trials),2);
+    gFR_iAr = mean(cell2mat(props_air_run_itrials_Ar.N_Resp_Trials),2);
+    gFR_iArL = mean(cell2mat(props_air_run_itrials_ArL.N_Resp_Trials),2);
+    gFR_iArs = mean(cell2mat(props_air_run_itrials_Ars.N_Resp_Trials),2);
+    
+    gFR_Ar = mean([gFR_tAr,gFR_iAr],2);
+    gFR_ArL = mean([gFR_tArL,gFR_iArL],2); gFR_ArL = mean([gFR_ArL(:,1) gFR_Lb(:,2)],2);
+    gFR_Ars = mean([gFR_tArs,gFR_iArs],2);
+    
+    
+    good_FR = [gFR_Lb(:,[1 3]) gFR_Ab gFR_Ar gFR_ArL gFR_Ars];
+    good_FR1 = good_FR(:,[1 3 5 6 7 2 4]);
+    [within,dvn,xlabels] = make_within_table({'Cond'},[7]);
+    dataT = make_between_table({good_FR1},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = [1 2 [4 5 6]-0.5 [8 9]-1];
+    h(h==1) = 0;
+    hf = get_figure(5,[8 7 1.5 1.5]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Lb','Ab','Ar','ArL','Ar*','Lb*','Ab*'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
+%     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
+    changePosition(gca,[0.06 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Silent Cells (%)',[-0.25 15 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    ha = display_p_table_img(ha,hbs,[0 0.25 0 0.35],ptable); %ytickangle(20)
+    save_pdf(hf,mData.pdf_folder,sprintf('silent_cells_across_conditions_%d.pdf',ntrials),600);
     %%
     break;
 end

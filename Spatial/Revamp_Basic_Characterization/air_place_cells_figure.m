@@ -327,8 +327,12 @@ while 1
     var1 = arrayfun(@(x) mean(x{1}),out1.adj_SP_corr_diag); 
     var2 = arrayfun(@(x) mean(x{1}),out2.adj_SP_corr_diag);
     var3 = arrayfun(@(x) mean(x{1}),out3.adj_SP_corr_diag);
+%     var1 = arrayfun(@(x) mean(x{1}),out1.adj_PV_corr_diag); 
+%     var2 = arrayfun(@(x) mean(x{1}),out2.adj_PV_corr_diag);
+%     var3 = arrayfun(@(x) mean(x{1}),out3.adj_PV_corr_diag);
     between = make_between_table({var1,var2,var3},dvn);
     ra = RMA(between,within);
+    ra.ranova
     %%
     hf = figure(6);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
     hold on;
@@ -349,11 +353,12 @@ while 1
     changePosition(gca,[0.05 0.12 0.05 -0.08]);
     put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Spatial Correlation'},[0 -0.05 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials',600);
+    %%
     break;
 end
 %% Spatial correlation between adjacent trails (taking mean) 
 while 1
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'TrialPairs','bonferroni'},[1 0.5 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Condition_by_TrialPairs','hsd'},[1 0.5 1]);
     hollowsep = 19;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.75 1],'color','w');
     hold on;
@@ -371,6 +376,7 @@ while 1
     changePosition(gca,[0.0 0.03 0.08 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'Spatial','Correlation'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'spatial_correlation_trials_bar_graph',600);
+    break;
 end
 
 %% Spatial correlation trails with mean of trials

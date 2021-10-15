@@ -47,6 +47,7 @@ for rr = 1:size(Rs,1)
         o.good_HiFD{rr,cc} = o.HiFD{rr,cc} > 1;
         o.bad_FR{rr,cc} = ~o.good_FR{rr,cc};
         o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} &o.good_Gauss{rr,cc};
+        o.silent_cells{rr,cc} = (o.N_Resp_Trials{rr,cc} == 0);
     end
 end
 

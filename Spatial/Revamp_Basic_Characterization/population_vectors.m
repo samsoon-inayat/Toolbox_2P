@@ -198,3 +198,27 @@ while 1
     %%
     break;
 end
+
+%% population vector and correlation spatial first three trials
+while 1
+    titles = {'Ar-t-D','ArL-t-D','Ar*-t-D'};
+    an = 4;
+    sel_ot = out3;
+    Rs = sel_ot.Rs; mR = sel_ot.mR;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.1],'widthHeightAdjustment',...
+        [-35 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.45 2]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,gFR_OR,1);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_spatial_trials.pdf'),600);
+
+   % average correlation of all animals
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.2],'widthHeightAdjustment',...
+        [-35 -240]);    set(gcf,'color','w');    set(gcf,'Position',[5 8 3.45 1]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_spatial_trials.pdf'),600);
+    %%
+    break;
+end

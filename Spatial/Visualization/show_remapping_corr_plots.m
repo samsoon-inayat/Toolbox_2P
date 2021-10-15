@@ -13,8 +13,13 @@ for rr = 1:size(remap_corrs,1)
 end
 
 if ~isempty(minmaxC)
-    m = minmaxC(1);
-    M = minmaxC(2);
+    if sum(isnan(minmaxC)) > 0
+        m = NaN;
+        M = NaN;
+    else
+        m = minmaxC(1);
+        M = minmaxC(2);
+    end
 else
     m = min(minC(:));
     M = max(maxC(:));
@@ -27,7 +32,12 @@ for rr = 1:size(remap_corrs,1)
             continue;
         end
         axes(ff.h_axes(rr,cc));
-        imagesc(remap_corrs{rr,cc},[m M]);
+        if isnan(m)
+            m = min(remap_corrs{rr,cc}(:));
+            M = max(remap_corrs{rr,cc}(:));
+        else
+            imagesc(remap_corrs{rr,cc},[m M]);
+        end
         box off;
         set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS-1,'FontWeight','Bold');
         if rr == cc

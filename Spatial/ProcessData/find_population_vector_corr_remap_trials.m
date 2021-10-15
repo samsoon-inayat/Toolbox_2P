@@ -8,4 +8,6 @@ for ii = 1:length(trials)
 end
 RsC = find_responsive_rasters(RsC,1:10);
 out_C = find_population_vector_corr_remap(RsC,mRsCT,resp);
+out_C.Rs = RsC;
+out_C.mR = mRsCT;
 
