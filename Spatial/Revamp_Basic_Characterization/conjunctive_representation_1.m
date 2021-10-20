@@ -292,7 +292,7 @@ end
 
 %% compare percent responsive cells
 while 1
-    ntrials = 50; si = [Lb_T ArL_L_T Lbs_T Ab_t_T Abs_t_T Ab_i_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D];
+    ntrials = 50; si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs,ntrials);
     good_FR = props1.good_FR(:,si);
     good_FR_any = cell_list_op(good_FR,[],'or');
@@ -314,11 +314,11 @@ while 1
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-%     xdata = xdataG1;
+    xdata = make_xdata([3 4 6 6],[1 2]);
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 2.2 2]);
+    hf = get_figure(5,[8 7 3.5 1.5]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.dcolors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
         'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
     ylims = ylim;
@@ -327,10 +327,10 @@ while 1
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
 %     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
-    changePosition(gca,[0.06 0.01 0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-1.25 15 0]});
+    changePosition(gca,[-0.04 0.01 0.13 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.25 -5 0]});
     ha = gca; ptable = extras.pvalsTable;
-    ha = display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable); %ytickangle(20)
-    htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+%     ha = display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable); %ytickangle(20)
+%     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     
 %     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
 % %     h(h==1) = 0;
@@ -349,7 +349,7 @@ while 1
 %     xticks = xdata; xticklabels = rasterNamesTxt(si);
 %     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45)
 %     changePosition(gca,[0.01 0.01 0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d.pdf',ntrials),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
     %%
     break;
 end
