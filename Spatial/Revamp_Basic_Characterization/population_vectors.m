@@ -65,7 +65,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    eval(cmdTxt);
+%     eval(cmdTxt);
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.1],'widthHeightAdjustment',...
         [-35 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.45 2]);
@@ -94,11 +94,11 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    eval(cmdTxt);
+%     eval(cmdTxt);
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.1],'widthHeightAdjustment',...
         [-35 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.45 2]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,gFR_D_g_T,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_spatial_%s.pdf',selected_property),600);

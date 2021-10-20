@@ -55,9 +55,11 @@ for rr = 2
         if isfield(R,'resp')
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
-                plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','m');
-                if isempty(strfind(R.marker_name,'motion'))
-                    plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
+                if isempty(strfind(R.marker_name,'IT'))
+                    plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','m');
+                    if isempty(strfind(R.marker_name,'motion'))
+                        plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
+                    end
                 end
             end
         end
@@ -161,7 +163,7 @@ for rr = 1
             cols = size(thisRaster,2);
             xticks = [1:floor(cols/2):size(thisRaster,2)];
             set(gca,'XTick',xticks,'XTickLabels',A.xs(xticks));
-            hx = xlabel('Position (cm)');
+            hx = xlabel('Distance (cm)');
         end
 
         if cc >1

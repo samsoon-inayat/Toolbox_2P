@@ -24,8 +24,7 @@ while 1
     all_xl{ii+1} = 'sp';
     resp = [o.resp.vals resp_speed];
 %     resp_o = cell_list_op(resp,[],'xor')
-    si_light = [1 2 3];
-    si_air_rest = [4 5];
+    si_light = [1 2 3];    si_air_rest = [4 5]; si_air_rest_t = [20 22];  si_air_rest_i = [21 23];
     si_air_dist_trials = [6 8 10]; si_air_run_trials_Ar = [6 12]; si_air_run_trials_ArL = [8 14]; si_air_run_trials_Ars = [10 16];
     si_air_dist_itrials = [7 9 11]; si_air_run_itrials_Ar = [7 13]; si_air_run_itrials_ArL = [9 15]; si_air_run_itrials_Ars = [11 17];
     si_air_time_trials = [12 14 16];
@@ -33,7 +32,11 @@ while 1
     si_motion = [18 19];
     si_seq_m = [1 4 6 13 8 15 10 17 3 5 2 18 19];
     si_seq = [1 4 6 13 8 15 10 17 3 5 2];
-    si_seqG = [1 2 3 4 5 6 8 10 13 15 17];
+%     si_seqG = [1 2 3 4 5 6 8 10 13 15 17];
+    si_seqG = [si_light si_air_rest si_air_dist_trials si_air_time_itrials];
+    si_seqG1 = [si_light si_air_rest si_air_dist_trials si_air_time_trials si_air_dist_itrials si_air_time_itrials];
+    si_seqG2 = [si_light si_air_rest_t si_air_rest_i si_air_dist_trials si_air_time_trials si_air_dist_itrials si_air_time_itrials];
+    si_seqG3 = [si_light si_air_rest_t si_air_rest_i si_air_dist_trials si_air_time_trials si_air_dist_itrials si_air_time_itrials];
     rNaG = rasterNamesTxt(si_seqG);%{'L','ArL','L*','A','A*','Ar','ArL','Ar*','Ar','ArL','Ar*'};
     rNaG1 = rasterNamesTxt(si_seqG1);%{'L','ArL','L*','A','A*','Ar','ArL','Ar*','Ar','ArL','Ar*'};
     xdataG = [1 2 3 [5 6]-0.5 [8 9 10]-1 [12 13 14]-1.5];
@@ -48,9 +51,6 @@ while 1
     si_no_brake_timeG = [12 14 16 13 15 17];
     si_no_brake_allG = [si_no_brake_distG si_no_brake_timeG];
     xdata_no_brake_allG  = [1 2 3 5 6 7 9 10 11 13 14 15];
-    
-    si_seqG1 = [si_light si_air_rest si_air_dist_trials si_air_time_trials si_air_dist_itrials si_air_time_itrials];
-    
     
     dzMI_m = prop_op(o.props.zMI(:,[si_air_dist_trials si_air_dist_itrials]),o.props.zMI(:,[si_air_time_trials si_air_time_itrials]),0.1);
     dzMI_T = prop_op(o.props.zMI(:,[si_air_dist_trials]),o.props.zMI(:,[si_air_time_trials]),0.5);
@@ -847,29 +847,32 @@ while 1
     si = si_seqG;
     props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
+    resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
+    resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
+    resp(:,6:8) = dzMI.resp_T_g_D(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(dzMI.resp_T_g_D,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = 0.6;%max([mOI(:);semOI(:)]);    
-    minI = 0;%min([mOI(:);semOI(:)])
+    maxI = max([mOI(:);semOI(:)]);    
+    minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = rNaG;%rasterNamesTxt(si); 
+    txl = rasterNamesTxt(si); 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.6 1.5]);
+    hf = get_figure(5,[8 7 3 3]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',[],'Ydir','reverse'); xtickangle(45);
-    text(0.5,12.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
+    text(0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box on
     changePosition(gca,[0.03 0 -0.04 0]);
     hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
@@ -877,7 +880,7 @@ while 1
     %%
     %
 %     maxYss = [maxYs(9) maxYs(2) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(7) maxYs(8) maxYs(9) maxYs(2) maxYs(11)];
-    for sel_row = 1:11
+    for sel_row = 1:sz
         sel_row
         for rr = 1:size(OI_mat,1)
             for cc = 1:size(OI_mat,2)
@@ -895,42 +898,19 @@ while 1
         dataT = make_between_table({OIs},dvn);
         ra = RMA(dataT,within);
         ra.ranova
-%         [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-%         xdata = 1:11; xdata(sel_row) = [];
-% 
-%     %     h(h==1) = 0;
-%         hf = get_figure(5,[8 7 1.95 1.5]);
-%         % s = generate_shades(length(bins)-1);
-%         tcolors = mData.colors(setdiff(1:11,sel_row));
-%         [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-%             'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-%             'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.01,'capsize',3);
-%         ylims = ylim;
-% %         maxY = maxYss(sel_row);
-%         format_axes(gca); set(gca,'FontSize',16,'ytick',[0 0.2 0.4 0.6 0.8 1]);
-%         set_axes_limits(gca,[0.35 11+.65],[ylims(1) maxY]); format_axes(gca);
-%         xticks = xdata; xticklabels = txl;
-%         set(gca,'xtick',1:11,'xticklabels',xticklabels); xtickangle(45)
-%         changePosition(gca,[0.025 -0.01 0.05 0.05]); 
         [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-        xdata = xdataG;%1:size(OI_mat,1); 
+        xdata = 1:size(OI_mat,1); 
         xdata(sel_row) = [];
 %         xdata = xdataG;
         h(h==1) = 0;
         hf = get_figure(5,[8 7 1.95 1.5]);
-        % s = generate_shades(length(bins)-1);
         tcolors = mData.colors(setdiff(1:size(OI_mat,1),sel_row));
         [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
             'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.45);
-
         ylims = ylim;
         format_axes(gca);
-%         if ii < 11
-        set_axes_limits(gca,[0.35 xdataG(end)+.65],[ylims(1) maxY]); format_axes(gca);
-%         else
-%         set_axes_limits(gca,[0.35 11.65],[ylims(1) maxY]); format_axes(gca);
-%         end
-        xticks = xdataG; xticklabels = txl;
+        set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+        xticks = xdata; xticklabels = txl;
         set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
         changePosition(gca,[0.09 0.01 -0.03 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{sprintf('Overlap Index of %s',txl{sel_row}),[-1.45 0.1 0]});
         ha = gca; ptable = extras.pvalsTable;

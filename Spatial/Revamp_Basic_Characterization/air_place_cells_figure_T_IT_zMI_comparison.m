@@ -10,7 +10,7 @@ while 1
     
     propsD = get_props_Rs(RsD,50); propsT = get_props_Rs(RsT,50);
     
-    dzMI = prop_op(propsD.zMI,propsT.zMI,0.1);
+    dzMI = prop_op(propsD.zMI,propsT.zMI,0.3);
     gFR_D_g_T = cell_list_op(props1S.good_FR,dzMI.resp_D_g_T,'and');
     gFR_T_g_D = cell_list_op(props1S.good_FR,dzMI.resp_T_g_D,'and');
 %     [dzMI.resp_D_g_T_perc;dzMI.resp_T_g_D_perc]
