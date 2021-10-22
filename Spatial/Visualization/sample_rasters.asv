@@ -151,13 +151,13 @@ for rr = 1
         box off;
         if rr == 1
 %         text(size(thisRaster,2)+size(thisRaster,2)/20,1,sprintf('zMI = %.2f, Rs = %.2f',A.info_metrics.ShannonMI_Zsh(cn),...
-%             A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',5,'color','k','rotation',90);
+            A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',5,'color','k','rotation',90);
         else
 %        text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR %d - zMI = %.2f',round(max(thisRaster(:))),A.SI(cn)),'FontSize',5,'color','k','rotation',90);
         end
         if rr == 1
-%             text(1,size(thisRaster,1)+1.5,sprintf('Cell %d, (MFR = %.0f)',cn,round(max(thisRaster(:)))),'FontSize',5,'color','k');
-            text(1,size(thisRaster,1)+1.5,sprintf('%d A.U.',round(max(thisRaster(:)))),'FontSize',5,'color','k');
+            text(1,size(thisRaster,1)+1.5,sprintf('Cell %d, (MFR = %.0f)',cn,round(max(thisRaster(:)))),'FontSize',5,'color','k');
+            
         end
         set(gca,'FontSize',6,'FontWeight','Normal','linewidth',0.5,'Ydir','normal','TickDir','out');
         colormap jet;

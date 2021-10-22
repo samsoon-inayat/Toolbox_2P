@@ -182,6 +182,8 @@ end
 %% Show sample rasters
 % an = 5; cn = 2;
 % plotRasters_simplest(Rs{an,cn})
+si = [Ar_t_D ArL_t_D Ars_t_D];
+Rs = o.Rs(:,si);mR = o.mR(:,si);
 while 1
    an = 3; cn = 1;
     % plotRasters_simplest(Rs{an,cn})
@@ -193,12 +195,12 @@ while 1
     ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
     
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-        [-75 -475]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(RsT{an,cn},[191 11 96 41],ff);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
+%     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+%         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+%         [-75 -475]);
+%     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+%     ff = sample_rasters(RsT{an,cn},[191 11 96 41],ff);
+%     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
     break;
 end
 %% Mutual Information Time versus Distance Distributions

@@ -170,8 +170,9 @@ while 1
     [within,dvn,xlabels] = make_within_table({'Type'},2);
     dataT = make_between_table({out_C.m_sp_animal_level_rest',out_C.m_sp_animal_level_motion'},dvn);
     ra = RMA(dataT,within);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1 1 1]);
-    
+
+    mVar = ra.est_marginal_means.Mean;semVar = ra.est_marginal_means.Formula_StdErr;
+    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
      xdata = [1 1.75]; 
     colors = mData.colors;
         hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 9 1.25 1],'color','w');

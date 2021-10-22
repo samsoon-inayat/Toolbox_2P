@@ -146,17 +146,19 @@ while 1
 	break;
 end
 %%
-Rs = o.Rs(:,si_light);
-an = 1; cn = 2;
-% plotRasters_simplest(Rs{an,cn})
+Rs = o.Rs(:,[Lb_T Lbs_T]);
+propsL = get_props_Rs(Rs,50);
+an = 4; cn = 2;
+% plotRasters_simplest(Rs{an,cn},find(propsL.good_FR{an,cn}))
 % find(resp_valsC{an}(:,cn));
-ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-    'spaceRowsCols',[0.15 0.09],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-    [-100 -475]);
+ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 2],...
+    'spaceRowsCols',[0.15 0.1],'rightUpShifts',[0.15 0.25],'widthHeightAdjustment',...
+    [-200 -475]);
 gg = 1;
 set(gcf,'color','w');
-set(gcf,'Position',[10 4 3.25 1]);
-ff = sample_rasters(Rs{an,cn},[558 328 168 55],ff);
+set(gcf,'Position',[10 4 2 1]);
+% ff = sample_rasters(Rs{an,cn},[558 328 168 55],ff);
+ff = sample_rasters(Rs{an,cn},[80 269],ff);
 set_obj(ff,{'xtick',[1 18 38],'xticklabels',[-2 0 2.2]})
 save_pdf(ff.hf,mData.pdf_folder,sprintf('light_rastgers'),600);
 %% population vector and correlation single animal

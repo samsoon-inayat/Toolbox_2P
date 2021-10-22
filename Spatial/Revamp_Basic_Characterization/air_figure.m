@@ -50,17 +50,18 @@ end
 % an = 5; cn = 2;
 % plotRasters_simplest(Rs{an,cn})
 if 1
-    titles = {'A','A*'};
-    si = si_seq([2 10]);
+    titles = {'Ar','Ar*'};
+    si = [Ab_T Abs_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     an = 1; cn = 1;
     % plotRasters_simplest(Rs{an,cn})
     % find(resp_valsC{an}(:,cn));
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-        [-75 -475]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(Rs{an,cn},[140 66 162 181],ff);
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 2],...
+        'spaceRowsCols',[0.15 0.1],'rightUpShifts',[0.15 0.25],'widthHeightAdjustment',...
+        [-175 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 2 1]);
+    ff = sample_rasters(Rs{an,cn},[140 181],ff);
+%     ff = sample_rasters(Rs{an,cn},[140 66 162 181],ff);
     for ii = 1:length(ff.h_axes)
         set_obj(ff.h_axes(ii),{'xticklabels',{'-5','0','5','10'}})
     end

@@ -314,9 +314,9 @@ while 1
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-    xdata = make_xdata([2 2 3 3],[1 1.5]);
+    xdata = make_xdata([2 2 3 3],[1 1.25]);
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 1.75 2]);
+    hf = get_figure(5,[8 7 2 2]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
@@ -327,7 +327,7 @@ while 1
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
 %     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
-    changePosition(gca,[0.06 0.01 0.02 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.65 -5 0]});
+    changePosition(gca,[0.04 0.01 0.05 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.65 -5 0]});
     ha = gca; ptable = extras.pvalsTable;
     ha = display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable); %ytickangle(20)
 %     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
