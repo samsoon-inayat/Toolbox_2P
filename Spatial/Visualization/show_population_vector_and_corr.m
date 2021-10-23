@@ -16,11 +16,13 @@ if ~isempty(allP)
         if isfield(R.resp,'cis')
                 hold on;
                 cis = R.resp.cis;
+                if isempty(strfind(R.marker_name,'airIT'))
                 plot([cis(2,1) cis(2,1)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','m');
+                end
                 if strcmp(R.marker_name,'air55T') 
                     plot([cis(1,3) cis(1,3)]+1,[0 size(P,1)+1],'linewidth',0.25,'color','c');
                 end
-            end
+        end
         if sii == 1
             h = ylabel('Cell No.'); %   changePosition(h,[0 0 0]);
         end
@@ -51,7 +53,7 @@ if ~isempty(allP)
            if  isfield(R,'fromFrames')
                 h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
            else
-               h = ylabel('Position (cm)');    changePosition(h,[0 0 0]);
+               h = ylabel('Distance (cm)');    changePosition(h,[0 0 0]);
             end
         end
         cols = size(P,2);
@@ -61,7 +63,7 @@ if ~isempty(allP)
         if isfield(R,'fromFrames')
             h = xlabel('Time (sec)');%    changePosition(h,[0 0 0]);
         else
-            h = xlabel('Position (cm)');%    changePosition(h,[0 0 0]);
+            h = xlabel('Distance (cm)');%    changePosition(h,[0 0 0]);
         end
         cols = size(P,2);
         colsHalf = ceil(cols/2);
@@ -139,7 +141,7 @@ if isempty(allP)
            if  isfield(R,'fromFrames')
             h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
            else
-               h = ylabel('Position (cm)');    changePosition(h,[0 0 0]);
+               h = ylabel('Distance (cm)');    changePosition(h,[0 0 0]);
             end
         end
         cols = size(C,2);
@@ -148,7 +150,7 @@ if isempty(allP)
         if isfield(R,'fromFrames')
             h = xlabel('Time (sec)');%    changePosition(h,[0 0 0]);
         else
-            h = xlabel('Position (cm)');%    changePosition(h,[0 0 0]);
+            h = xlabel('Distance (cm)');%    changePosition(h,[0 0 0]);
         end
         cols = size(C,2);
         colsHalf = ceil(cols/2);
@@ -177,8 +179,10 @@ if isempty(allP)
             set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
         end
             set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+            if sii == 1
             ht = title('Avg. Pop. Correlation');
         set(ht,'FontSize',5,'FontWeight','Normal');
+            end
     end
 
     mI = min(minC);
