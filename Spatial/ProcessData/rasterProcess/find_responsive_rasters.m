@@ -5,7 +5,7 @@ for rr = 1:size(Rs,1)
         R = Rs{rr,cc};
         rasters = permute(R.sp_rasters1,[2 1 3]);
         sR = sum(squeeze(nanmean(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
-        R.resp.FR_based = (sR)>4; % see if cell responded in at least half trials.
+%         R.resp.FR_based = (sR)>4; % see if cell responded in at least half trials.
         total_trials = size(rasters,2);
         R.resp.trial_scores = sR/total_trials;
         R.resp.trial_scores_percent = 100*sR/total_trials;
@@ -34,7 +34,7 @@ for rr = 1:size(Rs,1)
             n = 0;
         end
         if strcmp(R.marker_name,'light22T')
-            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light(R,trials);
+            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis,Rs{rr,cc}.resp.excinh] = find_resp_time_raster_light(R,trials);
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light_fractal(R,trials);
         end
         if strcmp(R.marker_name,'air55T') ||  strcmp(R.marker_name,'air77T')
@@ -190,7 +190,7 @@ parfor ii = 1:size(rasters,3)
 %     hv(ii) = sum(vert>0) >= 5;
     hv(ii) = sum(vert) >= 5;
     if p(ii) < 0.05% & hv(ii) == 1
-        resp(ii) = 1;
+        resp(ii,1) = 1;
         if mean(m_thisRaster(group==1)) > mean(m_thisRaster(group==2)) && mean(m_thisRaster(group==3)) > mean(m_thisRaster(group==2))
             excinh(ii) = 0;
         else
@@ -198,8 +198,6 @@ parfor ii = 1:size(rasters,3)
         end
     end
 end
-
-resp = resp';
 
 
 % resp = p<0.05 & (R.info_metrics.ShannonMI_Zsh > 1.96)';
@@ -209,7 +207,7 @@ resp = resp';
 % resp = zMIs > 1.96 & rs > 0.3;
 
 
-function [resp,cis] = find_resp_time_raster_light(R,trials)
+function [resp,cis,excinh] = find_resp_time_raster_light(R,trials)
 % SR = R.thorexp.frameRate;
 SR = 1/R.bin_width;
 markerType = R.marker_name;
@@ -233,6 +231,8 @@ group(group==3) = 2;
 p = NaN(size(rasters,3),1);
 p1 = NaN(size(rasters,3),1);
 hv = NaN(size(rasters,3),1);
+excinh = p;
+resp = logical(zeros(size(p)));
 parfor ii = 1:size(rasters,3)
     thisRaster = rasters(trials,:,ii);
     m_thisRaster = nanmean(thisRaster);
@@ -245,9 +245,17 @@ parfor ii = 1:size(rasters,3)
     hv(ii) = sum(vert>0) > 5;
 %     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
 %     hv(ii) = findHaFD(CRR,1:size(CRR,1));
+    if p(ii) < 0.05% & hv(ii) == 1
+        resp(ii,1) = 1;
+        if mean(m_thisRaster(group==1)) > mean(m_thisRaster(group==2))
+            excinh(ii,1) = 0;
+        else
+            excinh(ii,1) = 1;
+        end
+    end
 end
-resp = p < 0.05;% & hv;
-resp = resp';
+% resp = p < 0.05;% & hv;
+
 
 
 function [resp,cis] = find_resp_time_raster_light_fractal(R,trials)

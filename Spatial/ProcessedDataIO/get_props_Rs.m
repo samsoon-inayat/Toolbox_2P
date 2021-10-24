@@ -38,7 +38,7 @@ for rr = 1:size(Rs,1)
         o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.trial_scores{rr,cc} = R.resp.trial_scores';
-        o.vals{rr,cc} = R.resp.vals';
+        o.vals{rr,cc} = R.resp.vals;
         temp_cl = cell_list_op(o.good_FR(rr,cc),o.vals(rr,cc),'and');
         temp_c2 = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.vals(rr,cc),[],'not'),'and');
         o.good_FR_and_tuned{rr,cc} = temp_cl{1};
@@ -48,6 +48,14 @@ for rr = 1:size(Rs,1)
         o.bad_FR{rr,cc} = ~o.good_FR{rr,cc};
         o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} &o.good_Gauss{rr,cc};
         o.silent_cells{rr,cc} = (o.N_Resp_Trials{rr,cc} == 0);
+        if isfield(R.resp,'excinh')
+            o.exc{rr,cc} = R.resp.excinh == 1;
+            o.inh{rr,cc} = R.resp.excinh == 0;
+            temp_cl = cell_list_op(o.good_FR(rr,cc),o.exc(rr,cc),'and');
+            temp_c2 = cell_list_op(o.good_FR(rr,cc),o.inh(rr,cc),'and');
+            o.good_FR_and_exc{rr,cc} = temp_cl{1};
+            o.good_FR_and_inh{rr,cc} = temp_c2{1};
+        end
     end
 end
 
