@@ -96,7 +96,7 @@ while 1
 end
 
 
-%% percentage of cells sensory air different types
+%% percentage of cells sensory light different types
 while 1
     an = 4;
     selected_property = 'tuned';
@@ -129,14 +129,12 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Sup','Com'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.065 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    ht = title('Lb and Lb* (pooled)'); changePosition(ht,[-0.4 0 0])
+    changePosition(gca,[0.065 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    ht = title('Lb and Lb* (pooled)'); changePosition(ht,[-0.3 0 0])
     save_pdf(hf,mData.pdf_folder,sprintf('light_cell_types_percent.pdf'),600);
     %%
     break;
 end
-
-
 
 %% population vector and correlation sensory
 while 1
@@ -187,26 +185,24 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     %%
-
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1 1 1]);
     xdata = make_xdata([3],[1]);
-    h(h==1) = 0;
     hf = get_figure(5,[8 7 1.25 1]);
-    tcolors = mData.colors;
-    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
-        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    maxY = maxY + 5;
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Sup','Com'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 100]); xtickangle(45);
-%     changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-0.7 +15 0]});
-    changePosition(gca,[0.06 0.01 -0.02 -0.55]); put_axes_labels(gca,{[],[0 0 0]},{'Responsive Cells (%)',[-1.25 -5 0]});
-    ha = gca; ptable = extras.pvalsTable;
-    ha = display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable); %ytickangle(20)
-    save_pdf(hf,mData.pdf_folder,sprintf('air_cell_types_percent.pdf'),600);
-    
-    
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.065 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    ht = title('Ab and Ab* (pooled)'); changePosition(ht,[-0.2 0 0])
+    save_pdf(hf,mData.pdf_folder,sprintf('air_cell_types_percent_1.pdf'),600);
+
     %%
     break;
 end
@@ -252,7 +248,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    eval(cmdTxt);
+    
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);

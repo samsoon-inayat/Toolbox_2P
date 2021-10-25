@@ -242,17 +242,18 @@ end
 
 %% population vector and correlation spatial 
 while 1
+    selected_property = 'un_tuned';
     titles = {'Ar-t-D','ArL-t-D','Ar*-t-D'};
     an = 4;
     si = [Ar_t_D ArL_t_D Ars_t_D];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    eval(cmdTxt);
+    resp = props1.good_FR_and_notGauss;
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]); 
@@ -268,6 +269,45 @@ while 1
     %%
     break;
 end
+
+%% percentage of gauss versus cells not gauss spatial
+while 1
+    an = 4;
+    selected_property = 'tuned';
+    si = [Ar_t_D ArL_t_D Ars_t_D];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    resp1 = props1.good_FR_and_Gauss; resp2 = props1.good_FR_and_notGauss;
+    presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
+    presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
+   
+    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,3]);
+    dataT = make_between_table({presp1,presp2},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1 1 1]);
+    xdata = make_xdata([2],[1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gT','gU'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
+    changePosition(gca,[0.065 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+%     ht = title({'Pooled across','Conditions and Cell Types'}); changePosition(ht,[0.3 0 0])
+    save_pdf(hf,mData.pdf_folder,sprintf('light_cell_types_percent.pdf'),600);
+    %%
+    break;
+end
+
 
 %% population vector and correlation spatial temporal
 while 1

@@ -46,7 +46,9 @@ for rr = 1:size(Rs,1)
         o.good_HaFD{rr,cc} = o.HaFD{rr,cc} > 1;
         o.good_HiFD{rr,cc} = o.HiFD{rr,cc} > 1;
         o.bad_FR{rr,cc} = ~o.good_FR{rr,cc};
-        o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} &o.good_Gauss{rr,cc};
+        o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} & o.good_Gauss{rr,cc};
+        temp1 = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.good_Gauss(rr,cc),[],'not'),'and');
+        o.good_FR_and_notGauss{rr,cc} = temp1{1};
         o.silent_cells{rr,cc} = (o.N_Resp_Trials{rr,cc} == 0);
         if isfield(R.resp,'excinh')
             o.exc{rr,cc} = R.resp.excinh == 1;
