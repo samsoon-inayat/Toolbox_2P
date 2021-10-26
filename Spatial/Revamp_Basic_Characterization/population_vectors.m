@@ -242,14 +242,14 @@ end
 
 %% population vector and correlation spatial 
 while 1
-    selected_property = 'un_tuned';
+    selected_property = 'tuned';
     titles = {'Ar-t-D','ArL-t-D','Ar*-t-D'};
     an = 4;
     si = [Ar_t_D ArL_t_D Ars_t_D];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    resp = props1.good_FR_and_notGauss;
+    resp = props1.good_FR_and_Gauss_loose;
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
@@ -278,7 +278,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    resp1 = props1.good_FR_and_Gauss; resp2 = props1.good_FR_and_notGauss;
+    resp1 = props1.good_FR_and_Gauss_loose; resp2 = props1.good_FR_and_notGauss_loose;
     presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
     presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
    

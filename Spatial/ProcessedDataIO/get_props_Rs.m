@@ -25,12 +25,14 @@ for rr = 1:size(Rs,1)
         
         xs = R.xs;
 %         if ~isempty(strfind(R.marker_name,'D'))
-            p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers > xs(1)  & centers < xs(end) & MFR < 10000;
+%             p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers >= xs(1)  & centers <= xs(end) & MFR < 10000;
+            p = rs > 0.25 & PWs > 1 & PWs < 150 & centers >= 1  & centers <= 150 & MFR < 10000;
 %         end
 %         if ~isempty(strfind(R.marker_name,'T'))
 %             p = (ones(size(o.zMI{rr,cc})))';
 %         end
         o.good_Gauss{rr,cc} = p';
+        o.good_Gauss_loose{rr,cc} = rs' > 0.25;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
         [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc}] = get_FR_based(R.sp_rasters1,ntrials);
         o.good_FR_and_zMI{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
@@ -49,6 +51,11 @@ for rr = 1:size(Rs,1)
         o.good_FR_and_Gauss{rr,cc} = o.good_FR{rr,cc} & o.good_Gauss{rr,cc};
         temp1 = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.good_Gauss(rr,cc),[],'not'),'and');
         o.good_FR_and_notGauss{rr,cc} = temp1{1};
+        
+        o.good_FR_and_Gauss_loose{rr,cc} = o.good_FR{rr,cc} & o.good_Gauss_loose{rr,cc};
+        temp1 = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.good_Gauss_loose(rr,cc),[],'not'),'and');
+        o.good_FR_and_notGauss_loose{rr,cc} = temp1{1};
+        
         o.silent_cells{rr,cc} = (o.N_Resp_Trials{rr,cc} == 0);
         if isfield(R.resp,'excinh')
             o.exc{rr,cc} = R.resp.excinh == 1;

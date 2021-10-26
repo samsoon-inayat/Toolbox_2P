@@ -384,7 +384,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    gauss = props1.good_FR_and_Gauss; n_gauss = props1.good_FR_and_notGauss;
+    gauss = props1.good_FR_and_Gauss_loose; n_gauss = props1.good_FR_and_notGauss_loose;
     trials = mat2cell([1:10]',ones(size([1:10]')));
     parfor ii = 1:size(Rs,2)
         outTrialsG{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),gauss(:,ii),trials);
@@ -410,8 +410,8 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'TP','hsd'},[1 1 1]);
-    xdata = make_xdata([9],[1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+    xdata = make_xdata([2],[1 2]);
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;

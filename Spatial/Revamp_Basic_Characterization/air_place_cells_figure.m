@@ -785,6 +785,8 @@ end
 
 %% Place Field Properties on the belt
 % Rs = oD.Rs;
+si = [Ar_t_D ArL_t_D Ars_t_D];
+Rs = o.Rs(:,si);mR = o.mR(:,si);
 props1 = get_props_Rs(Rs,50);
 respAnB = cell_list_op(props1.good_FR,props1.good_Gauss,'and');
 respCells1 = get_cell_list(respAnB,[1 -2 -3]);     respCells2 = get_cell_list(respAnB,[-1 2 -3]);     respCells3 = get_cell_list(respAnB,[-1 -2 3]);
@@ -792,6 +794,7 @@ all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};
 fileNames = {'PFW','PFC','PFFR'}; yspacing = [10 5 5]; 
 pri = 2;
+%%
 while 1
     sRs = Rs(:,1:3);
     minBin = 0;     maxBin = 150;     incr = 50; % choosing more than 3 bins, give significant anova but not significant multcompare
@@ -853,6 +856,8 @@ while 1
     put_axes_labels(gca,{[],[0 0 0]},{props{pri},[0 -2 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('%s_bar_graph_place_cells_belt.pdf',fileNames{pri}),600);
     ra.ranova
+    %%
+    break;
 end
 
 
