@@ -32,10 +32,13 @@ for rr = 1:size(Rs,1)
 %             p = (ones(size(o.zMI{rr,cc})))';
 %         end
         o.good_Gauss{rr,cc} = p';
-        o.good_Gauss_loose{rr,cc} = rs' > 0.25;
+        o.good_Gauss_loose{rr,cc} = rs' > 0.3;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
         [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc}] = get_FR_based(R.sp_rasters1,ntrials);
         o.good_FR_and_zMI{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
+        temp_z = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.good_zMI(rr,cc),[],'not'),'and');
+        o.good_FR_and_notzMI{rr,cc} = temp_z{1};
+        
         o.centers{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;

@@ -9,6 +9,7 @@ while 1
     gauss = props1.good_FR_and_Gauss_loose; n_gauss = props1.good_FR_and_notGauss_loose;
     break;
 end
+disp('Done')
 
 %% look at the distribution of peak locations for tuned and weakly tuned cells
 while 1
@@ -22,8 +23,8 @@ while 1
         for cc = 1:size(gauss,2)
             R = Rs{rr,cc};
             tPL = props1.peak_locations{rr,cc};            tzMIs = props1.zMI{rr,cc};
-            tGauss = props1.good_FR_and_Gauss{rr,cc};
-            tnGauss = props1.good_FR_and_notGauss{rr,cc};
+            tGauss = gauss{rr,cc};
+            tnGauss = n_gauss{rr,cc};
             PLG = NaN(size(tPL)); PLnG = PLG;
             PLG(tGauss) = tPL(tGauss); PLnG(tnGauss) = tPL(tnGauss);
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);             
@@ -42,14 +43,15 @@ while 1
         end
         allG(rr,:) = pG; allnG(rr,:) = pnG; allPWs(rr,:) = pGPWs; allzMIsG(rr,:) = pGzMIs; allzMIsnG(rr,:) = pnGzMIs;
     end
+    disp('Done')
     %% For percentage of cells over belt
     [within,dvn,xlabels] = make_within_table({'CT','Cond','Bin'},[2,3,3]);
     dataT = make_between_table({allG,allnG},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_by_Bin','hsd'},[1 1 1]);
-    xdata = make_xdata([3 3],[1 2]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_Cond_Bin','hsd'},[1 1 1]);
+    xdata = make_xdata([3 3 3 3 3 3],[1 2]);
     hf = get_figure(5,[8 7 1.5 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
@@ -126,14 +128,15 @@ while 1
         for cc = 1:size(gauss,2)
             R = Rs{rr,cc};
             tPL = props1.peak_locations_trials{rr,cc};
-            tGauss = props1.good_FR_and_Gauss{rr,cc};
-            tnGauss = props1.good_FR_and_notGauss{rr,cc};
+            tGauss = gauss{rr,cc};
+            tnGauss = n_gauss{rr,cc};
             PLG = tPL(tGauss,:); dPLG = [dPLG mean(diff(PLG,[],2))];
             PLnG = tPL(tnGauss,:); dPLnG = [dPLnG mean(diff(PLnG,[],2))];
         end
         alldPLG(rr,:) = dPLG;
         alldPLnG(rr,:) = dPLnG;
     end
+    disp('Done')
     %% For anovarm
     [within,dvn,xlabels] = make_within_table({'CT','Cond','TP'},[2,3,9]);
     dataT = make_between_table({alldPLG,alldPLnG},dvn);
