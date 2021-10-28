@@ -350,18 +350,41 @@ while 1
             all_zMIsnG(rr,cc) = nanmean(tzMI(t_n_gauss));
         end
     end
+    [within,dvn,xlabels] = make_within_table({'CT','Cond'},[2,3]);
+    dataT = make_between_table({all_zMIsG,all_zMIsnG},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+    xdata = make_xdata([2],[1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gT','gU'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Mutual Information','(z-score)'},[0 0 0]});
+%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('spatial_across_conditions_zMI.pdf'),600);
+
     
     %%
     break;
 end
 
-%% spatial trial to trial correlation
+%% find spatial trial to trial correlation
 while 1
     si = [Ar_t_D ArL_t_D Ars_t_D];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    gauss = props1.good_FR_and_Gauss; n_gauss = props1.good_FR_and_notGauss;
+    gauss = props1.good_FR_and_Gauss_loose; n_gauss = props1.good_FR_and_notGauss_loose;
     trials = mat2cell([1:10]',ones(size([1:10]')));
     parfor ii = 1:size(Rs,2)
         outTrialsG{ii} = find_population_vector_corr_remap_trials(Rs(:,ii),gauss(:,ii),trials);
@@ -387,11 +410,28 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'TP','hsd'},[1 1 1]);
-    xdata = make_xdata([9],[1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+    xdata = make_xdata([2],[1 2]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = [colors colors];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {};%{'Trials 1-2','Trials 2-3','Trials 3-4','Trials 4-5','Trials 5-6','Trials 6-7','Trials 7-8','Trials 8-9','Trials 9-10'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.2 0.0 -0.0 -0.07]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Trial Pair','Correlation(%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('spatial_trial_to_trial_corr.pdf'),600);
+     %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+    xdata = make_xdata([9 9 9 9 9 9],[1 2]);
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = [colors colors];
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
@@ -408,7 +448,7 @@ while 1
     break;
 end
 
-%% spatial across condition corr
+%% find spatial across condition corr
 while 1
     %%
     si = [Ar_t_D ArL_t_D Ars_t_D];
@@ -448,7 +488,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'gT','gU'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. ','Correlation(%)'},[0 0 0]});
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Spatial','Correlation(%)'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('spatial_across_conditions_corr.pdf'),600);
     %%
@@ -478,7 +518,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'gT','gU'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. ','Correlation(%)'},[0 0 0]});
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Pop. Vec. ','Correlation(%)'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('spatial_across_conditions_corr_PV.pdf'),600);
     %%
@@ -509,7 +549,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[0.8 0.93]); format_axes(gca);
     xticks = xdata; xticklabels = {'gT','gU'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Score'},[0 0 0]});
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Rate Remapping','Score'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('spatial_across_conditions_corr_RR.pdf'),600);
     %%

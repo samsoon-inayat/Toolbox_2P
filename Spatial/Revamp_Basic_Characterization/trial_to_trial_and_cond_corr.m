@@ -412,9 +412,26 @@ while 1
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
     xdata = make_xdata([2],[1 2]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gT','gU'};%{'Trials 1-2','Trials 2-3','Trials 3-4','Trials 4-5','Trials 5-6','Trials 6-7','Trials 7-8','Trials 8-9','Trials 9-10'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.2 0.0 -0.5 -0.07]); put_axes_labels(gca,{[],[0 0 0]},{{'Trial Pair','Correlation'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('spatial_trial_to_trial_corr.pdf'),600);
+     %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+    xdata = make_xdata([9 9 9 9 9 9],[1 2]);
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = [colors colors];
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
@@ -522,7 +539,7 @@ while 1
     xdata = make_xdata([2],[1]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.dcolors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.025,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
