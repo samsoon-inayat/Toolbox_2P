@@ -1,8 +1,8 @@
-function air_place_cells_figure_properties
+function air_time_cells_figure_properties
 
 %% load data tuned versus weakly tuned cells
 while 1
-    si = [Ar_t_D ArL_t_D Ars_t_D];
+    si = [Ar_i_T ArL_i_T Ars_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
@@ -13,7 +13,7 @@ disp('Done')
 
 %% look at the distribution of peak locations for tuned and weakly tuned cells
 while 1
-    minBin = 0;     maxBin = 150;     incr = 50; % choosing more than 3 bins, give significant anova but not significant multcompare
+    minBin = 0;     maxBin = 15;     incr = 5; % choosing more than 3 bins, give significant anova but not significant multcompare
     % three bins also make sense because LED in condition 2 comes ON at
     % 110cm
     bins = minBin:incr:maxBin;
@@ -64,11 +64,12 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 12]); format_axes(gca);
-    xticks = xdata; xticklabels = {'dB1','dB2','dB3'};
+    xticks = xdata; xticklabels = {'tB1','tB2','tB3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[-0.041 0.0 0.12 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('percent_cells_on_belt.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('percent_cells_on_IT.pdf'),600);
+    
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
     xdata = make_xdata([2],[1 2]); 
@@ -76,37 +77,19 @@ while 1
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors(1:2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.85,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-%     maxY = maxY;
-    make_bars_hollow(hbs(10:end));
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 12]); format_axes(gca);
-    xticks = xdata; xticklabels = {'gT','gU'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.05 0.0 -0.5 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
-%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('percent_cells_on_belt_pooled_CT.pdf'),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','hsd'},[1 1 1]);
-    xdata = make_xdata([3],[1 2]); 
-    hf = get_figure(5,[8 7 1.25 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.dcolors(3:5);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 %     maxY = maxY;
     make_bars_hollow(hbs(10:end));
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 12]); format_axes(gca);
-    xticks = xdata; xticklabels = {'dB1','dB2','dB3'};
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gTt','gUt'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.05 0.0 -0.4 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
+    changePosition(gca,[0.05 0.0 -0.5 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('percent_cells_on_belt_pooled_Bin.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('percent_cells_on_IT_pooled_CT.pdf'),600);
+    
     %% For place widths over belt of tuned cells
     [within,dvn,xlabels] = make_within_table({'Cond','Bin'},[3,3]);
     dataT = make_between_table({allPWs},dvn);
@@ -126,11 +109,11 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'dB1','dB2','dB3'};
+    xticks = xdata; xticklabels = {'tB1','tB2','tB3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.05 0.0 -0.0 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{'Tuning Width (cm)'},[0 -5 0]});
+    changePosition(gca,[0.05 0.0 -0.0 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{'Tuning Width (cm)'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('PWs_on_belt.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('PWs_on_IT.pdf'),600);
     %% For zMIs of cells over belt
     [within,dvn,xlabels] = make_within_table({'CT','Cond','Bin'},[2,3,3]);
     dataT = make_between_table({allzMIsG,allzMIsnG},dvn);
@@ -150,12 +133,12 @@ while 1
     make_bars_hollow(hbs(10:end));
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 6]); format_axes(gca);
-    xticks = xdata; xticklabels = {'dB1','dB2','dB3'};
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 1.5]); format_axes(gca);
+    xticks = xdata; xticklabels = {'tB1','tB2','tB3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[-0.041 0.0 0.12 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'zMI'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('zMI_cells_on_belt.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('zMI_cells_on_IT.pdf'),600);
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
     xdata = make_xdata([2],[1 2]); 
@@ -163,37 +146,37 @@ while 1
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors(1:2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.85,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-%     maxY = maxY;
-    make_bars_hollow(hbs(10:end));
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 6]); format_axes(gca);
-    xticks = xdata; xticklabels = {'gT','gU'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.05 0.0 -0.5 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
-%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('zMI_cells_on_belt_pooled_CT.pdf'),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','hsd'},[1 1 1]);
-    xdata = make_xdata([3],[1 2]); 
-    hf = get_figure(6,[8 7 1.25 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.dcolors(3:5);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 %     maxY = maxY;
     make_bars_hollow(hbs(10:end));
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 6]); format_axes(gca);
-    xticks = xdata; xticklabels = {'dB1','dB2','dB3'};
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 1.5]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gTt','gUt'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.0 -0.5 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
+%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('zMI_cells_on_IT_pooled_CT.pdf'),600);
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','hsd'},[1 1 1]);
+    xdata = make_xdata([3],[1 2]); 
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors(3:5);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+    make_bars_hollow(hbs(10:end));
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 1.5]); format_axes(gca);
+    xticks = xdata; xticklabels = {'tB1','tB2','tB3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.05 0.0 -0.4 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('zMI_cells_on_belt_pooled_Bin.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('zMI_cells_on_IT_pooled_Bin.pdf'),600);
     %%
     break;
 end
@@ -274,6 +257,7 @@ while 1
     dataT = make_between_table({percCells},dvn);
     ra = RMA(dataT,within);
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Conds','hsd'},[1 0.25 1]);
+    [om,osem] = findMeanAndStandardError(mVar)
     hf = get_figure(5,[8 7 1.25 1]);
     if tC > 1
         tcolors = mData.dcolors(6:8);%[s.m;s.c;s.y];

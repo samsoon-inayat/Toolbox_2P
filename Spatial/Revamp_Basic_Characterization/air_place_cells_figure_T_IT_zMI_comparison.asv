@@ -543,7 +543,31 @@ while 1
     changePosition(gca,[0.05 0.0 -0.4 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('percent_cells_on_belt_pooled_Bin.pdf'),600);
-        %% For zMIs of cells over belt
+    %% For place widths over belt of tuned cells
+    [within,dvn,xlabels] = make_within_table({'Cond','Bin'},[3,3]);
+    dataT = make_between_table({allPWs},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_Bin','hsd'},[1 1 1]);
+    h(h==1) = 0;
+    xdata = make_xdata([3 3 3],[1 2]);
+    hf = get_figure(5,[8 7 1.7 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'dB1','dB2','dB3'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.0 -0.0 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{'Tuning Width (cm)'},[0 -5 0]});
+%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('PWs_on_belt.pdf'),600);
+    %% For zMIs of cells over belt
     [within,dvn,xlabels] = make_within_table({'CT','Cond','Bin'},[2,3,3]);
     dataT = make_between_table({allzMIsG,allzMIsnG},dvn);
     ra = RMA(dataT,within);
