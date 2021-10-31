@@ -111,7 +111,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'tB1','tB2','tB3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.05 0.0 -0.0 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{'Tuning Width (cm)'},[0 0 0]});
+    changePosition(gca,[0.05 0.0 -0.0 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{'Tuning Width (sec)'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('PWs_on_IT.pdf'),600);
     %% For zMIs of cells over belt
