@@ -85,15 +85,14 @@ end
 clc
 tic
 for ii = 1:length(ei_C)
-    ei_C(ii) = get_motion_onset_response(ei_C(ii),[0 0 0 0 0]);
+    ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 end
-
-
-for ii = 1:length(ei_A)
-    ei_A(ii) = get_motion_onset_response(ei_A(ii),[0 0 0 0 0]);
-end
-
 toc
+
+for ii = 1:length(ei)
+    ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
+end
+
 %%
 for ii = 1:length(ei)
     min_speed(ii) = min(ei{ii}.b.fSpeed);

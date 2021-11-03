@@ -36,7 +36,7 @@ while 1
     xdata = make_xdata([2],[1]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.colors([1 3]);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
@@ -46,7 +46,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Com'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Trial-to-Trial','Correlation(%)'},[0 0 0]});
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Trial Pair','Correlation(%)'},[0 0 0]});
     ht = title('Lb and Lb* (pooled)'); changePosition(ht,[-1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('light_trial_to_trial_corr.pdf'),600);
     %%
@@ -69,7 +69,7 @@ while 1
     break;
 end
     
-%% light across conditions corr
+%% light across conditions corr temporal
 while 1
     meancorr_trials = [];
     meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outE.adj_SP_corr_diag,'nanmean')];
@@ -83,7 +83,7 @@ while 1
     xdata = make_xdata([2],[1]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.colors([1 3]);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
@@ -93,9 +93,71 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Com'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. ','Correlation(%)'},[0 0 0]});
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Temporal','Correlation(%)'},[0 0 0]});
     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('Lb_Lbs_corr.pdf'),600);
+    %%
+    break;
+end
+
+%% light across conditions corr PV
+while 1
+    meancorr_trials = [];
+    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outE.adj_PV_corr_diag,'nanmean')];
+    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outC.adj_PV_corr_diag,'nanmean')];
+    [within,dvn,xlabels] = make_within_table({'CT'},[2]);
+    dataT = make_between_table({meancorr_trials},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+    xdata = make_xdata([2],[1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors([1 3]);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Exc','Com'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Temporal','Correlation(%)'},[0 0 0]});
+    ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('Lb_Lbs_corr_PV.pdf'),600);
+    %%
+    break;
+end
+
+%% light across conditions corr RR
+while 1
+    meancorr_trials = [];
+    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outE.adj_RR_SP,'nanmean')];
+    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outC.adj_RR_SP,'nanmean')];
+    [within,dvn,xlabels] = make_within_table({'CT'},[2]);
+    dataT = make_between_table({meancorr_trials},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+    xdata = make_xdata([2],[1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors([1 3]);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.01,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Exc','Com'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Temporal','Correlation(%)'},[0 0 0]});
+    ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('Lb_Lbs_corr_PV.pdf'),600);
     %%
     break;
 end
@@ -155,7 +217,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Sup','Com'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Trial-to-Trial','Correlation(%)'},[0 0 0]});
+    changePosition(gca,[0.2 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Trial Pair','Correlation(%)'},[0 0 0]});
     ht = title('Ab and Ab* (pooled)'); changePosition(ht,[-1.25 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('air_trial_to_trial_corr.pdf'),600);
     %%
@@ -205,7 +267,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Sup','Com'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Avg. ','Correlation(%)'},[0 0 0]});
+    changePosition(gca,[0.2 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Temporal','Correlation(%)'},[0 0 0]});
     ht = title('Across Ab and Ab*'); changePosition(ht,[-1.25 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('Ab_Abs_corr.pdf'),600);
     %%

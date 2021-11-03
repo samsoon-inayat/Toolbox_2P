@@ -93,21 +93,24 @@ while 1
 end
 %% Percentage of Responsive Cells
 while 1
-    resp = props1.vals;
-    perc_r = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
-    within = make_within_table({'Cond'},2);
-    dataT = make_between_table({perc_r},{'M_On','M_Off'});
+    respG = cell_list_op(props1.good_Gauss_loose,props1.vals,'and');
+    respnG = cell_list_op(cell_list_op(props1.good_Gauss_loose,[],'not'),props1.vals,'and');
+    perc_rG = 100*exec_fun_on_cell_mat(respG,'sum')./exec_fun_on_cell_mat(respG,'length');
+    perc_rnG = 100*exec_fun_on_cell_mat(respnG,'sum')./exec_fun_on_cell_mat(respnG,'length');
+    [within,dvn,xd] = make_within_table({'Cond'},2);
+    dataT = make_between_table({perc_rG,perc_rnG},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
      hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
-    tcolors = mData.dcolors(17:20);
+     s = generate_shades(4);
+    tcolors = s.g;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.05);
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-%     hatch(hbs(2),135,'k','-',2,0.1);
+    hatch(hbs(2),135,'k','-',2,0.1);
     xticks = [xdata(1:end)]; xticklabels = {'Onset','Offset'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
     changePosition(gca,[0.2 0.03 -0.5 -0.11]);
@@ -121,12 +124,12 @@ while 1
     presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
     presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
     
-    [within,dvn,xlabels] = make_within_table({'MT','CT'},[2,2]);
-    dataT = make_between_table({presp1(:,1),presp2(:,1),presp1(:,2),presp2(:,2)},dvn);
+    [within,dvn,xlabels] = make_within_table({'CT','MT'},[2,2]);
+    dataT = make_between_table({presp1,presp2},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'MT_by_CT','hsd'},[1 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_by_MT','hsd'},[1 1 1]);
     xdata = make_xdata([2,2],[1 2]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
@@ -138,9 +141,9 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Exc','Sup'};
+    xticks = xdata; xticklabels = {'M-On','M-Off'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Motion Responsive','Cells (%)'},[0 0 0]});
+    changePosition(gca,[0.065 0.0 -0.1 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
     %%
@@ -193,14 +196,14 @@ while 1
     Di = pdist(mOI1);
     tree = linkage(Di);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 2.5 1]);
+    set(hf,'Position',[7 3 1.25 2]);
     set(H,'linewidth',1);
-    set(gca,'xticklabels',txl(TC));xtickangle(45);
+    set(gca,'yticklabels',txl(TC));ytickangle(30);
     format_axes(gca);
-    hx = ylabel({'Eucledian','Distance'});%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 0.07 0.05]);
+    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
+    changePosition(gca,[0 0.0 0.05 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster_motion.pdf'),600);
     %%
     break;

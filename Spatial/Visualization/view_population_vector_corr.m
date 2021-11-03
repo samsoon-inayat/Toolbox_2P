@@ -1,4 +1,4 @@
-function view_population_vector_corr(Rs,mRs,ccs,figNum)
+function view_population_vector(Rs,mRs,ccs,figNum)
 
 if exist('figNum','var')
     figure(figNum);
@@ -6,6 +6,7 @@ else
     figure;
 end
 
+clf(gcf);
 if iscell(mRs)
     [nrows,ncols] = size(mRs);
     plotNums = 1:(nrows*ncols);
@@ -18,13 +19,20 @@ if iscell(mRs)
             R = Rs{rr,cc};
             resp = R.resp;
             if ~isempty(ccs)
-                ccsr = find(resp.vals);
+                if iscell(ccs)
+                    ccsr = ccs{rr,cc};
+                else
+                    if ccs == 1
+                        ccsr = resp.vals;
+                    else
+                        ccsr = ccs;
+                    end
+                end
             else
-                 ccsr = ccs;
+                ccsr = logical(ones(size(1:length(resp.vals))));
             end
-            [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccsr)
+            [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccsr);
             imagesc(CRc);
-            axis equal
             set(gca,'Ydir','Normal');
             colorbar;
             if rr == 1
@@ -33,7 +41,7 @@ if iscell(mRs)
             if cc == 1
                 ylabel(sprintf('Animal # %d',rr));
             end
-            xlabel(sprintf('%.2f',resp.fraction));
+            xlabel(sprintf('%.2f',sum(ccsr)/length(ccsr)));
         end
     end
 else

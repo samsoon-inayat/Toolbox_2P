@@ -111,9 +111,7 @@ for ii = 1:size(rasters,3)
         end
     end
 end
-resp = resp'; excinh = excinh';
-% resp = p < 0.05;% & hv;
-% resp = R.activity_speed_corr > 0.1;
+
 
 
 function [resp,cis,excinh] = find_resp_time_raster_intertrial(R,trials)

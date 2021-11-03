@@ -6,6 +6,7 @@ else
     figure;
 end
 
+clf(gcf);
 if iscell(mRs)
     [nrows,ncols] = size(mRs);
     plotNums = 1:(nrows*ncols);
@@ -22,15 +23,15 @@ if iscell(mRs)
                     ccsr = ccs{rr,cc};
                 else
                     if ccs == 1
-                        ccsr = find(resp.vals);
+                        ccsr = resp.vals;
                     else
                         ccsr = ccs;
                     end
                 end
             else
-                ccsr = ones(size(1:length(resp.vals)));
+                ccsr = logical(ones(size(1:length(resp.vals))));
             end
-            [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccsr)
+            [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccsr);
             imagesc(ptco);
             set(gca,'Ydir','Normal');
             colorbar;
