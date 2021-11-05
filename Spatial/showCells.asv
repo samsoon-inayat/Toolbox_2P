@@ -59,21 +59,18 @@ if ~iscell(selCells)
 %         plot(cellX,cellY,'.','color','r');
     end
 else
-    imagesc(mimg);hold on;
-    accs = selCells; %clear selCells;
+    accs = selCells; clear selCells;
     cColors = {'c','r','g','b','m','y','w'};
 %     cColors = {'c','r','g','r','g','y'};
     tcColors = {'c','r','g','b','m','y','w'};
     for ss = 1:length(accs)
-        ccs = accs{ss};
+        selCells = accs{ss};
+        ccs = 
         for cc = 1:length(ccs)
-            stat =  astat(ccs(cc));
-            cellX = double(stat{1}.xpix);% + double(min(xrange));
-            cellY = double(stat{1}.ypix);% + double(min(yrange));
-%             cellX = astat(ccs(cc)).xpix + min(xrange);
-%             cellY = astat(ccs(cc)).ypix + min(yrange);
-%             mx = min(cellX);
-%             my = max(cellY);
+            cellX = astat(ccs(cc)).xpix + min(xrange);
+            cellY = astat(ccs(cc)).ypix + min(yrange);
+            mx = min(cellX);
+            my = max(cellY);
 %             text(mx-5,my,num2str(selCells(cc)),'color',tcColors{ss},'fontsize',FS);
             plot(cellX,cellY,'.','color',cColors{ss});
         end
@@ -88,9 +85,8 @@ plot([scaleBarS,scaleBarE],[scaleBarY,scaleBarY],'c','linewidth',3);
 
 % text(scaleBarS,scaleBarY-20,sprintf('%.0f um',(scaleBarE - scaleBarS)*micronsPerPixel),'color','r','FontSize',14,'FontWeight','Bold');
 if iscell(selCells)
-%     title(tcColors');
+    title(tcColors');
 else
 %     title(ei.recordingFolder)
 end
 xlim(xrange); ylim(yrange);
-disp(tcColors);

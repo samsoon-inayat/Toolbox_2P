@@ -802,7 +802,7 @@ end
 %% Overlap Indices ImageSC Single animal
 while 1
     ntrials = 50;
-    si = si_seqG;
+    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
@@ -812,7 +812,7 @@ while 1
     minI = 0;%min([mOI(:);semOI(:)])
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = rNaG;%rasterNamesTxt(si); 
+    txl = rasterNamesTxt(si); 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));   % imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
