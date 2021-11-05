@@ -12,10 +12,14 @@ for aa = 1:length(ei)
         thispFolder = tei.plane{pp}.folder;
         if isfield(tei.plane{pp},'folderD')
             thispFolderD = tei.plane{pp}.folderD;
+            if ~exist(thispFolderD)
+                mkdir(thispFolderD);
+            end
         else
             thispFolderD = tei.plane{pp}.folder;
         end
         disp(thispFolder);
+        
         tei.folders.thispFolder = thispFolder;
 %         tei.areCells = find(tei.plane{pp}.tP.areCells);
         tei.deconv = tei.plane{pp}.tP.deconv;
