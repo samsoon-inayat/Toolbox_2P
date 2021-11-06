@@ -6,6 +6,9 @@ prop2 = prop2i.zMI;
 for rr = 1:size(prop1,1)
     for cc = 1:size(prop1,2)
         zMI_D = prop1{rr,cc}; zMI_T = prop2{rr,cc};
+        if isempty(zMI_D)
+            zMI_D = NaN(size(zMI_T));
+        end
         if exist('resp','var')
             tresp = resp{rr,cc};
             diff_D_T{rr,cc} = zMI_D(tresp) - zMI_T(tresp); 

@@ -1,18 +1,10 @@
 function overall_analysis
 
 %%
-si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-% si = [Ab_T Abs_T];
-% si = [Ar_t_D ArL_t_D Ars_t_D ];
+si = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T];
 Rs = o.Rs(:,si); mRs = o.mR(:,si);
-% 
-% si = [Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-% RsR = o.Rs(:,si);
 props1 = get_props_Rs(Rs,50);
-% resp_all = props1.good_FR;
-% resp = get_cell_list(resp_all,[3]);
-% resp = [resp(:,1:3) resp];
-resp = props1.good_FR;
+resp = props1.good_Gauss_loose;
 view_population_vector(Rs,mRs,resp,100);
 %%
 view_population_vector_corr(Rs,mRs,1,200);
@@ -20,9 +12,9 @@ view_population_vector_corr(Rs,mRs,1,200);
 %% Overlap Indices ImageSC
 while 1
     ntrials = 50;
-    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T];
     props1 = get_props_Rs(o.Rs,ntrials);
-    resp = [props1.good_Gauss_loose(:,si)];% resp_speed];
+    resp = [props1.good_FR(:,si)];% resp_speed];
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_T_g_D(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);

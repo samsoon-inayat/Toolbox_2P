@@ -3,10 +3,16 @@ cmdTxt = sprintf('good_FR = props1.%s;',selected_property);
 
 %% start with this
 while 1
-    siS = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T]; si = siS; Rs = o.Rs(:,si); mR = o.mR(:,si);
+%     siS = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T]; si = siS; Rs = o.Rs(:,si); mR = o.mR(:,si);
+%     props1S = get_props_Rs(Rs,50);
+%     siD = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_D,ArC_i_D,ArCB_i_D,ArB_i_D]; si = siD; RsD = o.Rs(:,si); mRD = o.mR(:,si);
+%     siT = [Ar_t_T,ArC_t_T,ArCB_t_T,ArB_t_T,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T]; si = siT; RsT = o.Rs(:,si); mRT = o.mR(:,si);
+%     propsD = get_props_Rs(RsD,50); propsT = get_props_Rs(RsT,50);
+    
+    siS = [Ar_t_D,ArC_t_D,Ar_i_T,ArC_i_T]; si = siS; Rs = o.Rs(:,si); mR = o.mR(:,si);
     props1S = get_props_Rs(Rs,50);
-    siD = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D]; si = siD; RsD = o.Rs(:,si); mRD = o.mR(:,si);
-    siT = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T]; si = siT; RsT = o.Rs(:,si); mRT = o.mR(:,si);
+    siD = [Ar_t_D,ArC_t_D,Ar_i_D,ArC_i_D]; si = siD; RsD = o.Rs(:,si); mRD = o.mR(:,si);
+    siT = [Ar_t_T,ArC_t_T,Ar_i_T,ArC_i_T]; si = siT; RsT = o.Rs(:,si); mRT = o.mR(:,si);
     propsD = get_props_Rs(RsD,50); propsT = get_props_Rs(RsT,50);
     
     dzMI = prop_op(propsD,propsT,0);
@@ -26,7 +32,7 @@ end
 while 1
     resp = [propsD.good_FR propsT.good_FR];
     perc_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
-    [within,dvn,xlabels] = make_within_table({'DiTi','TI','Cond'},[2,2,3]);
+    [within,dvn,xlabels] = make_within_table({'DiTi','TI','Cond'},[2,2,2]);
     dataT = make_between_table({perc_resp},dvn);
     ra = RMA(dataT,within);
     ra.ranova
@@ -113,7 +119,7 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Ar','ArL','Ar*'};
+    xticks = xdata; xticklabels = {'Trials','Inter-Trials'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.09 0.0 -0.5 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{'zMI Difference'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('mean_diff_zMID_zMIT.pdf'),600);

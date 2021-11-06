@@ -1,35 +1,20 @@
-
-
-\\\\\function conjunctive_representation
+function conjunctive_representation
 
 %% Load Data
 while 1
     mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-    ei_A = evalin('base','ei_A'); 
-    ei_C = evalin('base','ei_C'); 
+    ei = evalin('base','ei'); 
     
-    selContexts = [1 4 6 2 7 3 3 4 4 5 5 3 3 4 4 5 5 0 0 2 2 7 7];
-    rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airID','airD','airID','airD','airID','airT','airIT','airT','airIT','airT','airIT','motionOnsets','motionOffsets','airRT','airIRT','airRT','airIRT'};
-    rasterNamesTxt = {'Lb-T','ArL-L-T','Lb*-T','Ab-T','Ab*-T','Ar-t-D','Ar-i-D','ArL-t-D','ArL-i-D','Ar*-t-D','Ar*-i-D','Ar-t-T','Ar-i-T','ArL-t-T','ArL-i-T','Ar*-t-T','Ar*-i-T','MOn-T','MOff-T','Ab-t-T','Ab-i-T','Ab*-t-T','Ab*-i-T'};
-    xlabelsSeq = {'Lb','ArL-L','Lb*','Ab','Ab*','Ar-t','ArL-t','Ar*-t','Ar-i','ArL-i','Ar*-i'};
+    selContexts = [1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4];
+    rasterNames = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT','airT','airT','airT','airT','airID','airID','airID','airID','beltD','beltD','beltD','beltT','beltT','beltT','beltT','beltT'};
+    rasterNamesTxt = {'Ar-t-D','ArC-t-D','ArCB-t-D','ArB-t-D','Ar-i-T','ArC-i-T','ArCB-i-T','ArB-i-T','Ar-t-T','ArC-t-T','ArCB-t-T','ArB-t-T','Ar-i-D','ArC-i-D','ArCB-i-D','ArB-i-D'};
 
-    oA = get_data(ei_A,selContexts,rasterNames);
-    oC = get_data(ei_C,selContexts,rasterNames);
+    o = get_data(ei,selContexts,rasterNames);
     for ii = 1:length(selContexts)
         all_xl{ii} = sprintf('%c%c-%d',rasterNames{ii}(1),rasterNames{ii}(end),selContexts(ii));
     end
-    Lb_T = 1; ArL_L_T = 2; Lbs_T = 3; Ab_T = 4; Abs_T = 5; Ab_t_T = 20; Abs_t_T = 22;  Ab_i_T = 21; Abs_i_T = 23;
-    Ar_t_D = 6; Ar_t_T = 12; ArL_t_D = 8; ArL_t_T = 14; Ars_t_D = 10; Ars_t_T = 16;
-    Ar_i_D = 7; Ar_i_T = 13; ArL_i_D = 9; ArL_i_T = 15; Ars_i_D = 11; Ars_i_T = 17;
-    MOn_T = 18; MOff_T = 19;
-    
-%     [speedRs,resp_speed] = get_speed_response(ei);
-%     all_xl{ii+1} = 'sp';
-%     resp = [o.resp.vals resp_speed];
-  
-    M = [18 19];
-   
-%     dzMI = prop_op(o.props.zMI(:,[Ar_t_D Ar_i_D]),o.props.zMI(:,[Ar_t_T Ar_i_T]),0.1);
+    Ar_t_D = 1; ArC_t_D = 2; ArCB_t_D = 3; ArB_t_D = 4;     Ar_i_T = 5; ArC_i_T = 6; ArCB_i_T = 7; ArB_i_T = 8;
+    Ar_t_T = 9; ArC_t_T = 10; ArCB_t_T = 11; ArB_t_T = 12;     Ar_i_D = 13; ArC_i_D = 14; ArCB_i_D = 15; ArB_i_D = 16;
     break
 end
 n = 0;
@@ -299,32 +284,36 @@ end
 %% compare percent responsive cells
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-    props1_A = get_props_Rs(oA.Rs,ntrials);
-    props1_C = get_props_Rs(oC.Rs,ntrials);
-    good_FR_A = props1_A.good_FR(:,si);
-    good_FR_C = props1_C.good_FR(:,si);
-    
-    perc_C = 100*exec_fun_on_cell_mat(good_FR_C,'sum')./exec_fun_on_cell_mat(good_FR_C,'length');
-    perc_A = 100*exec_fun_on_cell_mat(good_FR_A,'sum')./exec_fun_on_cell_mat(good_FR_A,'length');
-    
+    si = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T];
+    props1 = get_props_Rs(o.Rs,ntrials);
+    good_FR = props1.good_FR(:,si);
+    good_FR_any = cell_list_op(good_FR,[],'or');
+    good_FR_all = cell_list_op(good_FR,[],'and');
+    per_active =[]; per_active = [];
+    for rr = 1:size(good_FR,1)
+        for cc = 1:size(good_FR,2)
+            tts = good_FR{rr,cc};
+            per_active(rr,cc) = 100*sum(tts)/length(tts);
+        end
+        tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
+        tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
+    end
     [within,dvn,xlabels] = make_within_table({'Cond'},[length(si)]);
-    dataT = make_between_table({perc_C;perc_A},dvn);
+    dataT = make_between_table({per_active},dvn);
     ra = RMA(dataT,within);
     ra.ranova
-%     [mra,semra] = findMeanAndStandardError(per_active_any);
-%     [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','hsd'},[1 1 1]);
-    xdata = make_xdata([3 2 3 3 3 2 3 3],[1 1.5]);
+    [mra,semra] = findMeanAndStandardError(per_active_any);
+    [mrall,semrall] = findMeanAndStandardError(per_active_all);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = make_xdata([4 4],[1 1.5]);
     h(h==1) = 0;
-    hf = get_figure(5,[8 7 6.99 2]);
+    hf = get_figure(5,[8 7 2.25 2]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.colors;
     [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
         'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
     ylims = ylim;
     format_axes(gca);
-    make_bars_hollow(hbs(12:end));
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50 100]); xtickangle(45);
@@ -802,7 +791,7 @@ end
 %% Overlap Indices ImageSC Single animal
 while 1
     ntrials = 50;
-    si = si_seqG;
+    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
@@ -812,7 +801,7 @@ while 1
     minI = 0;%min([mOI(:);semOI(:)])
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = rNaG;%rasterNamesTxt(si); 
+    txl = rasterNamesTxt(si); 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));   % imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
@@ -835,8 +824,8 @@ end
 %% Overlap Indices ImageSC
 while 1
     ntrials = 50;
-    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-    props1 = get_props_Rs(oA.Rs,ntrials);
+    si = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T];
+    props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
