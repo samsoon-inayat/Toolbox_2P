@@ -6,6 +6,9 @@ end
 
 for rr = 1:size(Rs,1)
     for cc = 1:size(Rs,2)
+        if cc == 9
+            n = 0;
+        end
         R = Rs{rr,cc};
         if size(R.sp_rasters1,2) == 0
             continue;

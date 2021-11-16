@@ -1,6 +1,3 @@
-selected_property = 'good_FR';
-cmdTxt = sprintf('good_FR = props1.%s;',selected_property);
-
 %% start with this
 while 1
     siS = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T]; si = siS; Rs = o.Rs(:,si); mR = o.mR(:,si);
@@ -20,7 +17,6 @@ while 1
 %     [dzMI.resp_D_g_T_perc;dzMI.resp_T_g_D_perc]
     break;
 end
-
 
 %% compare responsivity in distance and time rasters
 while 1
@@ -217,6 +213,70 @@ while 1
     %%
     break;
 end
+
+
+%% Comparison of the difference of distance and time zMIs of responsive cells during trials versus intertrials
+while 1
+    %%
+    resp = [propsD.good_FR(:,1:3) propsT.good_FR(:,4:6)];
+    respDo = propsD.good_FR(:,1:3); respTo = propsT.good_FR(:,4:6);
+    respD = cell_list_op(respDo,[],'or'); respT = cell_list_op(respTo,[],'or');
+    respDf = cell_list_op(respD(:,1),respT(:,1),'sep');
+    respTf = cell_list_op(respT(:,1),respD(:,1),'sep');
+%     dzMI = prop_op(propsD,propsT,0);
+    dist_diff_zMI1 = [];
+    for rr = 1:size(dzMI.diff_D_T,1)
+        t_rD = respDf{rr,1}; t_rT = respTf{rr,1};
+        dist_diff_zMI1{rr,1} = [dzMI.diff_D_T{rr,1};dzMI.diff_D_T{rr,3};dzMI.diff_D_T{rr,5}];
+        dist_diff_zMI1{rr,2} = [dzMI.diff_D_T{rr,2};dzMI.diff_D_T{rr,4};dzMI.diff_D_T{rr,6}];
+    end
+%     dist_diff_zMI1 = dzMI.diff_D_T;
+    [distDo,allVals] = getAveragesAndAllValues(dist_diff_zMI1);
+    minBin = min(allVals);
+    maxBin = max(allVals);
+    incr = 1;
+    tcolors = mData.colors;
+    hf = get_figure(8,[5 7 2.25 1.5]);hold on;
+    [ha,hb,~,bins] = plotAverageDistributions(dist_diff_zMI1,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','pdf');
+    %%
+    resp_sel = [repmat(respDf,1,3) repmat(respTf,1,3)];
+    diff_zMI = exec_fun_on_cell_mat(dzMI.diff_D_T,'nanmean',resp_sel);
+    [within,dvn,xlabels] = make_within_table({'TI','Cond'},[2,3]);
+    dataT = make_between_table({diff_zMI},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_Cond','hsd'},[1 1 1]);
+    ptab = 0;
+    if ptab h(h==1) = 0; end
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    
+    if ptab
+    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
+    else
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',0.2);
+    end
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    txl = rasterNamesTxt([siD siT]); 
+    xticks = xdata; xticklabels = {'Trials','Inter-Trials'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 (maxY)]); xtickangle(45);
+    if 0
+    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Correlation',[-1 3 0]});
+    ha = gca; ptable = extras.pvalsTable;
+    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    else
+    changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI Difference',[0 0 0]});
+    end
+    %%
+    break;
+end
+
 
 %% Comparison of the difference of distance and time zMIs of responsive cells 
 while 1

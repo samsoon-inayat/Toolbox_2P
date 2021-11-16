@@ -44,7 +44,7 @@ for rr = 1:size(Rs,1)
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_air(R,trials);
         end
         if strcmp(R.marker_name,'airT') || strcmp(R.marker_name,'beltT') || strcmp(R.marker_name,'airIRT') || strcmp(R.marker_name,'airRT')
-            zMIs = R.info_metrics.ShannonMI_Zsh;
+            zMIs = R.info_metrics.ShannonMI_Zsh';
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
         end
         if strcmp(R.marker_name,'airIT')
@@ -151,7 +151,6 @@ parfor ii = 1:size(rasters,3)
 %     hv(ii) = findHaFD(CRR,1:size(CRR,1));
 end
 resp = p < 0.05;% & hv;
-resp = resp';
 
 
 

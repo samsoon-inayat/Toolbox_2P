@@ -621,8 +621,8 @@ end
 %% spatial across conditions corr SP _ cell ordering difference
 while 1
     meancorr_trials = [];
-    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outR.adj_PV_corr_diag,'nanmean')];
-    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outR.adj_PV_corr_diag_ind,'nanmean')];
+    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outR.adj_SP_corr_diag,'nanmean')];
+    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outR.adj_SP_corr_diag_ind,'nanmean')];
     [within,dvn,xlabels] = make_within_table({'C_ord','Cond'},[2,2]);
     dataT = make_between_table({meancorr_trials},dvn);
     ra = RMA(dataT,within);

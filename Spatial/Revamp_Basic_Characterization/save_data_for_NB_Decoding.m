@@ -17,25 +17,34 @@ RsC = find_responsive_rasters(RsC,1:10);
 % view_population_vector(Rs,mRs,300);
 [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC,resp_exc_inh] = get_responsive_fraction(RsC);
 
-pcs = 1;
+pcs = 2;
 
 for an = 1:5
     for cn = 1:3
-        if pcs
-            [Dist{an,cn},T{an,cn},Space{an,cn},Rasters{an,cn},Speed{an,cn},frame_rate(an,1)] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
-        else
-            [Dist{an,cn},T{an,cn},Space{an,cn},Rasters{an,cn},Speed{an,cn},frame_rate(an,1)] = getXYs1(raster_data_C{an,cn},[]);
+        if pcs == 2 % not place cells
+            [DistC{an,cn},TC{an,cn},SpaceC{an,cn},RastersC{an,cn},SpeedC{an,cn},frame_rateC(an,1)] = getXYs1(raster_data_C{an,cn},~resp_valsC{an}(:,cn));
+        end
+        if pcs == 1 % place cells
+            [DistC{an,cn},TC{an,cn},SpaceC{an,cn},RastersC{an,cn},SpeedC{an,cn},frame_rateC(an,1)] = getXYs1(raster_data_C{an,cn},resp_valsC{an}(:,cn));
+        end
+        if pcs == 0 % all cells
+            [DistC{an,cn},TC{an,cn},SpaceC{an,cn},RastersC{an,cn},SpeedC{an,cn},frame_rateC(an,1)] = getXYs1(raster_data_C{an,cn},[]);
         end
     end
 end
 
-if pcs
+if pcs == 2
+    fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_not_place_cells.mat'));
+end
+if pcs == 1
     fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
-else
+end
+if pcs == 0
     fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_all_cells.mat'));
 end
-save(fileName,'Dist','T','Space','Rasters','Speed','frame_rate','-v7.3');
+save(fileName,'DistC','TC','SpaceC','RastersC','SpeedC','frame_rateC','-v7.3');
 return
+
 
 
 train = 1:10;% test = 2:2:10;

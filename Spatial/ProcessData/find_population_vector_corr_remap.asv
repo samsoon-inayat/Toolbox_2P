@@ -109,7 +109,7 @@ for rr = 1:size(mRs,1) % for each animal
 %             figure(10000);clf;plot(1:351,average_mR1);hold on;plot(1:351,average_mR2);plot(1:351,average_mR2_ind);
             
             pop_sim(cc1,cc2) = corr(average_mR1,average_mR2);
-            pop_sim_ind(cc1,cc2) = corr(average_mR1,average_mR2_ind);
+            pop_sim_ind(cc,cc2) = corr(average_mR1,average_mR2_ind);
             
             
             % RR --> rate remapping

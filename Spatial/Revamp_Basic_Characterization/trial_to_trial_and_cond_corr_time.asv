@@ -163,35 +163,6 @@ while 1
     break;
 end
 
-%% spatial across conditions corr SP _ cell ordering difference
-while 1
-    meancorr_trials = [];
-    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outR.adj_SP_corr_diag,'nanmean')];
-    meancorr_trials = [meancorr_trials exec_fun_on_cell_mat(outR.adj_SP_corr_diag_ind,'nanmean')];
-    [within,dvn,xlabels] = make_within_table({'C_ord','Cond'},[2,2]);
-    dataT = make_between_table({meancorr_trials},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'C_ord','hsd'},[1 1 1]);
-    xdata = make_xdata([2],[1]);
-    hf = get_figure(5,[8 7 1.25 1]);
-    tcolors = colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.05,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-%     maxY = maxY;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'gT','gU'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Pop. Vec. ','Correlation(%)'},[0 0 0]});
-%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('temporal_across_conditions_corr_SP_ind.pdf'),600);
-    %%
-    break;
-end
 
 
 %% spatial across conditions corr PV

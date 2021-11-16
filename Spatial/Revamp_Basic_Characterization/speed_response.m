@@ -29,7 +29,7 @@ rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airID'
 o = get_data(ei,selContexts,rasterNames);
 
 si_air_dist_trials = [6 8 10]; si_no_brake = [6 13 8 15 10 17];
-props1 = get_props_Rs(o.Rs,5); 
+props1 = get_props_Rs(o.Rs,50); 
 si = si_air_dist_trials;
 resp = props1.good_FR(:,si);
 
@@ -47,16 +47,19 @@ while 1
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
         inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
         inds = ~inds;
-        inds = inds & ~t_resp{an}';
+        speed_tuned_cells{an,1} = inds;
+%         inds = inds & ~t_resp{an}';
         pR(an) = 100*sum(inds)/length(inds);
         resp_speed{an} = inds';
-        [mVals,semVals] = findMeanAndStandardError(pR)
+        [mVals,semVals] = findMeanAndStandardError(pR);
     end
     break;
 end
+fileName = fullfile(mData.pd_folder,sprintf('%s_tuned_cells',mfilename));
+save(fileName,'speed_tuned_cells');
 %% visualize the data
 if 1
-    an = 5;
+    an = 4;
     d.bcs = speedRs{an}.bin_centers;
     d.FR = speedRs{an}.FR_vs_speed;
     fitg = speedRs{an}.fits.gauss; fits = speedRs{an}.fits.sigmoid; fitl = speedRs{an}.fits.linear;
@@ -66,7 +69,7 @@ if 1
     inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
     t_resp = cell_list_op(resp,[],'or');
     inds = ~inds;
-    inds = inds & ~t_resp{an}';
+%     inds = inds & ~t_resp{an}';
     100*sum(inds)/length(inds)
     d.FR = d.FR(inds,:); d.fFRl = d.fFRl(inds,:); d.fFRs = d.fFRs(inds,:); d.fFRg = d.fFRg(inds,:);
     d.cl = d.cl(inds); d.cs = d.cs(inds); d.cg = d.cg(inds);

@@ -8,6 +8,11 @@ else
     resp_valsC1 = resp_valsC1i;
 end
 
+
+if ~isempty(strfind(fun,'sep'))
+    resp = sep_cell_list(resp_valsC,resp_valsC1);
+end
+
 if ~isempty(strfind(fun,'not'))
     for rr = 1:size(resp_valsC,1)
         for cc = 1:size(resp_valsC,2)

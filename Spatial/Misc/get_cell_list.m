@@ -46,10 +46,11 @@ end
 
 if exist('per','var')
     if per == 0
+        selResp = selResp';
         return;
     end
     for rr = 1:length(selResp)
-        perc(rr) = sum(selResp{rr})/length(selResp{rr});
+        perc(rr) = 100*sum(selResp{rr})/length(selResp{rr});
     end
     selResp = perc;
 end

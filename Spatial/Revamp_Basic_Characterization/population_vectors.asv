@@ -12,16 +12,6 @@ for ii = 1:length(si)
 end
 perc_only_cells = 100*exec_fun_on_cell_mat(only_cells,'sum')./exec_fun_on_cell_mat(only_cells,'length');
 
-% only light
-cond_mat = [1;3];
-temp_cell_list = get_cell_list(resp,cond_mat,0);
-int_cell_list = [temp_cell_list resp(:,setdiff(1:11,cond_mat))];
-only_ones = get_cell_list(int_cell_list,[1 -(2:size(int_cell_list,2))]);
-perc_only_ones = 100*exec_fun_on_cell_mat(only_ones,'sum')./exec_fun_on_cell_mat(only_ones,'length');
-only_light = only_ones;
-perc_only_light = perc_only_ones;
-
-
 % only air
 cond_mat = [4;5];
 temp_cell_list = get_cell_list(resp,cond_mat,0);

@@ -1,4 +1,8 @@
-function ff = show_population_vector_and_corr(mData,ff,Rs,allP,allC,minmaxCorr,maxBin)
+function ff = show_population_vector_and_corr(mData,ff,Rs,allP,allC,minmaxCorr,maxBin,cbf)
+
+if ~exist('cbf','var')
+    cbf = 1;
+end
 
 if ~isempty(allP)
     FS = mData.axes_font_size;
@@ -112,10 +116,11 @@ if ~isempty(allP)
         axes(ff.h_axes(2,ii)); caxis(minmaxCorr);
     %     axes(ff.h_axes(3,ii)); caxis([mIa maxs(3)]);
     end
-
+    if cbf
     hc = putColorBar(ff.h_axes(1,size(allP,2)),[0.0 0.03 0 -0.05],[0 maxs(1)],6,'eastoutside',[0.07 0.07 0.1 0.1]);
     hc = putColorBar(ff.h_axes(2,size(allP,2)),[0.0 0.03 0 -0.05],minmaxCorr,6,'eastoutside',[0.07 0.07 0.1 0.1]);
     % hc = putColorBar(ff.h_axes(3,4),[0.0 0.03 0 -0.05],[mIa maxs(3)],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+    end
 end
 
 %%
@@ -195,8 +200,10 @@ if isempty(allP)
 
     %     axes(ff.h_axes(3,ii)); caxis([mIa maxs(3)]);
     end
+    if cbf
     hc = putColorBar(ff.h_axes(1,size(allC,2)),[0.0 0.03 0 -0.05],minmaxCorr,6,'eastoutside',[0.07 0.07 0.1 0.1]);
     % hc = putColorBar(ff.h_axes(3,4),[0.0 0.03 0 -0.05],[mIa maxs(3)],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+    end
 end
 
 

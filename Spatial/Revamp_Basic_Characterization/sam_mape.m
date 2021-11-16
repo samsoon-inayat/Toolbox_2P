@@ -1,6 +1,9 @@
+function sam_mape
 %% load them data
-clear all
-load NB_decoding_data_all_cells.mat
+% clear all
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+fileName = fullfile(mData.pd_folder,sprintf('NB_decoding_data_place_cells.mat'));
+load(fileName);
 % load NB_decoding_data_place_cells.mat
 
 %% define parameters
