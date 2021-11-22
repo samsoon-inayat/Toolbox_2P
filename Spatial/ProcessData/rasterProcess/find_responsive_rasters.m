@@ -45,7 +45,11 @@ for rr = 1:size(Rs,1)
         end
         if strcmp(R.marker_name,'airT') || strcmp(R.marker_name,'beltT') || strcmp(R.marker_name,'airIRT') || strcmp(R.marker_name,'airRT')
             zMIs = R.info_metrics.ShannonMI_Zsh';
-            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
+            if size(R.iscell,2) == 1
+                Rs{rr,cc}.resp.vals = R.iscell & zMIs > 1.65;% & R.resp.FR_based;
+            else
+                Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
+            end
         end
         if strcmp(R.marker_name,'airIT')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_intertrial(R,trials);
@@ -115,8 +119,9 @@ end
 
 
 function [resp,cis,excinh] = find_resp_time_raster_intertrial(R,trials)
+% SR = R.thorexp.frameRate;
 SR = 1/R.bin_width;
-markerType = R.marker_name;
+% markerType = R.marker_name;
 timeBefore = 7.5;
 % rasters = R.fromFrames.sp_rasters;
 rasters = R.sp_rasters1;
@@ -127,30 +132,35 @@ cis(1,:) = [1 column_index (number_of_columns-column_index+1)];
 column_index = cis - 1; column_index(1) = []; column_index(3) = number_of_columns;
 cis(2,:) = column_index;
 
-% resp = (R.info_metrics.ShannonMI_Zsh > 0)';
+% resp = (R.info_metrics.ShannonMI_Zsh > 1.96)';
 % return;
+
 group = [];
 for ii = 1:size(cis,2)
     group = [group ii*ones(1,length(cis(1,ii):cis(2,ii)))];
 end
-group(group==3) = 2;
+group(group == 3) = 2;
 p = NaN(size(rasters,3),1);
-p1 = NaN(size(rasters,3),1);
-hv = NaN(size(rasters,3),1);
+hv = p;
+resp = logical(zeros(size(p)));
+excinh = p;
 parfor ii = 1:size(rasters,3)
     thisRaster = rasters(trials,:,ii);
     m_thisRaster = nanmean(thisRaster);
-%     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
-%     [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
-%     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
-    [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
-%     [p(ii),~] = ttest2(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
-    vert = nansum(thisRaster,2);
-    hv(ii) = sum(vert>0) > 5;
-%     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
-%     hv(ii) = findHaFD(CRR,1:size(CRR,1));
+    [p(ii),atabk,statsk] = kruskalwallis(m_thisRaster,group,'nodisplay');
+    vert = nanmean(thisRaster,2)>0.1;
+%     vert = nansum(thisRaster,2);
+%     hv(ii) = sum(vert>0) >= 5;
+%     hv(ii) = sum(vert) >= 5;
+    if p(ii) < 0.05% & hv(ii) == 1
+        resp(ii,1) = 1;
+        if mean(m_thisRaster(group==1)) > mean(m_thisRaster(group==2)) && mean(m_thisRaster(group==3)) > mean(m_thisRaster(group==2))
+            excinh(ii) = 0;
+        else
+            excinh(ii) = 1;
+        end
+    end
 end
-resp = p < 0.05;% & hv;
 
 
 

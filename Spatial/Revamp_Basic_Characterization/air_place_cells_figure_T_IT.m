@@ -25,7 +25,7 @@ while 1
     selContexts = [3 3 4 4 5 5]; rasterNames = {'airD','airIT','airD','airIT','airD','airIT'};
     oDT = get_data(ei,selContexts,rasterNames);
 
-    dzMI = prop_op(oD.props.zMI,oT.props.zMI,0.25);
+%     dzMI = prop_op(oD.props.zMI,oT.props.zMI,0.25);
     
     selContexts = [3 4 5]; rasterNames = {'airT','airT','airT'}; oTo = get_data(ei,selContexts,rasterNames);
 
@@ -35,21 +35,21 @@ while 1
 
     selContexts = [3 4 5]; rasterNames = {'airID','airID','airID'}; oIDo = get_data(ei,selContexts,rasterNames);
     
-    dzMIo = prop_op(oDo.props.zMI,oTo.props.zMI,0.1);
-    dzMIoI = prop_op(oIDo.props.zMI,oITo.props.zMI,0.1);
-    dzMI_seq = prop_op(oD_seq.props.zMI,oT_seq.props.zMI,0.1);
-    
-    pop_DgT_T = dzMIo.resp_D_g_T; 
-    pop_TgD_T = dzMIo.resp_T_g_D; 
-    
-    pop_DgT_IT = dzMIoI.resp_D_g_T;
-    pop_TgD_IT = dzMIoI.resp_T_g_D;
-    
-    pop_DgT_and_good_Gauss_T = cell_list_op(pop_DgT_T,oDo.props.good_Gauss,'and');
-    pop_TgD_and_good_Gauss_T = cell_list_op(pop_TgD_T,oTo.props.good_Gauss,'and');
-    
-    pop_DgT_and_good_Gauss_IT = cell_list_op(pop_DgT_IT,oIDo.props.good_Gauss,'and');
-    pop_TgD_and_good_Gauss_IT = cell_list_op(pop_TgD_IT,oITo.props.good_Gauss,'and');
+%     dzMIo = prop_op(oDo.props.zMI,oTo.props.zMI,0.1);
+%     dzMIoI = prop_op(oIDo.props.zMI,oITo.props.zMI,0.1);
+%     dzMI_seq = prop_op(oD_seq.props.zMI,oT_seq.props.zMI,0.1);
+%     
+%     pop_DgT_T = dzMIo.resp_D_g_T; 
+%     pop_TgD_T = dzMIo.resp_T_g_D; 
+%     
+%     pop_DgT_IT = dzMIoI.resp_D_g_T;
+%     pop_TgD_IT = dzMIoI.resp_T_g_D;
+%     
+%     pop_DgT_and_good_Gauss_T = cell_list_op(pop_DgT_T,oDo.props.good_Gauss,'and');
+%     pop_TgD_and_good_Gauss_T = cell_list_op(pop_TgD_T,oTo.props.good_Gauss,'and');
+%     
+%     pop_DgT_and_good_Gauss_IT = cell_list_op(pop_DgT_IT,oIDo.props.good_Gauss,'and');
+%     pop_TgD_and_good_Gauss_IT = cell_list_op(pop_TgD_IT,oITo.props.good_Gauss,'and');
     
     
     break
@@ -789,6 +789,41 @@ while 1
     tff = ff; tff.h_axes = ff.h_axes(2,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
 %     tff = ff; tff.h_axes = ff.h_axes(3,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDIT'),600);
+    colormap parula
+    break;
+end
+
+%% Show sample rasters for presentation
+while 1
+    Rs = oDT.Rs;
+    props1 = get_props_Rs(Rs,5); 
+    an = 4; cn = 1;
+    good_FR = props1.good_FR_and_zMI(an,[1:2:6]);
+%     gfr = cell_list_op(good_FR,[],'and');
+    % plotRasters_simplest(Rs{an,cn})
+    % find(resp_valsC{an}(:,cn));
+    ff = makeFigureRowsCols(2020,[10 4 6.1 4],'RowsCols',[4 6],'spaceRowsCols',[0.15 0.05],'rightUpShifts',[0.05 0.15],'widthHeightAdjustment',[-55 -130]);
+%     ff = sample_rasters(Rs(an,:),[24 96 41],ff);
+    ff = sample_rasters(Rs(an,:),[23 35 46 62],ff);%ff = sample_rasters(Rs(an,:),[512 451 191],ff);
+    tff = ff; tff.h_axes = ff.h_axes(1,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string',''); 
+    cTxt = {'Ar-t-D','Ar-i-T','ArL-t-D','ArL-i-T','Ar*-t-D','Ar*-i-T'}; 
+    for ii = 1:length(tff.h_axes)
+        axes(tff.h_axes(ii));
+        ylims = ylim;
+        text(12,14,cTxt{ii},'FontSize',8,'FontWeight','Bold');
+    end
+%     tff = ff; tff.h_axes = ff.h_axes(2,:); xls = get_obj(tff,'xlabel'); set_obj(xls,'string','');
+    for ii = 1:2:6
+        tff = ff; tff.h_axes = ff.h_axes(:,ii); xls = get_obj(tff,'xtick'); set_obj(tff,{'xtick',[1 25 49],'xticklabel',{'0','75','150'}});
+    end
+    for ii = 2:2:6
+        tff = ff; tff.h_axes = ff.h_axes(:,ii); xls = get_obj(tff,'xtick'); set_obj(tff,{'xtick',[1 68 136],'xticklabel',{'0','7.5','15'}});
+    end
+    tff = ff; tff.h_axes = ff.h_axes(1,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
+    tff = ff; tff.h_axes = ff.h_axes(2,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
+%     tff = ff; tff.h_axes = ff.h_axes(3,2:end); xls = get_obj(tff,'ylabel'); set_obj(xls,'string',''); 
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDIT'),600);
+    colormap parula
     break;
 end
 %% Mutual Information Time versus Distance Distributions
@@ -1355,6 +1390,7 @@ if 1
 end
 
 %% Place Field Properties on the belt
+respAnB = get_props
 respCells1 = get_cell_list(respAnB,[1 -2 -3]);     respCells2 = get_cell_list(respAnB,[-1 2 -3]);     respCells3 = get_cell_list(respAnB,[-1 -2 3]);
 all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};

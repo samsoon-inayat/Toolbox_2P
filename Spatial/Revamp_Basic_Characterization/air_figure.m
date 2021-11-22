@@ -46,6 +46,31 @@ if 1
     changePosition(gca,[-0.07 -0.13 -0.15 -0.1]);
     save_pdf(hf,mData.pdf_folder,sprintf('air_signal_train'),600);
 end
+
+%% Show sample rasters for presentation
+% an = 5; cn = 2;
+% plotRasters_simplest(Rs{an,cn})
+if 1
+    titles = {'Ar','Ar*'};
+    si = [Ab_T Abs_T];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    propsA = get_props_Rs(Rs,50);
+    an = 1; cn = 1;
+    % plotRasters_simplest(Rs{an,cn})
+    % find(resp_valsC{an}(:,cn));
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.07],'rightUpShifts',[0.07 0.25],'widthHeightAdjustment',...
+        [-100 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 4 1]);
+%     ff = sample_rasters(Rs{an,cn},[140 17 319 168],ff);
+    ff = sample_rasters(Rs{an,cn},[45 8 25 181],ff);
+    for ii = 1:length(ff.h_axes)
+        set_obj(ff.h_axes(ii),{'xticklabels',{'-5','0','5','10'}})
+    end
+    colormap parula
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rasters'),600);
+end
+
 %% Show sample rasters
 % an = 5; cn = 2;
 % plotRasters_simplest(Rs{an,cn})

@@ -285,8 +285,8 @@ end
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     si = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T];
-    props1 = get_props_Rs(o.Rs,ntrials);
-    good_FR = props1.good_FR(:,si);
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    good_FR = props1.good_FR;
     good_FR_any = cell_list_op(good_FR,[],'or');
     good_FR_all = cell_list_op(good_FR,[],'and');
     per_active =[]; per_active = [];
@@ -791,6 +791,9 @@ end
 %% Overlap Indices ImageSC Single animal
 while 1
     ntrials = 50;
+    si = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T];
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    good_FR = props1.good_FR;
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs,ntrials);
     resp = [props1.good_FR(:,si)];% resp_speed];
@@ -823,13 +826,11 @@ end
 
 %% Overlap Indices ImageSC
 while 1
-    ntrials = 50;
+    ntrials = 70;
     si = [Ar_t_D,ArC_t_D,ArCB_t_D,ArB_t_D,Ar_i_T,ArC_i_T,ArCB_i_T,ArB_i_T];
-    props1 = get_props_Rs(o.Rs,ntrials);
-    resp = [props1.good_FR(:,si)];% resp_speed];
-%     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
-%     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
-%     resp(:,6:8) = dzMI.resp_T_g_D(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    resp = props1.good_FR;
+
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);

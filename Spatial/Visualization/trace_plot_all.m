@@ -30,7 +30,7 @@ mData = evalin('base','mData');
 signals = get_calcium_data(pd_rec,1);
 n = 0;
 %%
-while 0
+while 1
     hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.95 3],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
     [maxVal,maxLoc] = max(spSigAllN,[],2);

@@ -13,6 +13,38 @@ while 1
     break;
 end
 n = 0;
+
+%% Show sample rasters for presentation
+% an = 5; cn = 2;
+% plotRasters_simplest(Rs{an,cn})
+si = [Ar_i_T ArL_i_T Ars_i_T];
+Rs = o.Rs(:,si);mR = o.mR(:,si);
+props1 = get_props_Rs(Rs,50);
+while 1
+   an = 4; cn = 2;
+    % plotRasters_simplest(Rs{an,cn})
+    % find(resp_valsC{an}(:,cn));
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-75 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+%     ff = sample_rasters(Rs{an,cn},[75 278 145 181],ff);
+%     ff = sample_rasters(Rs{an,cn},[75 71 115 6],ff); % tuned
+    ff = sample_rasters(Rs{an,cn},[3 33 7 37],ff); % untuned
+    for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(1,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]});  end 
+    colormap parula
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersIT'),600);
+    
+%     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+%         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+%         [-75 -475]);
+%     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+%     ff = sample_rasters(RsT{an,cn},[191 11 96 41],ff);
+%     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
+    break;
+end
+
+
 %% find correlations across conditions
 
 

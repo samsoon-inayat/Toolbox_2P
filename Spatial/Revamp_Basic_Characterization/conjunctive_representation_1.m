@@ -836,11 +836,9 @@ end
 while 1
     ntrials = 50;
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-    props1 = get_props_Rs(o.Rs,ntrials);
-    resp = [props1.good_FR(:,si)];% resp_speed];
-%     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
-%     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
-%     resp(:,6:8) = dzMI.resp_T_g_D(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    resp = [props1.good_FR];% resp_speed];
+    resp = [resp(:,1:8) props1.good_FR_and_tuned(:,9:11)];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);

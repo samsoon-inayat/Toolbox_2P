@@ -17,8 +17,7 @@ n = 0;
 try
     Rs = oD.Rs; mR = oD.mR;
 catch
-    si = si_seq(setdiff(1:11,[1 11 9 2 10]));
-    si = si([1 3 5]);
+    si = [Ar_t_D ArL_t_D Ars_t_D];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
 end
 props1 = get_props_Rs(Rs,50);
@@ -203,6 +202,33 @@ while 1
 %     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
     break;
 end
+
+%% Show sample rasters for presentation
+% an = 5; cn = 2;
+% plotRasters_simplest(Rs{an,cn})
+si = [Ar_t_D ArL_t_D Ars_t_D];
+Rs = o.Rs(:,si);mR = o.mR(:,si);
+while 1
+   an = 3; cn = 1;
+    % plotRasters_simplest(Rs{an,cn})
+    % find(resp_valsC{an}(:,cn));
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[2 4],...
+        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-75 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+    ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
+    colormap parula
+%     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+%         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+%         [-75 -475]);
+%     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
+%     ff = sample_rasters(RsT{an,cn},[191 11 96 41],ff);
+%     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
+    break;
+end
+
+
 %% Mutual Information Time versus Distance Distributions
 while 1
     for rr = 1:size(Rs,1)
@@ -788,7 +814,8 @@ end
 si = [Ar_t_D ArL_t_D Ars_t_D];
 Rs = o.Rs(:,si);mR = o.mR(:,si);
 props1 = get_props_Rs(Rs,50);
-respAnB = cell_list_op(props1.good_FR,props1.good_Gauss,'and');
+% respAnB = cell_list_op(props1.good_FR,props1.good_Gauss,'and');
+respAnB = props1.good_FR;
 respCells1 = get_cell_list(respAnB,[1 -2 -3]);     respCells2 = get_cell_list(respAnB,[-1 2 -3]);     respCells3 = get_cell_list(respAnB,[-1 -2 3]);
 all_respCells = {respCells1,respCells2,respCells3};
 props = {'Field Width (cm)',{'Spatially Tuned','Cells (%)'},'Field FR (AU)'};

@@ -302,7 +302,7 @@ while 1
             PLG = NaN(size(tPL)); PLnG = PLG;
             PLG(tGauss) = tPL(tGauss); PLnG(tnGauss) = tPL(tnGauss);
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);             
-            bData = []; bData1 = []; bDataPWs = []; bDatazMIs = []; bDatazMIs1 = []; bData2 = []; bDatazMIs2 = []; 
+            bData = []; bData1 = []; bDataPWs = []; bDatazMIs = []; bDatazMIs1 = [];
             for ii = 1:(length(bins)-1)
                 binS = bins(ii); binE = bins(ii+1);
                 inds = PLG >= binS & PLG < binE;
@@ -325,14 +325,14 @@ while 1
     end
     disp('Done')
     %% For percentage of cells over belt
-    [within,dvn,xlabels] = make_within_table({'Cond','Bin'},[3,3]);
-    dataT = make_between_table({allA},dvn);
+    [within,dvn,xlabels] = make_within_table({'CT','Cond','Bin'},[2,3,3]);
+    dataT = make_between_table({allA,allnG},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_Bin','hsd'},[1 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_Cond_Bin','hsd'},[1 1 1]);
     h(h==1) = 0;
-    xdata = make_xdata([3 3 3],[1 2]); %xdata(10:end) = xdata(10:end) + 1;
+    xdata = make_xdata([3 3 3 3 3 3],[1 2]); xdata(10:end) = xdata(10:end) + 1;
     hf = get_figure(5,[8 7 3 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = repmat(mData.colors(1:9),2,1);

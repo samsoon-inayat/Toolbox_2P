@@ -70,7 +70,11 @@ for rr = 2
         end
 %         text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR = %d',round(max(thisRaster(:)))),'FontSize',5,'color','k','rotation',90);
 %         text(1,size(thisRaster,1)+1.5,sprintf('Cell %d, (MFR = %d)',cn,round(max(thisRaster(:)))),'FontSize',5,'color','k');
-        text(1,size(thisRaster,1)+1.5,sprintf('%d A.U.',round(max(thisRaster(:)))),'FontSize',5,'color','k');
+        if max(thisRaster(:)) < 1
+            text(1,size(thisRaster,1)+1.5,sprintf('%.1f A.U.',max(thisRaster(:))),'FontSize',5,'color','k');
+        else
+            text(1,size(thisRaster,1)+1.5,sprintf('%d A.U.',round(max(thisRaster(:)))),'FontSize',5,'color','k');
+        end
         set(gca,'FontSize',6,'linewidth',0.25,'Ydir','normal','TickDir','out');
         colormap jet;
             xticks = [1:10:size(thisRaster,2)];

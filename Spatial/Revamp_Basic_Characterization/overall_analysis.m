@@ -9,6 +9,7 @@ Rs = o.Rs(:,si); mRs = o.mR(:,si);
 % si = [Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
 % RsR = o.Rs(:,si);
 props1 = get_props_Rs(Rs,50);
+
 % resp_all = props1.good_FR;
 % resp = get_cell_list(resp_all,[3]);
 % resp = [resp(:,1:3) resp];
@@ -86,13 +87,13 @@ end
 %% Overlap Indices ImageSC check for overlap among air stream rest versus motion trials and intertrials
 while 1
     ntrials = 50;
-    fileName = fullfile(mData.pd_folder,sprintf('%s_tuned_cells',mfilename));
-    load(fileName);
+%     fileName = fullfile(mData.pd_folder,sprintf('%s_tuned_cells',mfilename));
+%     load(fileName);
     
     si = [Ab_t_T Abs_t_T Ar_t_D ArL_t_D Ars_t_D Ab_i_T Abs_i_T Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
     
-    resp = [props1.good_FR_and_tuned];% resp_speed];
+    resp = [props1.good_FR];% resp_speed];
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_T_g_D(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
