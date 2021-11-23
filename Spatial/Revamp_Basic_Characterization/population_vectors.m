@@ -417,16 +417,16 @@ while 1
     an = 4;
     si = [Ar_t_D ArL_t_D Ars_t_D];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
-    props1 = get_props_Rs(Rs,ntrials);
-    q_type = 'Ored';
+    props1 = get_props_Rs(Rs,[10,40]);
+    q_type = '1040';
     resp = cell_list_op(props1.good_FR,[],'or');
+%     resp = props1.good_FR;
 %     resp = cell_list_op(props1.good_FR_and_Gauss_loose,[],'or');
 %     resp = cell_list_op(props1.good_FR,[],'or');
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,1);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]); 

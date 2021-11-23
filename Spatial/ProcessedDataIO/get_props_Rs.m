@@ -83,6 +83,10 @@ rasters = permute(rasters,[2 1 3]);
 sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
 sR = sR';
 sR = 100*sR./size(rasters,2);
-FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
+if length(ntrials) == 1
+    FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
+else
+    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+end
 % FR_based = FR_based';
 
