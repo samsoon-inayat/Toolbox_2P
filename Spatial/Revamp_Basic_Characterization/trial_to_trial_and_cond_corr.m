@@ -275,14 +275,25 @@ while 1
 end
 
 
-
 %% Overlap Indices ImageSC
 while 1
     ntrials = 50;
     si_nb = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props_nb = get_props_Rs(o.Rs(:,si_nb),ntrials);
     resp_nb = props_nb.good_FR;
+    si = [Ab_T Abs_T];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    exc = props1.good_FR_and_exc;     sup = props1.good_FR_and_inh;    com = props1.good_FR_and_untuned;
+    
+    respE_OR = cell_list_op(exc,[],'or');
+    respS_OR = cell_list_op(sup,[],'or');
+    respC_OR = cell_list_op(com,[],'or'); 
+    
     resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1) resp_nb];
+    resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1)];
+    resp = [exc(:,1), sup(:,1), com(:,1)];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);

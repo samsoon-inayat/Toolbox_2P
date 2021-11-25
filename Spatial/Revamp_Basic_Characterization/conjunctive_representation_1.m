@@ -666,6 +666,7 @@ while 1
     good_FR = [];
     good_FR = [gFR_Lb(:,[1 3]) gFR_Ab gFR_Ar(:,1) gFR_ArL(:,1) gFR_Ars(:,1)];
     per_unique =[];
+    condMat = [];
     for rr = 1:size(good_FR,2)
         for cc = 1:size(good_FR,2)
             if rr == cc
@@ -745,8 +746,9 @@ end
 
 %% compare diference number of responsive trials across conditions
 while 1
-    props1 = get_props_Rs(o.Rs,50); si = si_seq(1:10);
-    good_FR = props1.N_Resp_Trials(:,si);
+    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    props1 = get_props_Rs(o.Rs(:,si),50);
+    good_FR = props1.N_Resp_Trials;
     for rr = 1:size(good_FR,1)
         for cc = 2:size(good_FR,2)
             ttsp = good_FR{rr,cc-1}; tts = good_FR{rr,cc};
@@ -836,7 +838,9 @@ end
 while 1
     ntrials = 50;
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    props1 = get_props_Rs(o.Rs(:,si),[40,100]);
+%     props1 = get_props_Rs(o.Rs(:,si),[40,70]);
+%     props1 = get_props_Rs(o.Rs(:,si),[10,40]);
     resp = [props1.good_FR];% resp_speed];
 %     resp = [resp(:,1:8) props1.good_FR_and_tuned(:,9:11)];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
@@ -916,7 +920,8 @@ while 1
     mOI1 = mOI;
     mOI1(isnan(mOI1)) = 1;
     Di = pdist(mOI1);
-    tree = linkage(Di);
+    tree = linkage(mOI1,'average','euclidean');
+%     tree = linkage(Di,'average');
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
@@ -1027,6 +1032,23 @@ while 1
         display_p_table_img(ha,hbs,[0 0.23 0 0.37],ptable);ytickangle(0);
         save_pdf(hf,mData.pdf_folder,sprintf('OI_bar_no_brake_%d.pdf',sel_row),600);
         maxYs(sel_row) = maxY;
+    end
+    %%
+    break;
+end
+
+%% trial by trial comparison - difference in peak locations
+while 1
+    ntrials = 50;
+    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    gFR = props1.good_FR;
+    pL_trials = props1.peak_locations_trials;
+    for rr = 1:size(pL_trials,1)
+        for cc = 1:size(pL_trials,2)
+            tPL = pL_trials{rr,cc};
+            dtPL = diff(tPL,[],2);
+        end
     end
     %%
     break;

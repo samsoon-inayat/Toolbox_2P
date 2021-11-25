@@ -221,6 +221,7 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('average_population_vector_corr.pdf'),60
 %%
 %% average correlation of all animals
 if 1
+    out = out_C{1,1};
     ff = makeFigureRowsCols(106,[1 0.5 4 0.5],'RowsCols',[3 3],...
         'spaceRowsCols',[0.1 0.1],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',...
         [-150 -150]);

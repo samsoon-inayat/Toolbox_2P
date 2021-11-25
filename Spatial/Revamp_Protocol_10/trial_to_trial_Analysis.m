@@ -2,10 +2,7 @@ function trial_to_trial_Analysis
 
 %% find spatial trial to trial correlation
 while 1
-    si = [Ar_t_D ArL_t_D Ars_t_D];
-    si = [Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
-    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-    si = [Lb_T Ab_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Lbs_T Abs_T];
+    si = [Ar_t_D Ar_i_T ArC_t_D ArC_i_T ArCB_t_D ArCB_i_T  ArB_t_D ArB_i_T];
 %     si = [Ar_i_T ArL_i_T Ars_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     for cn = 1:length(si)
@@ -82,7 +79,7 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 3 3]);
+    set(hf,'Position',[7 3 6 6]);
     set(H,'linewidth',1);
     set(gca,'yticklabels',txl(TC));ytickangle(30);
     format_axes(gca);

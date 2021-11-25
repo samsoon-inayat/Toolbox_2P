@@ -419,7 +419,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     props1 = get_props_Rs(Rs,[10,40]);
     q_type = '1040';
-    resp = cell_list_op(props1.good_FR,[],'or');
+    resp = cell_list_op(props1.good_FR,[],'and');
 %     resp = props1.good_FR;
 %     resp = cell_list_op(props1.good_FR_and_Gauss_loose,[],'or');
 %     resp = cell_list_op(props1.good_FR,[],'or');
