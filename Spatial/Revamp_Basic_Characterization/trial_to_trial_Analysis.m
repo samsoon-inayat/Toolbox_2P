@@ -104,42 +104,50 @@ while 1
     an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0;
     
     allresp = []; ind = 1;
+    all_peakL = [];
     for cn = 1:length(si)
         mRsCT = allmRsT{cn};
+        resp = []; peak_locations = [];
         for rr = 1:size(mRsCT,1)
             for cc = 1:size(mRsCT,2)
                 this_mat = mRsCT{rr,cc};
+                [~,peakL] = max(this_mat,[],2);
+%                 size_tmat(rr,cc) = size(this_mat,2);
                 resp{rr,cc} = sum(this_mat,2) > 0;
                 if intersect_with_global
                     resp{rr,cc} = resp{rr,cc} & respG{rr,cn};
                 end
                 if sp == 1
-                if cn == 1
-                    respSe = respSeL{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,1};
+                    if cn == 1
+                        respSe = respSeL{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,1};
+                    end
+                    if cn == 2
+                        respSe = respSeL{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,2};
+                    end
+                    if cn == 3
+                        respSe = respSeL{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,3};
+                    end
+                    if cn == 4
+                        respSe = respSeA{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,1};
+                    end
+                    if cn == 5
+                        respSe = respSeA{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,2};
+                    end
                 end
-                if cn == 2
-                    respSe = respSeL{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,2};
-                end
-                if cn == 3
-                    respSe = respSeL{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,3};
-                end
-                if cn == 4
-                    respSe = respSeA{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,1};
-                end
-                if cn == 5
-                    respSe = respSeA{eic}; resp{rr,cc} = resp{rr,cc} & respSe{rr,2};
-                end
-                end
+                peakL(~resp{rr,cc}) = NaN;
+                peak_locations{rr,cc} = peakL;
                 if rr == 1
                     txl{ind} = sprintf('C%dT%d',cn,cc);
                     ind = ind + 1;
                 end
             end
         end
-        allresp = [allresp resp];
+        allresp = [allresp resp]; all_peakL = [all_peakL peak_locations];
     end
     i_allresp = cell_list_op(allresp,[],'not');
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05);
+%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05,1);
+%     [AS,mAS,semAS,AS_mat] = get_average_shift(all_peakL(an,:));
+    [OI,mOI,semOI,OI_mat] = get_average_shift(all_peakL(an,:));
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
