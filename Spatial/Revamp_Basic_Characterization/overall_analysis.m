@@ -24,8 +24,12 @@ while 1
     fileName = fullfile(mData.pd_folder,sprintf('%s_tuned_cells',mfilename));
     load(fileName);
     si = [MOn_T MOff_T Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [MOn_T MOff_T Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
     resp = [ speed_tuned_cells props1.good_FR];% resp_speed];
+    si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; 
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    resp = props1.good_FR;
    
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
@@ -40,6 +44,7 @@ while 1
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
     txl = [{'sR'} rasterNamesTxt(si)]; 
+    txl = [rasterNamesTxt(si)]; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;

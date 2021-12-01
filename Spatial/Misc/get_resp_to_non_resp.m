@@ -1,4 +1,4 @@
-function [all_OI,mOI,semOI,all_OI_mat] = get_overlap_index(resp_valsi)
+function [all_OI,mOI,semOI,all_OI_mat,mOIM,semOIM] = get_overlap_index(resp_valsi)
 
 
 % resp_valsCi = resp_valsC;
@@ -25,15 +25,7 @@ for ii = 1:length(resp_vals)
 %             if mask(rr,cc)
                 ccs2 = ccs(:,cc);
                 nan2 = isnan(ccs2);
-                inds_nans = nan1 | nan2;
-                [ia1,ib1] = sort(ccs1(~inds_nans));
-                [ia2,ib2] = sort(ccs2(~inds_nans));
-                sh = [];
-                for dd = 1:length(ib1)
-                    ind2 = find(ib2 == ib1(dd));
-                    sh(dd) = 100*(ind2 - dd)/size(ccs1,1);
-                end
-                OI(rr,cc) = (mean(abs(sh)));
+                OI(rr,cc) = 100* sum(nan1 == 0 & nan2 == 1)/size(ccs2,1);
 %             end
         end
     end
@@ -55,14 +47,20 @@ einds = 10:10:size(mmOI,1);
 
 for an = 1:size(mmOI,3)
     tmmOI = mmOI(:,:,an);
+    mmmOI = [];
     for ii = 1:length(sinds)
         for jj = 1:length(sinds)
             indsr = sinds(ii):einds(ii);
-            indsj = sinds(jj):einds(jj);
-            mmmOI(ii,jj) = tmmOI(inds,inds);
+            indsc = sinds(jj):einds(jj);
+            mmmOI(ii,jj) = mean(tmmOI(indsr,indsc),'A');
         end
     end
+    mmmOIan(:,:,an) = mmmOI;
 end
+
+semOIM = std(mmmOIan,[],3)/sqrt(length(all_OI));
+mOIM = mean(mmmOIan,3);
+OIM_mat = mmmOIan;
 n = 0;
 
 

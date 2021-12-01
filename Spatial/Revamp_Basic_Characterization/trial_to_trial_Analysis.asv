@@ -6,7 +6,8 @@ while 1
     si = [Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
-    Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs;
+    
+    Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
     for cn = 1:length(si)
     trials = mat2cell([1:10]',ones(size([1:10]')));
@@ -112,7 +113,7 @@ while 1
             for cc = 1:size(mRsCT,2)
                 this_mat = mRsCT{rr,cc};
                 [~,peakL] = max(this_mat,[],2);
-                size_tmat(rr,cc) = size(this_mat,2);
+%                 size_tmat(rr,cc) = size(this_mat,2);
                 resp{rr,cc} = sum(this_mat,2) > 0;
                 if intersect_with_global
                     resp{rr,cc} = resp{rr,cc} & respG{rr,cn};
@@ -145,14 +146,20 @@ while 1
         allresp = [allresp resp]; all_peakL = [all_peakL peak_locations];
     end
     i_allresp = cell_list_op(allresp,[],'not');
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05,1);
-    [AS,mAS,semAS,AS_mat] = get_average_shift(all_peakL(an,:));
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05,0);
+%     [AS,mAS,semAS,AS_mat] = get_average_shift(all_peakL(an,:));
+    [OI,mOI,semOI,OI_mat,mOIM,semOIM] = get_average_shift(all_peakL(an,:));
+%     [OI,mOI,semOI,OI_mat,mOIM,semOIM] = get_resp_to_non_resp(all_peakL(an,:));
+%%
+while 1
+     %%
+    mOI = mOI; semOI = semOI;
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);    
+    maxI = max([mOI(:);semOI(:)]);
     minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
@@ -160,7 +167,7 @@ while 1
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 3 7 7]);
+    hf = get_figure(6,[8 5 7 7]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
@@ -169,7 +176,43 @@ while 1
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
+    ttxl = rasterNamesTxt(siG);
+    set(gca,'xtick',1:length(ttxl),'ytick',1:length(ttxl),'xticklabels',ttxl,'yticklabels',ttxl,'Ydir','reverse'); xtickangle(45);
+    text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
+    box on
+    changePosition(gca,[0.03 0 -0.04 0]);
+    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
+    %%
+
+    break;
+end
+    %%
+    mOI = mOI; semOI = semOI;
+%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
+    sz = size(mOI,1);
+%     mOI = OI_mat(:,:,4);
+    oM = ones(size(mOI));
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    maxI = max([mOI(:);semOI(:)]);
+    minI = min([mOI(:);semOI(:)]);
+    
+    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
+%     mOI = mOI .* mask;
+    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
+    imAlpha(mask1 == 1) = 0;
+%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+    hf = get_figure(6,[8 5 7 7]);
+    %
+%     axes(ff.h_axes(1));
+    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    plot([10.5 10.5],[0 30.5],'r'); plot([20.5 20.5],[0 30.5],'r');
+    plot([0 30.5],[10.5 10.5],'r'); plot([0 30.5],[20.5 20.5],'r');
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+    format_axes(gca);
+    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+    ttxl = rasterNamesTxt(siG);
+    set(gca,'xtick',1:length(ttxl),'ytick',1:length(ttxl),'xticklabels',ttxl,'yticklabels',ttxl,'Ydir','reverse'); xtickangle(45);
     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box on
     changePosition(gca,[0.03 0 -0.04 0]);
@@ -188,9 +231,11 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 3 3]);
+    set(hf,'Position',[7 5 2 2]);
     set(H,'linewidth',1);
-    set(gca,'yticklabels',txl(TC));ytickangle(30);
+	ttxl = rasterNamesTxt(siG);
+    ttxl = ttxl(TC);
+    set(gca,'yticklabels',ttxl);ytickangle(30);
     format_axes(gca);
     hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
     changePosition(gca,[0 0.0 -0.05 0.05]);
