@@ -41,6 +41,14 @@ for rr = 1:size(Rs,1)
         o.good_Gauss_loose{rr,cc} = rs' > 0.3;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
         [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc}] = get_FR_based(R.sp_rasters1,ntrials);
+        if strcmp(R.marker_name,'airIT')
+            [o.good_FR_IT{rr,cc},o.N_Resp_Trials_IT{rr,cc}] = get_FR_based_IT(R.sp_rasters1,ntrials);
+            [o.good_FR_IT1{rr,cc},o.N_Resp_Trials_IT1{rr,cc}] = get_FR_based_IT1(R.sp_rasters1,ntrials);
+        end
+        if strcmp(R.marker_name,'airD')
+            [o.good_FR_T{rr,cc},o.N_Resp_Trials_T{rr,cc}] = get_FR_based_T(R.sp_rasters1,ntrials);
+            [o.good_FR_T1{rr,cc},o.N_Resp_Trials_T1{rr,cc}] = get_FR_based_T1(R.sp_rasters1,ntrials);
+        end
         o.good_FR_and_zMI{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
         temp_z = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.good_zMI(rr,cc),[],'not'),'and');
         o.good_FR_and_notzMI{rr,cc} = temp_z{1};
@@ -78,6 +86,62 @@ for rr = 1:size(Rs,1)
 end
 
 function [FR_based,sR,sRp] = get_FR_based(rasters,ntrials)
+rasters = permute(rasters,[2 1 3]);
+% sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sR';
+sR = 100*sR./size(rasters,2);
+if length(ntrials) == 1
+    FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
+else
+    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+end
+% FR_based = FR_based';
+
+function [FR_based,sR,sRp] = get_FR_based_IT(rasters,ntrials)
+rasters = rasters(:,1:45,:);
+rasters = permute(rasters,[2 1 3]);
+% sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sR';
+sR = 100*sR./size(rasters,2);
+if length(ntrials) == 1
+    FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
+else
+    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+end
+% FR_based = FR_based';
+
+function [FR_based,sR,sRp] = get_FR_based_IT1(rasters,ntrials)
+rasters = rasters(:,46:end,:);
+rasters = permute(rasters,[2 1 3]);
+% sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sR';
+sR = 100*sR./size(rasters,2);
+if length(ntrials) == 1
+    FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
+else
+    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+end
+% FR_based = FR_based';
+
+function [FR_based,sR,sRp] = get_FR_based_T(rasters,ntrials)
+rasters = rasters(:,1:15,:);
+rasters = permute(rasters,[2 1 3]);
+% sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
+sR = sR';
+sR = 100*sR./size(rasters,2);
+if length(ntrials) == 1
+    FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
+else
+    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+end
+% FR_based = FR_based';
+
+function [FR_based,sR,sRp] = get_FR_based_T1(rasters,ntrials)
+rasters = rasters(:,16:end,:);
 rasters = permute(rasters,[2 1 3]);
 % sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
 sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials

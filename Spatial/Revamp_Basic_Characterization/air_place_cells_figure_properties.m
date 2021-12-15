@@ -7,6 +7,8 @@ while 1
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
     gauss = props1.good_FR_and_Gauss_loose; n_gauss = props1.good_FR_and_notGauss_loose;
+%     gauss = cell_list_op(props1.good_FR,gFR_D_g_T,'and'); n_gauss = cell_list_op(props1.good_FR,gFR_T_g_D,'and');
+%     gauss = gFR_D_g_T_g; n_gauss = gFR_D_g_T_ng;
     break;
 end
 disp('Done')
@@ -101,7 +103,7 @@ while 1
     make_bars_hollow(hbs(10:end));
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 12]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'dB1','dB2','dB3'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.05 0.0 -0.4 -0.09]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
@@ -263,9 +265,9 @@ end
 
 %% Place cell emergence disruption stability
 props1 = get_props_Rs(Rs,50);
-respAnB = props1.good_FR;
+respAnB = props1.good_FR_and_Gauss_loose;
 
-for tC = 4%:4
+for tC = 2%:4
 while 1
     txtT = {'Unique','New','Disrupted','Common'};
     or_cells = get_cell_list(respAnB,[1;2;3]);
@@ -292,6 +294,7 @@ while 1
     end
     dataT = make_between_table({percCells},dvn);
     ra = RMA(dataT,within);
+    ra.ranova
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Conds','hsd'},[1 0.25 1]);
     hf = get_figure(5,[8 7 1.25 1]);
     if tC > 1
@@ -307,12 +310,10 @@ while 1
     xticks = xdata; xticklabels = xlabels;
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.1 0.02 -0.45 -0.05])
-    yshifts = [0 0 -2 0]
+    yshifts = [0 0 -2 0];
     put_axes_labels(gca,{[],[0 0 0]},{sprintf('%s Cells (%%)',txtT{tC}),[0 yshifts(tC) 0]});
 %     text(0.75,maxY+3,txtT{tC},'FontSize',6)
     save_pdf(hf,mData.pdf_folder,sprintf('%s_cells.pdf',txtT{tC}),600);
-    ra.ranova
-%     ra.mauchly
     break;
 end
 end

@@ -63,9 +63,9 @@ for ii = 1:length(ei)
 end
 toc
 %%
-tic
+
 for ii = 1:length(ei)
-    ei(ii) = get_speed_response(ei(ii),[0 0]);
+    ei1(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 end
 toc
 

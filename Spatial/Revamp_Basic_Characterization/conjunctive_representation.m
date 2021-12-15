@@ -20,7 +20,7 @@ while 1
         all_xl{ii} = sprintf('%c%c-%d',rasterNames{ii}(1),rasterNames{ii}(end),selContexts(ii));
     end
     
-    [speedRs,resp_speed] = get_speed_response(ei);
+    [speedRs,resp_speed] = load_speed_response(ei);
     all_xl{ii+1} = 'sp';
     resp = [o.resp.vals resp_speed];
 %     resp_o = cell_list_op(resp,[],'xor')

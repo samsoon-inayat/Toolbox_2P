@@ -1,10 +1,9 @@
-function ei_C = get_motion_onset_response(ei_C,owr)
+function ei_C = get_speed_response(ei_C,owr)
 for ii = 1:length(ei_C)
     ei_C{ii} = process_one_animal(ei_C{ii},1,owr);
 end
 
 function ei = process_one_animal(ei,thr,owr)
-[mOnst,mOnse,mOffst,mOffse] = get_monoffs(ei,thr);
 % disp(sprintf('%d,%d - %d,%d',length(mOnst),length(mOnse),length(mOffst),length(mOffse)));
 binwidths = evalin('base','binwidths');
 for pp = 1:length(ei.plane)
@@ -23,7 +22,7 @@ for pp = 1:length(ei.plane)
 %     ei.plane{pp}.motionOffset_rasters = rasters;
     
 %     ei.plane{pp}.acc_response = find_acc_response(ei,pp,owr(5));
-    ei.plane{pp}.speed_response = find_speed_response(ei,pp,owr(4));
+    ei.plane{pp}.speed_response = find_speed_response(ei,pp,owr);
 end
 
 function out = find_speed_response(ei,pp,owr)
@@ -32,7 +31,7 @@ speed = ei.b.fSpeed(ei.plane{pp}.b.frames_f);
 speed = speed(1:size(activity,2));
 out.corr = corr(activity',speed');
 
-min_speed = 1; max_speed = 40;
+min_speed = 1; max_speed = 30;
 bin_incr = 1;
 bins = min_speed:bin_incr:max_speed;
 for ii = 1:(length(bins)-1)
@@ -42,9 +41,80 @@ for ii = 1:(length(bins)-1)
     inds = find(speed > st & speed < se);
     cell_act(:,ii) = nanmean(activity(:,inds),2);
 end
-out.fits = find_cellular_speed_tuning(ei,pp,bin_centers,cell_act,owr);
+out.McN = find_cellular_speed_tuning_McN(ei,pp,bins,activity,owr(1));
+out.fits = find_cellular_speed_tuning(ei,pp,bin_centers,cell_act,owr(2));
 out.FR_vs_speed = cell_act;
 out.bin_centers = bin_centers;
+
+function out = find_cellular_speed_tuning_McN(ei,pp,bins,activity,owr)
+n = 0;
+file_name = fullfile(ei.plane{pp}.folder,sprintf('speed_tuning_McN.mat'));
+if exist(file_name,'file') && owr == 0
+    out = load(file_name);
+    return;
+end
+
+speed = ei.b.fSpeed(ei.plane{pp}.b.frames_f);
+speed = speed(1:size(activity,2));
+
+hist_speed = hist(speed,bins);
+n_hist_s = hist_speed/sum(hist_speed);
+% figure(100000);clf;plot(bins,n_hist_s);
+r2 = find_cell_speed_tuning(activity,speed,bins,n_hist_s);
+nshuffle = 1000;
+parfor ii = 1:nshuffle
+    shuf_inds = randperm(size(activity,2));
+    activity_s = activity(:,shuf_inds);
+    r2s(:,ii) = find_cell_speed_tuning(activity_s,speed,bins,n_hist_s);
+end
+r2_r = repmat(r2,1,nshuffle);
+p_vals = sum(r2_r > r2s,2)/nshuffle;
+sp_cells = p_vals > 0.99;
+inds_nonzero = activity > 0;
+speed_tuning_inc = NaN(size(sp_cells,1),length(bins));
+speed_tuning_dec = NaN(size(sp_cells,1),length(bins));
+speed_cell_resp = double(sp_cells);
+for ii = 1:size(sp_cells,1)
+    if ~sp_cells(ii)
+        continue;
+    end
+    speeds_when_firing = speed(inds_nonzero(ii,:));
+    hist_speed_when_firing = hist(speeds_when_firing,bins);
+    n_hist_swf = hist_speed_when_firing/sum(hist_speed_when_firing);
+    velocity_tuning = n_hist_swf./n_hist_s;
+    [p,S,mu] = polyfit(bins,velocity_tuning,1);
+    if p(1) > 0 
+        speed_tuning_inc(ii,:) = velocity_tuning;
+    end
+    if p(1) < 0 
+        speed_cell_resp(ii) = -1;
+        speed_tuning_dec(ii,:) = velocity_tuning;
+    end
+%     [f_vt,delta] = polyval(p,bins,S,mu);
+%     figure(100000);clf;plot(bins,velocity_tuning,'.');hold on;
+%     plot(bins,f_vt);
+%     pause;
+end
+out.speed_tuning_inc = speed_tuning_inc;
+out.speed_tuning_dec = speed_tuning_dec;
+out.speed_resp = speed_cell_resp;
+save(file_name,'-struct','out','-v7.3');
+    
+
+
+
+
+function r2 = find_cell_speed_tuning(activity,speed,bins,n_hist_s)
+inds_nonzero = activity > 0;
+r2 = NaN(size(activity,1),1);
+for ii = 1:size(activity,1)
+    speeds_when_firing = speed(inds_nonzero(ii,:));
+    hist_speed_when_firing = hist(speeds_when_firing,bins);
+    n_hist_swf = hist_speed_when_firing/sum(hist_speed_when_firing);
+    velocity_tuning = n_hist_swf./n_hist_s;
+    [p,S,mu] = polyfit(bins,velocity_tuning,1);
+    r2(ii) = 1 - (S.normr/norm(velocity_tuning - mean(velocity_tuning)))^2;
+end
 
 function fits = find_cellular_speed_tuning(ei,pp,bcs,cell_act,owr)
 n = 0;
@@ -135,83 +205,4 @@ end
 %         eval(cmdTxt);
 %     end
 % end
-
-function [mOnst,mOnse,mOffst,mOffse] = get_monoffs(ei,thr)
-spSig = ei.b.fSpeed;
-motionOnsets = find_rising_edge(spSig > thr,0.1,500);
-motionOffsets = find_falling_edge(spSig > thr,-0.1,500); % find places where speed is below threshold
-[mOnst,mOnse] = get_markers_motion(ei,motionOnsets,motionOffsets);
-[mOffst,mOffse] = get_markers_motion(ei,motionOffsets,motionOnsets);
-disp(sprintf('%d,%d - %d,%d',length(mOnst),length(mOnse),length(mOffst),length(mOffse)));
-% diplay_with_air_puff(ei.b,mOnst,mOnse);
-% n = 0;
-% diplay_with_air_puff(ei.b,mOffst,mOffse);
-% n = 0;
-
-function [st2,se2] = get_markers_motion(ei,motionOnsets,motionOffsets)
-thr_t = 0.5;
-tb = 1.5;
-b = ei.b;
-st = motionOnsets - round(1e6 * tb/b.si);
-se = motionOnsets + round(1e6 * tb/b.si);
-inds = find(st<0);
-if ~isempty(inds)
-    st(inds) = [];
-    se(inds) = [];
-end
-[st1,se1] = removeOverlapWithAirPuff(b,st,se);
-[se2,st2] = removeOverlapWithAirPuff(b,se1,st1);
-[st2,se2] = eliminate_close_ones(b,b.air_puff_r,st2,se2,thr_t); 
-[st2,se2] = eliminate_close_ones(b,b.air_puff_f,st2,se2,thr_t); 
-[st2,se2] = eliminate_close_ones(b,motionOffsets,st2,se2,thr_t); 
-
-[st2,se2] = check_for_frames(ei,st2,se2);
-
-function [mon,moff] = check_for_frames(ei,mon,moff)
-for pp = 1:length(ei.plane)
-    firstFrame(pp) = ei.plane{pp}.b.frames_f(1);
-    lastFrame(pp) = ei.plane{pp}.b.frames_f(end);
-end
-mlastFrame = min(lastFrame);
-MfirstFrame = max(firstFrame);
-inds = find(mon < MfirstFrame); mon(inds) = []; moff(inds) = [];
-inds = find(moff > mlastFrame); mon(inds) = []; moff(inds) = [];
-
-
-function [st,se] = eliminate_close_ones(b,aon,st,se,thr)
-[st,se] = check_close_to_air_puff(b,aon,st,se,thr); 
-[se,st] = check_close_to_air_puff(b,aon,se,st,thr);
-
-function [st,se] = check_close_to_air_puff(b,aon,st,se,thr)
-inds = [];
-for ii = 1:length(st)
-    d = b.ts(aon) - b.ts(st(ii));
-    dlz = abs(d(d<0));
-    dgz = d(d>0);
-    if sum(min(dlz) < thr)>0 || sum(min(dgz) < thr)>0
-        inds = [inds ii];
-    end
-end
-if ~isempty(inds)
-    st(inds) = []; se(inds) = [];
-end
-
-
-function [st1,se1] = removeOverlapWithAirPuff(b,st,se)
-dar = b.air_puff_raw < 0.5;
-inds = find(st > length(dar));
-st(inds) = [];
-se(inds) = [];
-zm = zeros(size(b.air_puff_raw));
-zm(st) = 1; 
-if length(dar) ~= length(zm)
-    n = 0;
-end
-zm1 = dar.*zm;
-st1 = find(zm1);
-inds = [];
-for ii = 1:length(st1)
-    inds(ii) = find(st == st1(ii));
-end
-se1 = se(inds);
 

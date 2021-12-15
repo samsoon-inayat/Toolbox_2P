@@ -5,7 +5,7 @@ while 1
     si = [Ar_t_D ArL_t_D Ars_t_D];
     si = [Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-    si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
+%     si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
     si = [Lb_T Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Lbs_T Abs_t_T Abs_i_T ArL_L_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
@@ -18,6 +18,7 @@ while 1
         [mRsCT(:,ii),~] = calc_mean_rasters(RsC(:,1),trials{ii});
     end
     allmRsT{cn} = mRsCT;
+    allRsC{cn} = RsC;
     end
     disp('Done');
     %%
@@ -146,9 +147,9 @@ while 1
         allresp = [allresp resp]; all_peakL = [all_peakL peak_locations];
     end
     i_allresp = cell_list_op(allresp,[],'not');
-%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05,0);
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05,0);
 %     [AS,mAS,semAS,AS_mat] = get_average_shift(all_peakL(an,:));
-    [OI,mOI,semOI,OI_mat,mOIM,semOIM,OIM_mat] = get_average_shift(all_peakL(an,:));
+%     [OI,mOI,semOI,OI_mat,mOIM,semOIM,OIM_mat] = get_average_shift(all_peakL(an,:));
 %     [OI,mOI,semOI,OI_mat,mOIM,semOIM,OIM_mat] = get_resp_to_non_resp(all_peakL(an,:));
     break;
 end
@@ -168,7 +169,7 @@ while 1
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
 %     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 5 2 2]);
+    hf = get_figure(6,[8 5 3.5 3.5]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
@@ -264,21 +265,31 @@ while 1   %%
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 5 7 7]);
+    hf = get_figure(6,[8 3 3.5 3.5]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    plot([10.5 10.5],[0 30.5],'r'); plot([20.5 20.5],[0 30.5],'r');
-    plot([0 30.5],[10.5 10.5],'r'); plot([0 30.5],[20.5 20.5],'r');
+    plot([10.5 10.5],[0 130.5],'r'); plot([30.5 30.5],[0 130.5],'r'); plot([90.5 90.5],[0 130.5],'r'); plot([100.5 100.5],[0 130.5],'r'); plot([120.5 120.5],[0 130.5],'r');
+
+    plot([0 130.5],[10.5 10.5],'r'); plot([0 130.5],[30.5 30.5],'r'); plot([0 130.5],[90.5 90.5],'r'); plot([0 130.5],[110.5 110.5],'r'); plot([0 130.5],[120.5 120.5],'r');
+    
+%     plot([90.5 90.5],[0 130.5],'r'); plot([90.5 90.5],[0 130.5],'r');
+%     plot([0 130.5],[10.5 10.5],'r'); plot([0 130.5],[30.5 30.5],'r');
+
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
     ttxl = rasterNamesTxt(siG);
-    set(gca,'xtick',1:length(ttxl),'ytick',1:length(ttxl),'xticklabels',ttxl,'yticklabels',ttxl,'Ydir','reverse'); xtickangle(45);
-    text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
+    xtickvals = 5:10:130;%[5 15 25 60 100 115 125];
+%     si = [Lb_T Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Lbs_T Abs_t_T Abs_i_T ArL_L_T];
+    xticklabels = {'Lb','Ab-t','Ab-i','Ar-t','Ar-i','ArL-t','ArL-i','Ar*-t','Ar*-i','Lb*','Ab*-t','Ab*-i','ArL-L'};
+
+    set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);
+%     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box on
     changePosition(gca,[0.03 0 -0.04 0]);
     hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
+    colormap parula
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
     %%
     break;

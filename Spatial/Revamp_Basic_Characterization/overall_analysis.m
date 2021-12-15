@@ -10,10 +10,20 @@ Rs = o.Rs(:,si); mRs = o.mR(:,si);
 % RsR = o.Rs(:,si);
 props1 = get_props_Rs(Rs,50);
 
-% resp_all = props1.good_FR;
-% resp = get_cell_list(resp_all,[3]);
-% resp = [resp(:,1:3) resp];
-resp = props1.good_Gauss_loose;
+siAb = [Ab_T Abs_T];
+RsAb = o.Rs(:,siAb);mRAb = o.mR(:,siAb);
+ntrials = 50;
+props1Ab = get_props_Rs(RsAb,ntrials);
+exc = props1Ab.good_FR_and_exc;     sup = props1Ab.good_FR_and_inh;    com = props1Ab.good_FR_and_untuned;
+
+respE_OR = cell_list_op(exc,[],'or');
+respS_OR = cell_list_op(sup,[],'or');
+respC_OR = cell_list_op(com,[],'or'); 
+
+% resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1) resp_nb];% resp = props1.good_FR;
+resp = repmat(respE_OR(:,1),1,11);
+
+
 view_population_vector(Rs,mRs,resp,100);
 %%
 view_population_vector_corr(Rs,mRs,1,200);
@@ -27,6 +37,8 @@ while 1
     si = [MOn_T MOff_T Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
     resp = [ speed_tuned_cells props1.good_FR];% resp_speed];
+    si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; 
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
     si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; 
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
     resp = props1.good_FR;

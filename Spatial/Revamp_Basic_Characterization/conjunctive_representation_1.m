@@ -19,7 +19,7 @@ while 1
     Ar_i_D = 7; Ar_i_T = 13; ArL_i_D = 9; ArL_i_T = 15; Ars_i_D = 11; Ars_i_T = 17;
     MOn_T = 18; MOff_T = 19;
     
-%     [speedRs,resp_speed] = get_speed_response(ei);
+    [speedRs,resp_speed] = load_speed_response(ei);
 %     all_xl{ii+1} = 'sp';
 %     resp = [o.resp.vals resp_speed];
   
@@ -116,10 +116,9 @@ end
 
 %% compare the zMIs
 while 1
-    ntrials = 50;
-    si = si_seqG;%si_no_brake_dist; 
-    Rs = o.Rs(:,si)
-    props1 = get_props_Rs(Rs,ntrials);
+    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
     good_FR = props1.good_FR;
     all_zMIs = props1.zMI;
     zMIs = [];
@@ -137,7 +136,7 @@ while 1
 %     ra.mauchly
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-    xdata = xdataG;
+    xdata = make_xdata([3 2 3 3],[1 1.5]);
     ptab = 0;
     if ptab h(h==1) = 0; end
     hf = get_figure(5,[8 7 1.75 1]);

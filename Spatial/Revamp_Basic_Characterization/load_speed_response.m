@@ -27,9 +27,9 @@ n = 0;
 
 while 1
     for an = 1:5
-        d.bcs = speedRs{an}.bin_centers;
-        d.FR = speedRs{an}.FR_vs_speed;
-        fitg = speedRs{an}.fits.gauss; fits = speedRs{an}.fits.sigmoid; fitl = speedRs{an}.fits.linear;
+        d.bcs = speedRs{an,1}.bin_centers;
+        d.FR = speedRs{an,1}.FR_vs_speed;
+        fitg = speedRs{an,1}.fits.gauss; fits = speedRs{an,1}.fits.sigmoid; fitl = speedRs{an,1}.fits.linear;
         d.fFRl = fitl.fitted; d.fFRs = fits.fitted; d.fFRg = fitg.fitted;
         d.cl = fitl.coeffsrs(:,3); d.cs = fits.coeffsrs(:,3); d.cg = fitg.coeffsrs(:,3);
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
@@ -39,4 +39,22 @@ while 1
         resp_speed{an,1} = inds';
     end
     break;
+end
+%%
+for ii = 1:length(ei)
+    tei = ei{ii};
+    psp = [];
+    psp1 = tei.plane{1}.speed_response.McN;
+    if length(tei.plane) == 2
+        psp2 = tei.plane{2}.speed_response.McN;
+        psp.speed_resp = [psp1.speed_resp;psp2.speed_resp];
+        psp.speed_tuning_inc = [psp1.speed_tuning_inc;psp2.speed_tuning_inc];
+        psp.speed_tuning_dec = [psp1.speed_tuning_dec;psp2.speed_tuning_dec];
+        
+        speedRs{ii,2} = psp;
+        resp_speed{ii,2} = psp.speed_resp;
+    else
+        speedRs{ii,2} = psp1;
+        resp_speed{ii,2} = psp1.speed_resp;
+    end
 end

@@ -6,7 +6,7 @@ while 1
     siT = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T]; si = siT; RsT = o.Rs(:,si); mRT = o.mR(:,si);
     propsD = get_props_Rs(RsD,50); propsT = get_props_Rs(RsT,50);
     
-    dzMI = prop_op(propsD,propsT,0.1);
+    dzMI = prop_op(propsD,propsT,0);
 %     gFR_D_g_T = cell_list_op(props1S.good_FR,dzMI.resp_D_g_T,'and');
 %     gFR_T_g_D = cell_list_op(props1S.good_FR,dzMI.resp_T_g_D,'and');
     mean_diff = exec_fun_on_cell_mat(dzMI.diff_D_T,'nanmean');
@@ -147,7 +147,7 @@ while 1
     resp = dzMI.resp_T_g_D;
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 6],...
         'spaceRowsCols',[0 -0.03],'rightUpShifts',[0.055 0.1],'widthHeightAdjustment',...
-        [25 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 5 5 1.5]);
+        [25 -60]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 5 1.5]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
@@ -381,9 +381,8 @@ while 1
     save_pdf(hf,mData.pdf_folder,sprintf('diff_ST_all_pooled.pdf'),600);
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi_TI_Cond','hsd'},[1 1 1]);
-    h(h==1) = 0;
-    xdata = make_xdata([3 3 3 3],[1 2]);
-    hf = get_figure(5,[8 7 3 1]);
+    xdata = make_xdata([3 3 3
+    hf = get_figure(5,[8 7 6.99 1.5]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
 
@@ -395,9 +394,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     txl = rasterNamesTxt([siD siT]); 
     xticks = xdata; xticklabels = xlabels%{'DistE','TimeE','DistE','TimeE'};
-    xticks = xdata; xticklabels = {'Ar-t','ArL-t','Ar*-t','Ar-i','ArL-i','Ar*-i','Ar-t','ArL-t','Ar*-t','Ar-i','ArL-i','Ar*-i'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-%     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 (100)]); xtickangle(45);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 (100)]); xtickangle(45);
     changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
 %     save_pdf(hf,mData.pdf_folder,sprintf('diff_ST_all.pdf'),600);
     %%
@@ -441,24 +438,7 @@ while 1
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
     changePosition(gca,[0.15 0.0 -0.25 -0.03]); put_axes_labels(gca,{[],[0 0 0]},{{'Peak Locations (cm)'},[0 -20 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Peak_Locations_DiTI_TI_pooled_dist.pdf'),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi_TI_Cond','hsd'},[1 1 1]);
-    xdata = make_xdata([3 3 3 3],[1 2]);
-    hf = get_figure(5,[8 7 6.99 1.5]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = colors;
-
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',10);
-
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    txl = rasterNamesTxt([siD siT]); 
-    xticks = xdata; xticklabels = xlabels%{'DistE','TimeE','DistE','TimeE'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 (100)]); xtickangle(45);
-    changePosition(gca,[-0.01 -0.02 -0.05 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Peak Locations (cm)',[0 0 0]});
-%     save_pdf(hf,mData.pdf_folder,sprintf('diff_ST_all.pdf'),600);
+    
     %%
     break;
 end
@@ -550,7 +530,7 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 5 1.25 2]);
+    set(hf,'Position',[7 3 1.25 2]);
     set(H,'linewidth',1);
     set(gca,'yticklabels',txl(TC));ytickangle(30);
     format_axes(gca);
@@ -607,7 +587,7 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 5 1.25 2]);
+    set(hf,'Position',[7 3 1.25 2]);
     set(H,'linewidth',1);
     set(gca,'yticklabels',txl(TC));ytickangle(30);
     format_axes(gca);
