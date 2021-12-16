@@ -69,11 +69,32 @@ for ii = 1:length(ei)
 end
 toc
 
+%%
+tic
+for ii = 1:length(ei)
+    ei(ii) = get_speed_response_gauss(ei(ii),[1 0]);
+end
+toc
+
+%%
+tic
+for ii = 1:length(ei)
+    ei(ii) = get_accel_response_gauss(ei(ii),[0 1]);
+end
+toc
+
 
 %%
 for ii = 1:length(ei)
     min_speed(ii) = min(ei{ii}.b.fSpeed);
     max_speed(ii) = max(ei{ii}.b.fSpeed);
+    
+    t_accel = diff(ei{ii}.b.fSpeed)./diff(ei{ii}.b.ts);
+    samplingRate = floor(1/(ei{ii}.b.si*1e-6));
+    coeffs = ones(1, samplingRate)/samplingRate;
+    ft_accel = filter(coeffs, 1, t_accel);
+    min_accel(ii) = min(ft_accel);
+    max_accel(ii) = max(ft_accel);
 end
 %%
 %%

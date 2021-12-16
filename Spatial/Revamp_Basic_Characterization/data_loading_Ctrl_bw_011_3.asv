@@ -63,9 +63,16 @@ for ii = 1:length(ei)
 end
 toc
 %%
-
+tic
 for ii = 1:length(ei)
-    ei1(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
+    ei(ii) = get_speed_response(ei(ii),[0 0]);
+end
+toc
+
+%%
+tic
+for ii = 1:length(ei)
+    ei1(ii) = get_speed_response_gauss(ei(ii),[0 0]);
 end
 toc
 
@@ -74,6 +81,10 @@ toc
 for ii = 1:length(ei)
     min_speed(ii) = min(ei{ii}.b.fSpeed);
     max_speed(ii) = max(ei{ii}.b.fSpeed);
+    
+    t_accel = diff(ei{ii}.b.fSpeed)./diff(ei{ii}.b.ts);
+    min_accel(ii) = min(t_accel);
+    max_accel(ii) = max(t_accel);
 end
 %%
 %%

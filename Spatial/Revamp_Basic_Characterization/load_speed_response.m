@@ -1,4 +1,4 @@
-function [speedRs,resp_speed] = get_speed_response(ei)
+function [speedRs,resp_speed,pR] = get_speed_response(ei)
 
 
 var_names = {'linear','sigmoid','gauss'};
@@ -33,7 +33,8 @@ while 1
         d.fFRl = fitl.fitted; d.fFRs = fits.fitted; d.fFRg = fitg.fitted;
         d.cl = fitl.coeffsrs(:,3); d.cs = fits.coeffsrs(:,3); d.cg = fitg.coeffsrs(:,3);
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
-        inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
+        inds = centers < 1 | centers > 39 | rs < 0.3 | PWs < 10;% | PWs > 20 | PWs < 10;
+        inds = centers < 1 | centers > 39 | PWs < 1 | PWs > 40 | rs < 0.3;
         inds = ~inds;
         pR(an) = 100*sum(inds)/length(inds);
         resp_speed{an,1} = inds';
@@ -51,10 +52,14 @@ for ii = 1:length(ei)
         psp.speed_tuning_inc = [psp1.speed_tuning_inc;psp2.speed_tuning_inc];
         psp.speed_tuning_dec = [psp1.speed_tuning_dec;psp2.speed_tuning_dec];
         
+        psp.bins = psp1.bins;
         speedRs{ii,2} = psp;
         resp_speed{ii,2} = psp.speed_resp;
+        resp_speed{ii,3} = abs(psp.speed_resp);
     else
         speedRs{ii,2} = psp1;
         resp_speed{ii,2} = psp1.speed_resp;
+        resp_speed{ii,3} = abs(psp1.speed_resp);
     end
 end
+

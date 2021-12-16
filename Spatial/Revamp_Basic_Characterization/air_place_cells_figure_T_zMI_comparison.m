@@ -14,6 +14,9 @@ while 1
     dzMI = prop_op(propsD,propsT,mDiff+sDiff);
     gFR_D_g_T = dzMI.resp_D_g_T;
     gFR_T_g_D = dzMI.resp_T_g_D;
+    gFR_D_g_T = cell_list_op(dzMI.resp_D_g_T,propsD.good_FR,'and');
+    gFR_T_g_D = cell_list_op(dzMI.resp_T_g_D,propsD.good_FR,'and');
+    gFR_Comp = cell_list_op(dzMI.resp_complex,propsD.good_FR,'and');
 %     [dzMI.resp_D_g_T_perc;dzMI.resp_T_g_D_perc]
     gauss = propsD.good_FR_and_Gauss_loose; n_gauss = propsD.good_FR_and_notGauss_loose;
     break;
@@ -621,81 +624,101 @@ end
 
 %% compare responsivity in gauss n_gauss D>T and T>D
 while 1
-    resp = [gFR_D_g_T gFR_T_g_D gauss n_gauss];
+    resp = [gauss n_gauss gFR_D_g_T gFR_T_g_D gFR_Comp];
     perc_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
-    [within,dvn,xlabels] = make_within_table({'DiTi','Cond'},[4,3]);
+    [within,dvn,xlabels] = make_within_table({'DiTi','Cond'},[5,3]);
     dataT = make_between_table({perc_resp},dvn);
     ra = RMA(dataT,within);
     ra.ranova
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi_TI_Cond','hsd'},[1 1 1]);
-    h(h==1) = 0;
-    xdata = make_xdata([3 3 3 3],[1 2]); 
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = repmat(mData.colors(1:6),2,1);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-%     maxY = maxY;
-    make_bars_hollow(hbs(7:end));
-    ylims = ylim;
-    format_axes(gca);
-    maxY1 = maxY;
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Ar-t-D','ArL-t-D','Ar*-t-D','Ar-i-D','ArL-i-D','Ar*-i-D','Ar-t-T','ArL-t-T','Ar*-t-T','Ar-i-T','ArL-i-T','Ar*-i-T'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.07 0.0 -0. -0.03]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('responsive_cells_zMID_zMIT.pdf'),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi_by_Cond','hsd'},[1 1 1]);
-    xdata = make_xdata([3 3 3 3],[1 2]); 
-    hf = get_figure(5,[8 7 1.25 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = repmat(mData.dcolors(1:3),4,1);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-%     maxY = maxY;
-    make_bars_hollow(hbs(3:end));
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Trials','I-Trials'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 50]); xtickangle(45);
-    changePosition(gca,[0.15 0.0 -0.25 -0.03]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('responsive_cells_zMID_zMIT_pooled_DiTi_TI.pdf'),600);
+    
+    
+    
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi','hsd'},[1 1 1]);
-    xdata = make_xdata([2 2],[1 2]); 
+    xdata = make_xdata([2,3],[1 2]); 
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = repmat(mData.dcolors(3),4,1);
+    tcolors = repmat(mData.dcolors(1:5),4,1);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 %     maxY = maxY;
-    make_bars_hollow(hbs(2:end));
+%     make_bars_hollow(hbs(2:end));
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY1]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dist','Time'};
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gT','gU','Dist','Time','Comp'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    changePosition(gca,[0.06 0.05 -0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('percent_DiTi_trials.pdf'),600);
+    
+    %%
+    break;
+end
+
+%% compare zMI in gauss n_gauss D>T and T>D
+while 1
+    all_zMI_C = exec_fun_on_cell_mat(propsD.zMI,'nanmean',gFR_Comp);
+    all_zMI_D = exec_fun_on_cell_mat(propsD.zMI,'nanmean',gFR_D_g_T);
+    all_zMI_T = exec_fun_on_cell_mat(propsD.zMI,'nanmean',gFR_T_g_D);
+    all_zMI_G = exec_fun_on_cell_mat(propsD.zMI,'nanmean',gauss);
+    all_zMI_nG = exec_fun_on_cell_mat(propsD.zMI,'nanmean',n_gauss);
+    [within,dvn,xlabels] = make_within_table({'DiTi','Cond'},[5,3]);
+    dataT = make_between_table({all_zMI_G,all_zMI_nG,all_zMI_D,all_zMI_T,all_zMI_C},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+   
+    
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi','hsd'},[1 1 1]);
+    xdata = make_xdata([2 3],[1 2]); 
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = repmat(mData.dcolors(1:5),4,1);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+%     make_bars_hollow(hbs(2:end));
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gT','gU','Dist','Time','Comp'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.05 0.0 -0.5 -0.08]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
+    changePosition(gca,[0.06 0.05 -0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'zMI'},[0 0 0]});
 %     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
-    save_pdf(hf,mData.pdf_folder,sprintf('responsive_cells_zMID_zMIT_pooled_DiTi.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('zMIs_DiTi_trials.pdf'),600);
+
+%%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi_by_Cond','hsd'},[1 1 1]);
+    xdata = make_xdata([3 3 3 3 3],[1 2]); 
+    hf = get_figure(5,[8 7 3.25 3]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = repmat(mData.dcolors(1:5),4,1);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+%     make_bars_hollow(hbs(2:end));
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Ar','ArL','Ar*'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.06 0.05 -0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'zMI'},[0 0 0]});
+%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('zMIs_DiTi_by_Cond_trials.pdf'),600);
     
     %%
     break;
 end
 
 
-
 %% Overlap Indices ImageSC gauss n gauss d>t t>d
 while 1
     ntrials = 50;
     si = siS;
-    resp = [gFR_D_g_T gFR_T_g_D gauss n_gauss];
+    resp = [gFR_D_g_T gFR_T_g_D gFR_Comp gauss n_gauss];
 %     resp = [dzMI.resp_T_g_D props1S.good_FR];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
@@ -706,12 +729,12 @@ while 1
     minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = [{'D-Ar'}    {'D-ArL'}    {'D-Ar*'}    {'T-Ar'}    {'T-ArL'}    {'T-Ar*'} {'G-Ar'}    {'G-ArL'}    {'G-Ar*'}    {'nG-Ar'}    {'nG-ArL'}    {'nG-Ar*'} ]; 
+    txl = [{'Dist-Ar'}    {'Dist-ArL'}    {'Dist-Ar*'}    {'Time-Ar'}    {'Time-ArL'}    {'Time-Ar*'} {'Comp-Ar'}    {'Comp-ArL'}    {'Comp-Ar*'} {'gT-Ar'}    {'gT-ArL'}    {'gT-Ar*'}    {'gU-Ar'}    {'gU-ArL'}    {'gU-Ar*'} ]; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.5 1.5]);
+    hf = get_figure(5,[8 7 2.5 2.5]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
@@ -735,14 +758,14 @@ while 1
     Di = pdist(mOI1);
     tree = linkage(Di);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 5 1.25 2]);
+    set(hf,'Position',[7 5 2.25 1.25]);
     set(H,'linewidth',1);
-    set(gca,'yticklabels',txl(TC));ytickangle(30);
+    set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 0.05 0.05]);
+    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.05 0]);
+    changePosition(gca,[0.03 0.0 0.05 0.01]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster_DT_T.pdf'),600);
     %%
     break;

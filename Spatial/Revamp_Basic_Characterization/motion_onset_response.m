@@ -156,7 +156,7 @@ while 1
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1A = get_props_Rs(o.Rs,ntrials);
     respO = [props1A.good_FR(:,si)];% resp_speed];
-    resp = [props1.vals respO];% resp_speed];
+    resp = [resp_speed(:,1) props1.vals respO];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
@@ -166,12 +166,12 @@ while 1
     minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = [{'M-On','M-Off'} rasterNamesTxt(si)]; 
+    txl = [{'M-On','M-Off','Speed'} rasterNamesTxt(si)]; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.5 1.5]);
+    hf = get_figure(5,[8 7 2 2]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;

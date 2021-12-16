@@ -21,6 +21,7 @@ for rr = 1:size(prop1,1)
             th = thi;
         end
         resp_diff_D_g_T{rr,cc} = diff_D_T{rr,cc} > th; resp_diff_T_g_D{rr,cc} = -diff_D_T{rr,cc} > th;
+        resp_diff_complex{rr,cc} = diff_D_T{rr,cc} < th & -diff_D_T{rr,cc} < th;
         per_resp_d_D_g_T(rr,cc) = 100*sum(resp_diff_D_g_T{rr,cc})/length(zMI_D);
         per_resp_d_T_g_D(rr,cc) = 100*sum(resp_diff_T_g_D{rr,cc})/length(zMI_D);
     end
@@ -28,6 +29,7 @@ end
 
 o.resp_D_g_T = resp_diff_D_g_T;
 o.resp_T_g_D = resp_diff_T_g_D;
+o.resp_complex = resp_diff_complex;
 o.resp_D_g_T_perc = per_resp_d_D_g_T;
 o.resp_T_g_D_perc = per_resp_d_T_g_D;
 o.diff_D_T = diff_D_T;

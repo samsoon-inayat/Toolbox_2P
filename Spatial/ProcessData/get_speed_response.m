@@ -31,9 +31,13 @@ speed = ei.b.fSpeed(ei.plane{pp}.b.frames_f);
 speed = speed(1:size(activity,2));
 out.corr = corr(activity',speed');
 
-min_speed = 1; max_speed = 30;
+min_speed = 1; max_speed = 40;
 bin_incr = 1;
 bins = min_speed:bin_incr:max_speed;
+
+min_speed = 1; max_speed = 30;
+bin_incr = 1;
+new_bins = min_speed:bin_incr:max_speed;
 for ii = 1:(length(bins)-1)
     st = bins(ii);
     se = bins(ii+1);
@@ -41,7 +45,7 @@ for ii = 1:(length(bins)-1)
     inds = find(speed > st & speed < se);
     cell_act(:,ii) = nanmean(activity(:,inds),2);
 end
-out.McN = find_cellular_speed_tuning_McN(ei,pp,bins,activity,owr(1));
+out.McN = find_cellular_speed_tuning_McN(ei,pp,new_bins,activity,owr(1));
 out.fits = find_cellular_speed_tuning(ei,pp,bin_centers,cell_act,owr(2));
 out.FR_vs_speed = cell_act;
 out.bin_centers = bin_centers;
@@ -51,6 +55,7 @@ n = 0;
 file_name = fullfile(ei.plane{pp}.folder,sprintf('speed_tuning_McN.mat'));
 if exist(file_name,'file') && owr == 0
     out = load(file_name);
+    out.bins = bins;
     return;
 end
 
@@ -98,6 +103,7 @@ end
 out.speed_tuning_inc = speed_tuning_inc;
 out.speed_tuning_dec = speed_tuning_dec;
 out.speed_resp = speed_cell_resp;
+out.bins = bins;
 save(file_name,'-struct','out','-v7.3');
     
 

@@ -19,7 +19,7 @@ while 1
     Ar_i_D = 7; Ar_i_T = 13; ArL_i_D = 9; ArL_i_T = 15; Ars_i_D = 11; Ars_i_T = 17;
     MOn_T = 18; MOff_T = 19;
     
-    [speedRs,resp_speed] = load_speed_response(ei);
+    [speedRs,resp_speed,speed_percent] = load_speed_response(ei);
 %     all_xl{ii+1} = 'sp';
 %     resp = [o.resp.vals resp_speed];
   
@@ -841,6 +841,7 @@ while 1
 %     props1 = get_props_Rs(o.Rs(:,si),[40,70]);
 %     props1 = get_props_Rs(o.Rs(:,si),[10,40]);
     resp = [props1.good_FR];% resp_speed];
+%     resp(:,9:11) = props1.good_FR_IT(:,9:11);
 %     resp = [resp(:,1:8) props1.good_FR_and_tuned(:,9:11)];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
@@ -859,12 +860,12 @@ while 1
     hf = get_figure(5,[8 7 1.5 1.5]);
     %
 %     axes(ff.h_axes(1));
-    im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
 %     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',[],'Ydir','reverse'); xtickangle(45);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
 %     text(-0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); 
     set(gca,'Ydir','normal');ytickangle(20);
     box on
@@ -924,14 +925,14 @@ while 1
     tree = linkage(mOI1,'average','euclidean');
 %     tree = linkage(Di,'average');
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 1.25 2]);
+    set(hf,'Position',[7 3 1.75 1]);
     set(H,'linewidth',1);
-    set(gca,'yticklabels',txl(TC));ytickangle(30);
+    set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 0.05 0.05]);
+    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
+    changePosition(gca,[0.03 0.0 0.05 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;

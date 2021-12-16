@@ -6,14 +6,17 @@ while 1
     siT = [Ar_i_T ArL_i_T Ars_i_T]; si = siT; RsT = o.Rs(:,si); mRT = o.mR(:,si);
     propsD = get_props_Rs(RsD,50); propsT = get_props_Rs(RsT,50);
     
-    dzMI = prop_op(propsD,propsT,0.1);
+    dzMI = prop_op(propsD,propsT,0);
 %     gFR_D_g_T = cell_list_op(props1S.good_FR,dzMI.resp_D_g_T,'and');
 %     gFR_T_g_D = cell_list_op(props1S.good_FR,dzMI.resp_T_g_D,'and');
     mean_diff = exec_fun_on_cell_mat(dzMI.diff_D_T,'nanmean');
     mDiff = mean(mean_diff(:)); sDiff = std(mean_diff(:));
     dzMI = prop_op(propsD,propsT,mDiff+sDiff);
     gFR_D_g_T = dzMI.resp_D_g_T;
-    gFR_T_g_D = dzMI.resp_T_g_D;
+    gFR_T_g_D = dzMI.resp_T_g_D; gFR_Comp = dzMI.resp_complex;
+%     gFR_D_g_T = cell_list_op(dzMI.resp_D_g_T,propsD.good_FR,'and');
+%     gFR_T_g_D = cell_list_op(dzMI.resp_T_g_D,propsD.good_FR,'and');
+%     gFR_Comp = cell_list_op(dzMI.resp_complex,propsD.good_FR,'and');
 %     [dzMI.resp_D_g_T_perc;dzMI.resp_T_g_D_perc]
     gauss = propsT.good_FR_and_Gauss_loose; n_gauss = propsT.good_FR_and_notGauss_loose;
     break;
@@ -526,124 +529,103 @@ while 1
     break;
 end
 
-%% Overlap Indices ImageSC zMID>zMIT
+
+
+%% compare responsivity in gauss n_gauss D>T and T>D
 while 1
-    ntrials = 50;
-    si = siS;
-    resp = [dzMI.resp_D_g_T props1S.good_FR];% resp_speed];
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
-    sz = size(mOI,1);
-%     mOI = OI_mat(:,:,4);
-    oM = ones(size(mOI));
-    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);    
-    minI = min([mOI(:);semOI(:)]);
+    resp = [gauss n_gauss gFR_D_g_T gFR_T_g_D gFR_Comp];
+    perc_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
+    [within,dvn,xlabels] = make_within_table({'DiTi','Cond'},[5,3]);
+    dataT = make_between_table({perc_resp},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
     
-    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = [{'D-Ar-t-D'}    {'D-ArL-t-D'}    {'D-Ar*-t-D'}    {'D-Ar-i-D'}    {'D-ArL-i-D'}    {'D-Ar*-i-D'} rasterNamesTxt(si)]; 
-%     mOI = mOI .* mask;
-    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-    imAlpha(mask1 == 1) = 0;
-%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.5 1.5]);
-    %
-%     axes(ff.h_axes(1));
-    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
-    format_axes(gca);
-    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
-    text(0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
-    box on
-    changePosition(gca,[0.03 0 -0.04 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean_DT.pdf',ntrials),600);
+        
     %%
-    break;
-end
-
-%% agglomerative hierarchical clustering zMID>zMIT
-while 1
-    mOI1 = mOI;
-    mOI1(isnan(mOI1)) = 1;
-    Di = pdist(mOI1);
-    tree = linkage(Di);
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
-    hf = gcf;
-    set(hf,'Position',[7 3 1.25 2]);
-    set(H,'linewidth',1);
-    set(gca,'yticklabels',txl(TC));ytickangle(30);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi','hsd'},[1 1 1]);
+    xdata = make_xdata([2,3],[1 2]); 
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = repmat(mData.dcolors(1:5),4,1);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+%     make_bars_hollow(hbs(2:end));
+    ylims = ylim;
     format_axes(gca);
-    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 0.05 0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster_DT.pdf'),600);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gTt','gUt','Dist','Time','Comp'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    changePosition(gca,[0.06 0.05 -0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('percent_DiTi_Itrials.pdf'),600);
+
     %%
-    break;
-end
-
-
-%% Overlap Indices ImageSC zMIT>zMID
-while 1
-    ntrials = 50;
-    si = siS;
-    resp = [dzMI.resp_T_g_D props1S.good_FR];% resp_speed];
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
-    sz = size(mOI,1);
-%     mOI = OI_mat(:,:,4);
-    oM = ones(size(mOI));
-    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);    
-    minI = min([mOI(:);semOI(:)]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = make_xdata([3],[1 2]); 
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = repmat(mData.dcolors(1:5),4,1);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+%     make_bars_hollow(hbs(2:end));
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Ar','ArL','Ar*'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    changePosition(gca,[0.06 0.05 -0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('percent_Cond_Itrials.pdf'),600);
     
-    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = [{'T-Ar-t-T'}    {'T-ArL-t-T'}    {'T-Ar*-t-T'}    {'T-Ar-i-T'}    {'T-ArL-i-T'}    {'T-Ar*-i-T'} rasterNamesTxt(si)]; 
-%     mOI = mOI .* mask;
-    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-    imAlpha(mask1 == 1) = 0;
-%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.5 1.5]);
-    %
-%     axes(ff.h_axes(1));
-    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
-    format_axes(gca);
-    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
-    text(0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
-    box on
-    changePosition(gca,[0.03 0 -0.04 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean_DT_T.pdf',ntrials),600);
     %%
     break;
 end
 
-%% agglomerative hierarchical clustering zMIT>zMID
+%% compare zMI in gauss n_gauss D>T and T>D
 while 1
-    mOI1 = mOI;
-    mOI1(isnan(mOI1)) = 1;
-    Di = pdist(mOI1);
-    tree = linkage(Di);
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
-    hf = gcf;
-    set(hf,'Position',[7 3 1.25 2]);
-    set(H,'linewidth',1);
-    set(gca,'yticklabels',txl(TC));ytickangle(30);
+    all_zMI_C = exec_fun_on_cell_mat(propsT.zMI,'nanmean',gFR_Comp);
+    all_zMI_D = exec_fun_on_cell_mat(propsT.zMI,'nanmean',gFR_D_g_T);
+    all_zMI_T = exec_fun_on_cell_mat(propsT.zMI,'nanmean',gFR_T_g_D);
+    all_zMI_G = exec_fun_on_cell_mat(propsT.zMI,'nanmean',gauss);
+    all_zMI_nG = exec_fun_on_cell_mat(propsT.zMI,'nanmean',n_gauss);
+    [within,dvn,xlabels] = make_within_table({'DiTi','Cond'},[5,3]);
+    dataT = make_between_table({all_zMI_G,all_zMI_nG,all_zMI_D,all_zMI_T,all_zMI_C},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+   
+    
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'DiTi','hsd'},[1 1 1]);
+    xdata = make_xdata([2 3],[1 2]); 
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = repmat(mData.dcolors(1:5),4,1);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+%     maxY = maxY;
+%     make_bars_hollow(hbs(2:end));
+    ylims = ylim;
     format_axes(gca);
-    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 0.05 0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster_DT_T.pdf'),600);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'gTt','gUt','Dist','Time','Comp'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.06 0.05 -0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'zMI'},[0 0 0]});
+%     ht = title('Across Lb and Lb*'); changePosition(ht,[-1 0 0]);
+    save_pdf(hf,mData.pdf_folder,sprintf('zMIs_DiTi_Itrials.pdf'),600);
+    
     %%
     break;
 end
 
-%% Overlap Indices ImageSC gauss ngauss d.t t>d
+
+%% Overlap Indices ImageSC gauss n gauss d>t t>d
 while 1
     ntrials = 50;
     si = siS;
-    resp = [gFR_D_g_T gFR_T_g_D gauss n_gauss];
+    resp = [gFR_D_g_T gFR_T_g_D gFR_Comp gauss n_gauss];
 %     resp = [dzMI.resp_T_g_D props1S.good_FR];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
@@ -654,12 +636,12 @@ while 1
     minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = [{'D-Ar'}    {'D-ArL'}    {'D-Ar*'}    {'T-Ar'}    {'T-ArL'}    {'T-Ar*'} {'G-Ar'}    {'G-ArL'}    {'G-Ar*'}    {'nG-Ar'}    {'nG-ArL'}    {'nG-Ar*'} ]; 
+    txl = [{'Dist-Ar'}    {'Dist-ArL'}    {'Dist-Ar*'}    {'Time-Ar'}    {'Time-ArL'}    {'Time-Ar*'} {'Comp-Ar'}    {'Comp-ArL'}    {'Comp-Ar*'} {'gTt-Ar'}    {'gTt-ArL'}    {'gTt-Ar*'}    {'gUt-Ar'}    {'gUt-ArL'}    {'gUt-Ar*'} ]; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.5 1.5]);
+    hf = get_figure(5,[8 7 2 2]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
@@ -676,21 +658,21 @@ while 1
     break;
 end
 
-%% agglomerative hierarchical clustering zMIT>zMID
+%% agglomerative hierarchical clustering 
 while 1
     mOI1 = mOI;
     mOI1(isnan(mOI1)) = 1;
     Di = pdist(mOI1);
     tree = linkage(Di);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 5 1.25 2]);
+    set(hf,'Position',[7 5 2.25 1.25]);
     set(H,'linewidth',1);
-    set(gca,'yticklabels',txl(TC));ytickangle(30);
+    set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 0.05 0.05]);
+    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.05 0]);
+    changePosition(gca,[0.03 0.0 0.05 0.01]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster_DT_IT.pdf'),600);
     %%
     break;
