@@ -19,7 +19,7 @@ while 1
     Ar_i_D = 7; Ar_i_T = 13; ArL_i_D = 9; ArL_i_T = 15; Ars_i_D = 11; Ars_i_T = 17;
     MOn_T = 18; MOff_T = 19;
     
-    [speedRs,resp_speed,speed_percent] = load_speed_response(ei);
+    [speedRs,resp_speed,speed_percent,speed_Gauss] = load_speed_response(ei);
 %     all_xl{ii+1} = 'sp';
 %     resp = [o.resp.vals resp_speed];
   

@@ -76,12 +76,12 @@ for ii = 1:length(ei)
 end
 toc
 
-%%
-tic
-for ii = 1:length(ei)
-    ei(ii) = get_accel_response_gauss(ei(ii),[0 1]);
-end
-toc
+%% this information is already in the previous function
+% tic
+% for ii = 1:length(ei)
+%     ei(ii) = get_accel_response_gauss(ei(ii),[0 1]);
+% end
+% toc
 
 
 %%

@@ -156,7 +156,7 @@ while 1
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1A = get_props_Rs(o.Rs,ntrials);
     respO = [props1A.good_FR(:,si)];% resp_speed];
-    resp = [props1.vals resp_speed(:,[4,5]) respO];% resp_speed];
+    resp = [resp_speed(:,4) respO];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);

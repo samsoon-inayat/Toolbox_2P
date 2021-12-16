@@ -355,7 +355,7 @@ end
 
 
 
-%%
+%% exploring McN speed curves
 while 1
     %%
     an = 4; 
@@ -377,6 +377,38 @@ while 1
         figure(100000);clf;plot(bins,velocity_tuning,'.');hold on;
         plot(bins,f_vt);
         pause(0.1);
+    end
+    %%
+    break;
+end
+
+%% speed gauss shuffle
+while 1
+    speedRG = speedRs(:,3);
+    for ii = 1:length(speedRG)
+        tsrg = speedRG{ii};
+        gaussR = tsrg.fits.gaussR;
+        bcs = tsrg.bin_centers;
+        [rs,MFR,centers,PWs] = get_gauss_fit_parameters(gaussR.coeffsrs,bcs(2)-bcs(1));
+        nshuffle = size(gaussR.coeffsrsS,3);
+        for jj = 1:nshuffle
+            tcoeff = gaussR.coeffsrsS(:,:,jj);
+            [rsS(jj,:),~,~,~] = get_gauss_fit_parameters(tcoeff,bcs(2)-bcs(1));
+        end
+        rsST = rsS';
+        rs_r = repmat(rs',1,nshuffle);
+        p_vals = sum(rs_r > rsST,2)/nshuffle;
+        sp_cells = p_vals > 0.95;
+        for cn = 1:length(sp_cells)
+            if sp_cells(cn) == 0
+                continue;
+            end
+            figure(10000);clf;
+            plot(bcs,tsrg.FR_vs_speed(cn,:));hold on;
+            plot(bcs,gaussR.fitted(cn,:));
+            pause(0.1);
+        end
+        
     end
     %%
     break;

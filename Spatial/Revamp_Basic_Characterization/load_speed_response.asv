@@ -103,7 +103,6 @@ while 1
         bcs = tsrg.bin_centers;
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(gaussR.coeffsrs,bcs(2)-bcs(1));
         nshuffle = size(gaussR.coeffsrsS,3);
-        clear rsS;
         for jj = 1:nshuffle
             tcoeff = gaussR.coeffsrsS(:,:,jj);
             [rsS(jj,:),~,~,~] = get_gauss_fit_parameters(tcoeff,bcs(2)-bcs(1));
@@ -111,7 +110,7 @@ while 1
         rsST = rsS';
         rs_r = repmat(rs',1,nshuffle);
         p_vals = sum(rs_r > rsST,2)/nshuffle;
-        sp_cells = p_vals > 0.99;
+        sp_cells = p_vals > 0.95;
 %         for cn = 1:length(sp_cells)
 %             if sp_cells(cn) == 0
 %                 continue;
@@ -121,40 +120,7 @@ while 1
 %             plot(bcs,gaussR.fitted(cn,:));
 %             pause(0.1);
 %         end
-        resp_speed{ii,4} = sp_cells;
-    end
-    %%
-    break;
-end
-
-%% accel gauss find responsiveness
-while 1
-    speedRG = speedRs(:,3);
-    for ii = 1:length(speedRG)
-        tsrg = speedRG{ii};
-        gaussR = tsrg.fitsA.gaussR;
-        bcs = tsrg.bin_centersA;
-        [rs,MFR,centers,PWs] = get_gauss_fit_parameters(gaussR.coeffsrs,bcs(2)-bcs(1));
-        nshuffle = size(gaussR.coeffsrsS,3);
-        clear rsS;
-        for jj = 1:nshuffle
-            tcoeff = gaussR.coeffsrsS(:,:,jj);
-            [rsS(jj,:),~,~,~] = get_gauss_fit_parameters(tcoeff,bcs(2)-bcs(1));
-        end
-        rsST = rsS';
-        rs_r = repmat(rs',1,nshuffle);
-        p_vals = sum(rs_r > rsST,2)/nshuffle;
-        sp_cells = p_vals > 0.99;
-%         for cn = 1:length(sp_cells)
-%             if sp_cells(cn) == 0
-%                 continue;
-%             end
-%             figure(10000);clf;
-%             plot(bcs,tsrg.FR_vs_speed(cn,:));hold on;
-%             plot(bcs,gaussR.fitted(cn,:));
-%             pause(0.1);
-%         end
-        resp_speed{ii,5} = sp_cells;
+        resp_speed
     end
     %%
     break;
