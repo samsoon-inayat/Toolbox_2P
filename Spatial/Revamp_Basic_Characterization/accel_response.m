@@ -1,4 +1,4 @@
-function speed_response
+function accel_response
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
@@ -39,9 +39,9 @@ resp = resp_speed;
 while 1
     t_resp = cell_list_op(resp,[],'or');
     for an = 1:5
-        d.bcs = speedRs{an}.bin_centers;
-        d.FR = speedRs{an}.FR_vs_speed;
-        fitg = speedRs{an}.fits.gauss; fits = speedRs{an}.fits.sigmoid; fitl = speedRs{an}.fits.linear;
+        d.bcs = speedRs{an,4}.bin_centers;
+        d.FR = speedRs{an,4}.FR_vs_speed;
+        fitg = speedRs{an,4}.fits.gauss; fits = speedRs{an,4}.fits.sigmoid; fitl = speedRs{an,4}.fits.linear;
         d.fFRl = fitl.fitted; d.fFRs = fits.fitted; d.fFRg = fitg.fitted;
         d.cl = fitl.coeffsrs(:,3); d.cs = fits.coeffsrs(:,3); d.cg = fitg.coeffsrs(:,3);
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
@@ -60,14 +60,15 @@ save(fileName,'speed_tuned_cells');
 %% visualize the data
 if 1
     an = 4;
-    d.bcs = speedRs{an}.bin_centers;
-    d.FR = speedRs{an}.FR_vs_speed;
-    fitg = speedRs{an}.fits.gauss; fits = speedRs{an}.fits.sigmoid; fitl = speedRs{an}.fits.linear;
+    d.bcs = speedRs{an,4}.bin_centers;
+    d.FR = speedRs{an,4}.FR_vs_accel;
+    fitg = speedRs{an,4}.fits.gauss; fits = speedRs{an,4}.fits.sigmoid; fitl = speedRs{an,4}.fits.linear;
     d.fFRl = fitl.fitted; d.fFRs = fits.fitted; d.fFRg = fitg.fitted;
     d.cl = fitl.coeffsrs(:,3); d.cs = fits.coeffsrs(:,3); d.cg = fitg.coeffsrs(:,3);
     [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
-    inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
-    inds = resp_speed{an,1};
+    inds = rs < 0.5;% | PWs > 20 | PWs < 10;
+    inds = ~inds;
+%     inds = resp_speed{an,6};
 %     t_resp = cell_list_op(resp,[],'or');
 %     inds = ~inds;
 %     inds = inds & ~t_resp{an}';
@@ -78,34 +79,26 @@ if 1
     return;
 end
 %%
-if 1
+while 1
     an = 4;
-%     resp_sp = resp_speed(:,[1 3]);
-    
-    sMcN = speedRs{an,2};
-    resp_M = resp_speed(an,3);
-    d.bcs = speedRs{an}.bin_centers;
-    d.FR = speedRs{an}.FR_vs_speed;
-    fitg = speedRs{an}.fits.gauss; fits = speedRs{an}.fits.sigmoid; fitl = speedRs{an}.fits.linear;
+    clear d
+    d.bcs = speedRs{an,4}.bin_centers;
+    d.FR = speedRs{an,4}.FR_vs_accel;
+    fitg = speedRs{an,4}.fits.gauss; fits = speedRs{an,4}.fits.sigmoid; fitl = speedRs{an,4}.fits.linear;
     d.fFRl = fitl.fitted; d.fFRs = fits.fitted; d.fFRg = fitg.fitted;
     d.cl = fitl.coeffsrs(:,3); d.cs = fits.coeffsrs(:,3); d.cg = fitg.coeffsrs(:,4);
-    [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
-    inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
+    [rs2,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
+    inds = rs2 < 0.5;
     inds = ~inds;
-    resp_sp_and = cell_list_op([resp_M,{inds'}],[],'and'); %resp_sp_and = resp_sp_and(:,1);
-    inds = resp_sp_and{1};
     inds_cn = find(inds);
     100*sum(inds)/length(inds)
     d.FR = d.FR(inds,:); d.fFRl = d.fFRl(inds,:); d.fFRs = d.fFRs(inds,:); d.fFRg = d.fFRg(inds,:);
     d.cl = d.cl(inds); d.cs = d.cs(inds); d.cg = d.cg(inds);
-    cell_inds = [24 48 54];
-    cell_inds = [1 2 3]+(5*3);
+    cell_inds = [49 7 49];
+%     cell_inds = [1 2 3]+(5*3);
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 3],...
-        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.14 0.26],'widthHeightAdjustment',...
+        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.14 0.28],'widthHeightAdjustment',...
         [-100 -415]);    set(gcf,'color','w'); set(gcf,'Position',[10 4 3 1]);
-    ff1 = makeFigureRowsCols(2021,[0.5 0.5 4 1],'RowsCols',[1 3],...
-        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.14 0.26],'widthHeightAdjustment',...
-        [-100 -415]);    set(gcf,'color','w'); set(gcf,'Position',[10 6 3 1]);
     for iii = 1:3
         ii = cell_inds(iii);
         rs = [d.cl(ii) d.cs(ii) d.cg(ii)];
@@ -123,31 +116,17 @@ if 1
             ylabel({'Firing','Rate (AU)'});
         end
         if iii == 2
-            xlabel('Speed (cm/sec)')
+            xlabel('Acceleration (cm/sec^2)')
         end
-        if iii == 1
-            legs = {'Linear','Sigmoid','Gaussian',[25 2 0.4 0.01]};
+        if iii == 2
+            legs = {'Linear','Sigmoid','Gaussian',[25 .0 0.06 0.01]};
            putLegend(gca,legs,{'k','m','b'});
         end
         box off;
         set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-        iic = inds_cn(ii);
-        axes(ff1.h_axes(1,iii));
-        if sMcN.speed_resp(iic) == 0
-            continue;
-        end
-       if sMcN.speed_resp(iic) == 1
-            velocity_tuning = sMcN.speed_tuning_inc(iic,:);
-        end
-        if sMcN.speed_resp(iic) == -1
-            velocity_tuning = sMcN.speed_tuning_dec(iic,:);
-        end
-        [p,S,mu] = polyfit(sMcN.bins,velocity_tuning,1);
-        [f_vt,delta] = polyval(p,sMcN.bins,S,mu);
-        plot(sMcN.bins,velocity_tuning,'.','markersize',4);hold on;
-        plot(sMcN.bins,f_vt);
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('sample_speed_tuning'),600);
+    break;
 end
 %% see the distribution of rs for linear, sigmoid, and gaussian fitting.
 if 1
@@ -158,7 +137,7 @@ if 1
    for ii = 1:length(ei)
        ii
        for vv = 1:length(var_names)
-           cmdTxt = sprintf('distD{ii,vv} = speedRs{ii}.fits.%s.coeffsrs(:,ind(vv));',var_names{vv});
+           cmdTxt = sprintf('distD{ii,vv} = speedRs{ii,4}.fits.%s.coeffsrs(:,ind(vv));',var_names{vv});
            eval(cmdTxt);
            infinds = find(distD{ii,vv}==-inf | distD{ii,vv}==inf);
            distD{ii,vv}(infinds) = NaN;
@@ -179,7 +158,7 @@ if 1
    ylim([0 110]);
    changePosition(gca,[0.2 0.13 -0.15 -0.13]);
     put_axes_labels(gca,{'R-Squared',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_speed_rs'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_accel_rs'),600);
 end
 
 %% mean rs values
@@ -191,25 +170,26 @@ if 1
     [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
      hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'ySpacing',0.15,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[-0.75 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
+    ylims = ylim;
+    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[ylims(1) maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
     xticks = [xdata(1:end)]; xticklabels = {'Linear','Sigmoid','Gaussian'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
     changePosition(gca,[0.11 0.03 -0.3 -0.05]);
     put_axes_labels(gca,{[],[0 0 0]},{{'R-Squared'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('mean_Rsquared'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('mean_Rsquared_accel'),600);
 end
 
 %% distribution preferred speed
 if 1
     distD = [];
     for ii = 1:length(ei)
-        bcs = speedRs{ii}.bin_centers;
-        fitg = speedRs{ii}.fits.gauss;
+        bcs = speedRs{ii,4}.bin_centers;
+        fitg = speedRs{ii,4}.fits.gauss;
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,bcs(2)-bcs(1));
-        inds = centers < 1 | centers > 39 | PWs < 1 | PWs > 40; 
-        inds = ~resp_speed{ii,1};
+%         inds = centers < 1 | centers > 39 | PWs < 1 | PWs > 40; 
+        inds = ~resp_speed{ii,5};
         centers(inds) = [];
        distD{ii,1} = centers;
        meanPWs(ii) = (mean(centers));
@@ -225,11 +205,11 @@ if 1
 %    legs = {'Linear','Sigmoid','Gaussian',[-1.75 0.3 85 5]};
 %    putLegend(gca,legs,tcolors);
    ylim([0 110]);
-   pmchar=char(177); any_text = sprintf('%.0f%c%.0f cm/sec',mean(meanPWs),pmchar,std(meanPWs)/sqrt(5)); 
-   text(10,15,any_text,'FontSize',6);
+   pmchar=char(177); any_text = sprintf('%.0f%c%.0f cm/sec^2',mean(meanPWs),pmchar,std(meanPWs)/sqrt(5)); 
+   text(1,100,any_text,'FontSize',6);
    changePosition(gca,[0.12 0.13 -0.3 -0.13]);
-    put_axes_labels(gca,{'Pref. Speed (cm/sec)',[-4 0 0]},{{'Neurons(%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_speed_preferred'),600);
+    put_axes_labels(gca,{'Pref. Acceleration (cm/sec^2)',[0 0 0]},{{'Neurons(%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_accel_preferred'),600);
     return;
 end
 
@@ -241,7 +221,7 @@ if 1
         fitg = speedRs{ii}.fits.gauss;
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,bcs(2)-bcs(1));
         inds = centers < 1 | centers > 39 | PWs < 1 | PWs > 40; 
-        inds = ~resp_speed{ii,1};
+        inds = ~resp_speed{ii,5};
         centers(inds) = []; PWs(inds) = [];
         distD{ii,1} = PWs;
         meanPWs(ii) = (mean(PWs));
@@ -257,11 +237,11 @@ if 1
 %    legs = {'Linear','Sigmoid','Gaussian',[-1.75 0.3 85 5]};
 %    putLegend(gca,legs,tcolors);
    ylim([0 110]);
-   pmchar=char(177); any_text = sprintf('%.0f%c%.0f cm/sec',mean(meanPWs),pmchar,std(meanPWs)/sqrt(5)); 
+   pmchar=char(177); any_text = sprintf('%.0f%c%.0f cm/sec^2',mean(meanPWs),pmchar,std(meanPWs)/sqrt(5)); 
    text(10,15,any_text,'FontSize',6);
    changePosition(gca,[0.12 0.13 -0.3 -0.13]);
-    put_axes_labels(gca,{'Tuning Width (cm/sec)',[-5 0 0]},{{'Neurons (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_speed_tuning_width'),600);
+    put_axes_labels(gca,{'Tuning Width (cm/sec^2)',[-5 0 0]},{{'Neurons (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_accel_tuning_width'),600);
     return;
 end
 %% relationship between centers and PWs

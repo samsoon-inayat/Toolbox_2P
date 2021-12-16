@@ -161,3 +161,43 @@ while 1
 end
 
 
+var_names = {'linear','sigmoid','gauss'};
+for ii = 1:length(ei)
+    tei = ei{ii};
+    psp = [];
+    psp1 = tei.plane{1}.accel_response;
+    if length(tei.plane) == 2
+        psp2 = tei.plane{2}.accel_response;
+        psp.corra = [psp1.corra;psp2.corra];
+        psp.FR_vs_accel = [psp1.FR_vs_accel;psp2.FR_vs_accel];
+         for vv = 1:length(var_names)
+            cmdTxt = sprintf('psp.fits.%s.fitted = [psp1.fits.%s.fitted;psp2.fits.%s.fitted];',var_names{vv},var_names{vv},var_names{vv});
+            eval(cmdTxt);
+            cmdTxt = sprintf('psp.fits.%s.coeffsrs = [psp1.fits.%s.coeffsrs;psp2.fits.%s.coeffsrs];',var_names{vv},var_names{vv},var_names{vv});
+            eval(cmdTxt);
+         end
+        psp.bin_centers = psp1.bin_centers;
+        speedRs{ii,4} = psp;
+    else
+        speedRs{ii,4} = psp1;
+    end
+end
+n = 0;
+%% Percentage speed responsive
+
+while 1
+    for an = 1:5
+        d.bcs = speedRs{an,4}.bin_centers;
+        d.FR = speedRs{an,4}.FR_vs_accel;
+        fitg = speedRs{an,4}.fits.gauss; fits = speedRs{an,4}.fits.sigmoid; fitl = speedRs{an,4}.fits.linear;
+        d.fFRl = fitl.fitted; d.fFRs = fits.fitted; d.fFRg = fitg.fitted;
+        d.cl = fitl.coeffsrs(:,3); d.cs = fits.coeffsrs(:,3); d.cg = fitg.coeffsrs(:,3);
+        [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
+        inds = centers < 1 | centers > 39 | rs < 0.3 | PWs < 10;% | PWs > 20 | PWs < 10;
+        inds = centers < 1 | centers > 39 | PWs < 1 | PWs > 40 | rs < 0.3;
+        inds = ~inds;
+        pR(an) = 100*sum(inds)/length(inds);
+        resp_speed{an,6} = inds';
+    end
+    break;
+end
