@@ -11,7 +11,7 @@ for pp = 1:length(ei.plane)
     thispFolder = ei.plane{pp}.folder;
     ei.deconv = ei.plane{pp}.tP.deconv;
 %     ei.plane{pp}.acc_response = find_acc_response(ei,pp,owr(5));
-    ei.plane{pp}.speed_response = find_speed_response(ei,pp,owr);
+    ei.plane{pp}.speed_response_gauss = find_speed_response(ei,pp,owr);
 end
 
 function out = find_speed_response(ei,pp,owr)
@@ -48,7 +48,7 @@ for ii = 1:(length(binsa)-1)
 end
 
 out.fits = find_cellular_speed_tuning(ei,pp,bin_centers,cell_act,owr(1));
-% out.fitsA = find_cellular_accel_tuning(ei,pp,bin_centersa,cell_acta,owr(2));
+out.fitsA = find_cellular_accel_tuning(ei,pp,bin_centersa,cell_acta,owr(2));
 out.FR_vs_speed = cell_act;
 out.bin_centers = bin_centers;
 out.FR_vs_accel = cell_acta;
