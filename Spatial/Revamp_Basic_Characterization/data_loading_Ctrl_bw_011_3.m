@@ -71,7 +71,7 @@ toc
 
 %%
 tic
-for ii = 1:length(ei)
+for ii = 1:2%length(ei)
     ei(ii) = get_speed_response_gauss(ei(ii),[1 0]);
 end
 toc
