@@ -62,7 +62,8 @@ while 1
             num_trials(rr,cc) = size(tRs.sp_rasters1,1);
         end
     end
-%     mean(num_tri
+    mean(num_trials)
+    std(num_trials)/sqrt(5)
     %%
     break;
 end
