@@ -61,7 +61,7 @@ while 1
     cell_inds = [49 7 49];
 %     cell_inds = [1 2 3]+(5*3);
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 3],...
-        'spaceRowsCols',[0.15 0.065],'rightUpShifts',[0.15 0.28],'widthHeightAdjustment',...
+        'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.14 0.28],'widthHeightAdjustment',...
         [-100 -415]);    set(gcf,'color','w'); set(gcf,'Position',[10 4 3 1]);
     for iii = 1:3
         ii = cell_inds(iii);
@@ -72,12 +72,10 @@ while 1
         pl(1) = plot(d.bcs,d.fFRl(ii,:),'k','linewidth',1);
         pl(2) = plot(d.bcs,d.fFRs(ii,:),'m','linewidth',0.5);
         pl(3) = plot(d.bcs,d.fFRg(ii,:),'b','linewidth',1);
-        ylims = ylim;
-        ylim([0 ylims(2)]);
 %         set(pl(mind),'linewidth',2);
 %         title(sprintf('Cell %d',ii));
         if iii > 1
-%             set(gca,'YTick',[]);
+            set(gca,'YTick',[]);
         else
             ylabel({'Firing','Rate (AU)'});
         end
@@ -85,12 +83,11 @@ while 1
             xlabel('Acceleration (cm/sec^2)')
         end
         if iii == 2
-            legs = {'Linear','Sigmoid','Gaussian',[1 3 0.055 0.003]};
+            legs = {'Linear','Sigmoid','Gaussian',[25 .0 0.06 0.01]};
            putLegend(gca,legs,{'k','m','b'});
         end
         box off;
         set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-        format_axes(gca);
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('sample_accel_tuning'),600);
     break;
@@ -173,10 +170,9 @@ while 1
 %    putLegend(gca,legs,tcolors);
    ylim([0 110]);
    pmchar=char(177); any_text = sprintf('%.0f%c%.0f cm/sec^2',mean(meanPWs),pmchar,std(meanPWs)/sqrt(5)); 
-   text(-10,103,any_text,'FontSize',6);
+   text(-50,100,any_text,'FontSize',6);
    changePosition(gca,[0.12 0.13 -0.3 -0.13]);
-    put_axes_labels(gca,{'Pref. Accel (cm/sec^2)',[-2 0 0]},{{'Cells(%)'},[0 0 0]});
-    format_axes(gca);
+    put_axes_labels(gca,{'Pref. Acceleration (cm/sec^2)',[0 0 0]},{{'Neurons(%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution_accel_preferred'),600);
     break;
 end
@@ -204,13 +200,38 @@ while 1
 %    putLegend(gca,legs,tcolors);
    ylim([0 110]);
    pmchar=char(177); any_text = sprintf('%.0f%c%.0f cm/sec^2',mean(meanPWs),pmchar,std(meanPWs)/sqrt(5)); 
-   text(1,100,any_text,'FontSize',6);
+   text(21,100,any_text,'FontSize',6);
    changePosition(gca,[0.12 0.14 -0.3 -0.13]);
-    put_axes_labels(gca,{'Tuning Width (cm/sec^2)',[-2 0 0]},{{'Cells (%)'},[0 0 0]});
-    format_axes(gca);
+    put_axes_labels(gca,{'Tuning Width (cm/sec^2)',[0 0 0]},{{'Neurons (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution_accel_tuning_width'),600);
     break;
 end
+%% relationship between centers and PWs
+if 1
+    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+   hold on;
+   colors = {'k','r','b','c','m'};
+   for ii = 5%1:length(ei)
+        bcs = speedRs{ii}.bin_centers;
+        fitg = speedRs{ii}.fits.gauss;
+        [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,bcs(2)-bcs(1));
+        inds = centers < 1 | centers > 39 | PWs < 1 | PWs > 40; 
+        inds = ~resp_speed{ii,1};
+        centers(inds) = []; PWs(inds) = [];
+        scatter(centers,PWs,'.');
+        [p,S,mu] = polyfit(centers,PWs,1);
+        sl(ii) = p(1);
+        lineRS(ii) = S.R(1,1);
+        PWsY = polyval(p,centers);
+        plot(centers,PWsY,'color',colors{ii});
+        corrs(ii) = corr(centers',PWs');
+    end
+   set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
+   changePosition(gca,[0.2 0.13 -0.2 -0.13]);
+    put_axes_labels(gca,{'Pref. Speed (cm/sec)',[-4 0 0]},{{'Tuning Width (cm/sec)'},[0 -15 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('Scatter_Centers_TW'),600);
+end
+
 
 %% Overlap Indices ImageSC 
 while 1

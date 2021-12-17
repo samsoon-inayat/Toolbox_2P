@@ -64,3 +64,16 @@ title(sprintf('Cell %d',ii));
 % legend('FR','Lin','Sig','Gauss');
 % xlabel('Speed (cm/sec)');
 % ylabel('FR (AU)');
+
+function plotSpeedTuningG(ah,d,ii)
+axes(ah);
+cla;
+rs = [d.cg(ii)];
+[~,mind] = max(rs);
+plot(d.bcs,d.FR(ii,:),'c');hold on;
+pl(1) = plot(d.bcs,d.fFRg(ii,:),'b','linewidth',1);
+set(pl(mind),'linewidth',2);
+title(sprintf('Cell %d - %.2f',ii,d.PWs(ii)));
+% legend('FR','Lin','Sig','Gauss');
+% xlabel('Speed (cm/sec)');
+% ylabel('FR (AU)');

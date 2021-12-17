@@ -121,8 +121,8 @@ while 1
 %             plot(bcs,gaussR.fitted(cn,:));
 %             pause(0.1);
 %         end
-        inds = centers < bcs(1) | centers > bcs(end) | PWs > (bcs(end)-bcs(1));
-%         inds = rs < 0.7;
+        inds = centers < bcs(1) | centers > bcs(end) | PWs < bcs(1) | PWs > bcs(end);
+        inds = rs < 0.7;
         resp_speed{ii,4} = sp_cells & ~(inds');
         resp_speedN{ii,1} = resp_speed{ii,4};
     end
@@ -147,7 +147,7 @@ while 1
         rsST = rsS';
         rs_r = repmat(rs',1,nshuffle);
         p_vals = sum(rs_r > rsST,2)/nshuffle;
-        sp_cells = p_vals > 0.95;
+        sp_cells = p_vals > 0.99;
 %         for cn = 1:length(sp_cells)
 %             if PWs(cn)>0
 %                 continue;
@@ -157,8 +157,8 @@ while 1
 %             plot(bcs,gaussR.fitted(cn,:));
 %             pause(0.1);
 %         end
-        inds = centers < bcs(1) | centers > bcs(end) | PWs > (bcs(end)-bcs(1));
-%         inds = rs < 0.7;
+%         inds = centers < bcs(1) | centers > bcs(end) | PWs > bcs(end);
+        inds = rs < 0.7;
         resp_speed{ii,5} = sp_cells & ~(inds');
         resp_speedN{ii,2} = resp_speed{ii,5};
     end
