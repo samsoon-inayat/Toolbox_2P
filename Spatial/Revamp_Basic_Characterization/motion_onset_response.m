@@ -57,7 +57,7 @@ end
 %% number of trials
 while 1
     for rr = 1:size(Rs,1)
-        for cc = 2
+        for cc = 1:2
             tRs = Rs{rr,cc};
             num_trials(rr,cc) = size(tRs.sp_rasters1,1);
         end
