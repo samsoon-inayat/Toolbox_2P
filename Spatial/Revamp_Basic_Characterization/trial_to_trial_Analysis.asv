@@ -252,7 +252,7 @@ end
 %%
 while 1   %%
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);
-%     mOI = OI{4}; semOI = semOI;
+    mOI = OI{2}; semOI = semOI;
     
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
     sz = size(mOI,1);
@@ -273,8 +273,7 @@ while 1   %%
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     
     for ii = 1:12
-        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
-        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'r'); 
     end
     
 %     plot([10.5 10.5],[0 130.5],'r'); plot([30.5 30.5],[0 130.5],'r'); plot([90.5 90.5],[0 130.5],'r'); plot([100.5 100.5],[0 130.5],'r'); plot([120.5 120.5],[0 130.5],'r');
@@ -297,7 +296,7 @@ while 1   %%
     box on
     changePosition(gca,[0.03 0 -0.04 0]);
     hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
-    colormap jet
+    colormap parula
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
     %%
     break;
