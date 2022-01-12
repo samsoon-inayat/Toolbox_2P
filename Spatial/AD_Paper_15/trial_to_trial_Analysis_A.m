@@ -1,5 +1,7 @@
 function trial_to_trial_Analysis
 
+o = oA;
+
 %% find spatial trial to trial correlation
 while 1
     si = [Ar_t_D ArL_t_D Ars_t_D];

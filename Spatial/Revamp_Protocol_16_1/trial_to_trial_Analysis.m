@@ -65,7 +65,7 @@ while 1
     
 %     plot([10.5 10.5],[0 30.5],'r'); plot([20.5 20.5],[0 30.5],'r');
 %     plot([0 30.5],[10.5 10.5],'r'); plot([0 30.5],[20.5 20.5],'r');
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+    set(gca,'color',0.5*[1 1 1]);    colormap jet;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
 %     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);

@@ -22,20 +22,14 @@ respC_OR = cell_list_op(com,[],'or');
 
 % resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1) resp_nb];% resp = props1.good_FR;
 resp = repmat(respE_OR(:,1),1,11);
-view_population_vector(Rs,mRs,resp,100);
 
-%%
-si_r = [Ab_T Ar_i_T ArL_i_T Ars_i_T];%
-si_r = [Ab_T Ars_t_D Ars_i_T];%
+si_r = [Ab_i_T Ar_i_T ArL_i_T Ars_i_T];%
 Rs_r = o.Rs(:,si_r); mRs_r = o.mR(:,si_r);
 props_r = get_props_Rs(Rs_r,ntrials);
 resp_r = cell_list_op(props_r.good_FR,[],'and');
 resp_r1 = repmat(resp_r(:,1),1,11);
-si_p = [Ab_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];%
-Rs_p = o.Rs(:,si_p); mRs_p = o.mR(:,si_p);
-view_population_vector(Rs_p,mRs_p,resp_r1,100);
-
-
+view_population_vector(Rs_r,mRs_r,resp_r1,100);
+view_population_vector(Rs,mRs,resp_r1,100);
 %%
 view_population_vector_corr(Rs,mRs,1,200);
 

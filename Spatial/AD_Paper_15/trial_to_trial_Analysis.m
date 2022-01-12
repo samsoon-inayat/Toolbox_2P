@@ -1,5 +1,7 @@
 function trial_to_trial_Analysis
 
+o = oC;
+
 %% find spatial trial to trial correlation
 while 1
     si = [Ar_t_D ArL_t_D Ars_t_D];
@@ -267,8 +269,8 @@ while 1   %%
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 3 3.5 3.5]);
-    hf = get_figure(6,[8 3 7 7]);
+    hf = get_figure(7,[8 3 3.5 3.5]);
+    hf = get_figure(7,[8 3 7 7]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
