@@ -920,7 +920,7 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 1.25 2]);
+    set(hf,'Position',[6 3 1.25 2]);
     set(H,'linewidth',1);
     set(gca,'yticklabels',txl(TC));ytickangle(30);
     format_axes(gca);
