@@ -15,7 +15,11 @@ for ii = 1:size(raster,1)
     for jj = 1:length(pks)
         thisC = [pks(jj),locs(jj),w(jj)];
         [gmdl,x0] = buildGaussianModel(order,thisC,dc); mdl_fun_h = str2func(gmdl);
-        mdl = fitnlm(xs',mSig',mdl_fun_h,x0,'options',statsetfitnlm);
+        try
+            mdl = fitnlm(xs',mSig',mdl_fun_h,x0,'options',statsetfitnlm);
+        catch
+            continue;
+        end
         Rs(jj) = mdl.Rsquared.Ordinary;
 %         aRs(jj) = mdl.Rsquared.Adjusted;
     end

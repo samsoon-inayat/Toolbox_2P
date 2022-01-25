@@ -33,11 +33,11 @@ for rr = 1:size(Rs,1)
             end
             n = 0;
         end
-        if strcmp(R.marker_name,'light22T')
+        if strcmp(R.marker_name,'light22T') || strcmp(R.marker_name,'tone22T')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis,Rs{rr,cc}.resp.excinh] = find_resp_time_raster_light(R,trials);
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light_fractal(R,trials);
         end
-        if strcmp(R.marker_name,'air55T') ||  strcmp(R.marker_name,'air77T')
+        if strcmp(R.marker_name,'air55T') ||  strcmp(R.marker_name,'air77T') || strcmp(R.marker_name,'air44T')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis,Rs{rr,cc}.resp.excinh] = find_resp_time_raster_air(R,trials);
         end
         if strcmp(R.marker_name,'air33T') 

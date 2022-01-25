@@ -57,11 +57,13 @@ end
 %% number of trials
 while 1
     for rr = 1:size(Rs,1)
-        for cc = 1
+        for cc = 1:2
             tRs = Rs{rr,cc};
             num_trials(rr,cc) = size(tRs.sp_rasters1,1);
         end
     end
+    mean(num_trials)
+    std(num_trials)/sqrt(5)
     %%
     break;
 end
@@ -119,9 +121,10 @@ while 1
 end
 %% Percentage of excitatory inhibitory responsive cells
 while 1
-    resp1 = props1.exc;     resp2 = props1.inh;
+    resp1 = props1.exc;     resp2 = props1.inh; resp3 = resp_speedAcc;
     presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
     presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
+    presp3 = 100 * exec_fun_on_cell_mat(resp3,'sum')./exec_fun_on_cell_mat(resp3,'length');
     
     [within,dvn,xlabels] = make_within_table({'MT','CT'},[2,2]);
     dataT = make_between_table({presp1(:,1),presp2(:,1),presp1(:,2),presp2(:,2)},dvn);
@@ -156,7 +159,7 @@ while 1
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1A = get_props_Rs(o.Rs,ntrials);
     respO = [props1A.good_FR(:,si)];% resp_speed];
-    resp = [props1.vals respO];% resp_speed];
+    resp = [props1.vals resp_speedAcc respO];% resp_speed];
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
@@ -166,12 +169,12 @@ while 1
     minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = [{'M-On','M-Off'} rasterNamesTxt(si)]; 
+    txl = [{'M-On','M-Off','Speed','Accel'} rasterNamesTxt(si)]; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.5 1.5]);
+    hf = get_figure(5,[8 7 2 2]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;

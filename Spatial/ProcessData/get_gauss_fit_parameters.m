@@ -15,7 +15,7 @@ if isstruct(mrfs)
 
     A = coeff(:,1);
     mu = coeff(:,2);
-    sigma = coeff(:,3);
+    sigma = coeff(:,3); sigma = abs(sigma);
     as = A';%*exp(0.5);
     bs = mu'*binwidth;
     cs = sigma';
@@ -27,7 +27,7 @@ else
     end
     A = coeff(:,1);
     mu = coeff(:,2);
-    sigma = coeff(:,3);
+    sigma = coeff(:,3); sigma = abs(sigma);
     as = A';%;*exp(0.5);
     bs = mu'*binwidth;
     cs = sigma';

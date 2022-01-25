@@ -49,6 +49,7 @@ for rr = 2
         else
             imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         end
+        plot(10*normalizeSignal(mean(thisRaster)),'b','linewidth',0.25);
 %         if rr ==1 
 %             plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
 %         end

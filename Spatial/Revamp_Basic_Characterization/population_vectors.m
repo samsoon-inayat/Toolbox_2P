@@ -240,9 +240,9 @@ while 1
     titles = {'Ab','Ab*'};
     si = [Ab_T Abs_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
+    ntrials = [30,100];
     props1 = get_props_Rs(Rs,ntrials);
-    resp = props1.good_FR_and_untuned;
+    resp = props1.good_FR_and_tuned;
 %     resp = only_air(:,[1 2]);
 %     eval(cmdTxt);
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 2],...
@@ -414,19 +414,20 @@ end
 while 1
     selected_property = 'tuned';
     titles = {'Ar-t-D','ArL-t-D','Ar*-t-D'};
-    an = 4;
+    an = 3;
     si = [Ar_t_D ArL_t_D Ars_t_D];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
-    props1 = get_props_Rs(Rs,[10,40]);
+    props1 = get_props_Rs(Rs,[50,100]);
     q_type = '1040';
-    resp = cell_list_op(props1.good_FR,[],'and');
-%     resp = props1.good_FR;
+%     resp = cell_list_op(props1.good_FR,[],'and');
+    resp = props1.good_FR;
+%     resp = repmat(respSen(:,2),1,3);
 %     resp = cell_list_op(props1.good_FR_and_Gauss_loose,[],'or');
 %     resp = cell_list_op(props1.good_FR,[],'or');
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,1);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]); 
@@ -531,7 +532,7 @@ while 1
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
     q_type = 'Resp';
-    resp = props1.good_FR;
+    resp = props1.good_FR_and_tuned;
 %     resp = cell_list_op(props1.good_FR,[],'or');
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.1],'widthHeightAdjustment',...
@@ -562,7 +563,7 @@ while 1
     ntrials = 50;
     q_type = 'Resp_Gauss_Loose';
     props1 = get_props_Rs(Rs,ntrials);
-    resp = props1.good_FR_and_Gauss_loose;
+    resp = props1.good_FR_IT;
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
@@ -571,7 +572,7 @@ while 1
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]); 
     for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(2,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]}); set_obj(ff.h_axes(2,ii),{'ytick',[1 68 136],'yticklabels',[0 7.5 15]}); end 
-    colormap parula
+%     colormap parula
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_temporal_%s_%s.pdf',selected_property,q_type),600);
 
    % average correlation of all animals
@@ -581,7 +582,7 @@ while 1
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
     changePosition(ff.h_axes(1,1).YLabel,[-3 0 0]); 
     for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(1,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]}); set_obj(ff.h_axes(1,ii),{'ytick',[1 68 136],'yticklabels',[0 7.5 15]}); end 
-    colormap parula
+%     colormap parula
     save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_temporal_%s_%s.pdf',selected_property,q_type),600);
     %%
     break;
@@ -672,6 +673,52 @@ while 1
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
     changePosition(ff.h_axes(1,1).YLabel,[-3 0 0]); 
     save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_spatial_%s.pdf',selected_property),600);
+    %%
+    break;
+end
+
+
+%% population vector grand
+while 1
+    selected_property = 'tuned';
+%     titles = {'Ar-t-D','ArL-t-D','Ar*-t-D'};
+    titles = {'Lb','ArL-L','Lb*','Ab-t','Ab-i','Ab*-t','Ab*-i','Ar-t','ArL-t','Ar*-t','Ar-i','ArL-i','Ar*-i'};
+    an = 4;
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = [50,100];
+    props1 = get_props_Rs(Rs,ntrials);
+    resp = props1.good_FR;
+    resp = get_cell_list(resp,[1;3]);
+    resp_perc = get_cell_list(resp,[1;3],1);
+    resp_perc(an,:)
+%     resp = cell_list_op(props1.good_FR,[],'or');
+    szC = [];
+    for cc = 1:size(resp,2)
+        szC(1,cc) = size(mR{an,cc},2);
+    end
+    numCells = sum(resp{an,1},1); numConds = size(resp,2);
+    giantmR = NaN(numCells,sum(szC));
+    for cc = 1:size(resp,2)
+        if cc == 1
+            colS = 1; colE = szC(1);
+        else
+            colS = colE+1; colE = colE+szC(cc);
+        end
+        giantmR(1:numCells,colS:colE) = mR{an,cc}(resp{an,cc},:);
+        stC = colS+1;
+    end
+    figure(10000);clf;imagesc(corr(giantmR));
+    hold on;
+    for cc = 1:size(resp,2)
+        if cc == 1
+            colS = 1; colE = szC(1);
+        else
+            colS = colE+1; colE = colE+szC(cc);
+        end
+        plot([0 sum(szC)],[colE colE],'r');
+        plot([colE colE],[0 sum(szC)],'r');
+    end
+    
     %%
     break;
 end

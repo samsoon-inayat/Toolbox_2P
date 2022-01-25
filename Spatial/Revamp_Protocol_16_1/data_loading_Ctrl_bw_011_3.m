@@ -8,14 +8,15 @@ clear all
 % clc
 %%
 data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
-data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
-processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
-processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
-processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
-animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
-date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
+% data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
+processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_16';
+processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_16\Matlab';
+processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_16\Matlab_bw3';
+animal_list_control = {'183628';'183628';'183745';'183761';'183762'};
+date_list_control = {'2019-06-27';'2019-07-01';'2019-07-01';'2019-06-28';'2019-06-28'};
 [dS_C,T_C] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_control,date_list_control);
-T_C = [T_C];
+% [dS_C1,T_C1] = get_exp_info_from_folder(data_folder2,processed_data_folder,animal_list_control,date_list_control);
+% T_C = [T_C;T_C1];
 T_C1 = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
 %%
@@ -29,8 +30,8 @@ display_colors(mData.shades.c);
 % Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
 Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
 % Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
-mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
-mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
+mData.pdf_folder = [Uleth_one_drive '\PDFs16']; 
+mData.pd_folder = [Uleth_one_drive '\PDFs16\ProcessedDataMatlab'];
 disp('Done');
 %%
 if 0
@@ -46,61 +47,28 @@ ei = getData_py_2(T_C1(sel_rec,:));
 
 %%
 if 0
-    ii = 5;
+    ii = 1;
     edit_define_contexts_file(ei{ii});
 end
 %%
 clc
 tic
 binwidths = [0.11 3];
-for ii = 1:length(ei)
+for ii = 5:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
-toc
 
-for ii = 1:length(ei)
-    ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
-end
-toc
-%%
-tic
-for ii = 1:length(ei)
-    ei(ii) = get_speed_response(ei(ii),[0 0]);
-end
-toc
-%%
-tic
-for ii = 1:length(ei)
-    ei(ii) = get_accel_response(ei(ii),[0 0]);
-end
-toc
-
-%%
-tic
-for ii = 1:length(ei)
-    ei(ii) = get_speed_response_gauss(ei(ii),[0 0]);
-end
-toc
-
-%% this information is already in the previous function
-% tic
+% 
 % for ii = 1:length(ei)
-%     ei(ii) = get_accel_response_gauss(ei(ii),[0 1]);
+%     ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 % end
-% toc
+toc
 
 
 %%
 for ii = 1:length(ei)
     min_speed(ii) = min(ei{ii}.b.fSpeed);
     max_speed(ii) = max(ei{ii}.b.fSpeed);
-    
-    t_accel = diff(ei{ii}.b.fSpeed)./diff(ei{ii}.b.ts);
-    samplingRate = floor(1/(ei{ii}.b.si*1e-6));
-    coeffs = ones(1, samplingRate)/samplingRate;
-    ft_accel = filter(coeffs, 1, t_accel);
-    min_accel(ii) = min(ft_accel);
-    max_accel(ii) = max(ft_accel);
 end
 %%
 %%
@@ -126,7 +94,6 @@ training_data.weight = [34.5000   34.2000   33.7000   33.5000   34.6
 
 
 animal_id_A = [183633,183761,183745,183628,183762];
-gender_animals = {'M','M','F','F','M'};
 date_of_rec_A = {'2019-06-04','2019-06-06','2019-06-07','2019-06-11','2019-06-11'};
 date_of_surg_A = {'2019-03-27','2019-03-29','2019-04-30','2019-04-03','2019-04-26'};
 for rr = 1:length(animal_id_A)

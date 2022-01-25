@@ -292,8 +292,9 @@ while 1
     respC_OR = cell_list_op(com,[],'or'); 
     
     resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1) resp_nb];
-    resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1)];
-    resp = [exc(:,1), sup(:,1), com(:,1)];
+%     resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1)];
+%     resp = [exc(:,1), sup(:,1), com(:,1)];
+%     
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);

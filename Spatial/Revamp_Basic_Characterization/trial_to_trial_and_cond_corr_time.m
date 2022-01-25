@@ -1,4 +1,4 @@
-function trial_to_trial_corr
+function trial_to_trial_and_cond_corr_time
 
 
 %% spatial tuned untuned zMI
@@ -23,8 +23,8 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
-    xdata = make_xdata([2],[1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_by_Cond','hsd'},[1 1 1]);
+    xdata = make_xdata([3 3],[1 2]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
@@ -34,7 +34,7 @@ while 1
 %     maxY = maxY;
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    set_axes_limits(gca,[0 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'gT','gU'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.2 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Mutual Information','(z-score)'},[0 0 0]});

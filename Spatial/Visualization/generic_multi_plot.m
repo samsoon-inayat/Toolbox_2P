@@ -20,7 +20,7 @@ for gg = 1:numberOfGroups
     end
 end
 
-ff = makeFigureRowsCols(figNum,[5 5 7 5],'RowsCols',[numberOfRows numberOfCols],...
+ff = makeFigureRowsCols(figNum,[5 3 7 5],'RowsCols',[numberOfRows numberOfCols],...
     'spaceRowsCols',[0.1 0.05],'rightUpShifts',[0.05 0.07],'widthHeightAdjustment',...
     [-70 -115]);
 
@@ -61,6 +61,19 @@ pl(2) = plot(d.bcs,d.fFRs(ii,:),'m','linewidth',1);
 pl(3) = plot(d.bcs,d.fFRg(ii,:),'b','linewidth',1);
 set(pl(mind),'linewidth',2);
 title(sprintf('Cell %d',ii));
+% legend('FR','Lin','Sig','Gauss');
+% xlabel('Speed (cm/sec)');
+% ylabel('FR (AU)');
+
+function plotSpeedTuningG(ah,d,ii)
+axes(ah);
+cla;
+rs = [d.cg(ii)];
+[~,mind] = max(rs);
+plot(d.bcs,d.FR(ii,:),'c');hold on;
+pl(1) = plot(d.bcs,d.fFRg(ii,:),'b','linewidth',1);
+set(pl(mind),'linewidth',2);
+title(sprintf('Cell %d - %.2f',ii,d.PWs(ii)));
 % legend('FR','Lin','Sig','Gauss');
 % xlabel('Speed (cm/sec)');
 % ylabel('FR (AU)');

@@ -10,11 +10,32 @@ Rs = o.Rs(:,si); mRs = o.mR(:,si);
 % RsR = o.Rs(:,si);
 props1 = get_props_Rs(Rs,50);
 
-% resp_all = props1.good_FR;
-% resp = get_cell_list(resp_all,[3]);
-% resp = [resp(:,1:3) resp];
-resp = props1.good_Gauss_loose;
+siAb = [Ab_T Abs_T];
+RsAb = o.Rs(:,siAb);mRAb = o.mR(:,siAb);
+ntrials = 50;
+props1Ab = get_props_Rs(RsAb,ntrials);
+exc = props1Ab.good_FR_and_exc;     sup = props1Ab.good_FR_and_inh;    com = props1Ab.good_FR_and_untuned;
+
+respE_OR = cell_list_op(exc,[],'or');
+respS_OR = cell_list_op(sup,[],'or');
+respC_OR = cell_list_op(com,[],'or'); 
+
+% resp = [respE_OR(:,1) respS_OR(:,1) respC_OR(:,1) resp_nb];% resp = props1.good_FR;
+resp = repmat(respE_OR(:,1),1,11);
 view_population_vector(Rs,mRs,resp,100);
+
+%%
+si_r = [Ab_T Ar_i_T ArL_i_T Ars_i_T];%
+si_r = [Ab_T Ars_t_D Ars_i_T];%
+Rs_r = o.Rs(:,si_r); mRs_r = o.mR(:,si_r);
+props_r = get_props_Rs(Rs_r,ntrials);
+resp_r = cell_list_op(props_r.good_FR,[],'and');
+resp_r1 = repmat(resp_r(:,1),1,11);
+si_p = [Ab_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];%
+Rs_p = o.Rs(:,si_p); mRs_p = o.mR(:,si_p);
+view_population_vector(Rs_p,mRs_p,resp_r1,100);
+
+
 %%
 view_population_vector_corr(Rs,mRs,1,200);
 
@@ -24,8 +45,14 @@ while 1
     fileName = fullfile(mData.pd_folder,sprintf('%s_tuned_cells',mfilename));
     load(fileName);
     si = [MOn_T MOff_T Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [MOn_T MOff_T Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
     resp = [ speed_tuned_cells props1.good_FR];% resp_speed];
+    si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; 
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; 
+    props1 = get_props_Rs(o.Rs(:,si),ntrials);
+    resp = props1.good_FR;
    
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
@@ -40,6 +67,7 @@ while 1
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
     txl = [{'sR'} rasterNamesTxt(si)]; 
+    txl = [rasterNamesTxt(si)]; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
@@ -89,10 +117,14 @@ while 1
 %     fileName = fullfile(mData.pd_folder,sprintf('%s_tuned_cells',mfilename));
 %     load(fileName);
     
-    si = [Ab_t_T Abs_t_T Ar_t_D ArL_t_D Ars_t_D Ab_i_T Abs_i_T Ar_i_T ArL_i_T Ars_i_T];
+    si = [Lb_T Lbs_T ArL_L_T Ab_t_T Abs_t_T Ab_i_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
     
     resp = [props1.good_FR];% resp_speed];
+    resp_L = cell_list_op(resp(:,1:2),[],'or');
+    resp_At = cell_list_op(resp(:,4:5),[],'or');
+    resp_Ai = cell_list_op(resp(:,6:7),[],'or');
+    resp = [resp_L(:,1) resp_At(:,1) resp_Ai(:,1) resp(:,3) resp(:,8:end)];
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_D_g_T(:,[1 3 5]); resp(:,9:11) = dzMI.resp_D_g_T(:,[2 4 6]);
 %     resp(:,6:8) = dzMI.resp_T_g_D(:,[1 3 5]); resp(:,9:11) = dzMI.resp_T_g_D(:,[2 4 6]);
@@ -105,7 +137,8 @@ while 1
     minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = [rasterNamesTxt(si)]; 
+%     txl = [rasterNamesTxt(si)]; 
+    txl = {'Lb','Abt','Abi','Lnb','Ar-t-D','ArL-t-D','Ars-t-D','Ar-i-T','ArL-i-T','Ars-i-T'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;

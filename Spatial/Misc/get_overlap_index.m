@@ -32,6 +32,9 @@ for ii = 1:length(resp_vals)
                 end
                 shared = ccs1 & ccs2;
                 OI(rr,cc) = sum(shared)/(sum(ccs1)+sum(ccs2)-sum(shared));
+                if OI(rr,cc) < 0
+                    n = 0;
+                end
 %             end
         end
     end
