@@ -351,7 +351,7 @@ end
 %% Overlap Indices ImageSC light
 while 1
     ntrials = 50;
-    si_nb = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    si_nb = [ArL_L_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props_nb = get_props_Rs(o.Rs(:,si_nb),ntrials);
     resp_nb = props_nb.good_FR;
     resp = [respE_OR(:,1) respC_OR(:,1) resp_nb];

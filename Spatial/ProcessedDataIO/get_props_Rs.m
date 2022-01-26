@@ -13,6 +13,8 @@ for rr = 1:size(Rs,1)
         if size(R.sp_rasters1,2) == 0
             continue;
         end
+        temp_mean = squeeze(nanmean(R.sp_rasters1,[1]));
+        o.mean_FR{rr,cc} = (nanmean(temp_mean,1))';
         o.all{rr,cc} = logical(ones(size(R.info_metrics.ShannonMI_Zsh')));
 %         if isempty(strfind(R.marker_name,'motion'))
             o.zMI{rr,cc} = R.info_metrics.ShannonMI_Zsh';
