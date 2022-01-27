@@ -124,6 +124,44 @@ while 1
     break;
 end
 
+%% percentage of cells sensory light different types during locomotion
+while 1
+    titles = {'Lb','Lb*'};
+    si = [ArL_L_T];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    resp1 = props1.good_FR_and_exc;     resp2 = props1.good_FR_and_inh;    resp3 = props1.good_FR_and_untuned;
+    presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
+    presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
+    presp3 = 100 * exec_fun_on_cell_mat(resp3,'sum')./exec_fun_on_cell_mat(resp3,'length');
+    
+    [within,dvn,xlabels] = make_within_table({'Type'},[3]);
+    dataT = make_between_table({presp1,presp2,presp3},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1 1 1]);
+    xdata = make_xdata([3],[1]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Exc','Sup','Com'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
+    changePosition(gca,[0.1 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    ht = title('ArL-L-T'); changePosition(ht,[-0.3 0 0])
+    save_pdf(hf,mData.pdf_folder,sprintf('light_cell_types_percent_motion.pdf'),600);
+    %%
+    break;
+end
+
 
 %% percentage of cells sensory light different types
 while 1
@@ -158,7 +196,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Sup','Com'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.065 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    changePosition(gca,[0.1 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     ht = title('Lb and Lb* (pooled)'); changePosition(ht,[-0.3 0 0])
     save_pdf(hf,mData.pdf_folder,sprintf('light_cell_types_percent.pdf'),600);
     %%
