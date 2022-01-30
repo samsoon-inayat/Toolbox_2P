@@ -1,4 +1,4 @@
-function resp = cell_list_op(resp_valsCi,resp_valsC1i,fun)
+function resp = cell_list_op(resp_valsCi,resp_valsC1i,fun,first)
 
 if isstruct(resp_valsCi)
     resp_valsC = resp_valsCi.vals;
@@ -64,4 +64,9 @@ else
         resp{rr} = respTemp;
     end
     resp = repmat(resp',1,size(resp_valsC,2));
+end
+
+
+if exist('first','var')
+    resp = resp(:,1);
 end

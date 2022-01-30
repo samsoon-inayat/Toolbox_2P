@@ -283,6 +283,7 @@ while 1
     xdata = make_xdata([3],[1 2]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
+
     tcolors = mData.dcolors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...

@@ -83,6 +83,10 @@ for rr = 1:size(Rs,1)
             temp_c2 = cell_list_op(o.good_FR(rr,cc),o.inh(rr,cc),'and');
             o.good_FR_and_exc{rr,cc} = temp_cl{1};
             o.good_FR_and_inh{rr,cc} = temp_c2{1};
+            if strfind(R.marker_name,'motion')
+                 temp_m11 = cell_list_op(o.exc(rr,cc),o.inh(rr,cc),'or');
+                 o.good_FR{rr,cc} = temp_m11{1};
+            end
         end
     end
 end
