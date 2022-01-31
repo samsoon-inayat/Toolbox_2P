@@ -9,8 +9,8 @@ rasterNames = {'airD'};
 Rs = get_rasters_data(ei,selContexts,rasterNames);
 Rs = find_responsive_rasters(Rs,1:10);
 mR = calc_mean_rasters(Rs,1:10);
-[CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1);
-[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
+% [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,1);
+% [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(Rs);
 n = 0;
 
 %%

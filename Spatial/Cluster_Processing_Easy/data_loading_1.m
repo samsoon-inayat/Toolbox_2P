@@ -7,16 +7,19 @@ clear all
 % add_to_path
 clc
 %%
-[f,cName] = getFolders;
-colormaps = load('../MatlabCode/colorblind_colormap.mat');
+%%
+colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
-% mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%
-mData.colors = {[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
-mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06]; 
-Uleth_one_drive = 'G:\OneDrives\OneDrive - University of Lethbridge';
-Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge';
-mData.pdf_folder = [Uleth_one_drive '\PDFs\P15']; 
-mData.pd_folder = [Uleth_one_drive '\ProcessedData\Matlab'];
+mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
+mData.dcolors = mat2cell(distinguishable_colors(20,'w'),[ones(1,20)]);
+mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
+mData.shades = generate_shades(3);
+display_colors(mData.shades.c);
+% Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
+Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
+% Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
+mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
+mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
 disp('Done');
 %%
 data_folder = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Data\RSEG_PSEG_more_data';
@@ -26,13 +29,13 @@ f.data_folder = data_folder; f.processed_data_folder = processed_data_folder;
 % [dS,T] = get_exp_info_from_folder(data_folder,processed_data_folder);
 % sT = T([2 11 20 3 12 21 4 13 22 5 14 23 6 15 24],:);
 animal_list_control = {'3328'};
-date_list_control = {'2021-05-11'};
+date_list_control = {'2021-05-01'};
 [dS_C,T_C] = get_exp_info_from_folder(data_folder,processed_data_folder,animal_list_control,date_list_control);
 T_C = [T_C];
 T_C = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
 %%
-if 1
+if 0
 %     make_db(sT);
     process_abf(T_C,0);
 end
