@@ -898,7 +898,7 @@ while 1
     pmchar=char(177);
     text(-10,0.5,{'Immobility',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(1,1),pmchar,sem_p_gFR_C(1,1))},'FontSize',6,'rotation',0);
     text(5,-4.5,{'Locomotion',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(2,2),pmchar,sem_p_gFR_C(2,2))},'FontSize',6,'rotation',0);
-    text(-6,6,{'IT-Interval',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(3,3),pmchar,sem_p_gFR_C(3,3))},'FontSize',6,'rotation',0);
+    text(-6,6,{'Volunteer',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(3,3),pmchar,sem_p_gFR_C(3,3))},'FontSize',6,'rotation',0);
 %     [HVenn] = venn(AVenn,IVenn,'ErrMinMode','ChowRodgers');
 %     format_axes(gca);
 %     axis equal; axis off;
