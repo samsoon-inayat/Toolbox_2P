@@ -30,7 +30,7 @@ mData = evalin('base','mData');
 signals = get_calcium_data(pd_rec,1);
 n = 0;
 %%
-while 1
+while 0
     hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.95 3],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
     [maxVal,maxLoc] = max(spSigAllN,[],2);
@@ -94,7 +94,8 @@ while 1
     legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 109 0.1]};
     putLegendH(gca,legs,'colors',colors);
     hc = putColorBar(gca,[0.75 0.62 -0.8 -0.6],{'0',sprintf('>%.1f',maxSig)},6,'northoutside',[0.15 0.27 0.045 0.27]);
-    colormap_ig
+%     colormap_ig
+    colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('overall_pop.pdf'),600);
     break;
 end
@@ -102,7 +103,7 @@ end
 %%
 %%
 while 1
-    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 5.65 2.5],'color','w'); hold on;
+    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.99 2.25],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
     [maxVal,maxLoc] = max(spSigAllN,[],2);
     [sorted,locs] = sort(maxLoc);
@@ -158,7 +159,7 @@ while 1
     xlabel('Time (min)');
     ylabel('Cell Number (arranged by peaks)');
     set(gca,'FontSize',6,'FontWeight','Normal');
-    changePosition(gca,[-0.075 -0.015 0.16 -0.05]);
+    changePosition(gca,[-0.075 -0.005 0.16 -0.07]);
     ht = title(sprintf('Normalized Calcium signal (%cF/Fo) of %d of %d cells from a representative animal',916,numcells,size(signals,1))); 
     changePosition(ht,[0 12 0]);
     set(ht,'FontSize',6,'FontWeight','Normal');
@@ -166,6 +167,7 @@ while 1
     putLegendH(gca,legs,'colors',colors);
     hc = putColorBar(gca,[0.75 0.62 -0.8 -0.6],{'0',sprintf('>%.1f',maxSig)},6,'northoutside',[0.15 0.4 0.045 0.4]);
     colormap_ig
+%     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('overall_pop.pdf'),600);
     break;
 end

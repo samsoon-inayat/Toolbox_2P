@@ -58,8 +58,8 @@ ra.ranova
 % semVar = ra.est_marginal_means.Formula_StdErr;
 % combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
 % xdata = [1 2 4 5 7 8]; maxY = 25;
-colors = mData.colors;
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.35 1],'color','w');
+colors = mData.dcolors(1:10);
+hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
 hold on;
 tcolors = {colors{3};colors{3};colors{4};colors{4};colors{5};colors{5};colors{6};colors{6}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -73,11 +73,12 @@ set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','T
 xticks = [1.5 4.5 7.5]; xticklabels = {'Ar','ArL','Ar*'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
-changePosition(gca,[0.1 0.05 -0.07 -0.1]);
-put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Speed (cm/sec)'},[0 0 0]});
+changePosition(gca,[0.1 0.05 -0.3 -0.1]);
+put_axes_labels(gca,{[],[0 0 0]},{{'Speed (cm/sec)'},[0 0 0]});
 rectangle(gca,'Position',[0.75 maxY-4 1 2],'edgecolor','k','facecolor','k');
-text(1.85,maxY-3,'Trials','FontSize',5);
+text(1.85,maxY-3,'Trial','FontSize',5);
 rectangle(gca,'Position',[4 maxY-4 1 2],'edgecolor','k');
-text(5.2,maxY-3,'Inter-Trials','FontSize',5);
+text(5.2,maxY-3,'Intertrial','FontSize',5);
+format_axes(gca);
 save_pdf(hf,mData.pdf_folder,'AverageSpeedConditions_C',600);
 

@@ -79,9 +79,49 @@ end
 
 
 n = 0;
+%% raw speed air stream figure
+% hf = get_figure(5,[4 3 3.25 0.5]);
+ff = makeFigureRowsCols(100,[1 5 3.25 1.1],'RowsCols',[4 1],'spaceRowsCols',[0.05 0.001],...
+    'rightUpShifts',[0.01 0.04],'widthHeightAdjustment',[-30 -80]);
+set(gcf,'Position',[10 8 3.65 1]);
+set(gcf,'color','w');
+an = 1; %day = 1;
+for day = 1:4
+    axes(ff.h_axes(day,1));
+    b = ei1{an,day};
+    ts = b.ts; spd = b.fSpeed;
+    plot(ts,spd,'b','linewidth',0.5); hold on;
+%     changePosition(gca,[0 0 0.05 0]);format_axes(gca);
+    xlims = [0 610];
+    % xlims = xlim;
+    xlim(xlims); 
+    ylims = [0 40];
+    ylim(ylims)
+    onsets = b.air_puff_r; offsets = b.air_puff_f;
+    [TLx TLy] = ds2nfu(b.ts(onsets(1)),ylims(2));
+    [BLx BLy] = ds2nfu(b.ts(onsets(1)),ylims(1));
+    aH = (TLy - BLy);
+    for ii = 1:length(onsets)
+        if ts(offsets(ii)) > xlims(2) || ts(onsets(ii)) < xlims(1)
+            continue;
+        end
+        [BRx BRy] = ds2nfu(b.ts(offsets(ii)),ylims(1));
+        [BLx BLy] = ds2nfu(b.ts(onsets(ii)),ylims(1));
+        aW = (BRx-BLx);
+        annotation('rectangle',[BLx BLy aW aH],'facealpha',0.2,'linestyle','none','facecolor','k');
+    %     plot([ts(onsets(ii)),ts(onsets(ii))],ylims,'r');    %     plot([ts(offsets(ii)),ts(offsets(ii))],ylims,'g');
+    end
+    plot([xlims(1) xlims(1)],[ylims],'r','linewidth',0.5); %plot([xlims(1)-20 xlims(1)],[0 0],'k');
+%     plot([xlims(1) xlims(1)+10],[40 40],'k');
+%     text(xlims(1)-10,ylims(1)+3,'0','FontSize',5);
+%     text(xlims(1)-20,20,'20','FontSize',6);
+%     put_axes_labels(gca,{[],[0 0 0]},{{'Speed','(cm/sec)'},[0 0 0]});
+    axis off
+end
+save_pdf(ff.hf,mData.pdf_folder,sprintf('raw speeds.pdf'),600);
 %% peercent of trials with greater than 7 cm/sec
 runthis = 1;
-if runthis
+while 1
     thesecolors = distinguishable_colors(size(pa7,1),'w');
     ff = makeFigureWindow__one_axes_only(5,[10 4 2 1],[0.19 0.2 0.79 0.75]);
     axes(ff.ha);hold on;
@@ -107,12 +147,11 @@ if runthis
     ylabel({'Percent of trials','above 7cm/sec'});
     changePosition(gca,[0.02 0.06 -0.05 -0.06]);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('percenta7.pdf'),600);
-    return;
+    break;;
 end
 
 %%
-runthis =1;
-if runthis
+while 1
     itr = 0;
 thisCols_all = mData.colors;
     selRowi = 5;
@@ -158,7 +197,7 @@ for selRowi = 1:5
         save_pdf(ff.hf,mData.pdf_folder,sprintf('Figure_1_Speed_vs_Trials_Training_%d.pdf',temp.animalIDs(selRows(selRowi))),600);
     end
 end
-return;
+break;
 end
 
 %%
@@ -196,7 +235,7 @@ raO = repeatedMeasuresAnova(dataT,within);
 % semVar = ra.est_marginal_means.Formula_StdErr;
 % combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
 % xdata = [1 2 4 5 7 8 10 11]; maxY = 50;
-
+%%
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
@@ -206,16 +245,17 @@ tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4}
 for ii = 2:2:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 end
-set(gca,'xlim',[0.25 11.75],'ylim',[0 maxY+7],'FontSize',6,'FontWeight','Bold','TickDir','out');
+set(gca,'xlim',[0.25 11.75],'ylim',[0 maxY+7]);
 xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
-changePosition(gca,[0.1 0.02 -0.03 -0.011])
+changePosition(gca,[0.1 0.02 -0.07 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
 rectangle(gca,'Position',[0.75 maxY+3 1 3],'edgecolor','k','facecolor','k');
-text(1.95,maxY+5,'Trials','FontSize',5);
+text(1.95,maxY+5,'Trial','FontSize',5);
 rectangle(gca,'Position',[4.5 maxY+3 1 3],'edgecolor','k');
-text(5.7,maxY+5,'Inter-Trials','FontSize',5);
+text(5.7,maxY+5,'Intertrial','FontSize',5);
+format_axes(gca);
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova.pdf',600);
 return;
