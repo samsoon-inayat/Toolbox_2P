@@ -2,11 +2,13 @@ function trial_to_trial_Analysis_brake_vs_nobrake
 
 %% find spatial trial to trial correlation
 while 1
+    trialNums = [1:10];
    si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs Abs_On Abs_Off ];
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
     for cn = 1:length(si)
         trials = mat2cell([1:10]',ones(size([1:10]')));
+        trials = mat2cell([trialNums]',ones(size([trialNums]')));
         RsC = repmat(Rs(:,cn),1,10);
         mRsCT = cell(size(RsC,1),length(trials));
         for ii = 1:length(trials)
@@ -144,7 +146,7 @@ while 1
     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);
     minI = min([mOI(:);semOI(:)]);
-    
+    minI = 0; maxI = 0.6;
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
