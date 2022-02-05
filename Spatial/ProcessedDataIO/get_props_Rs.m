@@ -43,7 +43,7 @@ for rr = 1:size(Rs,1)
         o.good_Gauss{rr,cc} = p';
         o.good_Gauss_loose{rr,cc} = rs' > 0.3;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
-        [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc}] = get_FR_based(R.sp_rasters1,ntrials);
+        [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc},o.clus_based{rr,cc},o.oc(rr,cc)] = get_FR_based(R.sp_rasters1,ntrials);
         if strcmp(R.marker_name,'airIT')
             [o.good_FR_IT{rr,cc},o.N_Resp_Trials_IT{rr,cc}] = get_FR_based_IT(R.sp_rasters1,ntrials);
             [o.good_FR_IT1{rr,cc},o.N_Resp_Trials_IT1{rr,cc}] = get_FR_based_IT1(R.sp_rasters1,ntrials);
@@ -92,7 +92,7 @@ for rr = 1:size(Rs,1)
     end
 end
 
-function [FR_based,sR,sRp] = get_FR_based(rasters,ntrials)
+function [FR_based,sR,sRp1,oc] = get_FR_based(rasters,ntrials)
 rasters = permute(rasters,[2 1 3]);
 % sR = sum(squeeze(nanmean(rasters,1))>0.01); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
 sR = sum(squeeze(nansum(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
@@ -104,6 +104,21 @@ else
     FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
 end
 % FR_based = FR_based';
+trialR = (squeeze(nansum(rasters,1))')>0;
+% oc = find_cells_based_on_cluster(trialR);
+% sRp = kmeans(trialR,oc);
+oc = 2;
+rng(1);
+sRp = kmeans(trialR,2);
+s1 = median(sum(trialR(sRp==1,:),2));
+s2 = median(sum(trialR(sRp==2,:),2));
+if s1>s2
+    sRp1 = sRp == 1;
+else
+    sRp1 = sRp == 2;
+end
+% FR_based = sRp1;
+n = 0;
 
 function [FR_based,sR,sRp] = get_FR_based_IT(rasters,ntrials)
 rasters = rasters(:,1:45,:);

@@ -99,7 +99,7 @@ while 1
                 this_mat = mRsCT{rr,cc};
                 [~,peakL] = max(this_mat,[],2);
 %                 size_tmat(rr,cc) = size(this_mat,2);
-                resp{rr,cc} = sum(this_mat,2) > 0;
+                resp{rr,cc} = sum(this_mat,2) == 0;
                 if intersect_with_global
                     resp{rr,cc} = resp{rr,cc} & respG{rr,cn};
                 end
@@ -127,13 +127,17 @@ while 1
                     ind = ind + 1;
                 end
             end
+%             oc(rr,cn) = find_cells_based_on_cluster(cell2mat(resp(rr,:)));
         end
         allresp = [allresp resp]; all_peakL = [all_peakL peak_locations];
+        
     end
     i_allresp = cell_list_op(allresp,[],'not');
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05,0);
     break;
 end
+%%
+
 %%
 while 1   
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);

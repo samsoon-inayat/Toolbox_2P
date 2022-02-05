@@ -1,4 +1,4 @@
-function [all_OI,mOI,semOI,all_OI_mat,p_vals,h] = get_overlap_index(resp_valsi,thr,alpha,inv)
+function [all_OI,mOI,semOI,all_OI_mat,p_vals,h,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(resp_valsi,thr,alpha,inv)
 
 
 if ~exist('inv','var')
@@ -35,11 +35,15 @@ for ii = 1:length(resp_vals)
                 if OI(rr,cc) < 0
                     n = 0;
                 end
+                CI(rr,cc) = 100*sum(shared)/length(ccs1);
+                n = 0;
 %             end
         end
     end
     all_OI{ii} = OI;
     all_OI_mat(:,:,ii) = OI;
+    all_CI{ii} = CI;
+    all_CI_mat(:,:,ii) = CI;
 end
 
 mOI = NaN(size(all_OI{1},1),size(all_OI{1},2),length(all_OI));
@@ -49,6 +53,15 @@ for ii = 1:length(all_OI)
 end
 semOI = std(mOI,[],3)/sqrt(length(all_OI));
 mOI = mean(mOI,3);
+
+mCI = NaN(size(mOI));
+
+for ii = 1:length(all_CI)
+    mCI(:,:,ii) = all_CI{ii};
+end
+semCI = std(mCI,[],3)/sqrt(length(all_CI));
+mCI = mean(mCI,3);
+
 
 h = NaN(size(all_OI_mat(:,:,1)));
 
