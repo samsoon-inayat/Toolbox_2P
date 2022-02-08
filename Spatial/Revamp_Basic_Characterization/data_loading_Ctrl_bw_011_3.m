@@ -18,6 +18,8 @@ date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-0
 T_C = [T_C];
 T_C1 = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
+%% check for video files
+T_C1 = check_for_video_files(T_C1);
 %%
 colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
@@ -38,12 +40,15 @@ if 0
     process_abf(T_C,0);
 end
 disp('Done');
-
 %%
 sel_rec = [1 3 5];
 sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
 
+%% tag videos with event related signals
+if 0
+    tag_videos(ei,T_C1,0);
+end
 %%
 if 0
     ii = 5;

@@ -53,5 +53,11 @@ else
 end
 FR_based = sRp1;
 
-
+%%
+for fi = 1:500%length(frames)
+    figure(100);clf;
+    imagesc(frames{fi});
+    title(fi);
+    pause(0.1);
+end
 
