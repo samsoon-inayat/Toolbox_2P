@@ -12,7 +12,17 @@ for ii = 1:length(ei)
     b = tei.b;
     vo = VideoReader(vfile);
     number_of_frames = (ceil(vo.FrameRate*vo.Duration)-1);
-    [success,frames,frame_times] = load_file_frames(vo,1:10);
+    [success,frames,frame_times] = load_file_frames(vo,1:1000);
+    dt = frame_times(2) - frame_times(1);
+    vts = frame_times(1):dt:vo.Duration;
+    bts = b.ts;
+    bi_vts = NaN(size(vts));
+    parfor vi = 1:length(vts)
+        bi_vts(vi) = find(bts - vts(vi) < 0,1,'last');
+    end
+    figure(1000);clf;
+    plot(b.ts,b.air_puff_raw);hold on;
+    plot(b.ts(bi_vts),b.air_puff_raw(bi_vts),'r');
     n = 0;
 end
 
