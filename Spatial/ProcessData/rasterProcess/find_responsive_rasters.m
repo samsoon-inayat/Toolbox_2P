@@ -101,7 +101,8 @@ for ii = 1:size(rasters,3)
 %     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
 %     [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
 %     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
-    [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
+%     [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
+    [~,p(ii),~] = ttest2(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
     vert = nansum(thisRaster,2);
     hv(ii) = sum(vert>0) > (round(length(trials)/2)-1);
 %     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
@@ -192,7 +193,8 @@ excinh = p;
 parfor ii = 1:size(rasters,3)
     thisRaster = rasters(trials,:,ii);
     m_thisRaster = nanmean(thisRaster);
-    [p(ii),atabk,statsk] = kruskalwallis(m_thisRaster,group,'nodisplay');
+%     [p(ii),atabk,statsk] = kruskalwallis(m_thisRaster,group,'nodisplay');
+    [p(ii),atabk,statsk] = anova1(m_thisRaster,group,'nodisplay');
     vert = nanmean(thisRaster,2)>0.1;
 %     vert = nansum(thisRaster,2);
 %     hv(ii) = sum(vert>0) >= 5;
@@ -250,8 +252,9 @@ parfor ii = 1:size(rasters,3)
 %     [p(ii),atab,stats] = anova1(thisRaster,group,'nodisplay');
 %     [p(ii),~,~] = kruskalwallis(thisRaster,group,'nodisplay');
 %     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
-    [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
-%     [p(ii),~] = ttest2(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
+%     [p(ii),~,~] = kruskalwallis(m_thisRaster,group,'nodisplay');
+%     [p(ii),~] = ranksum(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
+    [~,p(ii),~] = ttest2(m_thisRaster(find(group==1)),m_thisRaster(find(group==2)));
     vert = nansum(thisRaster,2);
     hv(ii) = sum(vert>0) > 5;
 %     [~,CRR] = findPopulationVectorPlot(thisRaster,1:10);
@@ -266,7 +269,6 @@ parfor ii = 1:size(rasters,3)
     end
 end
 % resp = p < 0.05;% & hv;
-
 
 
 function [resp,cis] = find_resp_time_raster_light_fractal(R,trials)

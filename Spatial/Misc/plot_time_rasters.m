@@ -31,10 +31,10 @@ for rr = 2
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
                 if isempty(strfind(R.marker_name,'IT'))
-                    plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','m');
-                    if isempty(strfind(R.marker_name,'motion'))
-                        plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
-                    end
+                    plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.2,'color','r');
+%                     if isempty(strfind(R.marker_name,'motion'))
+%                         plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
+%                     end
                 end
             end
         end
@@ -90,7 +90,7 @@ for rr = 2
         
         if cc == length(ff.h_axes)
             hca = gca;
-%             ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
+            ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
         end
         cols = size(thisRaster,2);
         colsHalf = ceil(cols/2);

@@ -1,36 +1,41 @@
-function tag_videos(ei,T,ow)
+function tag_videos(ei,ow)
 
 for ii = 1:length(ei)
-    if isempty(cell2mat(T{ii,10}))
+    tei = ei{ii};
+    if isempty(tei.video_file)
         continue;
     end
-    tei = ei{ii};
-    vfile = fullfile(tei.recordingFolder,cell2mat(T{ii,10}));
-    vfile(end) = [];
-    vfile((length(vfile)-2):end) = 'mp4';
-    n = 0;
+    vfile = fullfile(tei.recordingFolder,tei.video_file_mp4);
     b = tei.b;
+    b.air_puff_rawD = b.air_puff_raw > 0.5;
+    b.stim_rawD = b.stim_raw > 0.5;
     vo = VideoReader(vfile);
-    number_of_frames = (ceil(vo.FrameRate*vo.Duration)-1);
-    [success,frames,frame_times] = load_file_frames(vo,1:1000);
-    dt = frame_times(2) - frame_times(1);
-    vts = frame_times(1):dt:vo.Duration;
-    bts = b.ts;
-    bi_vts = NaN(size(vts));
-    parfor vi = 1:length(vts)
-        bi_vts(vi) = find(bts - vts(vi) < 0,1,'last');
+    vts = b.video.times;
+    cam_frame_inds = b.video.cam_frame_inds;
+    st = b.air_puff_r(1)-1000;
+    en = b.air_puff_f(2)+1000;
+    fts = vts(cam_frame_inds > st & cam_frame_inds < en);
+    [~,frames,~] = load_file_frames(vo,fts);
+    cfii = cam_frame_inds(cam_frame_inds > st & cam_frame_inds < en);
+    for fi = 1:length(fts)
+        figure(100);clf;
+        imagesc(frames{fi});
+        title(fi);
+        if b.air_puff_rawD(cfii(fi))
+            text(100,100,'*','FontSize',20,'color','r');
+        else
+            text(100,100,'*','FontSize',20,'color','g');
+        end
+        pause(0.01);
     end
-    figure(1000);clf;
-    plot(b.ts,b.air_puff_raw);hold on;
-    plot(b.ts(bi_vts),b.air_puff_raw(bi_vts),'r');
+    figure(200);clf;plot(b.ts(cfii),b.air_puff_rawD(cfii))
     n = 0;
 end
 
-
-
 function [success,frames,frame_times] = load_file_frames(video_object,frameNums)
-
 success = 1;
+if isinteger(frameNums(1))
+
 % video_object = VideoReader(fullfile(file_path,file_name));
 number_of_frames = (ceil(video_object.FrameRate*video_object.Duration)-1);
 frameNumber = 1;
@@ -57,4 +62,11 @@ if ~success
     frames = [];
     frame_times = [];
     return;
+end
+else
+    for ii = 1:length(frameNums)
+        video_object.CurrentTime = frameNums(ii);
+        frames{ii} = readFrame(video_object);
+    end
+    frame_times = frameNums;
 end

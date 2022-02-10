@@ -4,6 +4,7 @@ for ii = 1:size(T,1)
     recordingFolder = cell2mat(T{ii,6});
     disp(recordingFolder);
     tei{ii}.recordingFolder = recordingFolder;
+    tei{ii}.matlab_folder = cell2mat(T{ii,8});
     tei{ii}.thorExp = thorGetExperimentInfo(recordingFolder);
     nP = getNumberOfPlanes(tei{ii}.thorExp);
     plane{1} = fullfile(cell2mat(T{ii,7}),'suite2P\plane0');

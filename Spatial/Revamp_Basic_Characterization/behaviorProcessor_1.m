@@ -83,7 +83,7 @@ n = 0;
 % hf = get_figure(5,[4 3 3.25 0.5]);
 ff = makeFigureRowsCols(100,[1 5 3.25 1.1],'RowsCols',[4 1],'spaceRowsCols',[0.05 0.001],...
     'rightUpShifts',[0.01 0.04],'widthHeightAdjustment',[-30 -80]);
-set(gcf,'Position',[10 8 3.65 1]);
+set(gcf,'Position',[10 8 2.75 1]);
 set(gcf,'color','w');
 an = 1; %day = 1;
 for day = 1:4
@@ -92,7 +92,7 @@ for day = 1:4
     ts = b.ts; spd = b.fSpeed;
     plot(ts,spd,'b','linewidth',0.5); hold on;
 %     changePosition(gca,[0 0 0.05 0]);format_axes(gca);
-    xlims = [0 610];
+    xlims = [0 430];
     % xlims = xlim;
     xlim(xlims); 
     ylims = [0 40];
@@ -476,11 +476,11 @@ tcolors = {colors{1};colors{2};colors{3};colors{4}};
     'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 
-set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out');
+set(gca,'xlim',[0.25 4.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
 xticks = xdata; xticklabels = {'Day1','Day2','Day3','RT'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30)
-changePosition(gca,[0.22 0.02 -0.15 -0.011])
+changePosition(gca,[0.22 0.02 -0.25 -0.011])
 put_axes_labels(gca,{[],[0 0 0]},{{'Movement','Latency (sec)'},[0 0 0]});
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_mov_lat.pdf',600);

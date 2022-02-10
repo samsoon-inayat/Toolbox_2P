@@ -4,7 +4,7 @@ function trial_to_trial_Analysis_brake_vs_nobrake
 while 1
     trialNums = [1:10];
    si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs Abs_On Abs_Off ];
-    Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si;
+    Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si; propsG = get_props_Rs(RsG,[40,100]); respG = propsG.vals;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
     for cn = 1:length(si)
         trials = mat2cell([1:10]',ones(size([1:10]')));
@@ -87,8 +87,9 @@ end
 
 %% Overlap Indices ImageSC all
 while 1
-    avgProps = get_props_Rs(RsG,[50,100]); respG = avgProps.good_FR;
-    an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0;
+    avgProps = get_props_Rs(RsG,[50,100]); 
+    respG = avgProps.good_FR_and_untuned;
+    an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0; only_global = 0;
     allresp = []; ind = 1;
     all_peakL = [];
     for cn = 1:length(si)
@@ -99,9 +100,12 @@ while 1
                 this_mat = mRsCT{rr,cc};
                 [~,peakL] = max(this_mat,[],2);
 %                 size_tmat(rr,cc) = size(this_mat,2);
-                resp{rr,cc} = sum(this_mat,2) == 0;
+                resp{rr,cc} = sum(this_mat,2) > 0;
                 if intersect_with_global
                     resp{rr,cc} = resp{rr,cc} & respG{rr,cn};
+                end
+                if only_global
+                    resp{rr,cc} = respG{rr,cn};
                 end
                 if sp == 1
                     if cn == 1
@@ -134,13 +138,13 @@ while 1
     end
     i_allresp = cell_list_op(allresp,[],'not');
     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05,0);
-    break;
-end
-%%
-
-%%
-while 1   
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);
+%     break;
+% end
+% %%
+% 
+% %%
+% while 1   
+%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);
 %     mOI = OI{4}; semOI = semOI;
     
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
@@ -150,7 +154,7 @@ while 1
     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);
     minI = min([mOI(:);semOI(:)]);
-    minI = 0; maxI = 0.6;
+%     minI = 0; maxI = 0.6;
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 

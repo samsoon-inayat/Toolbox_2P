@@ -1,31 +1,42 @@
-function tag_videos(ei,T,ow)
+function ei = load_video_frame_inds(ei,ow)
 
 for ii = 1:length(ei)
-    if isempty(cell2mat(T{ii,10}))
+    tei = ei{ii};
+    if isempty(tei.video_file)
         continue;
     end
-    tei = ei{ii};
-    vfile = fullfile(tei.recordingFolder,cell2mat(T{ii,10}));
-    vfile(end) = [];
-    vfile((length(vfile)-2):end) = 'mp4';
-    n = 0;
+    file_name = fullfile(tei.matlab_folder,'camera_frame_indices.mat');
+    if exist(file_name,'file') && ow == 0
+        temp = load(file_name);
+        tei.b.video.cam_frame_inds = temp.cam_frame_inds;
+        tei.b.video.times = temp.vts;
+        ei{ii} = tei;
+        continue;
+    end
+    disp('Processing video indexing');
+    vfile = fullfile(tei.recordingFolder,tei.video_file_mp4);
     b = tei.b;
+    b.air_puff_rawD = b.air_puff_raw > 0.5;
+    b.stim_rawD = b.stim_raw > 0.5;
     vo = VideoReader(vfile);
     number_of_frames = (ceil(vo.FrameRate*vo.Duration)-1);
-    [success,frames,frame_times] = load_file_frames(vo,1:1000);
+    [success,frames,frame_times] = load_file_frames(vo,1:100);
     dt = frame_times(2) - frame_times(1);
     vts = frame_times(1):dt:vo.Duration;
     bts = b.ts;
-    bi_vts = NaN(size(vts));
+    cam_frame_inds = NaN(size(vts));
     parfor vi = 1:length(vts)
-        bi_vts(vi) = find(bts - vts(vi) < 0,1,'last');
+        cam_frame_inds(vi) = find(bts - vts(vi) < 0,1,'last');
     end
-    figure(1000);clf;
-    plot(b.ts,b.air_puff_raw);hold on;
-    plot(b.ts(bi_vts),b.air_puff_raw(bi_vts),'r');
+%     figure(1000);clf;
+%     plot(b.ts,b.air_puff_raw);hold on;
+%     plot(b.ts(cam_frame_inds),b.air_puff_rawD(cam_frame_inds),'r');
+    save(file_name,'cam_frame_inds','vts');
+    tei.b.video.cam_frame_inds = cam_frame_inds;
+    tei.b.video.times = vts;
+    ei{ii} = tei;
     n = 0;
 end
-
 
 
 function [success,frames,frame_times] = load_file_frames(video_object,frameNums)

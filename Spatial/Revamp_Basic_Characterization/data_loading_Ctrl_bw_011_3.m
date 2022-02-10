@@ -19,7 +19,7 @@ T_C = [T_C];
 T_C1 = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
 %% check for video files
-T_C1 = check_for_video_files(T_C1);
+% T_C1 = check_for_video_files(T_C1);
 %%
 colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
@@ -47,7 +47,9 @@ ei = getData_py_2(T_C1(sel_rec,:));
 
 %% tag videos with event related signals
 if 0
-    tag_videos(ei,T_C1,0);
+    ei = check_for_video_files_ei(ei);
+    ei = load_video_frame_inds(ei,1);
+    tag_videos(ei,0);
 end
 %%
 if 0
