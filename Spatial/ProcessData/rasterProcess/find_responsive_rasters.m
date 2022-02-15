@@ -52,7 +52,13 @@ for rr = 1:size(Rs,1)
             end
         end
         if strcmp(R.marker_name,'airIT')
-            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_intertrial(R,trials);
+%             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_intertrial(R,trials);
+            [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
+            zMIs = R.info_metrics.ShannonMI_Zsh;
+%             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
+%             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 15 & centers > 0 & centers < 15 & MFR < 10000;
+            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25;
+            Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);

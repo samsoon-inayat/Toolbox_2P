@@ -23,7 +23,7 @@ for rr = 2
         else
             imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         end
-        plot(10*normalizeSignal(mean(thisRaster)),'b','linewidth',0.25);
+        plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.25);
 %         if rr ==1 
 %             plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
 %         end
@@ -31,7 +31,7 @@ for rr = 2
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
                 if isempty(strfind(R.marker_name,'IT'))
-                    plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.2,'color','r');
+                    plot([cis(2,1) cis(2,1)]+1,[0 size(thisRaster,1)+1],'linewidth',0.2,'color','m');
 %                     if isempty(strfind(R.marker_name,'motion'))
 %                         plot([cis(1,3) cis(1,3)]+1,[0 size(thisRaster,1)+1],'linewidth',0.1,'color','c');
 %                     end

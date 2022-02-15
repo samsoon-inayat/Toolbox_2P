@@ -25,20 +25,11 @@ while 1
     break;
 end
 %% Show sample rasters
-an = 4; cn = 1;
+an = 3; cn = 1;
 figure(2000);clf;imagesc(Rs{an,cn}.speed);colorbar;
 plotRasters_simplest(Rs{an,cn})
 %%
-an = 4; cn = 1;
-ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-        'spaceRowsCols',[0.15 0.04],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
-        [-60 -475]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.4 1]);
-ff = sample_rasters(Rs{an,cn},[248 264 270 230],ff);
-for ii = 1:4
-        set(ff.h_axes(1,ii),'xtick',[1 13.5 27],'xticklabels',{'-1.5','0','1.5'});
-    end
-save_pdf(ff.hf,mData.pdf_folder,sprintf('motion_rastersD'),600);
+
 %% population vector and correlation
 while 1
     selected_property = 'tuned';
@@ -52,9 +43,6 @@ while 1
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set(ht,'String',titles{ii}); end
     colormap_ig
-    for ii = 1:2
-        set(ff.h_axes(2,ii),'xtick',[1 13.5 27],'xticklabels',{'-1.5','0','1.5'});
-    end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_motion_%s.pdf',selected_property),600);
 
     % average correlation of all animals
@@ -63,9 +51,6 @@ while 1
         [-130 -320]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 1.7 0.8]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
     colormap_ig
-    for ii = 1:2
-        set(ff.h_axes(1,ii),'xtick',[1 13.5 27],'xticklabels',{'-1.5','0','1.5'},'ytick',[1 13.5 27],'yticklabels',{'-1.5','0','1.5'});
-    end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_motion_%s.pdf',selected_property),600);
     %%
     break;
@@ -138,9 +123,10 @@ while 1
 end
 %% Percentage of excitatory inhibitory responsive cells
 while 1
-    resp1 = props1.exc;     resp2 = props1.inh;
+    resp1 = props1.exc;     resp2 = props1.inh; resp3 = resp_speedAcc;
     presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
     presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
+    presp3 = 100 * exec_fun_on_cell_mat(resp3,'sum')./exec_fun_on_cell_mat(resp3,'length');
     
     [within,dvn,xlabels] = make_within_table({'MT','CT'},[2,2]);
     dataT = make_between_table({presp1(:,1),presp2(:,1),presp1(:,2),presp2(:,2)},dvn);

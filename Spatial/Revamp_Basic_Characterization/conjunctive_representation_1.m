@@ -94,22 +94,22 @@ break;
 end
 %% Show sample rasters
 while 1
-    Rs = o.Rs;
-   an = 3; cn = 1;
+%     Rs = o.Rs;
+   an = 1; cn = 1;
     % plotRasters_simplest(Rs{an,cn})
     % find(resp_valsC{an}(:,cn));
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
         [-75 -475]);
     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(Rs{an,cn},[191 11 96 41],ff);
+    ff = sample_rasters(Rs{an,cn},[328 518 567 436],ff);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
-    
+    break;
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
         [-75 -475]);
     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(RsT{an,cn},[191 11 96 41],ff);
+    ff = sample_rasters(Rs{an,cn},[328 518 567 436],ff);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersDT'),600);
     break;
 end
