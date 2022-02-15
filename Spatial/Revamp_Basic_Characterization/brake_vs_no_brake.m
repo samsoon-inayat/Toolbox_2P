@@ -28,18 +28,19 @@ n = 0;
 %% combine distance time rasters 
 siD = [Ar_D ArL_D Ars_D]; siT = [Ar_T ArL_T Ars_T];
 RsD = o.Rs(:,siD);mRD = o.mR(:,siD); RsT = o.Rs(:,siT);mRT = o.mR(:,siT);
-Rs = combine_distance_time_rasters(RsD,RsT);
+respDT = combine_distance_time_rasters(RsD,RsT);
 
 %% Show sample rasters
 while 1
-    rtype = {'B_L','NB_L','B_AOn','B_AOff','NB_AOn','NB_AOff'};
+    rtype = {'B_L','NB_L','B_AOn','B_AOff','NB_AOn','NB_AOff','NB-A'};
     cellNums = {[92 168 387 436];
         [70 59 328 558];
         [140 39 17 66 193 140];
         [575 581 373 532];
-        [142 66 54 567 429 235 164]
-        [439 42 215 353]};
-    an = 1; cn = 2;
+        [142 66 54 567 429 235 164];
+        [439 42 215 353];
+        [552 567 165 103]};
+    an = 1; cn = 8;
     ntrials = 50;
     asi = [Lb ArL_L Ab_On Abs_Off Ar_On Ar_Off Ar_D Ar_T];
     si = asi(cn);
@@ -47,7 +48,8 @@ while 1
     Rs = o.Rs(:,si);
     props1 = get_props_Rs(Rs,ntrials);
 %     plotRasters_simplest(Rs{an},find(props1.vals{an}))
-%     break;
+    plotRasters_simplest(Rs{an},find(props1.good_zMI{an}))
+    break;
     % find(resp_valsC{an}(:,cn));
     R = Rs{an};
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
@@ -62,6 +64,42 @@ while 1
     save_pdf(ff.hf,mData.pdf_folder,sprintf('rasters_%s',rtype{cn}),600);
     break;
 end
+
+%% Show sample rasters distance
+while 1
+    rtype = {'B_L','NB_L','B_AOn','B_AOff','NB_AOn','NB_AOff','NB-A'};
+    cellNums = {[92 168 387 436];
+        [70 59 328 558];
+        [140 39 17 66 193 140];
+        [575 581 373 532];
+        [142 66 54 567 429 235 164];
+        [439 42 215 353];
+        [11 54 116 165]};
+    an = 1; cn = 7;
+    ntrials = 50;
+    asi = [Lb ArL_L Ab_On Abs_Off Ar_On Ar_Off Ar_D Ar_T];
+    si = asi(cn);
+%     si = [Lb];
+    Rs = o.Rs(:,si);
+    props1 = get_props_Rs(Rs,ntrials);
+%     plotRasters_simplest(Rs{an},find(props1.vals{an}))
+%     plotRasters_simplest(Rs{an},find(props1.good_zMI{an}))
+%     break;
+    % find(resp_valsC{an}(:,cn));
+    R = Rs{an};
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.04],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-60 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.4 1]);
+    plot_dist_rasters(R,cellNums{cn},ff);
+    for ii = 1:4
+        set(ff.h_axes(1,ii),'xtick',[1 24.5 49],'xticklabels',{'0','75','150'});
+    end
+    colormap_ig
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('rasters_%s',rtype{cn}),600);
+    break;
+end
+
 
 %% compare the zMIs
 while 1
@@ -1614,11 +1652,12 @@ end
 %% Brake vs No-Brake and Voluntary Motion On Off
 while 1
     all_resp = [];
-    for ind = 2
+    for ind = 3
     ntrials = 50;
-    event_type = {'Air','Light'};
+    event_type = {'Air','Light','All'};
     allsic = {{[Ab_On Abs_On Ab_Off Abs_Off];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];[M_On M_Off]};
-    {[Lb Lbs];ArL_L;[M_On M_Off]}};
+    {[Lb Lbs];ArL_L;[M_On M_Off]};
+    {[Ab_On Abs_On Ab_Off Abs_Off Lb Lbs];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L];[M_On M_Off]}};
 %     ind = 3;
     sic = allsic{ind};
     clear all_gFR
@@ -1656,18 +1695,18 @@ while 1
 %     h(h==1) = 0;
     hf = get_figure(5,[8 7 1.5 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.dcolors(4:6);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.17);
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Brake','No-Brake','Volun'};
+    xticks = xdata; xticklabels = {'Brake','No-Brake','Motion'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.035 0.01 -0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Unique Cells (%)',[0 -5 0]});
+    changePosition(gca,[0.035 0.01 -0.25 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Unique Cells (%)',[0 0 0]});
     pos = get(gca,'Position');
-    text(1,ylims(2),sprintf('%s',event_type{ind}),'FontSize',6);
+%     text(1,ylims(2),sprintf('%s',event_type{ind}),'FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('unique_cells_across_conditions_%s_volunM.pdf',event_type{ind}),600);
     
     hf = get_figure(6,[10 7 1.5 1]);
@@ -1687,15 +1726,16 @@ while 1
     [mp_gFR_C_all,semp_gFR_C_all] = findMeanAndStandardError(100*exec_fun_on_cell_mat(gFR_C_all,'sum')./exec_fun_on_cell_mat(gFR_C_all,'length'));
 %     AVenn = [p_gFR_C(1,1) p_gFR_C(2,2)]; IVenn = [p_gFR_C(1,2)];
 %     [HVenn] = venn(AVenn,IVenn,'ErrMinMode','None');
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FRV,0.5,0.05);
     AVenn = [p_gFR_C(1,1) p_gFR_C(2,2) p_gFR_C(3,3)]; IVenn = [p_gFR_C(1,2) p_gFR_C(1,3) p_gFR_C(2,3) p_gFR_C_all];
     [HVenn] = venn(AVenn,IVenn,'ErrMinMode','None');
     format_axes(gca);
     axis equal; axis off;
     changePosition(gca,[0.0 -0.0 -0.05 -0.05]); %put_axes_labels(gca,{[],[0 0 0]},{'Unique Cells (%)',[0 -5 0]});
     pmchar=char(177);
-    text(-3.65,2.5,{'Brake',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(1,1),pmchar,sem_p_gFR_C(1,1))},'FontSize',6,'rotation',0);
-    text(4.5,-2.65,{'No-Brake',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(2,2),pmchar,sem_p_gFR_C(2,2))},'FontSize',6,'rotation',0);
-    text(0,4,{sprintf('Volun (%0.0f%c%0.0f%%)',m_p_gFR_C(3,3),pmchar,sem_p_gFR_C(3,3))},'FontSize',6,'rotation',0);
+%     text(-3.65,2.5,{'Brake',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(1,1),pmchar,sem_p_gFR_C(1,1))},'FontSize',6,'rotation',0);
+%     text(4.5,-2.65,{'No-Brake',sprintf('%0.0f%c%0.0f%%',m_p_gFR_C(2,2),pmchar,sem_p_gFR_C(2,2))},'FontSize',6,'rotation',0);
+%     text(0,4,{sprintf('Volun (%0.0f%c%0.0f%%)',m_p_gFR_C(3,3),pmchar,sem_p_gFR_C(3,3))},'FontSize',6,'rotation',0);
     set(HVenn(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); 
     set(HVenn(2),'FaceColor',tcolors{2},'FaceAlpha',0.75);
     set(HVenn(3),'FaceColor',tcolors{3},'FaceAlpha',0.75);
@@ -1742,11 +1782,12 @@ end
 %% Brake vs No-Brake and Spatial
 while 1
     all_resp = [];
-    for ind = 2
+    for ind = 3
     ntrials = 50;
-    event_type = {'Air','Light'};
+    event_type = {'Air','Light','All'};
     allsic = {{[Ab_On Abs_On Ab_Off Abs_Off];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];[Ar_D ArL_D Ars_D]};
-    {[Lb Lbs];ArL_L;[Ar_D ArL_D Ars_D]}};
+    {[Lb Lbs];ArL_L;[Ar_D ArL_D Ars_D]};
+    {[Ab_On Abs_On Ab_Off Abs_Off Lb Lbs];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];[M_On M_Off];[Ar_D ArL_D Ars_D]}};
 %     ind = 3;
     sic = allsic{ind};
     clear all_gFR
@@ -1791,7 +1832,7 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Brake','No-Brake','Dist'};
+    xticks = xdata; xticklabels = {'Brake','No-Brake','Motion','Dist'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
     changePosition(gca,[0.035 0.01 -0.05 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Unique Cells (%)',[0 -5 0]});
     pos = get(gca,'Position');
@@ -1809,6 +1850,8 @@ while 1
             p_gFR_C(rr,cc) = mean(100*exec_fun_on_cell_mat(gFR_C,'sum')./exec_fun_on_cell_mat(gFR_C,'length'));
         end
     end
+    
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FRV,0.5,0.05);
     
     gFR_C_all = cell_list_op(good_FRV(:,1),good_FRV(:,2),'and',1);    gFR_C_all = cell_list_op(gFR_C_all,good_FRV(:,3),'and',1);
     p_gFR_C_all = mean(100*exec_fun_on_cell_mat(gFR_C_all,'sum')./exec_fun_on_cell_mat(gFR_C_all,'length'));
@@ -1833,22 +1876,29 @@ while 1
     save_pdf(hf,mData.pdf_folder,sprintf('conjunctive_cells_venn_diagram_%s_dist.pdf',event_type{ind}),600);
     end
     %%
-    resp = all_resp;
-   [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
+    any_cond = cell_list_op(good_FRV,[],'or',1);
+    all_cond = cell_list_op(good_FRV,[],'and',1);
+    p_any_cond = 100*exec_fun_on_cell_mat(any_cond,'sum')./exec_fun_on_cell_mat(any_cond,'length');
+    p_all_cond = 100*exec_fun_on_cell_mat(all_cond,'sum')./exec_fun_on_cell_mat(all_cond,'length');
+    [mpac,sempac] = findMeanAndStandardError(p_any_cond);
+    [mpall,sempall] = findMeanAndStandardError(p_all_cond);
+    
+   [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FRV,0.5,0.05);
+   mOI = mCI; semOI = semCI;
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
-    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+%     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);    
     minI = min([mOI(:);semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'L-b','L-nb','AOn-b','AOff-b','AOn-nb','AOff-nb'};%,'M-On','M-Off'};
+    txl = {'Brake','No-Brake','Motion','Dist'};%,'M-On','M-Off'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-    imAlpha(mask1 == 1) = 0;
+%     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 1.5 1.5]);
+    hf = get_figure(5,[8 7 1.65 1.5]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
@@ -1860,8 +1910,8 @@ while 1
 %     text(-0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); 
     set(gca,'Ydir','normal');ytickangle(20);
     box on
-    changePosition(gca,[0.03 0 -0.04 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
+    changePosition(gca,[0.03 0 -0.06 0]);
+    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
     %%
     break;
@@ -2155,10 +2205,10 @@ while 1
     end
     ald = round(mean(alds(:)));
     %%
-     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 3],'spaceRowsCols',[0.1 0.07],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',[-125 -175]);
+     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 3],'spaceRowsCols',[0.1 0.08],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',[-125 -175]);
     set(gcf,'color','w'); set(gcf,'Position',[5 5 2 1]);
 %     [Y,E] = discretize(1:49,3);
-    all_speeds = []; cTxt = {'Ar-On','ArL-On','Ar*-On','Ar-Off','ArL-Off','Ar*-Off'}; 
+    all_speeds = []; cTxt = {'NB-A','NB-AL','NB-A*','Ar-Off','ArL-Off','Ar*-Off'}; 
     for cn = 1:6
         mean_speed_over_trials = [];
         aThisSpeed = [];
@@ -2168,6 +2218,8 @@ while 1
         end
         if ismember(cn,[1 2 3])
             axes(ff.h_axes(1,cn));
+            delete(gca);
+            continue;
         else
             axes(ff.h_axes(2,cn-3));
         end
@@ -2186,16 +2238,17 @@ while 1
         ylim([0 25]);
         box off;
         format_axes(gca);
-        plot([0 0],[0 30],'k--','linewidth',0.25);
+        plot([0 0],[0 30],'m','linewidth',0.25);
 %         if cn == 3
 %             hx = xlabel('Time (sec)');
 %         end
         if ismember(cn,[2 3 5 6])
             set(gca,'YTick',[])
         end
-        if ismember(cn,[1 2 3])
-            set(gca,'XTick',[])
-        end
+        format_axes(gca);
+%         if ismember(cn,[1 2 3])
+%             set(gca,'XTick',[])
+%         end
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('speeds_345'),600);
    
@@ -2315,7 +2368,7 @@ while 1
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
     hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
-    changePosition(gca,[0.03 0.0 0.05 0.05]);
+    changePosition(gca,[0.03 0.0 0.05 -0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;

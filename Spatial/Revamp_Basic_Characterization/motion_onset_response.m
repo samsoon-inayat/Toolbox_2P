@@ -159,15 +159,47 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Exc','Sup'};
+    xticks = xdata; xticklabels = {'Act','Sup'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Motion Responsive','Cells (%)'},[0 0 0]});
+    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
     %%
     break;
 end
 
+
+%% Percentage response fidelity excitatory inhibitory responsive cells
+while 1
+    gFR = props1.exc; rf = props1.N_Resp_Trials;
+    all_exc = exec_fun_on_cell_mat(rf,'mean',gFR);
+    gFR = props1.inh;rf = props1.N_Resp_Trials;
+    all_inh = exec_fun_on_cell_mat(rf,'mean',gFR);
+    
+    [within,dvn,xlabels] = make_within_table({'MT','CT'},[2,2]);
+    dataT = make_between_table({[all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2)]},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'MT_by_CT','hsd'},[1 1 1]);
+    xdata = make_xdata([2,2],[1 2]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Act','Sup'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 20 40]); xtickangle(45)
+    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Fidelity (% trials)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
+    %%
+    break;
+end
 
 %% Overlap Indices ImageSC 
 while 1

@@ -129,13 +129,12 @@ while 1
 end
 
 
-
 %% population vector and correlation distance
 while 1
     selected_property = 'untuned';
     an = 1;
-     titles = {'M-On','M-Off'};
-    si = [M_On M_Off];
+     titles = {'NB-A','NB-AL','NB-A*'};
+    si = [Ar_T ArL_T Ars_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
@@ -171,6 +170,8 @@ while 1
     %%
     break;
 end
+
+
 
 
 

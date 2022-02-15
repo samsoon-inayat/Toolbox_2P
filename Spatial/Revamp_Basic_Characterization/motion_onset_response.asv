@@ -25,11 +25,20 @@ while 1
     break;
 end
 %% Show sample rasters
-an = 3; cn = 1;
+an = 4; cn = 1;
 figure(2000);clf;imagesc(Rs{an,cn}.speed);colorbar;
 plotRasters_simplest(Rs{an,cn})
 %%
-
+an = 4; cn = 1;
+ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.04],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-60 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.4 1]);
+ff = sample_rasters(Rs{an,cn},[248 264 270 230],ff);
+for ii = 1:4
+        set(ff.h_axes(1,ii),'xtick',[1 13.5 27],'xticklabels',{'-1.5','0','1.5'});
+    end
+save_pdf(ff.hf,mData.pdf_folder,sprintf('motion_rastersD'),600);
 %% population vector and correlation
 while 1
     selected_property = 'tuned';
@@ -43,6 +52,9 @@ while 1
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set(ht,'String',titles{ii}); end
     colormap_ig
+    for ii = 1:2
+        set(ff.h_axes(2,ii),'xtick',[1 13.5 27],'xticklabels',{'-1.5','0','1.5'});
+    end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_motion_%s.pdf',selected_property),600);
 
     % average correlation of all animals
@@ -51,6 +63,9 @@ while 1
         [-130 -320]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 1.7 0.8]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
     colormap_ig
+    for ii = 1:2
+        set(ff.h_axes(1,ii),'xtick',[1 13.5 27],'xticklabels',{'-1.5','0','1.5'},'ytick',[1 13.5 27],'yticklabels',{'-1.5','0','1.5'});
+    end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_motion_%s.pdf',selected_property),600);
     %%
     break;
@@ -123,10 +138,9 @@ while 1
 end
 %% Percentage of excitatory inhibitory responsive cells
 while 1
-    resp1 = props1.exc;     resp2 = props1.inh; resp3 = resp_speedAcc;
+    resp1 = props1.exc;     resp2 = props1.inh;
     presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
     presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
-    presp3 = 100 * exec_fun_on_cell_mat(resp3,'sum')./exec_fun_on_cell_mat(resp3,'length');
     
     [within,dvn,xlabels] = make_within_table({'MT','CT'},[2,2]);
     dataT = make_between_table({presp1(:,1),presp2(:,1),presp1(:,2),presp2(:,2)},dvn);
@@ -145,14 +159,53 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Exc','Sup'};
+    xticks = xdata; xticklabels = {'Act','Sup'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Motion Responsive','Cells (%)'},[0 0 0]});
+    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
     %%
     break;
 end
+
+
+%% Percentage response fidelity excitatory inhibitory responsive cells
+while 1
+    resp1 = props1.exc;     resp2 = props1.inh;
+    presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
+    presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
+    
+    gFR = props1.exc; rf = props1.N_Resp_Trials;
+    all_exc = exec_fun_on_cell_mat(rf,'mean',gFR);
+    gFR = props1.inh;rf = props1.N_Resp_Trials;
+    all_inh = exec_fun_on_cell_mat(rf,'mean',gFR);
+    
+    [within,dvn,xlabels] = make_within_table({'MT','CT'},[2,2]);
+    dataT = make_between_table({[all_exc,all_inh]},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'MT_by_CT','hsd'},[1 1 1]);
+    xdata = make_xdata([2,2],[1 2]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Act','Sup'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
+    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
+    
+    save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
+    %%
+    break;
+end
+
 
 
 %% Overlap Indices ImageSC 

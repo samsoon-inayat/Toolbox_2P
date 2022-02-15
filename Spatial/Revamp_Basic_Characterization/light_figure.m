@@ -10,6 +10,8 @@ while 1
     break;
 end
 n = 0;
+si = [Lb ArL_L Lbs]
+Rs = o.Rs(:,si);
 %% light duration
 for ii = 1:length(ei)
     tei = ei{ii};
@@ -27,22 +29,25 @@ out = find_population_vector_corr_remap(Rs,mR,resp_ORC);
 
 n = 0;
 %% Speed Figure
+
 while 1
     for an = 1:size(Rs,1)
         mean_speed_over_trials(an,:) = nanmean(Rs{an,2}.speed);
     end
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1 1],'color','w');
     hold on; 
     xs = Rs{1,2}.xs; cis = Rs{1,2}.resp.cis;
     xs = xs - xs(cis(1,2));
-    xticks = [cis(1,:) 38];
+    xticks = [1 19 38];
     mspeed = mean(mean_speed_over_trials(:,1:38)); semspeed = std(mean_speed_over_trials(:,1:38))/sqrt(5);
     plot(xs,mspeed);
     shadedErrorBar(xs,mspeed,semspeed);
     ylims = ylim;
     plot([xs(cis(1,2)) xs(cis(1,2))],[0 ylims(2)+3],'linewidth',0.1,'color','m');
-    changePosition(gca,[0.07 0.15 -0.1 -0.15]);
+    changePosition(gca,[0.13 0.15 -0.2 -0.35]);
     put_axes_labels(gca,{'Time (sec)',[0 0 0]},{{'Speed (cm/sec)'},[0 -4 0]});
+    format_axes(gca);
+    set(gca,'xtick',xs(xticks),'xticklabels',{'-2','0','2'});
     save_pdf(hf,mData.pdf_folder,'LED_speed',600);
     break;
 end
