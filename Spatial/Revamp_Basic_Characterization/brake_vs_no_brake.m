@@ -100,6 +100,42 @@ while 1
     break;
 end
 
+%% Show sample rasters time
+while 1
+    rtype = {'B_L','NB_L','B_AOn','B_AOff','NB_AOn','NB_AOff','NB-A','NB-A'};
+    cellNums = {[92 168 387 436];
+        [70 59 328 558];
+        [140 39 17 66 193 140];
+        [575 581 373 532];
+        [142 66 54 567 429 235 164];
+        [439 42 215 353];
+        [11 54 116 165];
+        [328 565 390 406]};
+    an = 1; cn = 8;
+    ntrials = 50;
+    asi = [Lb ArL_L Ab_On Abs_Off Ar_On Ar_Off Ar_D Ar_T];
+    si = asi(cn);
+%     si = [Lb];
+    Rs = o.Rs(:,si);
+    props1 = get_props_Rs(Rs,ntrials);
+%     plotRasters_simplest(Rs{an},find(props1.vals{an}))
+%     plotRasters_simplest(Rs{an},find(props1.good_zMI{an}))
+%     break;
+    % find(resp_valsC{an}(:,cn));
+    R = Rs{an};
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+        'spaceRowsCols',[0.15 0.04],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
+        [-60 -475]);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.4 1]);
+    plot_time_rasters(R,cellNums{cn},ff);
+    for ii = 1:4
+        set(ff.h_axes(1,ii),'xtick',[1 68 136],'xticklabels',{'0','7.5','15'});
+    end
+    colormap_ig
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('rasters_%s',rtype{cn}),600);
+    break;
+end
+
 
 %% compare the zMIs
 while 1
