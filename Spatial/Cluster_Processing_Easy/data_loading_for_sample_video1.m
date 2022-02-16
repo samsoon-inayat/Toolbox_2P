@@ -53,7 +53,7 @@ if 0
 end
 
 %%
-binwidths = [0.1 1.5];
+binwidths = [0.3 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths);
 end
