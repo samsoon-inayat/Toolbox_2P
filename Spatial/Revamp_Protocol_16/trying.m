@@ -1,0 +1,17 @@
+function trying
+
+ei = evalin('base','ei');
+n = 0;
+
+for ii = 1:length(ei)
+    b = ei{ii}.b;
+    ston = b.stim_r;
+    stoff = b.stim_f;
+    
+    dT(ii) = median(b.ts(stoff) - b.ts(ston));
+    
+    ston = b.air_puff_r;
+    stoff = b.air_puff_f;
+    
+    dTA(ii) = median(b.ts(stoff) - b.ts(ston));
+end

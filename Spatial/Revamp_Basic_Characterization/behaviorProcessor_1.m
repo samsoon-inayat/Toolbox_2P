@@ -85,7 +85,7 @@ ff = makeFigureRowsCols(100,[1 5 3.25 1.1],'RowsCols',[4 1],'spaceRowsCols',[0.0
     'rightUpShifts',[0.01 0.04],'widthHeightAdjustment',[-30 -80]);
 set(gcf,'Position',[10 8 2.75 1]);
 set(gcf,'color','w');
-an = 1; %day = 1;
+an = 5; %day = 1;
 for day = 1:4
     axes(ff.h_axes(day,1));
     b = ei1{an,day};
@@ -118,7 +118,7 @@ for day = 1:4
 %     put_axes_labels(gca,{[],[0 0 0]},{{'Speed','(cm/sec)'},[0 0 0]});
     axis off
 end
-save_pdf(ff.hf,mData.pdf_folder,sprintf('raw speeds.pdf'),600);
+save_pdf(ff.hf,mData.pdf_folder,sprintf('raw speeds_%d.pdf',an),600);
 %% peercent of trials with greater than 7 cm/sec
 runthis = 1;
 while 1
@@ -246,7 +246,7 @@ for ii = 2:2:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 end
 set(gca,'xlim',[0.25 11.75],'ylim',[0 maxY+7]);
-xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'Day1','Day2','Day3','RT'};
+xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'Day1','Day2','Day3','T'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
 changePosition(gca,[0.1 0.02 -0.07 -0.011])

@@ -497,7 +497,7 @@ while 1
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
-    xticks = xdata; xticklabels = {'B-Act','NB-Act','B-Sup','NB-Sup'};
+    xticks = xdata; xticklabels = {'B-ON','NB-ON','B-OFF','NB-OFF'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15 30]); xtickangle(45)
     changePosition(gca,[0.05 0.01 -0.5 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all1.pdf',ntrials),600);
@@ -586,16 +586,16 @@ while 1
     % s = generate_shades(length(bins)-1);
     tcolors = mData.colors(3:6);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',30,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
     maxY = maxY + 5;
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 90]); format_axes(gca);
     xticks = xdata; xticklabels = {'B-Act','NB-Act','B-Sup','NB-Sup'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 35 70]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.3 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Response','Fidelity (% trials)'},[0 0 0]});
+    changePosition(gca,[0.05 0.01 -0.5 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Response','Fidelity (% trials)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_allf1.pdf',ntrials),600);
      %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
@@ -605,7 +605,7 @@ while 1
     % s = generate_shades(length(bins)-1);
     tcolors = mData.colors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
     maxY = maxY + 5;
     ylims = ylim;
@@ -613,7 +613,7 @@ while 1
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 90]); format_axes(gca);
     xticks = xdata; xticklabels = {'B-Act','NB-Act','B-Sup','NB-Sup'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15 30]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 35 70]); xtickangle(45)
     changePosition(gca,[0.05 0.01 -0.5 -0.04]); %put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_allf2.pdf',ntrials),600);
     %%
@@ -625,7 +625,7 @@ while 1
     % s = generate_shades(length(bins)-1);
     tcolors = mData.colors(7:end);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
     maxY = maxY + 5;
     ylims = ylim;
@@ -633,7 +633,7 @@ while 1
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 90]); format_axes(gca);
     xticks = xdata; xticklabels = {'B-Act','NB-Act','B-Sup','NB-Sup'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15 30]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 35 70]); xtickangle(45)
     changePosition(gca,[0.05 0.01 -0.5 -0.04]); %put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_allf3.pdf',ntrials),600);
     %%
@@ -1567,7 +1567,7 @@ end
 
 %% Brake vs No-Brake Air on Exc and Inh
 while 1
-    
+    tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
     good_FRV = good_FR(:,1:2); good_FRV = good_FR(:,3:4);
     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FRV,0.5,0.05);

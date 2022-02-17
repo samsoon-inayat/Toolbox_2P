@@ -43,9 +43,11 @@ ei = getData_py_2(T_C1(sel_rec,:));
 
 %%
 if 0
-    ii = 1;
+    ii = 3;
     edit_define_contexts_file(ei{ii});
 end
+%%
+% plotMarkers(ei{ii}.b,[],[],100);
 %%
 clc
 tic

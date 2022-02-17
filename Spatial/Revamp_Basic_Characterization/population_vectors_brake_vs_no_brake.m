@@ -4,12 +4,12 @@ while 1
     an = 1;
     titles = {'B-A','B-A*','NB-A','NB-AL','NB-A*'};
     si = [Ab_On Abs_On Ar_On ArL_On Ars_On];
-    si = [Ab_Off Abs_Off Ar_Off ArL_Off Ars_Off];
+%     si = [Ab_Off Abs_Off Ar_Off ArL_Off Ars_Off];
 %     si = [Ar_D ArL_D Ars_D Ar_T ArL_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    respA = props1.vals;
+    respA = props1.good_FR;
 %     respA = props1.good_zMI;
     resp1 = cell_list_op(respA(:,1:2),[],'or');
     resp2 = cell_list_op(respA(:,3:4),[],'or');
