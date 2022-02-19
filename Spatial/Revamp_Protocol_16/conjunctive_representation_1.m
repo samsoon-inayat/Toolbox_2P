@@ -4,17 +4,17 @@ function conjunctive_representation
 while 1
     mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
     ei = evalin('base','ei'); 
-    
-    selContexts = [1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4];
-    rasterNames = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT','airT','airT','airT','airT','airID','airID','airID','airID','beltD','beltD','beltD','beltT','beltT','beltT','beltT','beltT'};
-    rasterNamesTxt = {'Ar-t-D','ArC-t-D','ArCB-t-D','ArB-t-D','Ar-i-T','ArC-i-T','ArCB-i-T','ArB-i-T','Ar-t-T','ArC-t-T','ArCB-t-T','ArB-t-T','Ar-i-D','ArC-i-D','ArCB-i-D','ArB-i-D'};
+    selContexts = [1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7];
+    rasterNames = {'airD','airD','airD','airD','airD','airD','airD','tone22T','light22T','air44T','airIT','airIT','airIT','airIT','airIT','airIT','airIT'};
+    rasterNamesTxt = {'Ar-t-D','ArT-t-D','Ar*-t-D','ArL-t-D','Ar**-t-D','ArC-t-D','Ar***-t-D','Tb-t-T','Lb-t-T','Ab-t-T','Ar-i-T','ArT-i-T','Ar*-i-T','ArL-i-T','Ar**-i-T','ArC-i-T','Ar***-i-T'};
 
     o = get_data(ei,selContexts,rasterNames);
     for ii = 1:length(selContexts)
         all_xl{ii} = sprintf('%c%c-%d',rasterNames{ii}(1),rasterNames{ii}(end),selContexts(ii));
     end
-    Ar_t_D = 1; ArC_t_D = 2; ArCB_t_D = 3; ArB_t_D = 4;     Ar_i_T = 5; ArC_i_T = 6; ArCB_i_T = 7; ArB_i_T = 8;
-    Ar_t_T = 9; ArC_t_T = 10; ArCB_t_T = 11; ArB_t_T = 12;     Ar_i_D = 13; ArC_i_D = 14; ArCB_i_D = 15; ArB_i_D = 16;
+    Ar_t_D = 1; ArT_t_D = 2; Ars_t_D = 3; ArL_t_D = 4; Arss_t_D = 5; ArC_t_D = 6; Arsss_t_D = 7;
+    Tb_t_T = 8; Lb_t_T = 9; Ab_t_T = 10;
+    Ar_i_T = 11; ArT_i_T = 12; Ars_i_T = 13; ArL_i_T = 14; Arss_i_T = 15; ArC_i_T = 16; Arsss_i_T = 17;
     break
 end
 n = 0;

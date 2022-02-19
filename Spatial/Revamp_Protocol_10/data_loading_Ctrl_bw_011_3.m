@@ -20,6 +20,15 @@ T_C = [T_C;T_C1];
 T_C1 = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
 %%
+animal_list_APP = {'173062';'173511';'173198'};
+date_list_APP = {'2018-07-11';'2018-07-11';'2018-07-11'};
+data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
+processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_10_RSEG_PSEG\RSEG';
+processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_10_RSEG_PSEG\Matlab\RSEG';
+[dS_A,T_A] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_APP,date_list_APP);
+T_A = reduce_table(T_A,animal_list_APP,date_list_APP);
+disp('Done');
+%%
 colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
@@ -45,6 +54,8 @@ sel_rec = [1 3 5];
 sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
 
+eiA = getData_py_2(T_A(1:3,:));
+
 %%
 if 0
     ii = 5;
@@ -64,6 +75,19 @@ for ii = 1:length(ei)
 end
 toc
 
+%%
+clc
+tic
+binwidths = [0.11 3];
+for ii = 1:length(eiA)
+    eiA(ii) = make_and_load_rasters(eiA(ii),binwidths,[0 0 0]);
+end
+
+
+for ii = 1:length(eiA)
+    eiA(ii) = get_motion_onset_response(eiA(ii),[0 0 0 0 0]);
+end
+toc
 
 %%
 for ii = 1:length(ei)

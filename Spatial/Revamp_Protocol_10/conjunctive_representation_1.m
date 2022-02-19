@@ -3,7 +3,7 @@ function conjunctive_representation
 %% Load Data
 while 1
     mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-    ei = evalin('base','ei'); 
+    ei = evalin('base','eiA'); 
     
     selContexts = [1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4];
     rasterNames = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT','airT','airT','airT','airT','airID','airID','airID','airID','beltD','beltD','beltD','beltT','beltT','beltT','beltT','beltT'};

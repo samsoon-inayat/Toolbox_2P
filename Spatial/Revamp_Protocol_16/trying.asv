@@ -8,10 +8,12 @@ for ii = 1:length(ei)
     ston = b.stim_r;
     stoff = b.stim_f;
     
-    dT(ii) = mode(b.ts(stoff) - b.ts(ston));
+    dT(ii) = median(b.ts(stoff) - b.ts(ston));
+    adT = (b.ts(stoff) - b.ts(ston));
     
     ston = b.air_puff_r;
     stoff = b.air_puff_f;
     
-    dT(ii) = mode(b.ts(stoff) - b.ts(ston));
+    dTA(ii) = median(b.ts(stoff) - b.ts(ston));
+    FR(ii) = ei{ii}.thorExp.frameRate;
 end

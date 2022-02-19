@@ -37,8 +37,10 @@ while 1
         end
         allresp = [allresp resp];
     end
-    an  = 1:5;
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05);
+    an  = 1:3;
+    [OIo,mOIo,semOIo,OI_mato,p_vals,h_vals,CI,mCI,semCI,CI_mat] = get_overlap_index(allresp(an,:),0.5,0.05);
+    mOI = mCI; semOI = semCI;
+%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp(an,:),0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
@@ -55,8 +57,10 @@ while 1
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    plot([10.5 10.5],[0 30.5],'r'); plot([20.5 20.5],[0 30.5],'r');
-    plot([0 30.5],[10.5 10.5],'r'); plot([0 30.5],[20.5 20.5],'r');
+    for ii = 1:7
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
+        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+    end
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);

@@ -251,9 +251,10 @@ end
 
 %%
 while 1   %%
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);
+    [OIo,mOIo,semOIo,OI_mato,p_vals,h_vals,CI,mCI,semCI,CI_mat] = get_overlap_index(allresp(an,:),0.5,0.05);
+%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);
 %     mOI = OI{4}; semOI = semOI;
-    
+    mOI = mCI; semOI = semCI;
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
