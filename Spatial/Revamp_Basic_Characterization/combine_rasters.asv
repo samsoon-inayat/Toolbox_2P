@@ -1,0 +1,13 @@
+function oR1 = combine_rasters(R)
+
+for an = 1:size(R,1)
+    tRs = R(an,:);
+    R1 = tRs{1};
+    R1.sp_rasters1 = cat(2,R1.sp_rasters1,tRs{2}.sp_rasters1);
+    
+    for ii = 3:length(tRs)
+        tR = tRs{ii};
+        R1.sp_rasters1 = cat(2,R1.sp_rasters1,tR.sp_rasters1);
+    end
+    oR1{an,1} = R1;
+end
