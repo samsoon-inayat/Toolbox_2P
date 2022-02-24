@@ -9,7 +9,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    respA = props1.good_FR;
+    respA = props1.good_FR_and_untuned;
 %     respA = props1.good_zMI;
     resp1 = cell_list_op(respA(:,1:2),[],'or');
     resp2 = cell_list_op(respA(:,3:4),[],'or');
