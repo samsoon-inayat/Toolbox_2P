@@ -25,7 +25,7 @@ while 1
 end
 %% population vector and correlation sensory
 while 1
-    an = 5; cn = 3;
+    an = 2; cn = 1;
 %     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
     props1 = get_props_Rs(o.Rs(:,si),50);
     resp = props1.exc;
@@ -43,9 +43,9 @@ while 1
     changePosition(ff.h_axes(2,1).YLabel,[-2.5 0 0]); 
     colormap parula
     
-%     an = 2; cn = 1;
-% %     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
-%     props1 = get_props_Rs(o.Rs(:,si),50);
+    an = 2; cn = 1;
+%     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
+    props1 = get_props_Rs(o.Rs(:,si),50);
     resp = props1.inh;
 %     resp = props1.good_FR_and_untuned;
     Rs = [o.Rs(an,si(cn)) allRsC{cn}(an,:)];mR = [o.mR(an,si(cn)) allmRsT{cn}(an,:)];
@@ -62,9 +62,9 @@ while 1
     colormap parula
 %     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_trials_%s.pdf',selected_property),600);
     
-%     an = 2; cn = 1;
+    an = 2; cn = 1;
 %     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
-%     props1 = get_props_Rs(o.Rs(:,si),50);
+    props1 = get_props_Rs(o.Rs(:,si),50);
 %     resp = props1.inh;
     resp = props1.good_FR_and_untuned;
     Rs = [o.Rs(an,si(cn)) allRsC{cn}(an,:)];mR = [o.mR(an,si(cn)) allmRsT{cn}(an,:)];
@@ -74,7 +74,7 @@ while 1
     end
     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 11],...
         'spaceRowsCols',[0.02 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
-        [-30 -200]);    set(gcf,'color','w');    set(gcf,'Position',[1 7 14 3]);
+        [-30 -200]);    set(gcf,'color','w');    set(gcf,'Position',[1 10 14 3]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respT,1);
     ff = show_population_vector_and_corr(mData,ff,Rs,mRR,CRc,[],[]);
     changePosition(ff.h_axes(2,1).YLabel,[-2.5 0 0]); 

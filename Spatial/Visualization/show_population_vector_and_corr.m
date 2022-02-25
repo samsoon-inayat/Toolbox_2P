@@ -11,7 +11,7 @@ if ~isempty(allP)
         R = Rs{sii};
 
         %% first row
-        axes(ff.h_axes(1,sii));changePosition(gca,[0 0.05 -0.091 -0.1]);
+        axes(ff.h_axes(1,sii));%changePosition(gca,[0 0.05 -0.091 -0.1]);
         if ~isempty(maxBin)
             P = P(:,1:maxBin);
         end
@@ -41,7 +41,7 @@ if ~isempty(allP)
         %% 2nd row
         axes(ff.h_axes(2,sii));
         dec = -0.09;
-        changePosition(gca,[0.0 0.05 dec dec]);
+%         changePosition(gca,[0.0 0.05 dec dec]);
         if ~isempty(maxBin)
             corrPlot = allC{sii}(1:maxBin,1:maxBin);
         else

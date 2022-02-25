@@ -44,8 +44,8 @@ end
 
 ptco = ptc;
 CRc = corr(ptco);
-CRc = fillmissing(CRc,'linear',2,'EndValues','nearest');
-CRc = fillmissing(CRc','linear',2,'EndValues','nearest');
+% CRc = fillmissing(CRc,'linear',2,'EndValues','nearest');
+% CRc = fillmissing(CRc','linear',2,'EndValues','nearest');
 CRc = CRc';
 try
     if sum(isnan(CRc),'all')> 0
