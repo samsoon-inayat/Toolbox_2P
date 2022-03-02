@@ -2,8 +2,8 @@
 while 1
     selected_property = 'untuned';
     an = 1;
-    titles = {'B-A','B-A*','NB-A','NB-AL','NB-A*'};
-    si = [Ab_On Abs_On Ar_On ArL_On Ars_On];
+    titles = {'Air','Light','NB-A','NB-AL','NB-A*'};
+    si = [Ab_On Lb Abs_On Ar_On ArL_On Ars_On];
 %     si = [Ab_Off Abs_Off Ar_Off ArL_Off Ars_Off];
 %     si = [Ar_D ArL_D Ars_D Ar_T ArL_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
@@ -50,7 +50,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    respA = props1.vals;
+    respA = props1.good_FR_and_untuned;
     resp = respA;%[resp1(:,1:2),resp2(:,1:2)];
 %     eval(cmdTxt);
     ffM = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
