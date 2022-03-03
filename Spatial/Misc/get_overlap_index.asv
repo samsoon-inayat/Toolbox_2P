@@ -37,7 +37,8 @@ for ii = 1:length(resp_vals)
                 end
                 CI(rr,cc) = 100*sum(shared)/length(ccs1);
                 n = 0;
-                tuni(rr,cc) = 100*sum(ccs1 & (~ccs2))/length(ccs1);
+                tuni(rr,cc) = sum(ccs1 & (~ccs2));
+                tuni_p(rr,cc) = 
 %             end
         end
     end
@@ -45,7 +46,7 @@ for ii = 1:length(resp_vals)
     all_OI_mat(:,:,ii) = OI;
     all_CI{ii} = CI;
     all_CI_mat(:,:,ii) = CI;
-    uni(:,:,ii) = tuni;
+    all_uni{ii} = 
 end
 
 mOI = NaN(size(all_OI{1},1),size(all_OI{1},2),length(all_OI));

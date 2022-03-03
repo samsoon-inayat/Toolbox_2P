@@ -1859,8 +1859,8 @@ while 1
     %%
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
-    good_FRV = good_FR_bnb;
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FRV,0.5,0.05);
+    good_FRV = good_FR_bnb; good_FRV = all_inh(:,[2 4]);
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
     p_gFR_C = [];
     for rr = 1:size(good_FRV,2)
         for cc = 1:size(good_FRV,2)
@@ -1889,7 +1889,43 @@ while 1
     ylims = ylim;
 %     text(1,ylims(2)+0.51,sprintf('%s',event_type{ind}),'FontSize',6);
 %     text(5,ylims(2)-0.51,sprintf('%.0f%%',IVenn),'FontSize',6);
+    btxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(1,1),pmchar,sem_p_gFR_C(1,1)));
+    nbtxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(2,2),pmchar,sem_p_gFR_C(2,2)));
+    inttxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(1,2),pmchar,sem_p_gFR_C(1,2)));
+%     ht = title(sprintf('%s   %s   %s',btxt,inttxt,nbtxt));set(ht,'FontWeight','normal','FontSize',5);
+    clc
+    disp(btxt);
+    disp(inttxt);
+    disp(nbtxt);
     save_pdf(hf,mData.pdf_folder,sprintf('conjunctive_cells_venn_diagram_%s.pdf',''),600);
+    
+    
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    [within,dvn,xlabels] = make_within_table({'Type'},[3]);
+    dataT = make_between_table({[bcellsu intcells nbcellsu]},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+        
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([3],[1 1.5]);
+    hf = get_figure(5,[8 7 1 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = [mData.colors(1) mean([mData.colors{1};mData.colors{2}]) mData.colors(2)];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Brake','Conjunc','No-Brake'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.09 0.01 -0.3 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all3.pdf',ntrials),600);
     %%
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FR,0.5,0.05);
     mOI = mCI; semOI = semCI;
@@ -3183,7 +3219,7 @@ while 1
     %%
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
-    good_FRV = all_gFR(:,[2 4]);
+    good_FRV = all_gFR(:,[1 2]);
     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FRV,0.5,0.05);
     p_gFR_C = [];
     for rr = 1:size(good_FRV,2)
@@ -3266,11 +3302,11 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 2 1]);
+    set(hf,'Position',[7 3 2 1.5]);
 %     set(hf,'Position',[7 3 2 1]);
     set(H,'linewidth',0.5);
     txl = {' B-AOn-Exc',' B-AOn-Inh',' B-AOff-Exc',' B-AOff-Inh',' B-LOn-Exc',' B-LOn-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-LOn-Exc','NB-LOn-Inh'};
-    txl = {' B-A',' B-L','NB-A','NB-L',' B-Au',' B-Lu','NB-Au','NB-Lu'};
+    txl = {' Tun-B-A',' Tun-B-L','Tun-NB-A','Tun-NB-L',' Unt-B-A',' Unt-B-L','Unt-NB-A','Unt-NB-L'};
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
     hx = ylabel({'Eucledian','Distance'});changePosition(hx,[0 -0.3 0]);
