@@ -58,11 +58,44 @@ for ii = 1:length(selContexts)
         rasters(ii,1) = get_data_motion(ei,selContexts(ii),rasterNames(ii));
         continue;
     end
+    contextNumber = selContexts(ii);
     pp = 1;
     thisContext = ei.plane{pp}.contexts(selContexts(ii));
     disp(sprintf('%s - plane-%d',thisContext.name,pp));
     cmdTxt = sprintf('tempR = thisContext.rasters.%s;',rasterNames{ii});
     eval(cmdTxt);
+    if isempty(tempR)
+        thisStimMarker = rasterNames{ii}(1:(end-1));
+        cmdTxt = sprintf('markersOn = thisContext.markers.%s_onsets;',thisStimMarker);
+        eval(cmdTxt);
+        cmdTxt = sprintf('markersOff = thisContext.markers.%s_offsets;',thisStimMarker);
+        eval(cmdTxt);
+        binwidths = evalin('base','binwidths');
+        if strcmp(rasterNames{ii}(end),'T')
+            thisRasterType = 'time';
+        end
+        if strcmp(rasterNames{ii}(end),'D')
+            thisRasterType = 'dist';
+        end
+        tempR = make_rasters_quick(ei,pp,markersOn,markersOff,thisRasterType,binwidths);
+        trials = 1:size(tempR.sp_rasters,1);
+        if strcmp(rasterNames{ii}(end),'T')
+            thispFolder = ei.plane{pp}.folder;
+            tempR = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,tempR,thisRasterType,trials,[0 0 0]);
+        end
+        if strcmp(rasterNames{ii}(end),'D')
+             if isfield(ei.plane{pp},'folderD')
+                thispFolderD = ei.plane{pp}.folderD;
+                if ~exist(thispFolderD)
+                    mkdir(thispFolderD);
+                end
+            else
+                thispFolderD = ei.plane{pp}.folder;
+            end
+            tempR = findRasterProperties_1(thispFolderD,contextNumber,thisStimMarker,tempR,thisRasterType,trials,[0 0 0]);
+        end
+        
+    end
     iscell1 = ei.plane{pp}.tP.iscell(:,1);
     if nplanes == 1
         rasters{ii,1} = tempR;
@@ -73,6 +106,37 @@ for ii = 1:length(selContexts)
         disp(sprintf('%s - plane-%d',thisContext.name,pp));
         cmdTxt = sprintf('tempR1 = thisContext.rasters.%s;',rasterNames{ii});
         eval(cmdTxt);
+        if isempty(tempR1)
+%             tempR1 = make_rasters(ei,2,markersOn,markersOff,thisRasterType,binwidths);
+            cmdTxt = sprintf('markersOn = thisContext.markers.%s_onsets;',thisStimMarker);
+            eval(cmdTxt);
+            cmdTxt = sprintf('markersOff = thisContext.markers.%s_offsets;',thisStimMarker);
+            eval(cmdTxt);
+            binwidths = evalin('base','binwidths');
+            if strcmp(rasterNames{ii}(end),'T')
+                thisRasterType = 'time';
+            end
+            if strcmp(rasterNames{ii}(end),'D')
+                thisRasterType = 'dist';
+            end
+            tempR1 = make_rasters_quick(ei,pp,markersOn,markersOff,thisRasterType,binwidths);
+            trials = 1:size(tempR1.sp_rasters,1);
+            if strcmp(rasterNames{ii}(end),'T')
+                thispFolder = ei.plane{pp}.folder;
+                tempR1 = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,tempR1,thisRasterType,trials,[0 0 0]);
+            end
+            if strcmp(rasterNames{ii}(end),'D')
+                 if isfield(ei.plane{pp},'folderD')
+                    thispFolderD = ei.plane{pp}.folderD;
+                    if ~exist(thispFolderD)
+                        mkdir(thispFolderD);
+                    end
+                else
+                    thispFolderD = ei.plane{pp}.folder;
+                end
+                tempR1 = findRasterProperties_1(thispFolderD,contextNumber,thisStimMarker,tempR1,thisRasterType,trials,[0 0 0]);
+            end
+        end
         rasters{ii,1} = combine_planes_data(tempR,tempR1);
         iscell2 = ei.plane{pp}.tP.iscell(:,1);
         rasters{ii,1}.iscell = cat(1,iscell1,iscell2);

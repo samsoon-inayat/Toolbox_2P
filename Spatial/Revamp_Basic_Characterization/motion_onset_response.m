@@ -14,10 +14,12 @@ while 1
     motionOnsets = Rs{an,cn}.onsets;
     motionOffsets = Rs{an,cn}.offsets;
     hf = figure(1000);clf;
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 1.25 1]);
+    set(gcf,'color','w','units','inches'); set(gcf,'Position',[7 4 1.5 1]);
     display_with_air_puff(ei{an}.b,motionOnsets,motionOffsets);
-    xlim([270 330]/60);ylim([0 1.1]);
-    changePosition(gca,[-0.07 0.15 0 -0.2]); box off;
+    xlim([270 330]/60);ylim([0 2]);
+    plot([4.6 4.8],[1.45 1.45],'b');
+    plot([4.6 4.8],[1.9 1.9],'m');
+    changePosition(gca,[-0.07 0.15 0 -0.15]); box off;
     ax = gca; ax.YAxis.Visible = 'off';
     xlabel('Time (min)');
     set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out');
@@ -27,14 +29,16 @@ end
 %% Show sample rasters
 an = 4; cn = 1;
 figure(2000);clf;imagesc(Rs{an,cn}.speed);colorbar;
-plotRasters_simplest(Rs{an,cn})
+% plotRasters_simplest(Rs{an,cn})
+props1 = get_props_Rs(Rs,ntrials);
+plotRasters_simplest(Rs{an,cn},find(props1.inh{an,cn}))
 %%
 an = 4; cn = 1;
 ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
         'spaceRowsCols',[0.15 0.04],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
         [-60 -475]);
     set(gcf,'color','w'); set(gcf,'Position',[10 4 3.4 1]);
-ff = sample_rasters(Rs{an,cn},[248 264 270 230],ff);
+ff = sample_rasters(Rs{an,cn},[248 57 264 270 230],ff);
 for ii = 1:4
         set(ff.h_axes(1,ii),'xtick',[1 13.5 27],'xticklabels',{'-1.5','0','1.5'});
     end
@@ -97,7 +101,7 @@ while 1
     xdata = make_xdata([2],[1]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.colors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
@@ -148,20 +152,41 @@ while 1
     ra.ranova
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'MT_by_CT','hsd'},[1 1 1]);
+    h([2 5]) = 0;
     xdata = make_xdata([2,2],[1 2]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.colors(3:end);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    maxY = maxY + 5;
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.001);
+    maxY = maxY + 3;
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Act','Sup'};
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 22]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Exc','Inh'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
+    changePosition(gca,[0.1 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    
+    save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
+    
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1 1 1]);
+
+    xdata = make_xdata([2],[1 2]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors(7:end);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    maxY = maxY + 3;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 22]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Exc','Inh'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[]); xtickangle(45)
+    changePosition(gca,[-0.1 0.0 -0.5 -0.05]); %put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
     %%
@@ -182,20 +207,39 @@ while 1
     ra.ranova
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'MT_by_CT','hsd'},[1 1 1]);
-    xdata = make_xdata([2,2],[1 2]);
+    h(h==1) = 0;
+    xdata = make_xdata([2,2],[1 1.5]);
     hf = get_figure(5,[8 7 1.25 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = colors;
+    tcolors = mData.colors(3:end);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
     maxY = maxY + 5;
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Act','Sup'};
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 50]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Exc','Inh'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 20 40]); xtickangle(45)
-    changePosition(gca,[0.18 0.0 -0.2 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Fidelity (% trials)'},[0 0 0]});
+    changePosition(gca,[0.1 0.0 -0.25 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Trials (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
+    
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'MT','hsd'},[1 1 1]);
+    xdata = make_xdata([2],[1 1.5]);
+    hf = get_figure(5,[8 7 1.25 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors(7:end);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 50]); format_axes(gca);
+    xticks = xdata; xticklabels = {'MOn','MOff'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 20 40]); xtickangle(45)
+    changePosition(gca,[0.1 0.0 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{{'Trials (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,'motion_responsive_exc_inh',600);
     %%
     break;

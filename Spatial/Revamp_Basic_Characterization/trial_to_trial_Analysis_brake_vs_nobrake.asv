@@ -181,8 +181,8 @@ while 1
     set(gca,'ytick',xtickvals,'yticklabels',yticklabels,'tickdir','out');
 %     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box off
-    changePosition(gca,[-0.03 0.00 0.037 0.033]);
-    hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.03 0.09 0.02 0.09]);
+    changePosition(gca,[0.03 0.00 0.037 0.033]);
+    hc = putColorBar(gca,[0.15 -0.08 -0.2 0.03],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.03 0.09 0.02 0.09]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
     %%
