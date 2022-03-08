@@ -4,6 +4,7 @@ function trial_to_trial_Analysis_brake_vs_nobrake
 while 1
     trialNums = [1:10];
    si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L];
+%    si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off];
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si; propsG = get_props_Rs(RsG,[40,100]); respG = propsG.vals;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
     for cn = 1:length(si)
@@ -138,7 +139,7 @@ while 1
     end
     i_allresp = cell_list_op(allresp,[],'not');
 
-    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(allresp,0.5,0.05);
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
     mOI = mCI; semOI = semCI;
     %%
     sz = size(mOI,1);
@@ -163,7 +164,7 @@ while 1
         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     end
-    for ii = [3 10]   
+    for ii = [2 6 9 12]   
         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
     end
@@ -182,11 +183,271 @@ while 1
 %     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box off
     changePosition(gca,[-0.03 0.00 0.037 0.033]);
-    hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.03 0.09 0.02 0.09]);
+    hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.07 0.09 0.02 0.09]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
     %%
     break;
 end
+%% along diagnol (responsiveness)
+while 1
+mask = diag(mCI);
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 3.5 0.75]);
+plot(1:130,mask,'m');hold on;
+mconj = nanmean(mask);
+plot([1 130],[mconj mconj],'k');
+xlim([1 130]);
+for ii = 1:13
+    plot([ii*10 ii*10],[12 24],'b--');
+%     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
+end
+xticks = 5:10:130;
+yticks = [5 10 15 mconj 20];
+set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
+ylabel('Cells (%)');box off;
+format_axes(gca);
+save_pdf(hf,mData.pdf_folder,sprintf('tria_by_trial_responsive.pdf'),600);
+break;
+end
+%% 1 off diagnoal (conjunctive between adjacent trials)
+while 1
+mask = diag(mCI,1);
+mask(10:10:129) = NaN;
+mask(130) = NaN;
+mconj = nanmean(mask);
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 3.5 0.75]);
+plot(1:130,mask,'m');hold on;
+plot([1 130],[mconj mconj],'k');
+xlim([1 130]);
+for ii = 1:13
+    plot([ii*10 ii*10],[4 11],'b--');
+%     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
+end
+xticks = 5:10:130;
+set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
+ylabel('Cells (%)');box off;
+format_axes(gca);
+save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_conj.pdf'),600);
+break;
+end
+%% conjunctive trials stat
+while 1
+    pvals = [];
+    for trialN = 1:9
+    tvals = [];
+    for an = 1:5
+        vals = diag(all_CI_mat(:,:,an),1);
+        inds = trialN:10:129;
+        tvals(an,:) = vals(inds);
+    end
+    
+    [within,dvn,xlabels] = make_within_table({'cond'},[13]);
+    dataT = make_between_table({tvals},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova;
+    pvals(trialN) = ra.ranova.pValue_sel(3);
+    eta2(trialN) = ra.eta2;
+        
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([13],[1 1.5]);
+    hf = get_figure(5,[8 7 1.75 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; 
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('trial_pairs_conj_%d.pdf',trialN),600);
+    end
+    break;
+end
+
+%% unique cells
+while 1
+    mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
+    sz = size(mOI,1);
+%     mOI = OI_mat(:,:,4);
+    oM = ones(size(mOI));
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    maxI = max([mOI(:);semOI(:)]);
+    minI = min([mOI(:);semOI(:)]);
+%     minI = 0; maxI = 0.6;
+    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
+%     mOI = mOI .* mask;
+    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
+    imAlpha(mask1 == 1) = 0;
+%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+    hf = get_figure(6,[8 3 3.5 3.5]);
+%     hf = get_figure(6,[8 3 4 4]);
+    %
+%     axes(ff.h_axes(1));
+    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    
+    for ii = 1:12
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
+        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+    end
+    for ii = [2 6 9 12]   
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
+        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
+    end
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+    format_axes(gca);
+    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+    ttxl = rasterNamesTxt(siG);
+    xtickvals = 5:10:130;%[5 15 25 60 100 115 125];
+%    si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L];
+    xticklabels = {'1-L-On','6-L-On','2-A-On','7-A-On','2-A-Off','7-A-Off','3-A-On','4-A-On','5-A-On','3-A-Off','4-A-Off','5-A-Off','4-L-On'};
+%     yticklabels = {'ON','ON','ON','ON','ON','OFF','OFF','ON','ON','ON','OFF','OFF','OFF',};
+
+    set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);%ytickangle(45);
+    yyaxis right
+    set(gca,'ytick',xtickvals,'yticklabels',yticklabels,'tickdir','out');
+%     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
+    box off
+    changePosition(gca,[-0.03 0.00 0.037 0.033]);
+    hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.07 0.09 0.02 0.09]);
+    colormap jet
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial_unique.pdf'),600);
+    break;
+end
+
+%% 1 off diagnoal (uniqe between adjacent trials)
+while 1
+mask = diag(mOI,-1);
+mask(10:10:129) = NaN;
+mask(130) = NaN;
+mconj = nanmean(mask);
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 3.5 0.75]);
+plot(1:130,mask,'m');hold on;
+plot([1 130],[mconj mconj],'k');
+xlim([1 130]);
+for ii = 1:13
+    plot([ii*10 ii*10],ylim,'b--');
+%     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
+end
+xticks = 5:10:130;
+set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
+ylabel('Cells (%)');box off;
+format_axes(gca);
+save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
+break;
+end
+
+%% unique trials stat
+while 1
+    pvals = [];
+    for trialN = 1:9
+    tvals = [];
+    for an = 1:5
+        vals = diag(uni(:,:,an),-1);
+        inds = trialN:10:129;
+        tvals(an,:) = vals(inds);
+    end
+    
+    [within,dvn,xlabels] = make_within_table({'cond'},[13]);
+    dataT = make_between_table({tvals},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova;
+    pvals(trialN) = ra.ranova.pValue_sel(3);
+    eta2(trialN) = ra.eta2;
+        
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([13],[1 1.5]);
+    hf = get_figure(5,[8 7 1.75 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; 
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('trial_pairs_conj_%d_unique.pdf',trialN),600);
+    end
+    break;
+end
+
+%% 1 off diagnoal (uniqe between adjacent trials)
+while 1
+mask = diag(mOI,1);
+mask(10:10:129) = NaN;
+mask(130) = NaN;
+mconj = nanmean(mask);
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 3.5 0.75]);
+plot(1:130,mask,'m');hold on;
+plot([1 130],[mconj mconj],'k');
+xlim([1 130]);
+for ii = 1:13
+    plot([ii*10 ii*10],ylim,'b--');
+%     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
+end
+xticks = 5:10:130;
+set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
+ylabel('Cells (%)');box off;
+format_axes(gca);
+save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_disrupted.pdf'),600);
+break;
+end
 
 
+%% disrupted trials stat
+while 1
+    pvals = [];
+    for trialN = 1:9
+    tvals = [];
+    for an = 1:5
+        vals = diag(uni(:,:,an),1);
+        inds = trialN:10:129;
+        tvals(an,:) = vals(inds);
+    end
+    
+    [within,dvn,xlabels] = make_within_table({'cond'},[13]);
+    dataT = make_between_table({tvals},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova;
+    pvals(trialN) = ra.ranova.pValue_sel(3);
+    eta2(trialN) = ra.eta2;
+        
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([13],[1 1.5]);
+    hf = get_figure(5,[8 7 1.75 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; 
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('trial_pairs_conj_%d_disrupted.pdf',trialN),600);
+    end
+    break;
+end

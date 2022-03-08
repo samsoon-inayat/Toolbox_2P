@@ -1934,7 +1934,7 @@ while 1
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
-%     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);    
     minI = min([mOI(:);semOI(:)]);
     
@@ -1945,7 +1945,50 @@ while 1
 %     txl = {'Air-On','Air-Off'};txl = repmat(txl,1,2);
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-%     imAlpha(mask1 == 1) = 0;
+    imAlpha(mask1 == 1) = 0;
+%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+    hf = get_figure(5,[8 7 1.25 1.25]);
+    hf = get_figure(5,[8 7 1.75 1.75]);
+    %
+%     axes(ff.h_axes(1));
+    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+    format_axes(gca);
+    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+%     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
+    for rr = 1:size(mCI,1)
+        for cc = 1:size(mCI,1)
+            if rr == cc
+                text(rr-0.25,cc,sprintf('%.0f',mCI(rr,cc)),'FontSize',5);
+            end
+        end
+    end
+    set(gca,'Ydir','normal');ytickangle(20);
+    box on
+    changePosition(gca,[-0.02 0 -0.04 0]);
+    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
+    colormap jet
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
+    
+    %% with NaN
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FR,0.5,0.05);
+    mOI = mCI; semOI = semCI;
+    sz = size(mOI,1);
+%     mOI = OI_mat(:,:,4);
+    oM = ones(size(mOI));
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    maxI = max([mOI(:);semOI(:)]);    
+    minI = min([mOI(:);semOI(:)]);
+    
+    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
+%     txl = {'B-A-On-Exc','B-A-On-Inh','B-A-On-Unt','B-A-Off-Exc','B-A-Off-Inh','B-A-Off-Unt','NB-A-On-Exc','NB-A-On-Inh','NB-A-On-Unt','NB-A-Off-Exc','NB-A-Off-Inh','NB-A-Off-Unt'};%,'M-On','M-Off'};
+    txl = {'Exc','Inh','Unt'}; txl = repmat(txl,1,4);
+    txl = {'Exc','Inh'}; txl = repmat(txl,1,4);
+%     txl = {'Air-On','Air-Off'};txl = repmat(txl,1,2);
+%     mOI = mOI .* mask;
+    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
+    imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(5,[8 7 1.25 1.25]);
     hf = get_figure(5,[8 7 1.75 1.75]);
@@ -1964,6 +2007,30 @@ while 1
     hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
+    
+    
+    
+%% agglomerative hierarchical clustering
+
+    mOI1 = mOI;
+%     mOI1(isnan(mOI1)) = 1;
+    Di = pdist(mOI1,@naneucdist);
+%     tree = linkage(mOI1,'average','euclidean');
+    tree = linkage(Di,'average');
+    figure(hf);clf
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    hf = gcf;
+    set(hf,'Position',[7 3 2 1]);
+%     set(hf,'Position',[7 3 2 1]);
+    set(H,'linewidth',0.5);
+    txl = {' B-AOn-Exc',' B-AOn-Inh',' B-AOff-Exc',' B-AOff-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh'};
+%     txl = {' Tun-B-A',' Tun-B-L','Tun-NB-A','Tun-NB-L',' Unt-B-A',' Unt-B-L','Unt-NB-A','Unt-NB-L'};
+    set(gca,'xticklabels',txl(TC));xtickangle(45);
+    format_axes(gca);
+    hx = ylabel({'Eucledian','Distance'});changePosition(hx,[0 -0.3 0]);
+    changePosition(gca,[0.07 0.0 0.0 -0.05]);
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
+    
     %%
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FR_p,0.5,0.05);
     for an = 1:5
@@ -2280,6 +2347,10 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     
+    any_gFR = cell_list_op(all_gFR,[],'or',1);
+    pangfr = 100*exec_fun_on_cell_mat(any_gFR,'sum')./exec_fun_on_cell_mat(any_gFR,'length');
+    [mpangfr,sempangfr] = findMeanAndStandardError(pangfr);
+    
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     xdata = make_xdata([size(good_FR,2)],[1]);
 %     h(h==1) = 0;
@@ -2375,7 +2446,7 @@ while 1
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
-%     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);    
     minI = min([mOI(:);semOI(:)]);
     
@@ -2385,7 +2456,7 @@ while 1
 %     txl = {'Air-On','Air-Off'};txl = repmat(txl,1,2);
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-%     imAlpha(mask1 == 1) = 0;
+    imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(5,[8 7 1.25 1.25]);
 %     hf = get_figure(5,[8 7 1.25 1.75]);
@@ -2397,6 +2468,13 @@ while 1
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
 %     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
+    for rr = 1:size(mCI,1)
+        for cc = 1:size(mCI,1)
+            if rr == cc
+                text(rr-0.25,cc,sprintf('%.0f',mCI(rr,cc)),'FontSize',5);
+            end
+        end
+    end
 %     text(-0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); 
     set(gca,'Ydir','normal');ytickangle(20);
     box on
@@ -2410,10 +2488,10 @@ while 1
     %% agglomerative hierarchical clustering
 
     mOI1 = mOI;
-    mOI1(isnan(mOI1)) = 1;
-    Di = pdist(mOI1);
-    tree = linkage(mOI1,'average','euclidean');
-%     tree = linkage(Di,'average');
+%     mOI1(isnan(mOI1)) = 1;
+    Di = pdist(mOI1,@naneucdist);
+%     tree = linkage(mOI1,'average','euclidean');
+    tree = linkage(Di,'average');
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
@@ -3230,7 +3308,7 @@ while 1
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
-%     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);    
     minI = min([mOI(:);semOI(:)]);
     
@@ -3241,7 +3319,7 @@ while 1
 %     txl = {'Air-On','Air-Off'};txl = repmat(txl,1,2);
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-%     imAlpha(mask1 == 1) = 0;
+    imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(5,[8 7 1.25 1.25]);
     hf = get_figure(5,[8 7 1.75 1.75]);
@@ -3271,7 +3349,7 @@ while 1
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
-%     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
     maxI = max([mOI(:);semOI(:)]);    
     minI = 0;%min([mOI(:);semOI(:)]);
     
@@ -3280,7 +3358,7 @@ while 1
     txl = {'Air','Light'};txl = repmat(txl,1,2);
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-%     imAlpha(mask1 == 1) = 0;
+    imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(5,[8 7 1 1]);
     %
@@ -3291,6 +3369,13 @@ while 1
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
 %     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
     set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(45);
+    for rr = 1:size(mCI,1)
+        for cc = 1:size(mCI,1)
+            if rr == cc
+                text(rr-0.25,cc,sprintf('%.0f',mCI(rr,cc)),'FontSize',5);
+            end
+        end
+    end
 %     text(-0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); 
     set(gca,'Ydir','normal');ytickangle(20);
     box on
@@ -3306,10 +3391,10 @@ end
 %% agglomerative hierarchical clustering
 while 1
     mOI1 = mOI;
-    mOI1(isnan(mOI1)) = 1;
-    Di = pdist(mOI1);
-    tree = linkage(mOI1,'average','euclidean');
-%     tree = linkage(Di,'average');
+%     mOI1(isnan(mOI1)) = 1;
+    Di = pdist(mOI1,@naneucdist);
+%     tree = linkage(mOI1,'average','euclidean');
+    tree = linkage(Di,'average');
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
@@ -3321,7 +3406,7 @@ while 1
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
     hx = ylabel({'Eucledian','Distance'});changePosition(hx,[0 -0.3 0]);
-    changePosition(gca,[0.05 0.0 0.0 -0.05]);
+    changePosition(gca,[0.07 0.0 0.0 -0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;
