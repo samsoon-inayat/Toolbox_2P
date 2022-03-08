@@ -4,7 +4,7 @@ function trial_to_trial_Analysis_brake_vs_nobrake
 while 1
     trialNums = [1:10];
    si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L];
-%    si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off];
+   si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off ArL_L];
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si; propsG = get_props_Rs(RsG,[40,100]); respG = propsG.vals;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
     for cn = 1:length(si)
@@ -141,6 +141,7 @@ while 1
 
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
     mOI = mCI; semOI = semCI;
+    disp('Done');
     %%
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
@@ -154,7 +155,7 @@ while 1
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 3 3.5 3.5]);
+    hf = get_figure(6,[8 3 2.75 2.75]);
 %     hf = get_figure(6,[8 3 4 4]);
     %
 %     axes(ff.h_axes(1));
@@ -164,25 +165,22 @@ while 1
         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     end
-    for ii = [2 6 9 12]   
-        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
-        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
-    end
+%     for ii = [2 6 9 12]   
+%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
+%         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
+%     end
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
     ttxl = rasterNamesTxt(siG);
     xtickvals = 5:10:130;%[5 15 25 60 100 115 125];
-%    si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L];
-    xticklabels = {'1-L-On','6-L-On','2-A-On','7-A-On','2-A-Off','7-A-Off','3-A-On','4-A-On','5-A-On','3-A-Off','4-A-Off','5-A-Off','4-L-On'};
-%     yticklabels = {'ON','ON','ON','ON','ON','OFF','OFF','ON','ON','ON','OFF','OFF','OFF',};
+    xticklabels = rasterNamesTxt(siG);
 
     set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);%ytickangle(45);
     yyaxis right
     set(gca,'ytick',xtickvals,'yticklabels',yticklabels,'tickdir','out');
-%     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box off
-    changePosition(gca,[-0.03 0.00 0.037 0.033]);
+    changePosition(gca,[-0.01 0.00 0.037 0.033]);
     hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.07 0.09 0.02 0.09]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
@@ -192,14 +190,14 @@ end
 %% along diagnol (responsiveness)
 while 1
 mask = diag(mCI);
-hf = figure(100);clf;
-set(hf,'units','inches','position',[5 5 3.5 0.75]);
+hf = figure(200);clf;
+set(hf,'units','inches','position',[5 5 3.5 1.5]);
 plot(1:130,mask,'m');hold on;
 mconj = nanmean(mask);
 plot([1 130],[mconj mconj],'k');
 xlim([1 130]);
 for ii = 1:13
-    plot([ii*10 ii*10],[12 24],'b--');
+    plot([ii*10 ii*10],ylim,'b-');
 %     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
 end
 xticks = 5:10:130;
@@ -207,6 +205,29 @@ yticks = [5 10 15 mconj 20];
 set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
 ylabel('Cells (%)');box off;
 format_axes(gca);
+save_pdf(hf,mData.pdf_folder,sprintf('tria_by_trial_responsive.pdf'),600);
+break;
+end
+
+%% along diagnol (responsiveness) all on the same trial wise
+while 1
+mask = diag(mCI);
+respTW = reshape(mask,10,13);
+respTW = respTW';
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 3 1.5]);
+tcolors = mData.dcolors(1:13);
+for ii = 1:13
+    plot(1:10,respTW(ii,:),'color',mData.dcolors{ii});hold on;
+end
+mconj = nanmean(respTW); semconj = std(respTW)./sqrt(5);
+h = shadedErrorBar(1:10,mconj,semconj,{'color','k','linewidth',1.5},0.5);
+xlim([1 12]); ylim([12,25]);
+legs = {xticklabels{:},[10.5 0.1 24 0.3]}; putLegend(gca,legs,tcolors,'sigR',{[],'anova',[],6});
+ylabel('Cells (%)');box off;xlabel('Trials');
+set(gca,'Xtick',1:10);
+format_axes(gca);
+changePosition(gca,[-0.03 0.01 0.1 0]);
 save_pdf(hf,mData.pdf_folder,sprintf('tria_by_trial_responsive.pdf'),600);
 break;
 end
@@ -232,6 +253,34 @@ format_axes(gca);
 save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_conj.pdf'),600);
 break;
 end
+
+%% 1 off diagnoal (conjunctive between adjacent trials) trial-pair wise
+while 1
+mask = diag(mCI,1);
+mask(10:10:129) = NaN;
+mask(130) = NaN;
+mask(isnan(mask)) = [];
+respTW = reshape(mask,9,13);
+respTW = respTW';
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 3 1.5]);
+tcolors = mData.dcolors(1:13);
+for ii = 1:13
+    plot(1:9,respTW(ii,:),'color',mData.dcolors{ii});hold on;
+end
+mconj = nanmean(respTW); semconj = std(respTW)./sqrt(5);
+h = shadedErrorBar(1:9,mconj,semconj,{'color','k','linewidth',1.5},0.5);
+xlim([1 11]); ylim([4,11]);
+legs = {xticklabels{:},[9.5 0.1 11 0.2]}; putLegend(gca,legs,tcolors,'sigR',{[],'anova',[],6});
+box off;
+set(gca,'Xtick',1:9,'xticklabels',{'1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9','9-10'});xtickangle(30)
+put_axes_labels(gca,{'Trial-Pairs',[-1 0.5 0]},{{'Cells (%)'},[0.31 0 0]});
+format_axes(gca);
+changePosition(gca,[-0.03 0.1 0.1 -0.1]);
+save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_conj.pdf'),600);
+break;
+end
+
 %% conjunctive trials stat
 while 1
     pvals = [];

@@ -57,23 +57,26 @@ if 0
     edit_define_contexts_file(ei{ii});
 end
 %%
+binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = load_context_info(ei(ii),binwidths,[0 0 0]);
 end
+disp('Done');
 %%
 clc
 tic
-binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
 toc
-
+%%
+tic
 for ii = 1:length(ei)
     ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 end
 toc
-
+disp('Done');
+%%
 tic
 for ii = 1:length(ei)
     ei(ii) = get_speed_response(ei(ii),[0 0]);
