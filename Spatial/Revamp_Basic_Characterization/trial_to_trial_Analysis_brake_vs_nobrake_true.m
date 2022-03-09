@@ -3,7 +3,6 @@ function trial_to_trial_Analysis_brake_vs_nobrake
 %% find spatial trial to trial correlation
 while 1
     trialNums = [1:10];
-   si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L];
    si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off ArL_L];
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si; propsG = get_props_Rs(RsG,[40,100]); respG = propsG.vals;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
@@ -567,51 +566,30 @@ end
 
 %% 1 off diagnoal (uniqe between adjacent trials)
 while 1
-    mask = diag(mCI); respTW = reshape(mask,10,13); respAct = respTW';
-    mask = diag(mCI,1); mask(10:10:129) = NaN;mask(130) = NaN; mask(isnan(mask)) = []; respTW = reshape(mask,9,13); conj12 = respTW';
-    mask = diag(mOI,-1); mask(10:10:129) = NaN;mask(130) = NaN; mask(isnan(mask)) = []; respTW = reshape(mask,9,13); comp2c = respTW';
-    mask = diag(mOI,1); mask(10:10:129) = NaN;mask(130) = NaN; mask(isnan(mask)) = []; respTW = reshape(mask,9,13); comp1c = respTW';
-    
-    respActL = NaN; conj12L = NaN; comp1cL = NaN; comp2cL = NaN;
-    xtl = {''}; trialsStr = cellfun(@num2str,trials','un',0);
-    xaxL = NaN; xticks = []; xtickL =[];
-    for ii = 1:13
-        respActL = [respActL respAct(ii,:) NaN];
-        conj12L = [conj12L conj12(ii,:) NaN NaN];
-        comp1cL = [comp1cL comp1c(ii,:) NaN NaN];
-        comp2cL = [comp2cL comp2c(ii,:) NaN NaN];
-        xaxL = [xaxL 1:10 NaN];
-        xtl = [xtl trialsStr {''}];
-    end
-    xax = 1:length(respActL); 
-    for ii = 1:length(respActL)
-        if xaxL(ii) == 1 || xaxL(ii) == 9
-            xticks = [xticks xax(ii)];
-            xtickL = [xtickL xtl(ii)];
-        end
-    end
-    
-    hf = figure(100);clf;
-    set(hf,'units','inches','position',[5 5 6.9 1.5]);
-    plot(xax,respActL,'k.-');hold on;
-    plot(xax,conj12L,'m');hold on;
-    plot(xax,comp1cL,'c');
-    plot(xax,comp2cL,'r');
-    iii=1;
-    for ii = find(isnan(respActL))
-        plot([ii ii],ylim,'b-');
-        if iii <= 13
-        text(ii+2,25,sprintf('%s',xticklabels{iii}),'FontSize',6);iii=iii+1;
-        end
-    end
-    xlim([0 length(respActL)+1]); ylim([4 35]);
-    xlabel('Trial-Pairs');ylabel('Cells (%)');box off;
-    set(gca,'xtick',xticks,'xticklabel',xtickL);
-    legs = {'Conjunctive Cells','Complementary Cells (Previous Trial)','Complementary Cells (Later Trial)','Responsive Cells',[9.5 0.1 34 0.2]}; 
-    putLegendH(gca,legs,{'m','c','r','k'},'sigR',{[],'anova',[],6});
-    format_axes(gca);
-    changePosition(gca,[-0.08 0.1 0.17 -0.1]);
-    save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
+    respAct = diag(mCI);
+mask = diag(mOI,-1);mask(10:10:129) = NaN;mask(130) = NaN;
+maskd = diag(mOI,1);maskd(10:10:129) = NaN;maskd(130) = NaN;
+maskc = diag(mCI,1);maskc(10:10:129) = NaN;maskc(130) = NaN;
+mconj = nanmean(mask); mconjd = nanmean(maskd); mconjc = nanmean(maskc);
+
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 6.9 1.5]);
+plot(1:130,mask,'m');hold on;
+plot(1:130,respAct,'r');
+plot(1:130,maskd,'c');
+plot(1:130,maskc,'k');
+plot([1 130],[mconj mconj],'m'); plot([1 130],[mconjd mconjd],'c'); plot([1 130],[mconjc mconjc],'k');
+xlim([0 131]); ylim([2 25]);
+for ii = 1:13
+    plot([ii*10 ii*10],ylim,'b-');
+%     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
+end
+xticks = sort([5:10:130 0:10:130]);
+% set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
+set(gca,'Xtick',xticks)
+ylabel('Cells (%)');box off;
+format_axes(gca);
+changePosition(gca,[-0.08 0.1 0.17 -0.1]);
+save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
 break;
 end
-
