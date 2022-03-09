@@ -337,7 +337,7 @@ while 1
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 3 2.75 2.75]);
+    hf = get_figure(6,[8 3 3.5 3.5]);
 %     hf = get_figure(6,[8 3 4 4]);
     %
 %     axes(ff.h_axes(1));
@@ -347,10 +347,10 @@ while 1
         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     end
-%     for ii = [2 6 9 12]   
-%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
-%         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
-%     end
+    for ii = [2 6 9 12]   
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
+        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
+    end
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
@@ -364,7 +364,7 @@ while 1
     set(gca,'ytick',xtickvals,'yticklabels',yticklabels,'tickdir','out');
 %     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box off
-    changePosition(gca,[-0.01 0.00 0.037 0.033]);
+    changePosition(gca,[-0.03 0.00 0.037 0.033]);
     hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.07 0.09 0.02 0.09]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial_unique.pdf'),600);
@@ -567,20 +567,18 @@ end
 
 %% 1 off diagnoal (uniqe between adjacent trials)
 while 1
-    respAct = diag(mCI);
 mask = diag(mOI,-1);mask(10:10:129) = NaN;mask(130) = NaN;
 maskd = diag(mOI,1);maskd(10:10:129) = NaN;maskd(130) = NaN;
 maskc = diag(mCI,1);maskc(10:10:129) = NaN;maskc(130) = NaN;
 mconj = nanmean(mask); mconjd = nanmean(maskd); mconjc = nanmean(maskc);
 
 hf = figure(100);clf;
-set(hf,'units','inches','position',[5 5 6.9 1.5]);
+set(hf,'units','inches','position',[5 5 6.9 0.75]);
 plot(1:130,mask,'m');hold on;
-plot(1:130,respAct,'r');
 plot(1:130,maskd,'c');
 plot(1:130,maskc,'k');
 plot([1 130],[mconj mconj],'m'); plot([1 130],[mconjd mconjd],'c'); plot([1 130],[mconjc mconjc],'k');
-xlim([1 130]); ylim([2 25]);
+xlim([1 130]);
 for ii = 1:13
     plot([ii*10 ii*10],ylim,'b-');
 %     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
@@ -589,7 +587,7 @@ xticks = 5:10:130;
 set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
 ylabel('Cells (%)');box off;
 format_axes(gca);
-changePosition(gca,[-0.08 0.1 0.1 -0.1]);
+changePosition(gca,[-0.0 0.1 0.1 -0.1]);
 save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
 break;
 end
