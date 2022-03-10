@@ -609,8 +609,8 @@ while 1
         xaxL = [xaxL 1:10 NaN];
         xtl = [xtl trialsStr {''}];
     end
-    xax = 1:length(respActL); 
-    for ii = 1:length(respActL)
+    xax = 1:length(mrespActL); 
+    for ii = 1:length(mrespActL)
         if xaxL(ii) == 1 || xaxL(ii) == 9
             xticks = [xticks xax(ii)];
             xtickL = [xtickL xtl(ii)];
@@ -623,8 +623,8 @@ while 1
 %     plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'color',rlcolor);hold on;
     plot(xlim,[nanmean(mconjAct(:)) nanmean(mconjAct(:))],'color','m');hold on;
     iii=1;
-    theinds = find(isnan(respActL));
-    for ii = find(isnan(respActL))
+    theinds = find(isnan(mrespActL));
+    for ii = find(isnan(mrespActL))
         plot([ii ii],[4 21],'b-');
         if iii <= 13
             text(ii+2,21,sprintf('%s',xticklabels{iii}),'FontSize',6);
@@ -639,10 +639,10 @@ while 1
             iii=iii+1;
         end
     end
-    xlim([0 length(respActL)+1]); ylim([3 27]);
+    xlim([0 length(mrespActL)+1]); ylim([3 27]);
     xlabel('Trial-Pairs');ylabel('Cells (%)');box off;
     set(gca,'xtick',xticks,'xticklabel',xtickL);
-    legs = {'Conjunctive Cells      ','Complementary Cells (Previous Trial)','Complementary Cells (Later Trial)',[9.5 0.1 25 0.2]}; 
+    legs = {'Conjunctive Cells      ','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 25 0.2]}; 
     putLegendH(gca,legs,{'m','c','k'},'sigR',{[],'anova',[],6});
     format_axes(gca);
     changePosition(gca,[-0.08 0.1 0.17 -0.1]);
