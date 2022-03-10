@@ -141,6 +141,15 @@ while 1
 
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
     mOI = mCI; semOI = semCI;
+    
+    allrespOR = cell_list_op(allresp,[],'or',1);
+    allrespAND = cell_list_op(allresp,[],'and',1);
+    
+    pallrespOR = 100*exec_fun_on_cell_mat(allrespOR,'sum')./exec_fun_on_cell_mat(allrespOR,'length');
+    pallrespAND = 100*exec_fun_on_cell_mat(allrespAND,'sum')./exec_fun_on_cell_mat(allrespAND,'length');
+    
+    [mparOR,semparOR] = findMeanAndStandardError(pallrespOR);
+    
     disp('Done');
     %%
     sz = size(mOI,1);

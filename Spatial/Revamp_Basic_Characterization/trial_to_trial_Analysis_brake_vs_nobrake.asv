@@ -141,6 +141,9 @@ while 1
 
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
     mOI = mCI; semOI = semCI;
+    
+    allrespOR = cell_list_op
+    
     disp('Done');
     %%
     sz = size(mOI,1);
@@ -609,8 +612,8 @@ while 1
         xaxL = [xaxL 1:10 NaN];
         xtl = [xtl trialsStr {''}];
     end
-    xax = 1:length(respActL); 
-    for ii = 1:length(respActL)
+    xax = 1:length(mrespActL); 
+    for ii = 1:length(mrespActL)
         if xaxL(ii) == 1 || xaxL(ii) == 9
             xticks = [xticks xax(ii)];
             xtickL = [xtickL xtl(ii)];
@@ -623,8 +626,8 @@ while 1
 %     plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'color',rlcolor);hold on;
     plot(xlim,[nanmean(mconjAct(:)) nanmean(mconjAct(:))],'color','m');hold on;
     iii=1;
-    theinds = find(isnan(respActL));
-    for ii = find(isnan(respActL))
+    theinds = find(isnan(mrespActL));
+    for ii = find(isnan(mrespActL))
         plot([ii ii],[4 21],'b-');
         if iii <= 13
             text(ii+2,21,sprintf('%s',xticklabels{iii}),'FontSize',6);
@@ -639,10 +642,10 @@ while 1
             iii=iii+1;
         end
     end
-    xlim([0 length(respActL)+1]); ylim([3 27]);
+    xlim([0 length(mrespActL)+1]); ylim([3 27]);
     xlabel('Trial-Pairs');ylabel('Cells (%)');box off;
     set(gca,'xtick',xticks,'xticklabel',xtickL);
-    legs = {'Conjunctive Cells      ','Complementary Cells (Previous Trial)','Complementary Cells (Later Trial)',[9.5 0.1 25 0.2]}; 
+    legs = {'Conjunctive Cells      ','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 25 0.2]}; 
     putLegendH(gca,legs,{'m','c','k'},'sigR',{[],'anova',[],6});
     format_axes(gca);
     changePosition(gca,[-0.08 0.1 0.17 -0.1]);
@@ -677,9 +680,9 @@ while 1
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
     changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('responsivity.pdf'),600);
     
@@ -761,11 +764,11 @@ while 1
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
     changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('responsivity.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('conj_conds.pdf'),600);
     
     %%
     aVar = [];
@@ -793,11 +796,11 @@ while 1
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
     changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('responsivity.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('comp1_conds.pdf'),600);
     %%
     aVar = [];
     for an = 1:5
@@ -810,7 +813,7 @@ while 1
     rac2 = RMA(dataT,within);
     rac2.ranova
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
 	xdata = make_xdata([13],[1 1.5]);
     hf = get_figure(5,[8 7 2 1]);
@@ -824,11 +827,32 @@ while 1
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
     changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('responsivity.pdf'),600);
+    save_pdf(hf,mData.pdf_folder,sprintf('comp2_conds.pdf'),600);
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'TrialsP','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([9],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
+    xticks = xdata; 
+    xtltp = {'1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9','9-10'};
+    set(gca,'xtick',xticks,'xticklabels',xtltp,'ytick',[5 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.11 0.05 -0.1]); put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('comp2_trials.pdf'),600);
     %%
     break;
 end
