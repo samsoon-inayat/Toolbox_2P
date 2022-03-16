@@ -3,7 +3,8 @@ function brake_vs_no_brake
 %% Load Data
 while 1
     mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-    ei = evalin('base','ei'); 
+    eiC = evalin('base','ei_C'); 
+    eiA = evalin('base','ei_A'); 
     
     selContexts = [1 4 6 2 7 2 7 3 4 5 3 4 5 0 0 3 4 5 3 4 5];
     rasterNames = {'light22T','light22T','light22T','airOnsets22T','airOnsets22T','airOffsets22T',...
@@ -14,7 +15,8 @@ while 1
         '3-AOn','4-AOn','5-AOn','3-AOff','4-AOff','5-AOff','MOn','MOff',...
         '3-D','4-D','5-D','3-T','4-T','5-T'};
     tic
-    o = get_data1(ei,selContexts,rasterNames);
+    oC = get_data1(eiC,selContexts,rasterNames);
+    oA = get_data1(eiA,selContexts,rasterNames);
     toc
     
     Lb = 1; ArL_L = 2; Lbs = 3; Ab_On = 4; Abs_On = 5; Ab_Off = 6; Abs_Off = 7; 
@@ -23,7 +25,7 @@ while 1
     break
 end
 n = 0;
-
+o = oA;
 %% combine distance time rasters 
 siD = [Ar_D ArL_D Ars_D]; siT = [Ar_T ArL_T Ars_T];
 RsD = o.Rs(:,siD);mRD = o.mR(:,siD); RsT = o.Rs(:,siT);mRT = o.mR(:,siT);
@@ -140,8 +142,9 @@ end
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off M_On M_Off];
+    si = [Ab_On Abs_On Ab_Off Abs_Off];
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
-    good_FR = props1.good_FR;
+    good_FR = props1.vals;
     all_zMIs = props1.zMI;
     zMIs = [];
     for rr = 1:size(all_zMIs,1)
@@ -151,17 +154,18 @@ while 1
             zMIs(rr,cc) = nanmean(tzmis(resp));
         end
     end
-    [within,dvn,xlabels] = make_within_table({'Cond'},[15]);
+    [within,dvn,xlabels] = make_within_table({'Event','Cond'},[2 2]);
     dataT = make_between_table({zMIs},dvn);
     ra = RMA(dataT,within);
     ra.ranova
 %     ra.mauchly
     
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Event','hsd'},[1 1 1]);
     xdata = make_xdata([2 2 2 1 3 3 2],[1 1.5]);
+    xdata = make_xdata([2],[1 1.5]);
     ptab = 0;
     if ptab h(h==1) = 0; end
-    hf = get_figure(5,[8 7 1.75 1]);
+    hf = get_figure(5,[8 7 3.5 2]);
     % s = generate_shades(length(bins)-1);
     tcolors = colors;
     
@@ -172,11 +176,11 @@ while 1
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = rasterNamesTxt(si);
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 round(maxY/2) round(maxY)]); xtickangle(45);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 round(maxY)]); xtickangle(45);
     if ptab
-    changePosition(gca,[0.08 0.01 0.0 -0.5]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[-1 3 0]});
+    changePosition(gca,[0.08 0.01 0.0 0]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[0 0 0]});
     ha = gca; ptable = extras.pvalsTable;
-    display_p_table(ha,hbs,[0 -0.07 0 0.9],ptable);
+    display_p_table(ha,hbs,[0 0.0 0 0],ptable);
     else
     changePosition(gca,[0.01 -0.01 0.06 0.01]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. zMI',[0 0 0]});
     end

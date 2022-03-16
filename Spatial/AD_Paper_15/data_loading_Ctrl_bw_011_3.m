@@ -42,9 +42,10 @@ disp('Done');
 colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
+mData.dcolors = mat2cell(distinguishable_colors(20,'w'),[ones(1,20)]);
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
 mData.shades = generate_shades(3);
-display_colors(mData.shades.c);
+% display_colors(mData.shades.c);
 % Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
 Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
 % Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
@@ -64,24 +65,24 @@ ei_C = getData_py_2(T_Ca);
 ei_A = getData_py_2(T_Aa);
 ei_A(1) = [];
 %%
-ii = 5;
+ii = 2;
 edit_define_contexts_file(ei_C{ii});
-plotMarkers(ei_C{ii}.b,ei_C{ii}.b.stim_r,[],100,0)
-plotMarkers(ei_C{ii}.b,ei_C{ii}.b.air_puff_r,[],101,0)
+% plotMarkers(ei_C{ii}.b,ei_C{ii}.b.stim_r,[],100,0)
+% plotMarkers(ei_C{ii}.b,ei_C{ii}.b.air_puff_r,[],101,0)
 %%
-ii = 5;
+ii = 1;
 edit_define_contexts_file(ei_A{ii});
-plotMarkers(ei_A{ii}.b,ei_A{ii}.b.stim_r,[],100,0)
-plotMarkers(ei_A{ii}.b,ei_A{ii}.b.air_puff_r,[],101,0)
+% plotMarkers(ei_A{ii}.b,ei_A{ii}.b.stim_r,[],100,0)
+% plotMarkers(ei_A{ii}.b,ei_A{ii}.b.air_puff_r,[],101,0)
 %%
 binwidths = [0.11 3];
-for ii = 1:length(ei_C)
+for ii = 1%:length(ei_C)
     ei_C(ii) = make_and_load_rasters(ei_C(ii),binwidths,[0 0 0]);
 end
 for ii = 1:length(ei_A)
     ei_A(ii) = make_and_load_rasters(ei_A(ii),binwidths,[0 0 0]);
 end
-%%
+
 clc
 tic
 for ii = 1:length(ei_C)

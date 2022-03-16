@@ -3,7 +3,8 @@ function brake_vs_no_brake
 %% Load Data
 while 1
     mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-    ei = evalin('base','ei'); 
+    eiC = evalin('base','ei_C'); 
+    eiA = evalin('base','ei_A'); 
     
     selContexts = [1 4 6 2 7 2 7 3 4 5 3 4 5 0 0 3 4 5 3 4 5];
     rasterNames = {'light22T','light22T','light22T','airOnsets22T','airOnsets22T','airOffsets22T',...
@@ -14,7 +15,8 @@ while 1
         '3-AOn','4-AOn','5-AOn','3-AOff','4-AOff','5-AOff','MOn','MOff',...
         '3-D','4-D','5-D','3-T','4-T','5-T'};
     tic
-    o = get_data1(ei,selContexts,rasterNames);
+    oC = get_data1(eiC,selContexts,rasterNames);
+    oA = get_data1(eiA,selContexts,rasterNames);
     toc
     
     Lb = 1; ArL_L = 2; Lbs = 3; Ab_On = 4; Abs_On = 5; Ab_Off = 6; Abs_Off = 7; 

@@ -69,14 +69,14 @@ for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
 toc
-%%
+
 tic
 for ii = 1:length(ei)
     ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 end
 toc
 disp('Done');
-%%
+
 tic
 for ii = 1:length(ei)
     ei(ii) = get_speed_response(ei(ii),[0 0]);
