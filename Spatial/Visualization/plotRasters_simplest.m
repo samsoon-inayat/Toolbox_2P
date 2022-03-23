@@ -64,7 +64,7 @@ while 1
 %             [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
 %             haCRR = findHaFD(CRR,1:size(CRR,1));
 %             thisRaster = normalizeSignal(thisRaster,2);
-            thisRaster = thisRaster > 0;
+%             thisRaster = thisRaster > 0;
             try
 %                 imagesc(thisRaster);
 %                 imagesc(CRR);
@@ -105,7 +105,7 @@ while 1
             end
             end
             ylims = ylim;
-            plot([49.5,49.5],ylims);
+%             plot([49.5,49.5],ylims);
 %             catch
 %             end
 %             xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];

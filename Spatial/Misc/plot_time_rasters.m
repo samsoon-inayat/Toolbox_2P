@@ -17,7 +17,7 @@ for rr = 2
 %         ft = fittype(A.formula);
         xs = R.xs;
 %         coeff = A.coeff(:,cn);
-%         fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),R.gauss_fit_on_mean.gauss1Formula);
+        fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),R.gauss_fit_on_mean.gauss1Formula);
         if strfind(R.marker_name,'motion')
             imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         else
@@ -25,7 +25,7 @@ for rr = 2
         end
         plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.25);
 %         if rr ==1 
-%             plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
+            plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
 %         end
         if isfield(R,'resp')
             if isfield(R.resp,'cis')

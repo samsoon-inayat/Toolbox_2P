@@ -278,14 +278,14 @@ while 1
 end
 %% I want to explore the trial to trial changes when the animal is running a fixed distance
 RsDC = combine_rasters_conditions(RsDt);
-plotRasters_simplest(RsDC{an,1},find(resp))
+% plotRasters_simplest(RsDC{an,1},find(resp))
 
 RsTC = combine_rasters_conditions(RsTi);
-plotRasters_simplest(RsTC{1,1},[])
+% plotRasters_simplest(RsTC{1,1},[])
 %% combine the distance and time rasters horizontally and see individual cell rasters
 RsDTC = combine_rasters_horizontally([RsDC,RsTC]);
-ccs = cell_list_op(respDT.inh(1,:),[],'or',1);
-plotRasters_simplest(RsDTC{an,1},find(ccs{an}));
+% ccs = cell_list_op(respDT.inh(1,:),[],'or',1);
+% plotRasters_simplest(RsDTC{an,1},find(ccs{an}));
 %%
 plotRasters_simplest(RsDTC{an,1},find(respA));
 %% find mean over the 30 trials from conditions 3 4 5 and see population vector
@@ -294,7 +294,7 @@ mRDTC = calc_mean_rasters(RsDTC,[]);
 an = 1;
 Rs = RsDTC(an) ;mR = mRDTC(an);
 ccs = cell_list_op(respDTC.resp(an,1),[],'or',1);
-ccs =  cell_list_op(ccs,{respA},'or');
+% ccs =  cell_list_op(ccs,{respA},'or');
 % ccs = {respA};
 ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 1],...
     'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.13],'widthHeightAdjustment',...

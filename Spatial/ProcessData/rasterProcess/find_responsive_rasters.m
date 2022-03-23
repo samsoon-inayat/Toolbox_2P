@@ -59,7 +59,7 @@ for rr = 1:size(Rs,1)
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 15 & centers > 0 & centers < 15 & MFR < 10000;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25;
             Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
-%             [Rs{rr,cc}.resp.vals,~,Rs{rr,cc}.resp.excinh] = find_resp_no_before_after(R,1:10);
+            [Rs{rr,cc}.resp.vals] = find_resp_no_before_after_anova(R,1:10);
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
@@ -68,7 +68,7 @@ for rr = 1:size(Rs,1)
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 150 & centers > 0 & centers < 150 & MFR < 10000;
             Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
-%             [Rs{rr,cc}.resp.vals,~,Rs{rr,cc}.resp.excinh] = find_resp_no_before_after(R,1:10);
+            [Rs{rr,cc}.resp.vals] = find_resp_no_before_after_anova(R,1:10);
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
         Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals;% & Rs{rr,cc}.resp.FR_based;
@@ -313,6 +313,28 @@ for ii = 1:length(clus_More)
     n_clus_inds = n_clus_inds | clus_inds == clus_More(ii);
 end
 resp = n_clus_inds;% & rs' > 0.3;
+
+
+
+function [resp] = find_resp_no_before_after_anova(R,trials)
+% SR = R.thorexp.frameRate;
+SR = 1/R.bin_width;
+markerType = R.marker_name;
+timeBefore = str2num(markerType(end-1));
+% rasters = R.fromFrames.sp_rasters;
+rasters = R.sp_rasters1;
+number_of_columns = size(rasters,2);
+group = 1:number_of_columns;
+p = NaN(size(rasters,3),1);
+resp = logical(zeros(size(p)));
+parfor ii = 1:size(rasters,3)
+    thisRaster = rasters(trials,:,ii);
+    p(ii) = anova1(thisRaster,group,'nodisplay');
+    if p(ii) < 0.05% & hv(ii) == 1
+        resp(ii,1) = 1;
+    end
+end
+
 
 
 function [resp,cis,excinh] = find_resp_no_before_after(R,trials)
