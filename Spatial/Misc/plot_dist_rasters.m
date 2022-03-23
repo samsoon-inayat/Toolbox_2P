@@ -24,7 +24,7 @@ for rr = 1
         fitplot = gauss_fit(1:length(xs),A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
         imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         if rr ==1 
-%             plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.25,'color','m');
+            plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.25,'color','m');
         end
         box off;
         plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.25);
@@ -43,7 +43,7 @@ for rr = 1
         if rr == 1
             cols = size(thisRaster,2);
             xticks = [1:floor(cols/2):size(thisRaster,2)];
-            set(gca,'XTick',xticks,'XTickLabels',A.xs(xticks));
+            set(gca,'XTick',xticks,'XTickLabels',{'0','75','150'});
             hx = xlabel('Distance (cm)');
         end
 

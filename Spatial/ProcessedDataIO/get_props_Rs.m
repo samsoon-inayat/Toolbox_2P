@@ -101,7 +101,7 @@ sR = 100*sR./size(rasters,2);
 if length(ntrials) == 1
     FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
 else
-    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+    FR_based = (sR)>=ntrials(1) & (sR)<=ntrials(2); % see if cell responded in at least ntrials.
 end
 % FR_based = FR_based';
 trialR = (squeeze(nansum(rasters,1))')>0;
@@ -130,7 +130,7 @@ sR = 100*sR./size(rasters,2);
 if length(ntrials) == 1
     FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
 else
-    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+    FR_based = (sR)>=ntrials(1) & (sR)<=ntrials(2); % see if cell responded in at least ntrials.
 end
 % FR_based = FR_based';
 
@@ -144,7 +144,7 @@ sR = 100*sR./size(rasters,2);
 if length(ntrials) == 1
     FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
 else
-    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+    FR_based = (sR)>=ntrials(1) & (sR)<=ntrials(2); % see if cell responded in at least ntrials.
 end
 % FR_based = FR_based';
 
@@ -158,7 +158,7 @@ sR = 100*sR./size(rasters,2);
 if length(ntrials) == 1
     FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
 else
-    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+    FR_based = (sR)>=ntrials(1) & (sR)<=ntrials(2); % see if cell responded in at least ntrials.
 end
 % FR_based = FR_based';
 
@@ -172,7 +172,7 @@ sR = 100*sR./size(rasters,2);
 if length(ntrials) == 1
     FR_based = (sR)>=ntrials; % see if cell responded in at least ntrials.
 else
-    FR_based = (sR)>=ntrials(1) & (sR)< ntrials(2); % see if cell responded in at least ntrials.
+    FR_based = (sR)>=ntrials(1) & (sR)<=ntrials(2); % see if cell responded in at least ntrials.
 end
 % FR_based = FR_based';
 

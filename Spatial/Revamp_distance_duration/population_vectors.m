@@ -1,90 +1,81 @@
-function trial_by_trial_population_vectors
-
-
-%% find spatial trial to trial correlation
-while 1
-    trialNums = [1:10];
-   si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs Abs_On Abs_Off ];
-    Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si;
-    avgProps = get_props_Rs(Rs,[50,100]); respM = avgProps.good_FR;
-    for cn = 1:length(si)
-        trials = mat2cell([1:10]',ones(size([1:10]')));
-        trials = mat2cell([trialNums]',ones(size([trialNums]')));
-        RsC = repmat(Rs(:,cn),1,10);
-        mRsCT = cell(size(RsC,1),length(trials));
-        for ii = 1:length(trials)
-            ii;
-            [mRsCT(:,ii),~] = calc_mean_rasters(RsC(:,1),trials{ii});
-        end
-        allmRsT{cn} = mRsCT;
-        allRsC{cn} = RsC;
-    end
-    disp('Done');
-    %%
-    break;
+%% get cell populations
+ntrials = 50;
+si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+props1 = get_props_Rs(o.Rs(:,si),ntrials);
+resp = props1.good_FR;
+only_cells = [];
+for ii = 1:length(si)
+    cond_mat = -(1:length(si));
+    cond_mat(ii) = -cond_mat(ii);
+    only_cells = [only_cells get_cell_list(resp,cond_mat,0)];
+    
 end
+perc_only_cells = 100*exec_fun_on_cell_mat(only_cells,'sum')./exec_fun_on_cell_mat(only_cells,'length');
+
+% only light
+cond_mat = [1;3];
+temp_cell_list = get_cell_list(resp,cond_mat,0);
+int_cell_list = [temp_cell_list resp(:,setdiff(1:11,cond_mat))];
+only_ones = get_cell_list(int_cell_list,[1 -(2:size(int_cell_list,2))]);
+perc_only_ones = 100*exec_fun_on_cell_mat(only_ones,'sum')./exec_fun_on_cell_mat(only_ones,'length');
+only_light = only_ones;
+perc_only_light = perc_only_ones;
+
+
+% only air
+cond_mat = [4;5];
+temp_cell_list = get_cell_list(resp,cond_mat,0);
+int_cell_list = [temp_cell_list resp(:,setdiff(1:11,cond_mat))];
+only_ones = get_cell_list(int_cell_list,[1 -(2:size(int_cell_list,2))]);
+perc_only_ones = 100*exec_fun_on_cell_mat(only_ones,'sum')./exec_fun_on_cell_mat(only_ones,'length');
+only_air = only_ones;
+perc_only_air = perc_only_ones;
+
+% only spatial
+cond_mat = [6;7;8];
+temp_cell_list = get_cell_list(resp,cond_mat,0);
+int_cell_list = [temp_cell_list resp(:,setdiff(1:11,cond_mat))];
+only_ones = get_cell_list(int_cell_list,[1 -(2:size(int_cell_list,2))]);
+perc_only_ones = 100*exec_fun_on_cell_mat(only_ones,'sum')./exec_fun_on_cell_mat(only_ones,'length');
+only_spatial = only_ones;
+perc_only_spatial = perc_only_ones;
+
+% only temporal
+cond_mat = [9;10;11];
+temp_cell_list = get_cell_list(resp,cond_mat,0);
+int_cell_list = [temp_cell_list resp(:,setdiff(1:11,cond_mat))];
+only_ones = get_cell_list(int_cell_list,[1 -(2:size(int_cell_list,2))]);
+perc_only_ones = 100*exec_fun_on_cell_mat(only_ones,'sum')./exec_fun_on_cell_mat(only_ones,'length');
+only_temporal = only_ones;
+perc_only_temporal = perc_only_ones;
+
 %% population vector and correlation sensory
 while 1
-    an = 5; cn = 6;
-%     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
-    props1 = get_props_Rs(o.Rs(:,si),50);
-    resp = props1.good_FR;
-%     resp = props1.good_FR_and_untuned;
-    Rs = [o.Rs(an,si(cn)) allRsC{cn}(an,:)];mR = [o.mR(an,si(cn)) allmRsT{cn}(an,:)];
-    respT = repmat(resp(an,cn),1,size(mR,2));
-    for cc = 1:size(mR,2)
-        this_mat = mR{1,cc};
-    end
-    ff = makeFigureRowsCols(105,[1 0.5 4 0.5],'RowsCols',[2 11],...
-        'spaceRowsCols',[0.02 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
-        [-30 -200]);    set(gcf,'color','w');    set(gcf,'Position',[1 1 14 3]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respT,1);
-    ff = show_population_vector_and_corr(mData,ff,Rs,mRR,CRc,[],[]);
+    an = 4;
+    titles = {'Lb','ArL-L','Lb*'};
+    si = [Lb_T ArL_L_T Lbs_T];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    eval(cmdTxt);
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.13],'widthHeightAdjustment',...
+        [-50 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(2,ii),{'xtick',[1 18 38],'xticklabels',[-2 0 2.2]}); set_obj(ff.h_axes(2,ii),{'ytick',[1 18 38],'yticklabels',[-2 0 2.2]}); end 
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set(ht,'String',titles{ii}); end
     changePosition(ff.h_axes(2,1).YLabel,[-2.5 0 0]); 
-    colormap parula
-    
-%     an = 2; cn = 1;
-% %     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
-%     props1 = get_props_Rs(o.Rs(:,si),50);
-    resp = props1.good_FR_and_tuned;
-%     resp = props1.good_FR_and_untuned;
-    Rs = [o.Rs(an,si(cn)) allRsC{cn}(an,:)];mR = [o.mR(an,si(cn)) allmRsT{cn}(an,:)];
-    respT = repmat(resp(an,cn),1,size(mR,2));
-    for cc = 1:size(mR,2)
-        this_mat = mR{1,cc};
-    end
-    ff = makeFigureRowsCols(106,[1 0.5 4 0.5],'RowsCols',[2 11],...
-        'spaceRowsCols',[0.02 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
-        [-30 -200]);    set(gcf,'color','w');    set(gcf,'Position',[1 4 14 3]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respT,1);
-    ff = show_population_vector_and_corr(mData,ff,Rs,mRR,CRc,[],[]);
-    changePosition(ff.h_axes(2,1).YLabel,[-2.5 0 0]); 
-    colormap parula
-%     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_trials_%s.pdf',selected_property),600);
-    
-%     an = 2; cn = 1;
-%     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
-%     props1 = get_props_Rs(o.Rs(:,si),50);
-%     resp = props1.inh;
-    resp = props1.good_FR_and_untuned;
-    Rs = [o.Rs(an,si(cn)) allRsC{cn}(an,:)];mR = [o.mR(an,si(cn)) allmRsT{cn}(an,:)];
-    respT = repmat(resp(an,cn),1,size(mR,2));
-    for cc = 1:size(mR,2)
-        this_mat = mR{1,cc};
-    end
-    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 11],...
-        'spaceRowsCols',[0.02 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
-        [-30 -200]);    set(gcf,'color','w');    set(gcf,'Position',[1 7 14 3]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,respT,1);
-    ff = show_population_vector_and_corr(mData,ff,Rs,mRR,CRc,[],[]);
-    changePosition(ff.h_axes(2,1).YLabel,[-2.5 0 0]); 
-    colormap parula
-%     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_trials_%s.pdf',selected_property),600);
-    
-    
-    
-%     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_trials_%s.pdf',selected_property),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_light_%s.pdf',selected_property),600);
 
+    % average correlation of all animals
+    ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
+        'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.27],'widthHeightAdjustment',...
+        [-50 -370]);    set(gcf,'color','w');    set(gcf,'Position',[10 8 2.5 0.85]);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
+    for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(1,ii),{'xtick',[1 18 38],'xticklabels',[-2 0 2.2]}); set_obj(ff.h_axes(1,ii),{'ytick',[1 18 38],'yticklabels',[-2 0 2.2]}); end 
+    changePosition(ff.h_axes(1,1).YLabel,[-2.5 0 0]); 
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_light_%s.pdf',selected_property),600);
     %%
     break;
 end
@@ -153,44 +144,6 @@ while 1
     break;
 end
 
-%% percentage of cells sensory light different types during locomotion
-while 1
-    titles = {'Lb','Lb*'};
-    si = [ArL_L_T];
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
-    props1 = get_props_Rs(Rs,ntrials);
-    resp1 = props1.good_FR_and_exc;     resp2 = props1.good_FR_and_inh;    resp3 = props1.good_FR_and_untuned;
-    presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
-    presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
-    presp3 = 100 * exec_fun_on_cell_mat(resp3,'sum')./exec_fun_on_cell_mat(resp3,'length');
-    
-    [within,dvn,xlabels] = make_within_table({'Type'},[3]);
-    dataT = make_between_table({presp1,presp2,presp3},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1 1 1]);
-    xdata = make_xdata([3],[1]);
-    hf = get_figure(5,[8 7 1.25 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    maxY = maxY + 5;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Exc','Sup','Com'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.1 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    ht = title('ArL-L-T'); changePosition(ht,[-0.3 0 0])
-    save_pdf(hf,mData.pdf_folder,sprintf('light_cell_types_percent_motion.pdf'),600);
-    %%
-    break;
-end
-
 
 %% percentage of cells sensory light different types
 while 1
@@ -225,7 +178,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Exc','Sup','Com'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.1 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    changePosition(gca,[0.065 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     ht = title('Lb and Lb* (pooled)'); changePosition(ht,[-0.3 0 0])
     save_pdf(hf,mData.pdf_folder,sprintf('light_cell_types_percent.pdf'),600);
     %%
@@ -287,9 +240,9 @@ while 1
     titles = {'Ab','Ab*'};
     si = [Ab_T Abs_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
+    ntrials = [30,100];
     props1 = get_props_Rs(Rs,ntrials);
-    resp = props1.good_FR_and_untuned;
+    resp = props1.good_FR_and_tuned;
 %     resp = only_air(:,[1 2]);
 %     eval(cmdTxt);
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 2],...
@@ -461,13 +414,14 @@ end
 while 1
     selected_property = 'tuned';
     titles = {'Ar-t-D','ArL-t-D','Ar*-t-D'};
-    an = 3;
+    an = 4;
     si = [Ar_t_D ArL_t_D Ars_t_D];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     props1 = get_props_Rs(Rs,[50,100]);
     q_type = '1040';
 %     resp = cell_list_op(props1.good_FR,[],'and');
     resp = props1.good_FR;
+%     resp = repmat(respSen(:,2),1,3);
 %     resp = cell_list_op(props1.good_FR_and_Gauss_loose,[],'or');
 %     resp = cell_list_op(props1.good_FR,[],'or');
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
@@ -578,7 +532,7 @@ while 1
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
     q_type = 'Resp';
-    resp = props1.good_FR;
+    resp = props1.good_FR_and_untuned;
 %     resp = cell_list_op(props1.good_FR,[],'or');
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.01],'rightUpShifts',[0.11 0.1],'widthHeightAdjustment',...
@@ -609,7 +563,7 @@ while 1
     ntrials = 50;
     q_type = 'Resp_Gauss_Loose';
     props1 = get_props_Rs(Rs,ntrials);
-    resp = props1.good_FR_and_Gauss_loose;
+    resp = props1.good_FR_IT;
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
@@ -618,7 +572,7 @@ while 1
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]); 
     for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(2,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]}); set_obj(ff.h_axes(2,ii),{'ytick',[1 68 136],'yticklabels',[0 7.5 15]}); end 
-    colormap parula
+%     colormap parula
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_temporal_%s_%s.pdf',selected_property,q_type),600);
 
    % average correlation of all animals
@@ -628,7 +582,7 @@ while 1
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
     changePosition(ff.h_axes(1,1).YLabel,[-3 0 0]); 
     for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(1,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]}); set_obj(ff.h_axes(1,ii),{'ytick',[1 68 136],'yticklabels',[0 7.5 15]}); end 
-    colormap parula
+%     colormap parula
     save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_temporal_%s_%s.pdf',selected_property,q_type),600);
     %%
     break;
@@ -765,62 +719,6 @@ while 1
         plot([colE colE],[0 sum(szC)],'r');
     end
     
-    %%
-    break;
-end
-
-
-
-%% percentage of cells sensory light different types during locomotion
-while 1
-%     si = [ArL_L_T];
-%     Rs = o.Rs(:,si);mR = o.mR(:,si);
-%     ntrials = 50;
-%     props1 = get_props_Rs(Rs,ntrials);
-%     resp1 = props1.good_FR_and_exc;     resp2 = props1.good_FR_and_inh;    resp3 = props1.good_FR_and_untuned;
-%     presp1m = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
-%     presp2m = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
-%     presp3m = 100 * exec_fun_on_cell_mat(resp3,'sum')./exec_fun_on_cell_mat(resp3,'length');
-%     
-    si = [Lb_T Lbs_T ArL_L_T];
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
-    ntrials = 50;
-    props1 = get_props_Rs(Rs,ntrials); resp1 = props1.good_FR;
-    p_resp = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
-    [within,dvn,xlabels] = make_within_table({'Cond'},[3]);
-    dataT = make_between_table({p_resp},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    
-%     resp1 = props1.good_FR_and_exc;     resp2 = props1.good_FR_and_inh;    resp3 = props1.good_FR_and_untuned;
-% %     resp1 = cell_list_op(resp1,[],'or'); resp2 = cell_list_op(resp2,[],'or'); resp3 = cell_list_op(resp3,[],'or');
-% %     resp1 = resp1(:,1);resp2 = resp2(:,1);resp3 = resp3(:,1);
-%     presp1 = 100 * exec_fun_on_cell_mat(resp1,'sum')./exec_fun_on_cell_mat(resp1,'length');
-%     presp2 = 100 * exec_fun_on_cell_mat(resp2,'sum')./exec_fun_on_cell_mat(resp2,'length');
-%     presp3 = 100 * exec_fun_on_cell_mat(resp3,'sum')./exec_fun_on_cell_mat(resp3,'length');
-%     
-%     [within,dvn,xlabels] = make_within_table({'Cond','Type'},[2,3]);
-%     dataT = make_between_table({presp1,presp2,presp3,presp1m,presp2m,presp3m},dvn);
-%     ra = RMA(dataT,within);
-%     ra.ranova
-    %
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-    xdata = make_xdata([3 3],[1,1.5]);
-    hf = get_figure(5,[8 7 1.25 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = repmat(mData.colors(1:3,:),1,2);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    maxY = maxY + 5;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Exc','Sup','Com'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.1 0.0 -0.4 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    ht = title('Lb vs ArL-L'); changePosition(ht,[-0.3 0 0])
-    save_pdf(hf,mData.pdf_folder,sprintf('light_cell_types_percent_rest_motion.pdf'),600);
     %%
     break;
 end

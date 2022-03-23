@@ -59,6 +59,7 @@ for rr = 1:size(Rs,1)
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 15 & centers > 0 & centers < 15 & MFR < 10000;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25;
             Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
+%             [Rs{rr,cc}.resp.vals,~,Rs{rr,cc}.resp.excinh] = find_resp_no_before_after(R,1:10);
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
@@ -67,6 +68,7 @@ for rr = 1:size(Rs,1)
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 150 & centers > 0 & centers < 150 & MFR < 10000;
             Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
+%             [Rs{rr,cc}.resp.vals,~,Rs{rr,cc}.resp.excinh] = find_resp_no_before_after(R,1:10);
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
         Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals;% & Rs{rr,cc}.resp.FR_based;
@@ -311,3 +313,50 @@ for ii = 1:length(clus_More)
     n_clus_inds = n_clus_inds | clus_inds == clus_More(ii);
 end
 resp = n_clus_inds;% & rs' > 0.3;
+
+
+function [resp,cis,excinh] = find_resp_no_before_after(R,trials)
+% SR = R.thorexp.frameRate;
+SR = 1/R.bin_width;
+markerType = R.marker_name;
+timeBefore = str2num(markerType(end-1));
+% rasters = R.fromFrames.sp_rasters;
+rasters = R.sp_rasters1;
+number_of_columns = size(rasters,2);
+column_index = round(timeBefore * SR);
+cis = [];
+num_in_group = ceil(number_of_columns/10);
+gs = zeros(1,number_of_columns);
+gs(1:num_in_group) = 1;
+gs = logical(gs);
+for jj = 1:number_of_columns
+    group = circshift(gs,jj-1);
+    p = NaN(size(rasters,3),1);
+    resp = logical(zeros(size(p)));
+    excinh = p;
+    parfor ii = 1:size(rasters,3)
+        thisRaster = rasters(trials,:,ii);
+        m_thisRaster = nanmean(thisRaster);
+    %     [p(ii),atabk,statsk] = kruskalwallis(m_thisRaster,group,'nodisplay');
+    %     [p(ii),atabk,statsk] = anova1(m_thisRaster,group,'nodisplay');
+        [~,p(ii),~] = ttest2(m_thisRaster(find(group==1)),m_thisRaster(find(group==0)));
+    %     vert = nanmean(thisRaster,2)>0.1;
+    %     vert = nansum(thisRaster,2);
+    %     hv(ii) = sum(vert>0) >= 5;
+    %     hv(ii) = sum(vert) >= 5;
+        if p(ii) < 0.05% & hv(ii) == 1
+            resp(ii,1) = 1;
+            if mean(m_thisRaster(group==1)) > mean(m_thisRaster(group==0))
+                excinh(ii) = 0;
+            else
+                excinh(ii) = 1;
+            end
+        end
+    end
+    a_p(:,jj) = p;
+    a_excinh(:,jj) = excinh;
+    a_resp(:,jj) = resp;
+end
+resp = sum(a_resp,2)>2;
+excinh = sum(a_excinh,2);
+

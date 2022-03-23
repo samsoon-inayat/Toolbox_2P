@@ -1,4 +1,4 @@
-function out = combine_distance_time_rasters(RsD,RsT)
+function out = combine_distance_time_rasters(RsD,RsT,ntrials)
 
 for rr = 1:size(RsD,1)
     for cc = 1:size(RsD,2)
@@ -29,3 +29,11 @@ for rr = 1:size(RsD,1)
         out.inh{rr,cc} = inh;
     end
 end
+n = 0;
+propsD = get_props_Rs(RsD,ntrials);
+propsT = get_props_Rs(RsT,ntrials);
+out.exc_not_good_FR = cell_list_op(out.exc,cell_list_op(propsT.good_FR,[],'not'),'and');
+out.inh_not_good_FR = cell_list_op(out.inh,cell_list_op(propsD.good_FR,[],'not'),'and');
+out.exc_and_good_FR = cell_list_op(out.exc,propsT.good_FR,'and');
+out.inh_and_good_FR = cell_list_op(out.inh,propsD.good_FR,'and');
+

@@ -3,7 +3,7 @@ if ~exist('flag','var')
     flag = [1 1 0 1];
 end
 if ~exist('pd_rec','var')
-    pd_rec = evalin('base','ei{4}');
+    pd_rec = evalin('base','ei{3}');
 end
 try
 signals = pd_rec.deconv';

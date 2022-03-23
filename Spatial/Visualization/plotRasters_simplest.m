@@ -63,6 +63,8 @@ while 1
 %             htR = R.fractal_dim.HaFD(cn);
 %             [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
 %             haCRR = findHaFD(CRR,1:size(CRR,1));
+%             thisRaster = normalizeSignal(thisRaster,2);
+            thisRaster = thisRaster > 0;
             try
 %                 imagesc(thisRaster);
 %                 imagesc(CRR);
@@ -71,10 +73,12 @@ while 1
                 imagesc(thisRaster);
 %                 continue;
             end
+            colormap_ig;
             colorbar;hold on;
-            plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
+%             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
             try
                 title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
+                err
             catch
                 title(sprintf('%d ',cn));
             end
@@ -96,10 +100,12 @@ while 1
             if isfield(R,'context_info')
             if (~isempty(strfind(R.context_info,'air')) | ~isempty(strfind(R.context_info,'belt'))) & ~isempty(strfind(R.context_info,'D'))
                 fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
-                plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.5,'color','m');
+%                 plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.5,'color','m');
                 
             end
             end
+            ylims = ylim;
+            plot([49.5,49.5],ylims);
 %             catch
 %             end
 %             xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];

@@ -59,7 +59,7 @@ if ~isempty(allP)
         minC(sii) = min(corrPlot(:));
         maxC(sii) = max(corrPlot(:));
         box off;
-        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold','TickDir','out');
         if sii == 1 || (sii == 4 && strcmp(R.marker_name,'airIT'))
            if  isfield(R,'fromFrames')
                 h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
@@ -69,12 +69,12 @@ if ~isempty(allP)
         end
         cols = size(P,2);
         colsHalf = round(cols/2);
-        ts = round(R.xs(1:cols));
+%         ts = round(R.xs(1:cols));
         set(gca,'XTick',[]);
         if isfield(R,'fromFrames')
             h = xlabel('Time (sec)');%    changePosition(h,[0 0 0]);
         else
-            h = xlabel('Distance (cm)');%    changePosition(h,[0 0 0]);
+%             h = xlabel('Distance (cm)');%    changePosition(h,[0 0 0]);
         end
         cols = size(P,2);
         colsHalf = ceil(cols/2);
@@ -148,7 +148,7 @@ if isempty(allP)
         minC(sii) = min(corrPlot(:));
         maxC(sii) = max(corrPlot(:));
         box off;
-        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold','TickDir','out');
         if sii == 1 || (sii == 4 && strcmp(R.marker_name,'airIT'))
            if  isfield(R,'fromFrames')
             h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
@@ -162,7 +162,7 @@ if isempty(allP)
         if isfield(R,'fromFrames')
             h = xlabel('Time (sec)');%    changePosition(h,[0 0 0]);
         else
-            h = xlabel('Distance (cm)');%    changePosition(h,[0 0 0]);
+%             h = xlabel('Distance (cm)');%    changePosition(h,[0 0 0]);
         end
         cols = size(C,2);
         colsHalf = ceil(cols/2);

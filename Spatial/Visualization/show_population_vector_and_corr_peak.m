@@ -1,10 +1,10 @@
-function ff = show_population_vector_and_corr(mData,ff,Rs,allP,allC,minmaxCorr,maxBin,cbf)
+function ff = show_population_vector_and_corr_peak(mData,ff,Rs,allP,allC,minmaxCorr,maxBin,cbf)
 
 if ~exist('cbf','var')
     cbf = 1;
 end
 
-cp = 1;
+cp = 0;
 
 if ~isempty(allP)
     FS = mData.axes_font_size;
@@ -20,7 +20,12 @@ if ~isempty(allP)
         if ~isempty(maxBin)
             P = P(:,1:maxBin);
         end
-        imagesc(P);
+        pP = P == 1;
+        [xpp,ypp] = find(pP);
+        corr_pp = corr(xpp,ypp);
+%         imagesc(pP);
+        scatter(ypp,xpp);
+        lsline(gca);
         box off;
         if isfield(R.resp,'cis')
                 hold on;
@@ -39,6 +44,7 @@ if ~isempty(allP)
         set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold','YTick',[1]);
         set(gca,'YTick',[1 size(P,1)]);
         set(gca,'XTick',[]);
+        title(sprintf('%.3f',corr_pp));
 %         text(0,size(P,1)+5,{'Pop. Activity'},'FontSize',5);
 %         ht = title('Pop. Activity');
 %         set(ht,'FontSize',5,'FontWeight','Normal');

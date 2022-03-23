@@ -26,7 +26,7 @@ while 1
     Ab_On = 24; Abs_On = 25; Ab_Off = 26; Abs_Off = 27; 
     Ar_On = 28; ArL_On = 29; Ars_On = 30; Ar_Off = 31; ArL_Off = 32; Ars_Off = 33;
     
-    [speedRs,resp_speed,speed_percent,resp_speedAcc] = load_speed_response(ei);
+%     [speedRs,resp_speed,speed_percent,resp_speedAcc] = load_speed_response(ei);
 %     all_xl{ii+1} = 'sp';
 %     resp = [o.resp.vals resp_speed];
   
@@ -101,15 +101,15 @@ break;
 end
 %% Show sample rasters
 while 1
-%     Rs = o.Rs;
-   an = 1; cn = 1;
+   Rs = RsDt;
+   an = 3; cn = 3;
     % plotRasters_simplest(Rs{an,cn})
     % find(resp_valsC{an}(:,cn));
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
+    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 5],...
         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.08 0.25],'widthHeightAdjustment',...
         [-75 -475]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 4 3.25 1]);
-    ff = sample_rasters(Rs{an,cn},[328 518 567 436],ff);
+    set(gcf,'color','w'); set(gcf,'Position',[10 4 4 1]);
+    ff = sample_rasters(Rs{an,cn},[112,72,92,6,123],ff);
     save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
     break;
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
@@ -304,8 +304,11 @@ end
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     props1 = get_props_Rs(o.Rs,ntrials);
     good_FR = props1.good_FR(:,si);
+    good_FR  = [respDT.inh respDT.exc propsD.good_FR propsT.good_FR]
+%     good_FR = [respDT.exc respDT.inh];
     good_FR_any = cell_list_op(good_FR,[],'or');
     good_FR_all = cell_list_op(good_FR,[],'and');
     per_active =[]; 
@@ -317,14 +320,14 @@ while 1
         tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
         tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
     end
-    [within,dvn,xlabels] = make_within_table({'Cond'},[length(si)]);
+    [within,dvn,xlabels] = make_within_table({'Cond'},[12]);
     dataT = make_between_table({per_active},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-    xdata = make_xdata([3 2 3 3],[1 1.5]);
+    xdata = make_xdata([3 3 3 3],[1 1.5]);
     h(h==1) = 0;
     hf = get_figure(5,[8 7 2.25 2]);
     % s = generate_shades(length(bins)-1);
@@ -955,8 +958,10 @@ end
 
 %% Overlap Indices ImageSC
 while 1
-    
-    resp = good_FR;% resp_speed];
+    si = [Ab_T Abs_T  Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    avgProps = get_props_Rs(Rs,[50,100]); 
+    resp = avgProps.good_FR;% resp_speed];
 
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(resp,0.5,0.05);
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(resp,0.5,0.05);

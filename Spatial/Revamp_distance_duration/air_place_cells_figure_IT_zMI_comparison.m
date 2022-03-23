@@ -14,8 +14,8 @@ while 1
     dzMI = prop_op(propsD,propsT,mDiff+sDiff);
     gFR_D_g_T = dzMI.resp_D_g_T;
     gFR_T_g_D = dzMI.resp_T_g_D; gFR_Comp = dzMI.resp_complex;
-%     gFR_D_g_T = cell_list_op(dzMI.resp_D_g_T,propsD.good_FR,'and');
-%     gFR_T_g_D = cell_list_op(dzMI.resp_T_g_D,propsD.good_FR,'and');
+    gFR_D_g_T = cell_list_op(dzMI.resp_D_g_T,propsT.good_FR,'and');
+    gFR_T_g_D = cell_list_op(dzMI.resp_T_g_D,propsT.good_FR,'and');
 %     gFR_Comp = cell_list_op(dzMI.resp_complex,propsD.good_FR,'and');
 %     [dzMI.resp_D_g_T_perc;dzMI.resp_T_g_D_perc]
     gauss = propsT.good_FR_and_Gauss_loose; n_gauss = propsT.good_FR_and_notGauss_loose;
