@@ -36,9 +36,10 @@ if ~isempty(allP)
             h = ylabel('Cell No.'); %   changePosition(h,[0 0 0]);
         end
     %     text(3,size(P,1)+round(size(P,1)/7),sprintf('%s',raster_labels{sii}),'FontSize',FS,'FontWeight','Normal');
-        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold','YTick',[1]);
+        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Normal','YTick',[1]);
         set(gca,'YTick',[1 size(P,1)]);
         set(gca,'XTick',[]);
+        format_axes(gca);
 %         text(0,size(P,1)+5,{'Pop. Activity'},'FontSize',5);
 %         ht = title('Pop. Activity');
 %         set(ht,'FontSize',5,'FontWeight','Normal');
@@ -108,6 +109,7 @@ if ~isempty(allP)
             end
             set(gca,'XTick',[1 colsHalf cols],'XTickLabel',tlabels);
             set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
+            format_axes(gca);
         end
 %         ht = title('Pop. Correlation');
 %         set(ht,'FontSize',5,'FontWeight','Normal');
@@ -148,7 +150,7 @@ if isempty(allP)
         minC(sii) = min(corrPlot(:));
         maxC(sii) = max(corrPlot(:));
         box off;
-        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+        set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Normal');
         if sii == 1 || (sii == 4 && strcmp(R.marker_name,'airIT'))
            if  isfield(R,'fromFrames')
             h = ylabel('Time (sec)');    changePosition(h,[0 0 0]);
@@ -190,7 +192,7 @@ if isempty(allP)
             set(gca,'XTick',[1 colsHalf cols],'XTickLabel',tlabels);
             set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
         end
-            set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Bold');
+            set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Normal');
             if sii == 1
             ht = title('Avg. Pop. Correlation');
         set(ht,'FontSize',5,'FontWeight','Normal');
@@ -211,6 +213,7 @@ if isempty(allP)
     hc = putColorBar(ff.h_axes(1,size(allC,2)),[0.0 0.03 0 -0.05],minmaxCorr,6,'eastoutside',[0.07 0.07 0.1 0.1]);
     % hc = putColorBar(ff.h_axes(3,4),[0.0 0.03 0 -0.05],[mIa maxs(3)],6,'eastoutside',[0.07 0.07 0.1 0.1]);
     end
+    format_axes(gca);
 end
 
 

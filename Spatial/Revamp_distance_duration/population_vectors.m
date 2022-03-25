@@ -416,6 +416,7 @@ while 1
     titles = {'3 ','4 ','5 '};
     an = 4;
     si = [Ar_t_D ArL_t_D Ars_t_D];
+    si = [Ar_i_T ArL_i_T Ars_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     props1 = get_props_Rs(Rs,[50,100]);
     q_type = '1040';
@@ -428,7 +429,8 @@ while 1
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     axes(ff.h_axes(1,2));hold on;
     ylims = ylim;
-    plot([36,36],ylims,'m');
+%     plot([36,36],ylims,'m');
+    
     changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]);
     colormap_ig
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_spatial_%s_%s.pdf',selected_property,q_type),600);
@@ -436,7 +438,7 @@ while 1
    % average correlation of all animals
     ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.25],'widthHeightAdjustment',...
-        [-55 -350]);    set(gcf,'color','w');    set(gcf,'Position',[8 8 2.5 0.8]);
+        [-55 -350]);    set(gcf,'color','w');    set(gcf,'Position',[8 8 2.5 0.85]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
     changePosition(ff.h_axes(1,1).YLabel,[-3 0 0]); 
     colormap_ig

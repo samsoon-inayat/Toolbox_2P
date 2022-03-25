@@ -23,9 +23,9 @@ for rr = 2
         else
             imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         end
-        plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.25);
+        plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.2);
 %         if rr ==1 
-            plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',1,'color','m');
+            plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.2,'color','m');
 %         end
         if isfield(R,'resp')
             if isfield(R.resp,'cis')
@@ -64,13 +64,13 @@ for rr = 2
             else
                 xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
             end
-%             xticks
-            if ~ismember(size(thisRaster,2),xticks)
-                xticks = [xticks size(thisRaster,2)];
-            end
-            xs = round(xs,1); 
-            xticks = unique(xticks);
-            set(gca,'XTick',xticks,'XTickLabels',xs(xticks));
+            xticks = [1 24 49];
+%             if ~ismember(size(thisRaster,2),xticks)
+%                 xticks = [xticks size(thisRaster,2)];
+%             end
+%             xs = round(xs,1); 
+%             xticks = unique(xticks);
+            set(gca,'XTick',xticks,'XTickLabels',{'0','7.5','15'});
             if ~isempty(strfind(R.context_info,'airT'))
                 for bb = 1:length(R.lastBin)
                     xvalbin = R.lastBin(bb)-1;
@@ -95,6 +95,7 @@ for rr = 2
         cols = size(thisRaster,2);
         colsHalf = ceil(cols/2);
         ts = xs;
+        format_axes(gca);
 %         set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);
     end
 end

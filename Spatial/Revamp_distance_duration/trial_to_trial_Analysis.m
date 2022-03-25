@@ -4,7 +4,7 @@ function trial_to_trial_Analysis
 while 1
     ntrials = 10;
     si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-    siG = si; RsG = o.Rs(:,si);
+    siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = propsG.vals;
     trials = mat2cell([1:10]',ones(size([1:10]')));
     [allRsC,allmRsT] = get_trial_Rs(o,si,1:10);
     lnsi = length(si);
@@ -92,7 +92,7 @@ while 1
     respSeL{1} = pSeL.good_FR_and_exc;     respSeL{2} = pSeL.good_FR_and_inh;    respSeL{3} = pSeL.good_FR_and_untuned;
     
 %     avgProps = get_props_Rs(RsG,[50,100]); respG = avgProps.good_FR;
-    an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0;
+    an  = 1:5; eic = 1; sp = 0; intersect_with_global = 1;
     
     allresp = []; ind = 1;
     all_peakL = [];
@@ -144,159 +144,14 @@ while 1
     mOI = mCI; semOI = semCI;
     break;
 end
-%% heatmap of conjunction all trials
-while 1
-%     mOI = mOIM; semOI = semOIM;
-%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
-    sz = size(mOI,1);
-%     mOI = OI_mat(:,:,4);
-    oM = ones(size(mOI));
-    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);
-    minI = min([mOI(:);semOI(:)]);
-    
-%     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-%     mOI = mOI .* mask;
-    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-    imAlpha(mask1 == 1) = 0;
-%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 5 3.5 3.5]);
-    %
-%     axes(ff.h_axes(1));
-    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    plot([10.5 10.5],[0 30.5],'r'); plot([20.5 20.5],[0 30.5],'r');
-    plot([0 30.5],[10.5 10.5],'r'); plot([0 30.5],[20.5 20.5],'r');
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
-    format_axes(gca);
-    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    ttxl = rasterNamesTxt(siG);
-    set(gca,'xtick',1:length(ttxl),'ytick',1:length(ttxl),'xticklabels',ttxl,'yticklabels',ttxl,'Ydir','reverse'); xtickangle(45);
-    text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
-    box on
-    changePosition(gca,[0.03 0 -0.04 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
-    colormap jet
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
-    %%
-    break;
-end
 
-%% heatmap of conjunction averaged over trial-pairs
-while 1
-    mOI = [];
-    st = 1:10:60; se = 10:10:60;
-    for rr = 1:length(st)
-        for cc = 1:length(st)
-            tempM = mCI(st(rr):se(rr),st(cc):se(cc));
-            oM = ones(size(tempM));
-            mask1 = (triu(oM,0) & tril(oM,0)); tempM(mask1==1) = NaN;
-            mOI(rr,cc) = nanmean(tempM,'A');
-        end
-    end
-    wind = ones(6,6);
-    mOI = conv2(wind,tmOI,'same')/100;
-%     mOI = mOIM; semOI = semOIM;
-%     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
-    sz = size(mOI,1);
-%     mOI = OI_mat(:,:,4);
-    oM = ones(size(mOI));
-%     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);
-    minI = min([mOI(:);semOI(:)]);
-    
-%     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-%     mOI = mOI .* mask;
-    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-%     imAlpha(mask1 == 1) = 0;
-%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 5 3.5 3.5]);
-    %
-%     axes(ff.h_axes(1));
-    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    plot([10.5 10.5],[0 30.5],'r'); plot([20.5 20.5],[0 30.5],'r');
-    plot([0 30.5],[10.5 10.5],'r'); plot([0 30.5],[20.5 20.5],'r');
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
-    format_axes(gca);
-    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    ttxl = rasterNamesTxt(siG);
-    set(gca,'xtick',1:length(ttxl),'ytick',1:length(ttxl),'xticklabels',ttxl,'yticklabels',ttxl,'Ydir','reverse'); xtickangle(45);
-    text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
-    box on
-    changePosition(gca,[0.03 0 -0.04 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
-    colormap jet
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
-    %%
-    break;
-end
-
-%% spatial agglomerative hierarchical clustering
-while 1
-    mOI1 = mOI;
-    mOI1(isnan(mOI1)) = 1;
-    Di = pdist(mOI1);
-    tree = linkage(Di,'average');
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
-    hf = gcf;
-    set(hf,'Position',[7 5 2 2]);
-    set(H,'linewidth',1);
-	ttxl = rasterNamesTxt(siG);
-    ttxl = ttxl(TC);
-    set(gca,'yticklabels',ttxl);ytickangle(30);
-    format_axes(gca);
-    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 -0.05 0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster_tu_spatial.pdf'),600);
-    %%
-    break;
-end
-
-%% rm anova of one row
-while 1
-%     rowN = 1;
-%     for an = 1:size(OIM_mat,3)
-%         var(an,:) = OIM_mat(rowN,:,an);
-%     end
-    var = squeeze(mean(OIM_mat,1))';
-    [within,dvn,xlabels] = make_within_table({'Cond'},[13]);
-    dataT = make_between_table({var},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    %%
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-%     xdata = xdataG;
-    ptab = 0;
-    if ptab h(h==1) = 0; end
-    hf = get_figure(5,[8 7 1.75 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = colors;
-    
-    if ptab
-    [hbs,maxY] = plot_bars_p_table(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k','ptable',extras.pvalsTable,...
-        'BaseValue',0.01,'xdata',xdatag,'sigFontSize',7,'sigAsteriskFontSize',4,'barWidth',0.5);
-    else
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'BaseValue',0.01,'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'yspacing',0.1);
-    end
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    txl = rasterNamesTxt(si); 
-    xticks = xdata; xticklabels = txl;
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 0.1]); xtickangle(45);
-    changePosition(gca,[0.02 -0.01 0.06 0.01]); put_axes_labels(gca,{[],[0 0 0]},{'Avg. Correlation',[0 0 0]});
-    %%
-    break;
-end
-
-%%
+%% conjunction and complementation
 while 1   %%
     [OIo,mOIo,semOIo,OI_mato,p_vals,h_vals,CI,mCI,semCI,CI_mat] = get_overlap_index(allresp(an,:),0.5,0.05);
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);
 %     mOI = OI{4}; semOI = semOI;
     mOI = mCI; semOI = semCI;
+%     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(i_allresp(an,:),0.5,0.05);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
@@ -311,96 +166,58 @@ while 1   %%
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(6,[8 3 3.5 3.5]);
-    hf = get_figure(6,[8 3 7 7]);
+%     hf = get_figure(6,[8 3 7 7]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     
     for ii = 1:12
-        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
-        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.5); 
+        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.5); 
     end
     
-%     plot([10.5 10.5],[0 130.5],'r'); plot([30.5 30.5],[0 130.5],'r'); plot([90.5 90.5],[0 130.5],'r'); plot([100.5 100.5],[0 130.5],'r'); plot([120.5 120.5],[0 130.5],'r');
-
-%     plot([0 130.5],[10.5 10.5],'r'); plot([0 130.5],[30.5 30.5],'r'); plot([0 130.5],[90.5 90.5],'r'); plot([0 130.5],[100.5 100.5],'r'); plot([0 130.5],[120.5 120.5],'r');
-    
-%     plot([90.5 90.5],[0 130.5],'r'); plot([90.5 90.5],[0 130.5],'r');
-%     plot([0 130.5],[10.5 10.5],'r'); plot([0 130.5],[30.5 30.5],'r');
-
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
     ttxl = rasterNamesTxt(siG);
     xtickvals = 5:10:130;%[5 15 25 60 100 115 125];
 %     si = [Lb_T Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Lbs_T Abs_t_T Abs_i_T ArL_L_T];
-    xticklabels = {'Lb','Ab-t','Ab-i','Ar-t','Ar-i','ArL-t','ArL-i','Ar*-t','Ar*-i','Lb*','Ab*-t','Ab*-i','ArL-L'};
+    xticklabels = {'3-Dis','4-Dis','5-Dis','3-Dur','4-Dur','5-Dur'};
+    txl = xticklabels;
 
     set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);
 %     text(-0.3,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); set(gca,'Ydir','normal');ytickangle(20);
     box on
-    changePosition(gca,[0.03 0 -0.04 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
+    changePosition(gca,[-0.01 0 -0.04 0]);
+    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.08 0.05]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
     %%
     break;
 end
 
-%% spatial agglomerative hierarchical clustering
+%% agglomerative hierarchical clustering
 while 1
     mOI1 = mOI;
-    mOI1(isnan(mOI1)) = 1;
-    Di = pdist(mOI1);
-    tree = linkage(Di);
+%     mOI1(isnan(mOI1)) = 1;
+%     Di = pdist(mOI1);
+    Di = pdist(mOI1,@naneucdist);
+%     tree = linkage(mOI1,'average','euclidean');
+    tree = linkage(Di,'average');
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 5 2 2]);
+    set(hf,'Position',[7 3 3.5 1]);
     set(H,'linewidth',1);
-	ttxl = rasterNamesTxt(siG);
-    ttxl = ttxl(TC);
-    set(gca,'yticklabels',ttxl);ytickangle(30);
+    set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
-    changePosition(gca,[0 0.0 -0.05 0.05]);
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster_tu_spatial.pdf'),600);
+    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
+    changePosition(gca,[0.03 0.0 0.05 0.05]);
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster1.pdf'),600);
     %%
     break;
 end
 
-%% may be useful but telling the same story
-while 1
-    si = [Lb_T ArL_L_T Lbs_T Ab_T Abs_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-%     si = [Lb_T Ab_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Lbs_T Abs_T];
-%     si = [Ar_i_T ArL_i_T Ars_i_T];
-    Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs;
-    avgProps = get_props_Rs(Rs,[50,100]); respM = avgProps.good_FR;
-    respCL = [];
-    corrCond = [];
-    meanCorrCond = [];
-    for rr = 1:size(respM,1)
-        tempCL = [];
-        for cc = 1:size(respM,2)
-            tempCL = [tempCL respM{rr,cc}];
-        end
-        respCL{rr} = tempCL;
-        [~,corrCond{rr},cellnums] = findPopulationVectorPlot(tempCL,[]); % order RV1 according to peak firing
-        meanCorrCond(:,:,rr) = corrCond{rr};
-        
-    end
-    hf = get_figure(6,[8 3 7 7]);
-    meanCorrCond = mean(meanCorrCond,3);
-    imagesc(meanCorrCond);
-    
-    %%
-    figure(100);clf;
-    imagesc(respCL{5});
-    
-    
-    %%
-    break;
-end
 
 %% 1 off diagnoal (uniqe between adjacent trials)
 while 1
@@ -418,22 +235,22 @@ while 1
     
     respV = conjV;
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    mrespV(10:10:((lnsi*10)-1)) = NaN; mrespV(60) = NaN; mrespV(isnan(mrespV)) = []; 
-    semrespV(10:10:((lnsi*10)-1)) = NaN; semrespV(60) = NaN; semrespV(isnan(semrespV)) = []; 
+    mrespV(10:10:((lnsi*10)-1)) = NaN; mrespV(lnsi*10) = NaN; mrespV(isnan(mrespV)) = []; 
+    semrespV(10:10:((lnsi*10)-1)) = NaN; semrespV(lnsi*10) = NaN; semrespV(isnan(semrespV)) = []; 
     respTW = reshape(mrespV,9,lnsi); mconjAct = respTW'; 
     respTW = reshape(semrespV,9,lnsi); semconjAct = respTW';
     
     respV = comp1V;
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    mrespV(10:10:((lnsi*10)-1)) = NaN; mrespV(60) = NaN; mrespV(isnan(mrespV)) = []; 
-    semrespV(10:10:((lnsi*10)-1)) = NaN; semrespV(60) = NaN; semrespV(isnan(semrespV)) = []; 
+    mrespV(10:10:((lnsi*10)-1)) = NaN; mrespV(lnsi*10) = NaN; mrespV(isnan(mrespV)) = []; 
+    semrespV(10:10:((lnsi*10)-1)) = NaN; semrespV(lnsi*10) = NaN; semrespV(isnan(semrespV)) = []; 
     respTW = reshape(mrespV,9,lnsi); mcomp1Act = respTW'; 
     respTW = reshape(semrespV,9,lnsi); semcomp1Act = respTW';
     
     respV = comp2V;
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    mrespV(10:10:((lnsi*10)-1)) = NaN; mrespV(60) = NaN; mrespV(isnan(mrespV)) = []; 
-    semrespV(10:10:((lnsi*10)-1)) = NaN; semrespV(60) = NaN; semrespV(isnan(semrespV)) = []; 
+    mrespV(10:10:((lnsi*10)-1)) = NaN; mrespV(lnsi*10) = NaN; mrespV(isnan(mrespV)) = []; 
+    semrespV(10:10:((lnsi*10)-1)) = NaN; semrespV(lnsi*10) = NaN; semrespV(isnan(semrespV)) = []; 
     respTW = reshape(mrespV,9,lnsi); mcomp2Act = respTW'; 
     respTW = reshape(semrespV,9,lnsi); semcomp2Act = respTW';
     
@@ -568,3 +385,126 @@ while 1
 break;
 end
 %%
+
+
+%% anova running
+while 1
+    %%
+    aVar = [];
+    for an = 1:5
+        tvar = conjV(an,:);
+        tvar(10:10:59) = NaN; tvar(isnan(tvar)) = []; 
+        aVar(an,:) = tvar;
+    end
+    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[6,9]);
+    dataT = make_between_table({aVar},dvn);
+    rac = RMA(dataT,within);
+    rac.ranova
+    
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac,{'cond','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([6],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
+    xticks = xdata; 
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('conj_conds.pdf'),600);
+    
+    %%
+    aVar = [];
+    for an = 1:5
+        tvar = comp1V(an,:);
+        tvar(10:10:59) = NaN; tvar(isnan(tvar)) = []; 
+        aVar(an,:) = tvar;
+    end
+    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[6,9]);
+    dataT = make_between_table({aVar},dvn);
+    rac1 = RMA(dataT,within);
+    rac1.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac1,{'cond','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([6],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
+    xticks = xdata; 
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('comp1_conds.pdf'),600);
+    %%
+    aVar = [];
+    for an = 1:5
+        tvar = comp2V(an,:);
+        tvar(10:10:59) = NaN; tvar(isnan(tvar)) = []; 
+        aVar(an,:) = tvar;
+    end
+    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[6,9]);
+    dataT = make_between_table({aVar},dvn);
+    rac2 = RMA(dataT,within);
+    rac2.ranova
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'cond','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([13],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
+    xticks = xdata; 
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('comp2_conds.pdf'),600);
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'TrialsP','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([9],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
+    xticks = xdata; 
+    xtltp = {'1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9','9-10'};
+    set(gca,'xtick',xticks,'xticklabels',xtltp,'ytick',[5 10 20 30]); xtickangle(45)
+    changePosition(gca,[0.02 0.11 0.05 -0.1]); put_axes_labels(gca,{'Trial-Pairs',[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('comp2_trials.pdf'),600);
+    %%
+    break;
+end

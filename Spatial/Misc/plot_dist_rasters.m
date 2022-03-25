@@ -24,10 +24,10 @@ for rr = 1
         fitplot = gauss_fit(1:length(xs),A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
         imagesc(thisRaster,[min(thisRaster(:)) max(thisRaster(:))]);hold on;
         if rr ==1 
-            plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.25,'color','m');
+            plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.2,'color','m');
         end
         box off;
-        plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.25);
+        plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.2);
         if rr == 1
 %         text(size(thisRaster,2)+size(thisRaster,2)/20,1,sprintf('zMI = %.2f, Rs = %.2f',A.info_metrics.ShannonMI_Zsh(cn),...
 %             A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',5,'color','k','rotation',90);
@@ -59,7 +59,8 @@ for rr = 1
         
         if cc == length(ff.h_axes) && rr == 1
             hca = gca;
-%             hc = putColorBar(hca,[0 0 -0.05 0],{'0','Max FR'},6,'northoutside',[0.15 0.22 0.05 0.22]);
+            hc = putColorBar(hca,[-0.05 0 -0.05 0],{'0','Max FR(AU)'},6,'northoutside',[0.15 0.32 0.05 0.32]);
         end
+        format_axes(gca);
     end
 end

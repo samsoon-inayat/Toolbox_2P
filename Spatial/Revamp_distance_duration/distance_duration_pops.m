@@ -382,3 +382,122 @@ respA = resp | respT | respDT;
 plotRasters_simplest(RsDTC{an,1},find(respA));
 
 
+
+%% compare percent responsive cells
+while 1
+    ntrials = 50; 
+    si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+    props1 = get_props_Rs(o.Rs,ntrials);
+    good_FR = props1.vals(:,si);
+%     good_FR  = [respDT.inh respDT.exc propsD.good_FR propsT.good_FR]
+%     good_FR = [respDT.exc respDT.inh];
+    good_FR_any = cell_list_op(good_FR,[],'or');
+    good_FR_all = cell_list_op(good_FR,[],'and');
+    per_active =[]; 
+    for rr = 1:size(good_FR,1)
+        for cc = 1:size(good_FR,2)
+            tts = good_FR{rr,cc};
+            per_active(rr,cc) = 100*sum(tts)/length(tts);
+        end
+        tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
+        tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
+    end
+    [within,dvn,xlabels] = make_within_table({'DT','Cond'},[2,3]);
+    dataT = make_between_table({per_active},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    [mra,semra] = findMeanAndStandardError(per_active_any);
+    [mrall,semrall] = findMeanAndStandardError(per_active_all);
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'DT_by_Cond','hsd'},[1.5 1 1]);
+    h(h==1) = 0;
+    xdata = make_xdata([3 3],[1 1.5]);
+    hf = get_figure(5,[8 7 1.5 1]);
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+    htxt = text(0.75,maxY-2,{'Any Condition',sprintf('(%d\x00B1%d%%)',round(mra),round(semra))},'FontSize',6);
+%     text(13,maxY-9,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'3','4','5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
+    changePosition(gca,[0.04 0.01 0 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
+    %%
+    break;
+end
+
+%% compare percent of conjunctive and complementary cells
+while 1
+    ntrials = 50; 
+    si = [Ar_t_D ArL_t_D Ars_t_D];
+    si = [Ar_i_T ArL_i_T Ars_i_T];
+    props1 = get_props_Rs(o.Rs,ntrials);
+    good_FR = props1.vals(:,si);
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FR,0.5,0.05);
+    mOI = mCI; semOI = semCI;
+    
+    clear respRV conjV comp1V comp2V
+    for an = 1:5
+        respRV(an,:) = diag(all_CI_mat(:,:,an));
+        conjV(an,:) = diag(all_CI_mat(:,:,an),1);
+        comp1V(an,:) = diag(uni(:,:,an),1);
+        comp2V(an,:) = diag(uni(:,:,an),-1);
+    end
+    
+    for an = 1:5
+        conjV(an,3) = all_CI_mat(1,3,an);
+        comp1V(an,3) = uni(1,3,an);
+        comp2V(an,3) = uni(3,1,an);
+    end
+    
+    %%
+    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[3,3]);
+    dataT = make_between_table({conjV,comp1V,comp2V},dvn);
+    ra = RMA(dataT,within,{0.05,{'hsd','bonferroni'}});
+    ra.ranova
+
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type_by_Cond','hsd'},[1.5 1 1]);
+    h(h==1) = 0;
+    xdata = make_xdata([3 3 3],[1 2]);
+    hf = get_figure(5,[8 7 2.75 1]);
+%     hf = get_figure(5,[8 7 2.5 1]);
+    tcolors = repmat(mData.dcolors(1:3),1,3);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 5;
+    maxY1 = maxY;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'3-4','4-5','3-5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10 15]); xtickangle(45)
+    changePosition(gca,[-0.03 0.01 -0.0 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+    xdata = make_xdata([3],[1 1.5]);
+    hf = get_figure(5,[8 7 1.5 1]);
+    tcolors = mData.dcolors(4:6);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 5;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY1]); format_axes(gca);
+    xticks = xdata; xticklabels = {'3-4','4-5','3-5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10]); xtickangle(45);
+    changePosition(gca,[0.04 0.01 -0.5 -0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
+    %%
+    break;
+end
+

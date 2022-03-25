@@ -89,7 +89,7 @@ end
 %% Overlap Indices ImageSC all
 while 1
     avgProps = get_props_Rs(RsG,[50,100]); 
-    respG = avgProps.good_FR_and_untuned;
+    respG = avgProps.vals;
     an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0; only_global = 0;
     allresp = []; ind = 1;
     all_peakL = [];
