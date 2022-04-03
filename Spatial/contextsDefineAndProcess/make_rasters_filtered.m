@@ -24,6 +24,7 @@ b.frameRate = ei.thorExp.frameRate;
 % end
 % spSigAll = ei.deconv.spSigAll;
 spSigAll = ei.plane{pp}.tP.deconv.spSigAll;
+% spSigAll = filter_sig(spSigAll,ei.thorExp.frameRate);
 rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,nbins,rasterType);
 rasters.bin_width = binWidth;
 rasters.nbins = nbins;
@@ -42,8 +43,7 @@ if strcmp(rasterType,'time')
     out =  getRasters_from_frames(b,spSigAll,onsets,offsets);
     rasters.fromFrames = out;
 end
-% rasters = getRasters_speed(b,spSigAll,rasters);
-% rasters.sp_rasters1 = 
+rasters = filter_sig(rasters);
 n = 0;
 
 
@@ -66,9 +66,6 @@ nbins = ceil(max_trial_vals/binWidth);
 %     binWidth = round(max_trial_vals/nbins,1);
 %     [nbins,binWidth] = get_nbins(b,onsets,offsets,binWidth,rasterType);
 % end
-
-function rasters =  getRasters_speed(b,spSignal,rasters)
-n = 0;
 
 function out =  getRasters(b,spSignal,onsets,offsets,bin_width,nbins,rasterType)
 raster = NaN(length(onsets),nbins,size(spSignal,1));

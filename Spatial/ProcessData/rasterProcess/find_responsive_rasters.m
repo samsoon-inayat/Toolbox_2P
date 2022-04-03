@@ -5,7 +5,8 @@ for rr = 1:size(Rs,1)
         R = Rs{rr,cc};
         rasters = permute(R.sp_rasters1,[2 1 3]);
         sR = sum(squeeze(nanmean(rasters,1))>0); % sum over bins and then see in how many trials the sum is greater than 0 to see if the cell responded in multiple trials
-%         R.resp.FR_based = (sR)>4; % see if cell responded in at least half trials.
+        R.resp.FR_based36 = (sR)>=3 & (sR)<=6; % see if cell responded in at least half trials.
+        R.resp.FR_based710 = (sR)>=7 & (sR)<=10; % see if cell responded in at least half trials.
         total_trials = size(rasters,2);
         R.resp.trial_scores = sR/total_trials;
         R.resp.trial_scores_percent = 100*sR/total_trials;
@@ -50,6 +51,8 @@ for rr = 1:size(Rs,1)
             else
                 Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
             end
+            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
+            Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
         if strcmp(R.marker_name,'airIT')
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_intertrial(R,trials);
@@ -59,7 +62,8 @@ for rr = 1:size(Rs,1)
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 15 & centers > 0 & centers < 15 & MFR < 10000;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25;
             Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
-            [Rs{rr,cc}.resp.vals] = find_resp_no_before_after_anova(R,1:10);
+            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
+            Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
 %             [rs1,coeffs] = getMRFS_vals(R.gauss_fit_on_mean);
@@ -68,10 +72,11 @@ for rr = 1:size(Rs,1)
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 150 & centers > 0 & centers < 150 & MFR < 10000;
             Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
-            [Rs{rr,cc}.resp.vals] = find_resp_no_before_after_anova(R,1:10);
+            [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
+            Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
-        Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals;% & Rs{rr,cc}.resp.FR_based;
+%         Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals;% & Rs{rr,cc}.resp.FR_based;
         n = 0;
     end
 end
@@ -316,24 +321,52 @@ resp = n_clus_inds;% & rs' > 0.3;
 
 
 
-function [resp] = find_resp_no_before_after_anova(R,trials)
+function [resp,fac] = find_resp_no_before_after_anova(R,trials)
 % SR = R.thorexp.frameRate;
+file_name = fullfile(R.pd_folder,sprintf('responsive_cells_pyramidal_anova_%s.mat',R.context_info));
+if exist(file_name,'file')
+    te = load(file_name);
+    resp = te.resp;
+    resp = te.p<0.05;
+    fac = te.fac;
+    return;
+end
 SR = 1/R.bin_width;
 markerType = R.marker_name;
 timeBefore = str2num(markerType(end-1));
 % rasters = R.fromFrames.sp_rasters;
 rasters = R.sp_rasters1;
 number_of_columns = size(rasters,2);
-group = 1:number_of_columns;
-p = NaN(size(rasters,3),1);
+half_num_col = floor(number_of_columns/2);
+fac = 1:1:half_num_col;
+for ii = 1:length(fac)
+    os = ones(1,fac(ii));
+    num_groups = floor(number_of_columns/fac(ii));
+    tgroup = [];
+    for jj = 1:num_groups
+        tgroup = [tgroup jj*os];
+    end
+    diffL = number_of_columns - length(tgroup);
+    if diffL > 0
+        tgroup = [tgroup ones(1,diffL)*(tgroup(end)+1)];
+    end
+    groups{ii} = tgroup;
+end
+p = NaN(size(rasters,3),length(fac));
 resp = logical(zeros(size(p)));
-parfor ii = 1:size(rasters,3)
-    thisRaster = rasters(trials,:,ii);
-    p(ii) = anova1(thisRaster,group,'nodisplay');
-    if p(ii) < 0.05% & hv(ii) == 1
-        resp(ii,1) = 1;
+pG = p;
+for ni = 1:length(fac)
+    group = groups{ni};
+    parfor ii = 1:size(rasters,3)
+        thisRaster = rasters(trials,:,ii);
+%         thisRasterG = make_gauss_fit_raster(R,ii);
+        p(ii,ni) = anova1(thisRaster,group,'nodisplay');
+%         pG(ii,ni) = anova1(thisRasterG,group,'nodisplay');
     end
 end
+resp = sum(p<0.05,2)>0;
+save(file_name,'resp','p','fac');
+% respG = sum(pG<0.05,2)>0;
 
 
 

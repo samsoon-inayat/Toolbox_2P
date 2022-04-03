@@ -4,6 +4,10 @@ if ~exist('ntrials','var')
     ntrials = 5;
 end
 
+% if ~exist('scale','var')
+%     scale = NaN;
+% end
+
 for rr = 1:size(Rs,1)
     for cc = 1:size(Rs,2)
         if cc == 9
@@ -60,7 +64,25 @@ for rr = 1:size(Rs,1)
         o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.trial_scores{rr,cc} = R.resp.trial_scores';
-        o.vals{rr,cc} = R.resp.vals;
+        if size(R.resp.vals,2) == 1
+            o.vals{rr,cc} = R.resp.vals;
+        else
+            o.vals{rr,cc} = sum(R.resp.vals,2)>0;
+%             tempRespFacVals = R.resp.vals(:,1) | R.resp.vals(:,2);
+%             indfac = floor(length(R.resp.fac)/2);
+%             if scale == 1
+%                 o.vals{rr,cc} = tempRespFacVals & ~R.resp.vals(:,indfac) & ~R.resp.vals(:,end);
+%             end
+%             if scale == 2
+%                 o.vals{rr,cc} = ~tempRespFacVals & R.resp.vals(:,indfac) & ~R.resp.vals(:,end);
+%             end
+%             if scale == 3
+%                 o.vals{rr,cc} = ~tempRespFacVals & R.resp.vals(:,indfac) & R.resp.vals(:,end);
+%             end
+%             if scale == 4
+%                 o.vals{rr,cc} = ~tempRespFacVals & R.resp.vals(:,indfac) & R.resp.vals(:,end);
+%             end
+        end
         temp_cl = cell_list_op(o.good_FR(rr,cc),o.vals(rr,cc),'and');
         temp_c2 = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.vals(rr,cc),[],'not'),'and');
         o.good_FR_and_tuned{rr,cc} = temp_cl{1};

@@ -1,10 +1,7 @@
 function distance_duration_pops
 
 %%
-ntrials = [20 40]; % 30 40
-ntrials = [50 70]; % 50 60, 70 80, 90 100
-% ntrials = [80 100]; % 90 100
-% ntrials = 100;
+ntrials = [50];
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
 RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
 [dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
@@ -12,22 +9,23 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 [allRs_FD,allmRs_FD] = get_trial_Rs(o,[Ar_t_D ArL_t_D Ars_t_D],1:10);
 [allRs_FT,allmRs_FT] = get_trial_Rs(o,[Ar_i_T ArL_i_T Ars_i_T],1:10);
 [allRs_Ab,allmRs_Ab] = get_trial_Rs(o,[Ab_T Abs_T],1:10);
-% respDTC = combine_distance_time_rasters(o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]),o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]),ntrials);
+respDTC = combine_distance_time_rasters(o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]),o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]),ntrials);
+
 
 mRsDt = o.mR(:,[Ar_t_D ArL_t_D Ars_t_D]);  mRsTt = o.mR(:,[Ar_t_T ArL_t_T Ars_t_T]);
 mRsDi = o.mR(:,[Ar_i_D ArL_i_D Ars_i_D]);  mRsTi = o.mR(:,[Ar_i_T ArL_i_T Ars_i_T]);
 
 Rs_Ab = o.Rs(:,[Ab_T Abs_T]); mRs_Ab = o.mR(:,[Ab_T Abs_T]);
 
-trialsR = ntrials;
-props_Ab = get_props_Rs(Rs_Ab,trialsR); propsD = get_props_Rs(RsDt,trialsR); propsT = get_props_Rs(RsTi,trialsR);
-propsDi = get_props_Rs(RsDi,trialsR); propsTt = get_props_Rs(RsTt,trialsR);
-
+trialsR = [50];
+scale = 1000;
+props_Ab = get_props_Rs(Rs_Ab,trialsR); propsD = get_props_Rs(RsDt,trialsR,scale); propsT = get_props_Rs(RsTi,trialsR,scale);
+propsDi = get_props_Rs(RsDi,trialsR,scale); propsTt = get_props_Rs(RsTt,trialsR,scale);
+%%
 
 all_responsive_cells = cell_list_op(propsD.vals,propsT.vals,'or');
 all_responsive_cells = cell_list_op(all_responsive_cells,propsTt.vals,'or');
 all_responsive_cells = cell_list_op(all_responsive_cells,propsDi.vals,'or');
-all_responsive_cells_All = cell_list_op(all_responsive_cells,[],'or',1);
 
 trialsR = [10 30];
 props_Ab13 = get_props_Rs(Rs_Ab,trialsR); propsD13 = get_props_Rs(RsDt,trialsR); propsT13 = get_props_Rs(RsTi,trialsR);
@@ -38,13 +36,10 @@ props_Ab47 = get_props_Rs(Rs_Ab,trialsR); propsD47 = get_props_Rs(RsDt,trialsR);
 trialsR = [80 100];
 props_Ab810 = get_props_Rs(Rs_Ab,trialsR); propsD810 = get_props_Rs(RsDt,trialsR); propsT810 = get_props_Rs(RsTi,trialsR);
 
-
+%%
 while 1
-% FD_Dis = propsD.vals; FD_Dur = propsTt.vals;
-% FT_Dis = propsDi.vals; FT_Dur = propsT.vals;
-
-FD_Dis = propsD.good_FR_and_tuned; FD_Dur = propsTt.good_FR_and_tuned;
-FT_Dis = propsDi.good_FR_and_tuned; FT_Dur = propsT.good_FR_and_tuned;
+FD_Dis = propsD.vals; FD_Dur = propsTt.vals;
+FT_Dis = propsDi.vals; FT_Dur = propsT.vals;
 
 for rr = 1:size(FD_Dis,1)
     for cc = 1:size(FD_Dis,2)
@@ -59,7 +54,7 @@ for rr = 1:size(FD_Dis,1)
         FT_conj(rr,cc) = cell_list_op(cellP1,cellP2,'and');
     end
 end
-
+%%
 resp = [FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj];
 
 per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
@@ -76,7 +71,7 @@ per_active_all = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat
 
 [mra,semra] = findMeanAndStandardError(per_active_any);
 [mrall,semrall] = findMeanAndStandardError(per_active_all);
-
+%%
 break;
 end
 
@@ -92,14 +87,14 @@ while 1
     maxY = maxY + 5;
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 25]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dis','Dur','Mix'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
+    xticks = xdata; xticklabels = {'3','4','5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10 15 20]); xtickangle(45)
     changePosition(gca,[0.03 0.01 -0.3 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','hsd'},[1.5 1 1]);
-    xdata = make_xdata([2],[1 1.5]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
+    xdata = make_xdata([3],[1 1.5]);
     hf = get_figure(5,[8 7 1.5 1]);
     tcolors = mData.dcolors(10:end);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -108,46 +103,15 @@ while 1
     maxY = maxY + 5;
     ylims = ylim;
     format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 25]); format_axes(gca);
-    xticks = xdata; xticklabels = {'T','I'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.03 0.01 -0.5 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
+    xticks = xdata; xticklabels = {'3','4','5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10 15 20]); xtickangle(45)
+    changePosition(gca,[0.03 0.01 -0.3 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
 %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_by_Cond','hsd'},[1.5 1 1]);
-     h(h==1) = 0;
-     p = ones(size(p)); 
-     ind = ismember(combs,[1 2],'rows');  p(ind) = ra.MC.hsd.Cond_by_CT.pValue(1); 
-     ind = ismember(combs,[1 3],'rows');  p(ind) = ra.MC.hsd.Cond_by_CT.pValue(2); 
-    ind = ismember(combs,[2 3],'rows');  p(ind) = ra.MC.hsd.Cond_by_CT.pValue(4); 
-    ind = ismember(combs,[4 5],'rows'); p(ind) = ra.MC.hsd.Cond_by_CT.pValue(7); 
-    ind = ismember(combs,[4 6],'rows'); p(ind) = ra.MC.hsd.Cond_by_CT.pValue(8); 
-    ind = ismember(combs,[5 6],'rows'); p(ind) = ra.MC.hsd.Cond_by_CT.pValue(10); 
-%     h = p<0.05;
-    xdata = make_xdata([3 3],[1 1.5]);
-    hf = get_figure(5,[8 7 1.5 1]);
-    tcolors = mData.dcolors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 0;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%)',round(mra),round(semra)),'FontSize',6);
-%     text(13,maxY-9,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 25]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dis','Dur','Mix'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.03 0.01 -0.1 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
-
-
-    %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','hsd'},[1.5 1 1]);
      h(h==1) = 0;
      p = ones(size(p)); 
-     ind = ismember(combs,[1 2],'rows');  p(ind) = ra.MC.hsd.CT_by_TI.pValue(1); 
-     ind = ismember(combs,[1 3],'rows');  p(ind) = ra.MC.hsd.CT_by_TI.pValue(2); 
     ind = ismember(combs,[2 3],'rows');  p(ind) = ra.MC.hsd.CT_by_TI.pValue(4); 
     ind = ismember(combs,[4 5],'rows'); p(ind) = ra.MC.hsd.CT_by_TI.pValue(7); 
     ind = ismember(combs,[4 6],'rows'); p(ind) = ra.MC.hsd.CT_by_TI.pValue(8); 
@@ -164,13 +128,13 @@ while 1
     format_axes(gca);
 %     htxt = text(0.75,maxY-3,sprintf('Any Condition (%d\x00B1%d%%)',round(mra),round(semra)),'FontSize',6);
 %     text(13,maxY-9,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 25]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dis','Dur','Mix'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.03 0.01 -0.1 0.02]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
+    xticks = xdata; xticklabels = {'3','4','5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10 15 20]); xtickangle(45)
+    changePosition(gca,[0.03 0.01 -0.1 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
 
-%%
+    %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_CT_Cond','hsd'},[1.5 1 1]);
     h(h==1) = 0;
     xdata = make_xdata([3 3 3 3 3 3],[1 1.5]);
@@ -184,9 +148,9 @@ while 1
     format_axes(gca);
 %     htxt = text(0.75,maxY-3,sprintf('Any Condition or Type (%d\x00B1%d%%)',round(mra),round(semra)),'FontSize',6);
 %     text(13,maxY-9,sprintf('%d\x00B1%d %%',round(mrall),round(semrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 25]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
     xticks = xdata; xticklabels = {'3','4','5'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10 15 20]); xtickangle(45)
     changePosition(gca,[-0.04 0.01 0.1 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
     %%
@@ -667,11 +631,9 @@ plotRasters_simplest(RsDTC{an,1},find(respA));
 %% find mean over the 30 trials from conditions 3 4 5 and see population vector
 mRDTC = calc_mean_rasters(RsDTC,[]); 
 %%
-an = 5;
+an = 4;
 Rs = RsDTC(an) ;mR = mRDTC(an);
-Rs = RsD(an) ;mR = mRD(an);
 ccs = cell_list_op(respDTC.resp(an,1),[],'or',1);
-% ccs = all_responsive_cells_All(an);
 % ccs = cell_list_op(FT_conj(1,:),[],'or',1);
 % ccs =  cell_list_op(ccs,{respA},'or');
 % ccs = {respA};

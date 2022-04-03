@@ -46,20 +46,27 @@ for rr = 1
             set(gca,'XTick',xticks,'XTickLabels',{'0','75','150'});
             hx = xlabel('Distance (cm)');
         end
-
+        
+        if ~isempty(strfind(R.context_info,'airID'))
+                for bb = 1:length(R.lastBin)
+                    xvalbin = R.lastBin(bb)-1;
+                    plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'c','linewidth',0.25);
+                end
+            end
+        
         if cc >1
             set(gca,'YTick',[]);
         end
         if cc == 1
-            set(gca,'YTick',[1 5 10]);
-            h = ylabel('Trial #');
+%             set(gca,'YTick',[1 5 10]);
+%             h = ylabel('Trial #');
 %             changePosition(h,[3 0 0]);
 %             text
         end
         
         if cc == length(ff.h_axes) && rr == 1
             hca = gca;
-            hc = putColorBar(hca,[-0.05 0 -0.05 0],{'0','Max FR(AU)'},6,'northoutside',[0.15 0.32 0.05 0.32]);
+%             hc = putColorBar(hca,[-0.05 0 -0.05 0],{'0','Max FR(AU)'},6,'northoutside',[0.15 0.32 0.05 0.32]);
         end
         format_axes(gca);
     end

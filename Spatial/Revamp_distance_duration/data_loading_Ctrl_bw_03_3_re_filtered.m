@@ -11,8 +11,8 @@ clear all
 data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
 data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
 processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
-processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabRe';
-processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabReD';
+processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabRe_Filt';
+processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabReD_Filt';
 animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
 date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
 [dS_C,T_C] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_control,date_list_control);
@@ -50,7 +50,7 @@ ei = getData_py_2(T_C1(sel_rec,:));
 %%
 binwidths = [0.3 3];
 for ii = 1:length(ei)
-    ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
+    ei(ii) = make_and_load_rasters_filtered(ei(ii),binwidths,[0 0 0]);
 end
 
 clc
@@ -60,25 +60,6 @@ for ii = 1:length(ei)
 end
 toc
 
-%%
-tic
-for ii = 1:length(ei)
-    ei(ii) = get_speed_response(ei(ii),[0 0]);
-end
-toc
-
-tic
-for ii = 1:length(ei)
-    ei(ii) = get_accel_response(ei(ii),[0 0]);
-end
-toc
-
-
-tic
-for ii = 1:length(ei)
-    ei(ii) = get_speed_response_gauss(ei(ii),[0 0]);
-end
-toc
 
 %%
 for ii = 1:length(ei)

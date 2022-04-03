@@ -1,4 +1,5 @@
-function plotRasters_simplest(R,ccs)
+function plotRasters_simplest(Rs,ccs)
+R = Rs{1};
 rasters = R.sp_rasters1;
 if ~exist('ccs','var')
     ccs = find(R.resp.vals);% & R.resp.FR_based);
@@ -22,7 +23,7 @@ end
 % end
 
 numberOfRows = 4;
-numberOfCols = 4;
+numberOfCols = 1;
 graphsOnOneFigure = numberOfRows * numberOfCols;
 numberOfData = length(ccs);
 numberOfGroups = ceil(numberOfData/graphsOnOneFigure);
@@ -34,15 +35,16 @@ for gg = 1:numberOfGroups
     groupIndices(:,:,gg) = groupIndices(:,:,gg)';
 end
 
-ff = makeFigureRowsCols(1005,[0.5 0.5 19 9 ],'RowsCols',[numberOfRows numberOfCols],...
+ff = makeFigureRowsCols(1005,[0.5 0.5 19 7 ],'RowsCols',[numberOfRows 4],...
     'spaceRowsCols',[0.1 0.05],'rightUpShifts',[0.05 0.07],'widthHeightAdjustment',...
     [-70 -115]);
+
 
 gg = 1;
 while 1
     for rr = 1:numberOfRows
-        for cc = 1:numberOfCols
-            cni = groupIndices(rr,cc,gg);
+        for cc = 1:4
+            cni = groupIndices(rr,1,gg);
             if isnan(cni)
                 cla(ff.h_axes(rr,cc));
                 set(ff.h_axes(rr,cc),'visible','off');
@@ -50,7 +52,9 @@ while 1
             end
             set(ff.h_axes(rr,cc),'visible','on');
             cn = ccs(cni);
-            thisRaster = rasters(:,:,cn);
+            R = Rs{cc};
+            thisRaster = R.sp_rasters1(:,:,cn);
+%             thisRaster = rasters(:,:,cn);
             mSig = nanmean(thisRaster);
             axes(ff.h_axes(rr,cc));
             mtr = 1;%mode(thisRaster(thisRaster(:)>0));
@@ -73,14 +77,16 @@ while 1
                 imagesc(thisRaster);
 %                 continue;
             end
-            colormap_ig;
+            colormap jet;
             colorbar;hold on;
 %             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
             try
-                title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
-                err
+%                 title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
+                cellrsp = R.resp.valsC(cn) & R.resp.FR_based710(cn);
+                title(sprintf('%d (%.3f) %d',cn,R.info_metrics.ShannonMI_Zsh(cn),cellrsp));
+%                 err
             catch
-                title(sprintf('%d ',cn));
+                title(sprintf('%d - %d',cn,R.resp.vals(cn)));
             end
 %             title(sprintf('%d - %.3f - %.3f - %.3f - %.3f',cn,htR,haa,ham,haCRR));
 %             title(sprintf('%d-SI(%.2f)-Center(%.1f)-MaxFR(%.1f)',cn,A.SI(cn),A.centers(cn),max(thisRaster(:))));
@@ -105,6 +111,15 @@ while 1
 %             end
             end
             ylims = ylim;
+            lastBin = R.lastBin;
+            if ~isempty(strfind(R.context_info,'airT')) || ~isempty(strfind(R.context_info,'airID'))
+                for ii = 1:10
+                    plot([lastBin(ii) lastBin(ii)],[ii-0.5 ii+0.5],'w');
+                end
+            else
+                
+            end
+                
 %             plot([49.5,49.5],ylims);
 %             catch
 %             end

@@ -15,8 +15,12 @@ groupIndices = reshape(indices,1,numberOfCols,numberOfGroups);
 % for gg = 1:numberOfGroups
 %     groupIndices(:,:,gg) = groupIndices(:,:,gg)';
 % end
+% 
+% ff = makeFigureRowsCols(1005,[NaN 0.1 7 5],'RowsCols',[numberOfRows numberOfCols],...
+%     'spaceRowsCols',[0.1 0.05],'rightUpShifts',[0.05 0.07],'widthHeightAdjustment',...
+%     [-70 -115]);
 
-ff = makeFigureRowsCols(1005,[NaN 0.1 7 5],'RowsCols',[numberOfRows numberOfCols],...
+ff = makeFigureRowsCols(1005,[0.5 0.5 19 9 ],'RowsCols',[numberOfRows numberOfCols],...
     'spaceRowsCols',[0.1 0.05],'rightUpShifts',[0.05 0.07],'widthHeightAdjustment',...
     [-70 -115]);
 
@@ -33,7 +37,7 @@ while 1
             set(ff.h_axes(rr,cc),'visible','on');
             cn = ccs(cni);
             Rs = rasters{rr};
-            thisRaster = Rs(:,:,cn);
+            thisRaster = Rs.sp_rasters1(:,:,cn);
             if sum(thisRaster(:)) == 0
                 continue;
             end

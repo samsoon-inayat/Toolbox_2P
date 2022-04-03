@@ -2,8 +2,9 @@ function trial_to_trial_Analysis
 
 %% load data
 while 1
-    ntrials = 10;
+    ntrials = 50;
     si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
+%     si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = propsG.vals;
     trials = mat2cell([1:10]',ones(size([1:10]')));
     [allRsC,allmRsT] = get_trial_Rs(o,si,1:10);
@@ -182,7 +183,7 @@ while 1   %%
     ttxl = rasterNamesTxt(siG);
     xtickvals = 5:10:130;%[5 15 25 60 100 115 125];
 %     si = [Lb_T Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Lbs_T Abs_t_T Abs_i_T ArL_L_T];
-    xticklabels = {'3-Dis','4-Dis','5-Dis','3-Dur','4-Dur','5-Dur'};
+    xticklabels = {'3-Dis','4-Dis','5-Dis','3-Dur','4-Dur','5-Dur','3-Dis','4-Dis','5-Dis','3-Dur','4-Dur','5-Dur'};
     txl = xticklabels;
 
     set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);

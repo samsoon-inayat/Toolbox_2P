@@ -12,8 +12,10 @@ for rr = 1:size(prop1,1)
         if exist('resp','var')
             tresp = resp{rr,cc};
             diff_D_T{rr,cc} = zMI_D(tresp) - zMI_T(tresp); 
+            diff_T_D{rr,cc} = zMI_T(tresp) - zMI_D(tresp); 
         else
             diff_D_T{rr,cc} = zMI_D - zMI_T; 
+            diff_T_D{rr,cc} = zMI_T - zMI_D; 
         end
         if thi < 0
             th = nanmean(diff_D_T{rr,cc}) + 1*nanstd(diff_D_T{rr,cc});
@@ -33,5 +35,4 @@ o.resp_complex = resp_diff_complex;
 o.resp_D_g_T_perc = per_resp_d_D_g_T;
 o.resp_T_g_D_perc = per_resp_d_T_g_D;
 o.diff_D_T = diff_D_T;
-% o.good_FR_D_g_T = cell_list_op(resp_diff_D_g_T,prop1i.good_FR,'and');
-% o.good_FR_T_g_D = cell_list_op(resp_diff_T_g_D,prop2i.good_FR,'and');
+o.diff_T_D = diff_T_D;

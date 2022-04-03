@@ -151,6 +151,7 @@ for ii = 1:length(selContexts)
     [vals,valsi] = max(mspR);
     rasters{ii,1}.peak_location = valsi * rasters{ii,1}.bin_width;
     rasters{ii,1}.peak_location_trials = squeeze(valsTi) * rasters{ii,1}.bin_width;
+    rasters{ii,1}.pd_folder = ei.matlab_folder;
     n = 0;
 end
 

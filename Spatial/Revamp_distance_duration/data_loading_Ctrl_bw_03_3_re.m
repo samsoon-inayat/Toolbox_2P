@@ -60,6 +60,25 @@ for ii = 1:length(ei)
 end
 toc
 
+%%
+tic
+for ii = 1:length(ei)
+    ei(ii) = get_speed_response(ei(ii),[0 0]);
+end
+toc
+
+tic
+for ii = 1:length(ei)
+    ei(ii) = get_accel_response(ei(ii),[0 0]);
+end
+toc
+
+
+tic
+for ii = 1:length(ei)
+    ei(ii) = get_speed_response_gauss(ei(ii),[0 0]);
+end
+toc
 
 %%
 for ii = 1:length(ei)

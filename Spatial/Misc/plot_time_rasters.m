@@ -84,13 +84,13 @@ for rr = 2
         end
         if cc == 1
             ntrials = size(thisRaster,1);
-            set(gca,'YTick',[1  ntrials]);
-            h = ylabel('Trial #');
+%             set(gca,'YTick',[1 5 ntrials]);
+%             h = ylabel('Trial #');
         end
         
         if cc == length(ff.h_axes)
             hca = gca;
-            ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
+%             ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
         end
         cols = size(thisRaster,2);
         colsHalf = ceil(cols/2);
