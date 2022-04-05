@@ -34,18 +34,39 @@ for rr = 1
         else
 %        text(size(thisRaster,2)+size(thisRaster,2)/15,2,sprintf('Max FR %d - zMI = %.2f',round(max(thisRaster(:))),A.SI(cn)),'FontSize',5,'color','k','rotation',90);
         end
+        cols = size(thisRaster,2);
+        colsHalf = ceil(cols/2);
         if rr == 1
 %             text(1,size(thisRaster,1)+1.5,sprintf('Cell %d, (MFR = %.0f)',cn,round(max(thisRaster(:)))),'FontSize',5,'color','k');
             text(1,size(thisRaster,1)+1.5,sprintf('%d A.U.',round(max(thisRaster(:)))),'FontSize',5,'color','k');
         end
+        text(colsHalf,size(thisRaster,1)+1.5,sprintf('zMI = %.2f ',R.info_metrics.ShannonMI_Zsh(cn)),'FontSize',5,'color','k');
         set(gca,'FontSize',6,'FontWeight','Normal','linewidth',0.5,'Ydir','normal','TickDir','out');
         colormap jet;
         if rr == 1
-            cols = size(thisRaster,2);
-            xticks = [1:floor(cols/2):size(thisRaster,2)];
-            set(gca,'XTick',xticks,'XTickLabels',{'0','75','150'});
+%             cols = size(thisRaster,2);
+%             xticks = [1:floor(cols/2):size(thisRaster,2)];
+%             set(gca,'XTick',xticks,'XTickLabels',{'0','75','150'});
             hx = xlabel('Distance (cm)');
         end
+        
+        
+        xticks = [1 colsHalf cols];
+        xs = R.xs;
+        xs = round(xs,1); 
+        xticks = unique(xticks);
+        if ~strcmp(R.marker_name,'airD')
+            for xli = 1:length(xticks)
+                if xli == 1 || xli == length(xticks)
+                    xticklabels{xli} = sprintf('%.0f',xs(xticks(xli)));
+                else
+                    xticklabels{xli} = sprintf('%.0f',xs(xticks(xli)));
+                end
+            end
+        else
+            xticklabels = {'0','75','150'};
+        end
+        set(gca,'XTick',xticks,'XTickLabels',xticklabels);
         
         if ~isempty(strfind(R.context_info,'airID'))
                 for bb = 1:length(R.lastBin)

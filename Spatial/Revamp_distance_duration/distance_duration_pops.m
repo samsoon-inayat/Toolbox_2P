@@ -669,7 +669,7 @@ mRDTC = calc_mean_rasters(RsDTC,[]);
 %%
 an = 5;
 Rs = RsDTC(an) ;mR = mRDTC(an);
-Rs = RsD(an) ;mR = mRD(an);
+% Rs = RsD(an) ;mR = mRD(an);
 ccs = cell_list_op(respDTC.resp(an,1),[],'or',1);
 % ccs = all_responsive_cells_All(an);
 % ccs = cell_list_op(FT_conj(1,:),[],'or',1);

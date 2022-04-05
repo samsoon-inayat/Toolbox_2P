@@ -51,21 +51,23 @@ perc_only_temporal = perc_only_ones;
 
 
 
-%% population vector and correlation temporal 
+%% population vector and correlation Distance 
 while 1
     titles = {'3 ','4 ','5 '};
     an = 4;
     si = [Ar_i_T ArL_i_T Ars_i_T];
 %     si = [Ar_t_D ArL_t_D Ars_t_D];
-    Rs = o.Rs(:,si); mR = o.mR(:,si);
+    Rs = repmat(RsDtC,1,3); %o.Rs(:,si); 
+    mR = repmat(mRDtC,1,3);%o.mR(:,si);
     ntrials = [10 30];
 %     ntrials = [80 100];
     props1 = get_props_Rs(Rs,ntrials);
 %     resp = cell_list_op(props1.good_FR,[],'and');
-    resp = FT_Dur_comp{2};
-%     resp = FD_Dis_comp{1};
-%     resp = FD_Dur_comp;
-%     resp = FT_conj{1};
+    resp = repmat(FT_Dur_comp{2},1,3);
+%     resp = FD_Dis_comp{3};
+%     resp = FD_conj{3};
+%     resp = dzMI_FD.resp_T_g_D;
+%     resp = dzMI_FD.resp_D_g_T;
 %     eval(cmdTxt);
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...

@@ -34,7 +34,7 @@ mData.pdf_folder = [Uleth_one_drive '\PDFs15'];
 mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
 disp('Done');
 %%
-ii = 1;
+ii = 5;
 edit_define_contexts_file(ei{ii});
 %%
 if 1
@@ -47,6 +47,13 @@ disp('Done');
 sel_rec = [1 3 5];
 sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
+%%
+binwidths = [0.3 3];
+ctl = [8];
+for ii = 1:length(ei)
+    ei(ii) = make_and_load_rasters_selected_contexts(ei(ii),binwidths,[0 0 0],ctl);
+end
+
 %%
 binwidths = [0.3 3];
 for ii = 1:length(ei)

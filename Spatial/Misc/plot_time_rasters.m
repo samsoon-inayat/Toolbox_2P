@@ -50,41 +50,41 @@ for rr = 2
         else
             text(1,size(thisRaster,1)+1.5,sprintf('%d A.U.',round(max(thisRaster(:)))),'FontSize',5,'color','k');
         end
+        cols = size(thisRaster,2);
+        colsHalf = ceil(cols/2);
+        text(colsHalf,size(thisRaster,1)+1.5,sprintf('zMI = %.2f ',R.info_metrics.ShannonMI_Zsh(cn)),'FontSize',5,'color','k');
         set(gca,'FontSize',6,'linewidth',0.25,'Ydir','normal','TickDir','out');
         colormap jet;
-            xticks = [1:10:size(thisRaster,2)];
-            xs = R.xs;
-            if isfield(R,'resp')
-                if isfield(R.resp,'cis')
-                    xs = xs - xs(cis(1,2));
-                    xticks = [cis(1,:) size(thisRaster,2)];
-                else
-                    xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
-                end
+        cols = size(thisRaster,2);
+        colsHalf = ceil(cols/2);
+        xticks = [1 colsHalf cols];
+        xs = R.xs;
+        xs = round(xs,1); 
+        xticks = unique(xticks);
+        if ~strcmp(R.marker_name,'airIT')
+        for xli = 1:length(xticks)
+            if xli == 1 || xli == length(xticks)
+                xticklabels{xli} = sprintf('%.0f',xs(xticks(xli)));
             else
-                xticks = [1:round(size(thisRaster,2)/3):size(thisRaster,2)];
+                xticklabels{xli} = sprintf('%.1f',xs(xticks(xli)));
             end
-            xticks = [1 24 49];
-%             if ~ismember(size(thisRaster,2),xticks)
-%                 xticks = [xticks size(thisRaster,2)];
-%             end
-%             xs = round(xs,1); 
-%             xticks = unique(xticks);
-            set(gca,'XTick',xticks,'XTickLabels',{'0','7.5','15'});
-            if ~isempty(strfind(R.context_info,'airT'))
-                for bb = 1:length(R.lastBin)
-                    xvalbin = R.lastBin(bb)-1;
-                    plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'c','linewidth',0.25);
-                end
+        end
+        else
+            xticklabels = {'0','7.5','15'};
+        end
+        set(gca,'XTick',xticks,'XTickLabels',xticklabels);
+        if ~isempty(strfind(R.context_info,'airT'))
+            for bb = 1:length(R.lastBin)
+                xvalbin = R.lastBin(bb)-1;
+                plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'c','linewidth',0.25);
             end
-            hx = xlabel('Time (sec)');
+        end
+        hx = xlabel('Time (sec)');
 
         if cc >1
             set(gca,'YTick',[]);
         end
         if cc == 1
-            ntrials = size(thisRaster,1);
-%             set(gca,'YTick',[1 5 ntrials]);
 %             h = ylabel('Trial #');
         end
         
@@ -92,8 +92,7 @@ for rr = 2
             hca = gca;
 %             ff.hc = putColorBar(hca,[-0.07 0 -0.05 0],{'0','Max FR (AU)'},6,'northoutside',[0.15 0.3 0.05 0.3]);
         end
-        cols = size(thisRaster,2);
-        colsHalf = ceil(cols/2);
+        
         ts = xs;
         format_axes(gca);
 %         set(gca,'XTick',[1 colsHalf cols],'XTickLabel',[ts(1) ts(colsHalf) ts(cols)]);

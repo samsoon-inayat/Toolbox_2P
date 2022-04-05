@@ -5,11 +5,22 @@ RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]
 RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
 [dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
 
+
+RsDtC = combine_rasters_conditions(RsDt);
+RsTiC = combine_rasters_conditions(RsTi);
+RsDiC = combine_rasters_conditions(RsDi);
+RsTtC = combine_rasters_conditions(RsTt);
+
+mRDtC = calc_mean_rasters(RsDtC,[]); 
+mRDiC = calc_mean_rasters(RsDiC,[]); 
+mRTtC = calc_mean_rasters(RsTtC,[]); 
+mRTiC = calc_mean_rasters(RsTiC,[]); 
+
 %%
 % respfids = {[30 40],[50 60],[70 80],[90 100]};
-respfids = {[30 60],[70 100],[30 100]};
+respfids = {[30 60],[70 100],[30 100],[50 100]};
 
-raster_types = {'RsTt','RsDt','RsTi','RsDi'};
+raster_types = {'RsTtC','RsDtC','RsTiC','RsDiC'};
 % raster_types = {'RsTt','RsTi'};
 
 clear props
@@ -286,15 +297,15 @@ while 1
     rfi = 2;
     resp = [resp FD_Dur_comp{rfi} FT_Dur_comp{rfi}];
     
-    rfi = 1;
-    resp = [FD_Dis_comp{rfi} FT_Dis_comp{rfi}];
-    rfi = 2;
-    resp = [resp FD_Dis_comp{rfi} FT_Dis_comp{rfi}];
-% 
 %     rfi = 1;
-%     resp = [FD_conj{rfi} FT_conj{rfi}];
+%     resp = [FD_Dis_comp{rfi} FT_Dis_comp{rfi}];
 %     rfi = 2;
-%     resp = [resp FD_conj{rfi} FT_conj{rfi}];
+%     resp = [resp FD_Dis_comp{rfi} FT_Dis_comp{rfi}];
+% 
+    rfi = 1;
+    resp = [FD_conj{rfi} FT_conj{rfi}];
+    rfi = 2;
+    resp = [resp FD_conj{rfi} FT_conj{rfi}];
     
     per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
 
@@ -629,6 +640,8 @@ end
 while 1
     rfi = 2;
     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
+    respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi}];
+    respAll = [FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
 %     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
@@ -641,8 +654,8 @@ while 1
     minI = min([mOI(:)]);%semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'3-T-Dis','4-T-Dis','5-T-Dis','3-T-Dur','4-T-Dur','5-T-Dur','3-T-Mix','4-T-Mix','5-T-Mix',...
-        '3-I-Dis','4-I-Dis','5-I-Dis','3-I-Dur','4-I-Dur','5-I-Dur','3-I-Mix','4-I-Mix','5-I-Mix'};
+    txl = {'3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis','3-T-Mix','4-T-Mix','5-T-Mix',...
+        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis','3-I-Mix','4-I-Mix','5-I-Mix'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
