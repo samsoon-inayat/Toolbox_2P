@@ -78,7 +78,7 @@ break;
 end
 %% choosing 1 response fidelity and comparing across cell types, conditions, trials and intertrials
 while 1
-rfi = 2;
+rfi = 4;
 
 resp = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
 
@@ -183,11 +183,11 @@ end
 %% %% choosing 1 condition and comparing across cell types, response fidelity, trials and intertrials
 while 1
     %%
-    cni = 3;
-    rfi = 1;
+    cni = 1;
+    rfi = 4;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-    rfi = 2;
-    resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
+%     rfi = 2;
+%     resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
 
     per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
 

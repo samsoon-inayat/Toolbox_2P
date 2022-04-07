@@ -67,7 +67,8 @@ for rr = 1:size(Rs,1)
         if size(R.resp.vals,2) == 1
             o.vals{rr,cc} = R.resp.vals;
         else
-            o.vals{rr,cc} = sum(R.resp.vals,2)>0;
+            o.vals{rr,cc} = R.resp.vals(:,3);%sum(R.resp.vals,2)>0;
+            o.vals{rr,cc} = sum(R.resp.vals,2)>floor(size(R.resp.vals,2)/2);
 %             tempRespFacVals = R.resp.vals(:,1) | R.resp.vals(:,2);
 %             indfac = floor(length(R.resp.fac)/2);
 %             if scale == 1

@@ -193,6 +193,10 @@ if strcmp(lower(markerType),'airi')
     toffsets = onsets(2:end);% - round(1e6 * 0.5/ei.b.si);
     dur = mean(ei.b.ts(toffsets(1:5))-ei.b.ts(tonsets(1:5)));
     toffsets(length(toffsets)+1) = tonsets(end) + round(1e6 * dur/ei.b.si);
+    if length(onsets) == 30 % to handle combined conditions 3 4 5
+        toffsets(10) = tonsets(10) + round(1e6 * dur/ei.b.si);
+        toffsets(20) = tonsets(20) + round(1e6 * dur/ei.b.si);
+    end
     markersOn = tonsets;
     markersOff = toffsets;
 end

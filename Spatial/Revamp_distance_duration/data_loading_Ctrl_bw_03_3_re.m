@@ -49,9 +49,9 @@ sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
 %%
 binwidths = [0.3 3];
-ctl = [8];
+ctl = [8]; sml = {}; owr = [0 0 0];
 for ii = 1:length(ei)
-    ei(ii) = make_and_load_rasters_selected_contexts(ei(ii),binwidths,[0 0 0],ctl);
+    ei(ii) = make_and_load_rasters_selected_contexts(ei(ii),binwidths,owr,ctl,sml);
 end
 
 %%

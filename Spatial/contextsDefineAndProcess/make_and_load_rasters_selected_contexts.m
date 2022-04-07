@@ -1,4 +1,4 @@
-function ei = make_and_load_rasters_selected_contexts(ei,binwidths,owr,ctl)
+function ei = make_and_load_rasters_selected_contexts(ei,binwidths,owr,ctl,sml)
 
 
 
@@ -50,6 +50,11 @@ for aa = 1:length(ei)
                 typesOfRasters = getTypesOfRasters(allContexts,thisStimMarker);
                 for kk = 1:length(typesOfRasters)
                     thisRasterType = typesOfRasters{kk};
+                    if ~isempty(sml)
+                    if sum(strcmp(sml,stimMarkers{jj})) == 0
+                        continue;
+                    end
+                    end
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
                     rasters = make_rasters(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
                     trials = 1:size(rasters.sp_rasters,1);

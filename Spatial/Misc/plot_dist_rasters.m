@@ -1,4 +1,3 @@
-
 function ff = plot_dist_rasters(R,ccsi,ff)
 cellList = ccsi;
 ddtt = 1;
@@ -27,7 +26,7 @@ for rr = 1
             plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.2,'color','m');
         end
         box off;
-        plot(10*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.2);
+        plot(size(thisRaster,1)*normalizeSignal(nanmean(thisRaster)),'b','linewidth',0.2);
         if rr == 1
 %         text(size(thisRaster,2)+size(thisRaster,2)/20,1,sprintf('zMI = %.2f, Rs = %.2f',A.info_metrics.ShannonMI_Zsh(cn),...
 %             A.gauss_fit_on_mean.coefficients_Rs_mean(cn,4)),'FontSize',5,'color','k','rotation',90);
