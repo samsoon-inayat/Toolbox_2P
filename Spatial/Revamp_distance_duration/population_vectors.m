@@ -54,17 +54,18 @@ perc_only_temporal = perc_only_ones;
 %% population vector and correlation Distance 
 while 1
     titles = {'Dur','Dis','Dur','Dis'};
-    an = 4;
-    si = [AC_t_T AC_t_D AC_i_T AC_i_D];
+    an = 4; cn = 3;
+    si = [Ars_t_T Ars_t_D Ars_i_T Ars_i_D];
     Rs = o.Rs(:,si); mR = o.mR(:,si);
     props1 = get_props_Rs(Rs,50);
-    resp = repmat(FD_Dis_comp{2},1,4);
-    resp = repmat(FD_conj{2},1,4);
-    resp = repmat(FT_Dur_comp{2},1,4);
+    resp = repmat(FD_Dis_comp{1}(:,cn),1,4);
+    resp = repmat(FD_conj{1}(:,cn),1,4);
+    resp = repmat(FT_Dur_comp{1}(:,cn),1,4);
+    resp = repmat(FD_Dur_comp{1}(:,cn),1,4);
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.11],'widthHeightAdjustment',...
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 1.5]);
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
+    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,1);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
     changePosition(ff.h_axes(2,1).YLabel,[-1 0 0]); 
@@ -86,9 +87,11 @@ end
 %% population vector and correlation temporal 
 while 1
     selected_property = 'tuned';
-    titles = {'Ar-i-T','ArL-i-T','Ar*-i-T'};
+    titles = {'3','4','5'};
     an = 4;
-    si = [Ar_i_T ArL_i_T Ars_i_T];
+%     si = [Ar_i_T ArL_i_T Ars_i_T];
+    si = [Ar_On ArL_On Ars_On];
+%     si = [Ar_Off ArL_Off Ars_Off];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
@@ -98,15 +101,15 @@ while 1
         [-55 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.5 1.5]);
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,resp,0);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),mRR(an,:),CRc(an,:),[],[]);
-    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
-    changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]); 
-    for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(2,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]}); set_obj(ff.h_axes(2,ii),{'ytick',[1 68 136],'yticklabels',[0 7.5 15]}); end 
+%     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set_obj(ht,{'String',titles{ii}}); end
+%     changePosition(ff.h_axes(2,1).YLabel,[-3 0 0]); 
+%     for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(2,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]}); set_obj(ff.h_axes(2,ii),{'ytick',[1 68 136],'yticklabels',[0 7.5 15]}); end 
     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_temporal_%s.pdf',selected_property),600);
 
    % average correlation of all animals
     ff = makeFigureRowsCols(108,[1 0.5 4 0.5],'RowsCols',[1 3],...
         'spaceRowsCols',[0 0.03],'rightUpShifts',[0.11 0.25],'widthHeightAdjustment',...
-        [-55 -350]);    set(gcf,'color','w');    set(gcf,'Position',[8 8 2.5 0.8]);
+        [-55 -350]);    set(gcf,'color','w');    set(gcf,'Position',[8 6 2.5 0.8]);
     ff = show_population_vector_and_corr(mData,ff,Rs(an,:),[],aCRc,[],[]);
     changePosition(ff.h_axes(1,1).YLabel,[-3 0 0]); 
     for ii = 1:length(ff.h_axes(1,:)) set_obj(ff.h_axes(1,ii),{'xtick',[1 68 136],'xticklabels',[0 7.5 15]}); set_obj(ff.h_axes(1,ii),{'ytick',[1 68 136],'yticklabels',[0 7.5 15]}); end 

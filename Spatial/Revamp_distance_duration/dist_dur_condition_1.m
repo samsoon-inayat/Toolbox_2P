@@ -5,6 +5,28 @@ RsDt = o.Rs(:,[Ar_t_D]);  RsTt = o.Rs(:,[Ar_t_T]);
 RsDi = o.Rs(:,[Ar_i_D]);  RsTi = o.Rs(:,[Ar_i_T]);
 [dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
 
+for ii = 1:5
+    tRs = RsTt{ii};
+    speed = tRs.speed';
+    rasters = tRs.sp_rasters;
+    rasters = permute(rasters,[2 1 3]);
+    firing = reshape(rasters,size(rasters,1)*size(rasters,2),size(rasters,3));
+    speed = reshape(speed,size(rasters,1)*size(rasters,2),1);
+    corrfs = corr(firing,speed,'rows','complete');
+    speedResp{ii,1} = corrfs > 0.2;
+    figure(100);clf;hist(corrfs,50);pause(0.5);
+    tRs = RsTi{ii};
+    speed = tRs.speed';
+    rasters = tRs.sp_rasters;
+    rasters = permute(rasters,[2 1 3]);
+    firing = reshape(rasters,size(rasters,1)*size(rasters,2),size(rasters,3));
+    speed = reshape(speed,size(rasters,1)*size(rasters,2),1);
+    corrfs = corr(firing,speed,'rows','complete');
+    speedRespI{ii,1} = corrfs > 0.2;
+    figure(101);clf;hist(corrfs,50);pause(0.5);
+end
+
+
 %
 % respfids = {[30 40],[50 60],[70 80],[90 100]};
 respfids = {[30 50],[60 100],[30 100],[50 100],10};
@@ -142,7 +164,7 @@ end
 while 1
     %%
     mean_dzMI = [];
-    FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
+%     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
 %     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 

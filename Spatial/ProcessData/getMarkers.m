@@ -267,6 +267,30 @@ if strcmp(lower(markerType),'airoffsets22')
     markersOff(inds) = [];
 end
 
+if strcmp(lower(markerType),'aironsets55')
+    onsets = ei.b.air_puff_r(trials);
+    offsets = ei.b.air_puff_f(trials);
+    timeBefore = 5; % sec
+    timeAfter = 5; % sec
+    markersOn = onsets - round(1e6 * timeBefore/ei.b.si);
+    markersOff = onsets + round(1e6 * timeAfter/ei.b.si);
+    inds = find(markersOn < 0);
+    markersOn(inds) = [];
+    markersOff(inds) = [];
+end
+
+if strcmp(lower(markerType),'airoffsets55')
+    onsets = ei.b.air_puff_r(trials);
+    offsets = ei.b.air_puff_f(trials);
+    timeBefore = 5; % sec
+    timeAfter = 5; % sec
+    markersOn = offsets - round(1e6 * timeBefore/ei.b.si);
+    markersOff = offsets + round(1e6 * timeAfter/ei.b.si);
+    inds = find(markersOn < 0);
+    markersOn(inds) = [];
+    markersOff(inds) = [];
+end
+
 
 if strcmp(lower(markerType),'aironsets27')
     onsets = ei.b.air_puff_r(trials);

@@ -40,6 +40,15 @@ for aa = 1:length(ei)
             end
             for jj = 1:length(stimMarkers)
                 thisStimMarker = stimMarkers{jj};
+                if strcmp(thisStimMarker,'airOnsets55')
+                    n=0;
+                end
+                if ~isempty(sml)
+                    if sum(strcmp(sml,thisStimMarker)) == 0
+                        continue;
+                    end
+                end
+                
                 cmdTxt = sprintf('markersOn = contexts(contextNumber).markers.%s_onsets;',thisStimMarker);
                 eval(cmdTxt);
                 cmdTxt = sprintf('markersOff = contexts(contextNumber).markers.%s_offsets;',thisStimMarker);
@@ -50,11 +59,6 @@ for aa = 1:length(ei)
                 typesOfRasters = getTypesOfRasters(allContexts,thisStimMarker);
                 for kk = 1:length(typesOfRasters)
                     thisRasterType = typesOfRasters{kk};
-                    if ~isempty(sml)
-                    if sum(strcmp(sml,stimMarkers{jj})) == 0
-                        continue;
-                    end
-                    end
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
                     rasters = make_rasters(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
                     trials = 1:size(rasters.sp_rasters,1);

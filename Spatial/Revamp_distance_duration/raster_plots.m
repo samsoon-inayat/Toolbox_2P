@@ -7,6 +7,7 @@ an = 4; cn = 1;
 respC = FT_Dis_comp{1}; %respC = FT_conj{2};
 figure(1000);clf;subplot 141;imagesc(RsTt{an,cn}.speed); set(gca,'Ydir','normal'); subplot 142;imagesc(RsDt{an,cn}.speed);set(gca,'Ydir','normal'); subplot 143;imagesc(RsTi{an,cn}.speed); set(gca,'Ydir','normal'); subplot 144;imagesc(RsDi{an,cn}.speed);set(gca,'Ydir','normal');
 cNs = find(respC{an,cn});
+cNs = find(speedResp{an,cn});
 % cNs = [278 118 188 97 35 329 115 85 21 209 132 238 251 149];
 % cNs = [278 97 329 209 132 251 149];
 tprops = get_props_Rs(RsTi(an,cn),50);

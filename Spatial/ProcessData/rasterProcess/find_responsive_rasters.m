@@ -54,7 +54,7 @@ for rr = 1:size(Rs,1)
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
             Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
-        if strcmp(R.marker_name,'airIT')
+        if strcmp(R.marker_name,'airIT') || strcmp(R.marker_name,'airOnsets55T') || strcmp(R.marker_name,'airOffsets55T')
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_intertrial(R,trials);
             [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
             zMIs = R.info_metrics.ShannonMI_Zsh;

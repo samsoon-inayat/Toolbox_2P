@@ -31,25 +31,16 @@ for rr = 1:size(Rs,1)
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
         o.rs{rr,cc} = rs'; o.MFR{rr,cc} = MFR'; o.centers{rr,cc} = centers'; o.PWs{rr,cc} = PWs';
         o.peak_locations{rr,cc} = R.peak_location';
-        o.peak_locations_trials{rr,cc} = R.peak_location_trials';
         if strcmp(R.marker_name,'airD')
             bins = 0:50:150;
-            bins = 0:75:150;
-            bins = 0:37.5:150;
         end
         if strcmp(R.marker_name,'airIT')
             bins = 0:5:15;
-            bins = 0:3.75:15;
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'airIT')
-            tpl = o.peak_locations{rr,cc};
-            binN = NaN(size(tpl));
-            for bii = 1:(length(bins)-1)
-                indspeaks = find(tpl >= bins(bii) & tpl < bins(bii+1));
-                binN(indspeaks) = bii;
-            end
-            o.peak_location_bin{rr,cc} = binN;
+            
         end
+        o.peak_locations_trials{rr,cc} = R.peak_location_trials';
         
         o.HaFD{rr,cc} = R.fractal_dim.HaFD';
         o.HiFD{rr,cc} = R.fractal_dim.HiFD';

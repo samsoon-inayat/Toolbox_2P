@@ -41,14 +41,10 @@ for an = 1:length(ei)
             duration_onset_moveT(ii) = t{ii}(t_on_move);
             
             timeToCompleteT(ii) = ts(markers2i(ii)) - ts(markers1i(ii));
-            distT_cov(ii) = ds(markers2i(ii)) - ds(markers1i(ii));
-            distI_cov(ii) = ds(markers2iI(ii)) - ds(markers1iI(ii));
         end
         duration_onset_moveC(an,cci) = mean(duration_onset_moveT);
         timeToCompleteC(an,cci) = mean(timeToCompleteT);
         timeToCompleteC_All(an,:) = (timeToCompleteT);
-        distT(an,:) = (distT_cov);
-        distI(an,:) = (distI_cov);
     end
 end
 n=0;

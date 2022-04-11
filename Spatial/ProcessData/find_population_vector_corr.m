@@ -1,4 +1,4 @@
-function [CRc,aCRc,mR] = find_population_vector_corr(Rs,mRs,ccs,ordercol)
+function [CRc,aCRc,mR,seq] = find_population_vector_corr(Rs,mRs,ccs,ordercol,seqi)
 
 
 for rr = 1:size(mRs,1)
@@ -26,6 +26,7 @@ for rr = 1:size(mRs,1)
         R = Rs{rr,cc};
         resp = R.resp;
         ccsr = accsr{rr,cc};
+        if ~exist('seqi','var')
         if ordercol > 0
             try
                 [ptco,temp_C,~] = findPopulationVectorPlot(ptc,ccsr,cellNums{rr,ordercol});
@@ -35,6 +36,9 @@ for rr = 1:size(mRs,1)
             end
         else
             [ptco,temp_C,~] = findPopulationVectorPlot(ptc,ccsr);
+        end
+        else
+            [ptco,temp_C,~] = findPopulationVectorPlot(ptc,ccsr,seqi);
         end
         CRc{rr,cc} = temp_C;
         sz_CRc(rr,cc) = size(temp_C,1);
@@ -56,7 +60,8 @@ for cc = 1:size(mRs,2)
     end
     aCRc{cc} = nanmean(aCRc{cc},3);
 end
-
+seq = cellNums;
+n = 0;
 % if exist('plt','var')
 %     figure(plt);clf
 %     for cc = 1:size(mRs,2)
