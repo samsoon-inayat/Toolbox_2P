@@ -4,9 +4,9 @@ function trial_to_trial_Analysis
 while 1
     ntrials = 30;
 %     si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
-%     si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];
-    si = [Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];
-%     si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];
+%     si = [Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];
+    si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
     siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = propsG.good_FR_and_tuned;
     mRsG = calc_mean_rasters(RsG,1:10);
     trials = mat2cell([1:10]',ones(size([1:10]')));

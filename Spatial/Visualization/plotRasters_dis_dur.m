@@ -82,7 +82,7 @@ while 1
 %             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
             try
 %                 title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
-                cellrsp = R.resp.valsC(cn) & R.resp.FR_based710(cn);
+                cellrsp = R.resp.valsC(cn);% & R.resp.FR_based710(cn);
                 title(sprintf('%d (%.3f) %d',cn,R.info_metrics.ShannonMI_Zsh(cn),cellrsp));
 %                 err
             catch

@@ -3,29 +3,31 @@ function trial_by_trial_pop_vec
 
 %% population vector and correlation sensory
 while 1
-    an = 4; cnseq = 1; 
+    an = 4; cnseq = 7; 
     tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
     
 %     respT = FD_conj{1}(an,1);
 %     respT = FT_Dur_comp{1}(an,1);
+    cn = 7;
     respT = cell_list_op(respG(an,cn),respG(an,cn+3),'or');
+    respT = respG(an,cn);
     [~,~,seq] = findPopulationVectorPlot(mRsG{an,cnseq},respT{1});
     
-    cn = 1;
+    cn = 4;
     tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
     [ff] = plot_pop_vec_trials(100,[0.5 3 7 1.5],tRs,tmR,respT,seq)
     
     tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [mRsG(an,cn+3) allmRsT{cn+3}(an,:)];
     ff = plot_pop_vec_trials(101,[8 3 7 1.5],tRs,tmR,respT,seq)
     
-    cn = 2;
+    cn = 5;
     tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
     [ff] = plot_pop_vec_trials(102,[0.5 5 7 1.5],tRs,tmR,respT,seq)
     
     tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [mRsG(an,cn+3) allmRsT{cn+3}(an,:)];
     ff = plot_pop_vec_trials(103,[8 5 7 1.5],tRs,tmR,respT,seq)
     
-    cn = 3;
+    cn = 6;
     tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
     [ff] = plot_pop_vec_trials(104,[0.5 7 7 1.5],tRs,tmR,respT,seq)
     

@@ -2,15 +2,18 @@ function raster_plots
 
 %%
 %%
-an = 4; cn = 1;
+an = 4; cn = 3;
 % respC = cell_list_op(FD_conj{2},dzMI_FD.resp_complex,'and'); %all_responsive_cells{an,cn}
-respC = FT_Dis_comp{1}; %respC = FT_conj{2};
+respC = FT_Dur_comp{2}; respC = FD_conj{2};
+respC = cell_list_op(FT_Dur_comp{2},FD_conj{2},'and');
+
 figure(1000);clf;subplot 141;imagesc(RsTt{an,cn}.speed); set(gca,'Ydir','normal'); subplot 142;imagesc(RsDt{an,cn}.speed);set(gca,'Ydir','normal'); subplot 143;imagesc(RsTi{an,cn}.speed); set(gca,'Ydir','normal'); subplot 144;imagesc(RsDi{an,cn}.speed);set(gca,'Ydir','normal');
 cNs = find(respC{an,cn});
-cNs = find(speedResp{an,cn});
+% cNs = find(speedResp{an,cn});
 % cNs = [278 118 188 97 35 329 115 85 21 209 132 238 251 149];
 % cNs = [278 97 329 209 132 251 149];
 tprops = get_props_Rs(RsTi(an,cn),50);
+tprops = get_props_Rs(RsDt(an,cn),50);
 centers = tprops.centers{1}(cNs,1); [ic,vc] = sort(centers);
 cNs = cNs(vc);
 plotRasters_dis_dur({RsTt{an,cn},RsDt{an,cn},RsTi{an,cn},RsDi{an,cn}},cNs);

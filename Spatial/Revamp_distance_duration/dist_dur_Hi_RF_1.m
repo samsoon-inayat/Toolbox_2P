@@ -1,65 +1,32 @@
 function dist_dur
 
 %%
-RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
-RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
-[dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
+rfi = 2;
+for ani = 1:5
+    for cni = 1:3
+        thisan = {dzMI_FD.diff_D_T{ani,cni} > 0};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        dis_cells_T(ani,cni) = cell_list_op(FD_Dis_comp{rfi}(ani,cni),thisan,'or');
+        thisan = {dzMI_FD.diff_D_T{ani,cni} < 0};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        dur_cells_T(ani,cni) = cell_list_op(FD_Dur_comp{rfi}(ani,cni),thisan,'or');
 
-
-%%
-while 1
-    respfids = {[30 60],[70 100]};
-
-    raster_types = {'RsTt','RsDt','RsTi','RsDi'};
-    % raster_types = {'RsTt','RsTi'};
-
-    clear props
-    for ii = 1:length(respfids)
-        trialsR = respfids{ii};
-        for jj = 1:length(raster_types)
-            cmdTxt = sprintf('props{ii,jj} = get_props_Rs(%s,trialsR);',raster_types{jj});
-            eval(cmdTxt);
-        end
+        thisan = {dzMI_FT.diff_T_D{ani,cni} > 0};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        dur_cells_I(ani,cni) = cell_list_op(FT_Dur_comp{rfi}(ani,cni),thisan,'or');
+        thisan = {dzMI_FT.diff_T_D{ani,cni} < 0};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        dis_cells_I(ani,cni) = cell_list_op(FT_Dis_comp{rfi}(ani,cni),thisan,'or');
     end
-    % find dis, dur, and mix cells
-
-    clear FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj
-    for ii = 1:length(respfids)
-        FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
-        FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
-        
-        cellP1 = FD_Dis; cellP2 = FD_Dur;
-        FD_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
-        FD_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
-        FD_conj{ii} = cell_list_op(cellP1,cellP2,'and');
-        
-        cellP1 = FT_Dis; cellP2 = FT_Dur;
-        FT_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
-        FT_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
-        FT_conj{ii} = cell_list_op(cellP1,cellP2,'and');
-%         an = 4; cn = 3; respC = FT_Dur_comp{2}; tempCL = respC{an,cn};
-    end
-break;
 end
 
 %%
 while 1
     %%
-    % for one RF
-    cni = 1:3;
-    rfi = 1;
-    resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-    rfi = 2;
-    resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
+    resp = [dis_cells_T dur_cells_T dis_cells_I dur_cells_I];
+    per_resp = find_percent(resp);
 
-    per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
-
-%     [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
-%     dataT = make_between_table({per_resp},dvn);
-%     ra = RMA(dataT,within,{'hsd'});
-%     ra.ranova
-
-    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
+    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,2,3]);
     dataT = make_between_table({per_resp},dvn);
     ra = RMA(dataT,within,{'hsd'});
     ra.ranova
@@ -111,20 +78,20 @@ while 1
     save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','hsd'},[1.5 1 1]);
-    h(h==1) = 0;
-    xdata = make_xdata([3 3],[1 1.5]);
-    hf = get_figure(5,[8 7 3.5 1]);
-    tcolors = repmat(mData.colors(1:9),1,2);
+%     h(h==1) = 0;
+    xdata = make_xdata([2 2],[1 1.5]);
+    hf = get_figure(5,[8 7 1.5 1]);
+    tcolors = repmat(mData.colors(1:2),1,2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
     maxY = maxY + 0;
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dur','Dis','Mix'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[-0.04 0.01 0.1 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    xticks = xdata; xticklabels = {'Dis','Dur'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45);
+    changePosition(gca,[0.04 0.01 -0.3 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
     %%
     break
@@ -370,8 +337,8 @@ while 1
             for bni = 1:length(binNs)
                 cell_resp = cell_list_op({tplbin == binNs(bni)},good_FR_T,'and');
 %                 cell_resp = {tplbin == binNs(bni)};
-                mean_dzMIC = [mean_dzMIC find_percent(cell_resp)];
-%                 mean_dzMIC = [mean_dzMIC exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+%                 mean_dzMIC = [mean_dzMIC find_percent(cell_resp)];
+                mean_dzMIC = [mean_dzMIC exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
             end
         end
         mean_dzMI = [mean_dzMI;mean_dzMIC];
@@ -400,7 +367,7 @@ while 1
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_Bins','hsd'},[1.5 1 1]);
     h(h==1) = 0;
-    xdata = make_xdata([2 2 2],[1 2]);
+    xdata = make_xdata([4 4 4],[1 2]);
     hf = get_figure(5,[8 7 2.5 1]);
     tcolors = repmat(mData.dcolors(1:4),1,3);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
