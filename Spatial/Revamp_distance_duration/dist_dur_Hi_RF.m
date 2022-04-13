@@ -8,11 +8,9 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 
 %%
 while 1
-    respfids = {[30 60],[70 100]};
-
+    respfids = {[30 40],[50 100]};
     raster_types = {'RsTt','RsDt','RsTi','RsDi'};
     % raster_types = {'RsTt','RsTi'};
-
     clear props
     for ii = 1:length(respfids)
         trialsR = respfids{ii};
@@ -46,7 +44,7 @@ end
 while 1
     %%
     % for one RF
-    cni = 1:3;
+    cni = 1;
     rfi = 1;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
     rfi = 2;
@@ -54,10 +52,10 @@ while 1
 
     per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
 
-%     [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
-%     dataT = make_between_table({per_resp},dvn);
-%     ra = RMA(dataT,within,{'hsd'});
-%     ra.ranova
+    [within,dvn,xlabels] = make_within_table({'RF','TI','CT'},[2,2,3]);
+    dataT = make_between_table({per_resp},dvn);
+    ra = RMA(dataT,within,{'hsd'});
+    ra.ranova
 
     [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
     dataT = make_between_table({per_resp},dvn);
@@ -205,8 +203,8 @@ while 1
     si = [Ab_On Abs_On]; props_ON = get_props_Rs(o.Rs(:,si)); resp_ON = cell_list_op(props_ON.vals,[],'or',1);
     si = [Ab_Off Abs_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
     rfi = 2;
-    respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
-    respAll = [resp_ON FD_conj{rfi} FT_Dur_comp{rfi} resp_OFF];
+    respAll = [resp_ON FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi} resp_OFF];
+%     respAll = [resp_ON FD_conj{rfi} FT_Dur_comp{rfi} resp_OFF];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
 %     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
@@ -219,8 +217,8 @@ while 1
     minI = min([mOI(:)]);%semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'A-On','3-T-Mix','4-T-Mix','5-T-Mix',...
-        '3-I-Dur','4-I-Dur','5-I-Dur','A-Off'};
+    txl = {'A-On','3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis','3-T-Mix','4-T-Mix','5-T-Mix',...
+        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis','3-I-Mix','4-I-Mix','5-I-Mix','A-Off'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;

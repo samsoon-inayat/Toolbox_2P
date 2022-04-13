@@ -8,11 +8,9 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 
 %%
 while 1
-    respfids = {[10 50],[60 100]};
-
+    respfids = {[30 40],[0 100]};
     raster_types = {'RsTt','RsDt','RsTi','RsDi'};
     % raster_types = {'RsTt','RsTi'};
-
     clear props
     for ii = 1:length(respfids)
         trialsR = respfids{ii};
@@ -46,15 +44,20 @@ end
 while 1
     %%
     % for one RF
-    cni = 1:3;
-    rfi = 2;
+    cni = 1;
+    rfi = 1;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-%     rfi = 2;
-%     resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
+    rfi = 2;
+    resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
 
     per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
 
-    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
+    [within,dvn,xlabels] = make_within_table({'RF','TI','CT'},[2,2,3]);
+    dataT = make_between_table({per_resp},dvn);
+    ra = RMA(dataT,within,{'hsd'});
+    ra.ranova
+
+    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
     dataT = make_between_table({per_resp},dvn);
     ra = RMA(dataT,within,{'hsd'});
     ra.ranova
@@ -200,8 +203,8 @@ while 1
     si = [Ab_On Abs_On]; props_ON = get_props_Rs(o.Rs(:,si)); resp_ON = cell_list_op(props_ON.vals,[],'or',1);
     si = [Ab_Off Abs_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
     rfi = 2;
-    respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
-    respAll = [resp_ON FD_conj{rfi} FT_Dur_comp{rfi} resp_OFF];
+    respAll = [resp_ON FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi} resp_OFF];
+%     respAll = [resp_ON FD_conj{rfi} FT_Dur_comp{rfi} resp_OFF];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
 %     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
@@ -214,8 +217,8 @@ while 1
     minI = min([mOI(:)]);%semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'A-On','3-T-Mix','4-T-Mix','5-T-Mix',...
-        '3-I-Dur','4-I-Dur','5-I-Dur','A-Off'};
+    txl = {'A-On','3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis','3-T-Mix','4-T-Mix','5-T-Mix',...
+        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis','3-I-Mix','4-I-Mix','5-I-Mix','A-Off'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
@@ -365,8 +368,8 @@ while 1
             for bni = 1:length(binNs)
                 cell_resp = cell_list_op({tplbin == binNs(bni)},good_FR_T,'and');
 %                 cell_resp = {tplbin == binNs(bni)};
-%                 mean_dzMIC = [mean_dzMIC find_percent(cell_resp)];
-                mean_dzMIC = [mean_dzMIC exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+                mean_dzMIC = [mean_dzMIC find_percent(cell_resp)];
+%                 mean_dzMIC = [mean_dzMIC exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
             end
         end
         mean_dzMI = [mean_dzMI;mean_dzMIC];
@@ -395,7 +398,7 @@ while 1
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_Bins','hsd'},[1.5 1 1]);
     h(h==1) = 0;
-    xdata = make_xdata([4 4 4],[1 2]);
+    xdata = make_xdata([2 2 2],[1 2]);
     hf = get_figure(5,[8 7 2.5 1]);
     tcolors = repmat(mData.dcolors(1:4),1,3);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -414,7 +417,7 @@ end
 
 %% Speed Figure
 while 1
-    Rs = [RsDt RsTi];
+    Rs = [RsDt(:,1) RsTi(:,1) RsDt(:,2) RsTi(:,2) RsDt(:,3) RsTi(:,3)];
     for ii = 1:length(ei)
         b1 = ei{ii}.b;
         for jj = 1:10
@@ -423,9 +426,9 @@ while 1
     end
     ald = round(mean(alds(:)));
      ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],'spaceRowsCols',[0 0],'rightUpShifts',[-0.05 0.13],'widthHeightAdjustment',[-3 -350]);
-    set(gcf,'color','w'); set(gcf,'Position',[5 5 5.60 1]);
+    set(gcf,'color','w'); set(gcf,'Position',[5 5 5 1]);
     [Y,E] = discretize(1:49,3);
-    all_speeds = []; cTxt = {'Ar-Trials','Ar-Inter-Trials','ArL-Trials','ArL-Inter-Trials','Ar*-Trials','Ar*-Inter-Trials'}; 
+    all_speeds = []; cTxt = {'3-Trials','3-Intertrials','4-Trials','4-Intertrials','5-Trials','5-Intertrials'}; 
     for cn = 1:6
         mean_speed_over_trials = [];
         aThisSpeed = [];
@@ -451,25 +454,24 @@ while 1
             if cn == 3
                 plot([ald ald],[0 30],'m:','linewidth',0.5);
             end
-            plot([50 50],[0 30],'k--','linewidth',0.25);
-            plot([100 100],[0 30],'k--','linewidth',0.25);
-            bTxt = {'dB1','dB2','dB3'}; 
-            xbTxt = [25 75 125]-7; ybTxt = 31;
-            for ii = 1:length(bTxt)
-                text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
-            end
+%             plot([50 50],[0 30],'k--','linewidth',0.25);
+%             plot([100 100],[0 30],'k--','linewidth',0.25);
+%             bTxt = {'dB1','dB2','dB3'}; 
+%             xbTxt = [25 75 125]-7; ybTxt = 31;
+%             for ii = 1:length(bTxt)
+%                 text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
+%             end
             xlabel('Distance (cm)');
         else
-            disp(cn)
-            plot([5 5],[0 30],'k--','linewidth',0.25);
-            plot([10 10],[0 30],'k--','linewidth',0.25);
-            bTxt = {'tB1','tB2','tB3'}; xbTxt = [2.5 7.5 12.5]-1; ybTxt = 31;
-            for ii = 1:length(bTxt)
-                text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
-            end
+%             plot([5 5],[0 30],'k--','linewidth',0.25);
+%             plot([10 10],[0 30],'k--','linewidth',0.25);
+%             bTxt = {'tB1','tB2','tB3'}; xbTxt = [2.5 7.5 12.5]-1; ybTxt = 31;
+%             for ii = 1:length(bTxt)
+%                 text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
+%             end
             xlabel('Time (sec)');
         end
-        text(xbTxt(1),ybTxt+10,cTxt{cn},'FontSize',5);
+        text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
         ylim([0 30]);
         box off;
         format_axes(gca);
