@@ -222,12 +222,14 @@ while 1
 %     si = [Ar_Off ArL_Off Ars_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
     si = [Ab_On Abs_On]; props_ON = get_props_Rs(o.Rs(:,si)); resp_ON = cell_list_op(props_ON.vals,[],'or',1);
     si = [Ab_Off Abs_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
+    si = [MOn_T]; props_MOn = get_props_Rs(o.Rs(:,si)); resp_MOn = cell_list_op(props_MOn.vals,[],'or',1);
+    si = [MOff_T]; props_MOff = get_props_Rs(o.Rs(:,si)); resp_MOff = cell_list_op(props_MOff.vals,[],'or',1);
     rfi = 2;
 %     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
-    respAll = [resp_ON dis_cells_T dur_cells_T dis_cells_I dur_cells_I resp_OFF];
+    respAll = [resp_ON dis_cells_T dur_cells_T dis_cells_I dur_cells_I resp_OFF resp_MOn resp_MOff];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
-    mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
+%     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
@@ -238,7 +240,7 @@ while 1
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
     txl = {'A-On','3-T-Dis','4-T-Dis','5-T-Dis','3-T-Dur','4-T-Dur','5-T-Dur',...
-        '3-I-Dis','4-I-Dis','5-I-Dis','3-I-Dur','4-I-Dur','5-I-Dur','A-Off'};
+        '3-I-Dis','4-I-Dis','5-I-Dis','3-I-Dur','4-I-Dur','5-I-Dur','A-Off','M-On','M-Off'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
@@ -445,10 +447,11 @@ while 1
         end
     end
     ald = round(mean(alds(:)));
-     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],'spaceRowsCols',[0 0],'rightUpShifts',[-0.05 0.13],'widthHeightAdjustment',[-3 -350]);
-    set(gcf,'color','w'); set(gcf,'Position',[5 5 5 1]);
+    ald = floor(110/3);
+     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],'spaceRowsCols',[0 0.004],'rightUpShifts',[-0.035 0.13],'widthHeightAdjustment',[-9 -350]);
+    set(gcf,'color','w'); set(gcf,'Position',[5 5 4 1]);
     [Y,E] = discretize(1:49,3);
-    all_speeds = []; cTxt = {'3-Trials','3-Intertrials','4-Trials','4-Intertrials','5-Trials','5-Intertrials'}; 
+    all_speeds = []; cTxt = {'Trial (T)','Intertrial (I)','Trial','Intertrial','Trial','Intertrial'}; 
     for cn = 1:6
         mean_speed_over_trials = [];
         aThisSpeed = [];
@@ -463,6 +466,7 @@ while 1
         axes(ff.h_axes(1,cn));
         hold on;
         xs = Rs{1,cn}.xs; N = length(xs);
+        xs = 1:N;
         mspeed = mean(mean_speed_over_trials(:,1:N)); semspeed = std(mean_speed_over_trials(:,1:N))/sqrt(5);
         plot(xs,mspeed);
         shadedErrorBar(xs,mspeed,semspeed);
@@ -477,21 +481,25 @@ while 1
 %             plot([50 50],[0 30],'k--','linewidth',0.25);
 %             plot([100 100],[0 30],'k--','linewidth',0.25);
 %             bTxt = {'dB1','dB2','dB3'}; 
-%             xbTxt = [25 75 125]-7; ybTxt = 31;
+            xbTxt = [25 75 125]-7; ybTxt = 30;
 %             for ii = 1:length(bTxt)
 %                 text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
 %             end
             xlabel('Distance (cm)');
+            set(gca,'xtick',[1 25 50],'xticklabel',{'0','75','150'});
+            text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
         else
 %             plot([5 5],[0 30],'k--','linewidth',0.25);
 %             plot([10 10],[0 30],'k--','linewidth',0.25);
-%             bTxt = {'tB1','tB2','tB3'}; xbTxt = [2.5 7.5 12.5]-1; ybTxt = 31;
+            bTxt = {'tB1','tB2','tB3'}; xbTxt = [2.5 7.5 12.5]-1; ybTxt = 30;
 %             for ii = 1:length(bTxt)
 %                 text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
 %             end
             xlabel('Time (sec)');
+            set(gca,'xtick',[1 25 50],'xticklabel',{'0','7.5','15'});
+            text(xbTxt(2),ybTxt+5,cTxt{cn},'FontSize',5);
         end
-        text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
+%         text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
         ylim([0 30]);
         box off;
         format_axes(gca);

@@ -44,7 +44,7 @@ end
 while 1
     %%
     % for one RF
-    cni = 1;
+    cni = 1:3;
     rfi = 1;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
     rfi = 2;
@@ -52,10 +52,10 @@ while 1
 
     per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
 
-    [within,dvn,xlabels] = make_within_table({'RF','TI','CT'},[2,2,3]);
-    dataT = make_between_table({per_resp},dvn);
-    ra = RMA(dataT,within,{'hsd'});
-    ra.ranova
+%     [within,dvn,xlabels] = make_within_table({'RF','TI','CT'},[2,2,3]);
+%     dataT = make_between_table({per_resp},dvn);
+%     ra = RMA(dataT,within,{'hsd'});
+%     ra.ranova
 
     [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
     dataT = make_between_table({per_resp},dvn);
