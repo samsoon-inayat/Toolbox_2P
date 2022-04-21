@@ -8,7 +8,7 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 
 %%
 while 1
-    respfids = {[30 40],[50 100]};
+    respfids = {[0 40],[40 100]};
     raster_types = {'RsTt','RsDt','RsTi','RsDi'};
     % raster_types = {'RsTt','RsTi'};
     clear props
@@ -91,9 +91,9 @@ while 1
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_CT_Cond','hsd'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'RF','hsd'},[1.5 1 1]);
     h(h==1) = 0;
-    xdata = make_xdata([3 3 3 3 3 3],[1 1.5]);
+    xdata = make_xdata([2],[1 1.5]);
     hf = get_figure(5,[8 7 3.5 1]);
     tcolors = repmat(mData.colors(1:9),1,2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
