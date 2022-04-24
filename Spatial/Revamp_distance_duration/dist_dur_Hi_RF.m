@@ -8,7 +8,7 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 
 %%
 while 1
-    respfids = {[0 40],[50 100]};
+    respfids = {[0 100],[50 100]};
     raster_types = {'RsTt','RsDt','RsTi','RsDi'};
     % raster_types = {'RsTt','RsTi'};
     clear props
@@ -23,8 +23,8 @@ while 1
 
     clear FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj
     for ii = 1:length(respfids)
-        FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
-        FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
+        FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,1}.good_FR,'and');
+        FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,3}.good_FR,'and');
         
         cellP1 = FD_Dis; cellP2 = FD_Dur;
         FD_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
