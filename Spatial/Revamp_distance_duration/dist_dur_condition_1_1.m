@@ -24,7 +24,7 @@ resp = [dis_cells_T dur_cells_T dis_cells_I dur_cells_I];
 %% percentage of cells
 while 1
 per_cells = find_percent(resp);
-[within,dvn,xlabels] = make_within_table({'TI','CT'},[2,2]);
+[within,dvn,xlabels] = make_within_table({'TI','CT'},[2,3]);
 dataT = make_between_table({per_cells},dvn);
 ra = RMA(dataT,within,{'hsd'});
 ra.ranova
@@ -41,9 +41,9 @@ per_active_all = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat
 
 %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','hsd'},[1.5 1 1]);
-    xdata = make_xdata([2 2],[1 1.5]);
+    xdata = make_xdata([3 3],[1 1.5]);
     hf = get_figure(5,[8 7 1.5 1]);
-    tcolors = repmat(mData.colors(1:2),1,2);
+    tcolors = repmat(mData.colors(1:3),1,2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);

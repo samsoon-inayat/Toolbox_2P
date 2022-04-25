@@ -9,6 +9,11 @@ else
     end
 end
 
+
+for jj = 1:length(Rs)
+    props{jj} = get_props_Rs(Rs(jj),[0 100]);
+end
+n = 0;
 % if length(ccs) == 1
 %     figure(1005);
 %     clf;
@@ -53,6 +58,7 @@ while 1
             set(ff.h_axes(rr,cc),'visible','on');
             cn = ccs(cni);
             R = Rs{cc};
+            PR = props{cc};
             thisRaster = R.sp_rasters1(:,:,cn);
 %             thisRaster = rasters(:,:,cn);
             mSig = nanmean(thisRaster);
@@ -83,7 +89,7 @@ while 1
             try
 %                 title(sprintf('%d - %.3f - %.3f',cn,R.info_metrics.ShannonMI_Zsh(cn),R.gauss_fit_on_mean.worked(cn)));
                 cellrsp = R.resp.valsC(cn);% & R.resp.FR_based710(cn);
-                title(sprintf('%d (%.3f) %d',cn,R.info_metrics.ShannonMI_Zsh(cn),cellrsp));
+                title(sprintf('%d (%.3f) %d - RF (%d)',cn,R.info_metrics.ShannonMI_Zsh(cn),cellrsp,PR.N_Resp_Trials{1}(cn)));
 %                 err
             catch
                 title(sprintf('%d - %d',cn,R.resp.vals(cn)));

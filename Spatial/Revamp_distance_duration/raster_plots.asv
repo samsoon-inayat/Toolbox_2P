@@ -2,9 +2,9 @@ function raster_plots
 
 %%
 %%
-an = 1; cn = 1;
+an = 1; cn = 2;
 % respC = cell_list_op(FD_conj{2},dzMI_FD.resp_complex,'and'); %all_responsive_cells{an,cn}
-respC = FT_Dur_comp{3};  %respC = FD_conj{3};
+respC = FD_Dis_comp{3};  %respC = FD_conj{3};
 % respC = cell_list_op(dis_cells_T,dur_cells_I,'and');
 p_respC = find_percent(respC);
 
@@ -17,8 +17,7 @@ tprops = get_props_Rs(RsTi(an,cn),50);
 tprops = get_props_Rs(RsDt(an,cn),50);
 centers = tprops.centers{1}(cNs,1); [ic,vc] = sort(centers);
 cNs = cNs(vc);
-cNs = find(respC{an,cn});
-cNs = cNs(find(mean_dzMI{1,10}'==0))'
+
 plotRasters_dis_dur({RsTt{an,cn},RsDt{an,cn},RsTi{an,cn},RsDi{an,cn}},cNs);
 
 %%

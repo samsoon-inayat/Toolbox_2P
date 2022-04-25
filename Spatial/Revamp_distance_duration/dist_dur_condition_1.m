@@ -29,7 +29,7 @@ end
 end
 
 %
-respfids = {[60 100]};
+respfids = {[40 100]};
 
 raster_types = {'RsTt','RsDt','RsTi','RsDi'};
 % raster_types = {'RsTt','RsTi'};
