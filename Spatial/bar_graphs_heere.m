@@ -27,7 +27,7 @@ while 1
     tcolors = repmat(mData.colors(1:3),1,2);
     MmVar = max(mVar);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',MmVar/3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',MmVar/1.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
     maxY = maxY + 0;
     ylims = ylim;
@@ -49,7 +49,7 @@ while 1
     tcolors = repmat(mData.colors(1:9),1,2);
     MmVar = max(mVar);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',MmVar/3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',MmVar/1.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
     maxY = maxY + 0;
     ylims = ylim;
@@ -151,6 +151,12 @@ print_for_manuscript(ra)
 figure(hf);
 set(gca,'ytick',[10 20 30]);
 ylabel('Cells (%)');
+
+%% zMI format
+figure(hf);
+set(gca,'ytick',[-2 -1 0 1 2]);
+ylim([-2.5 4]);
+ylabel('dzMI (A.U.)');
 
 %% save file
 save_pdf(hf,mData.pdf_folder,sprintf('omnifile.pdf'),600);
