@@ -6,8 +6,8 @@ while 1
     si = [Ars_t_T Ars_t_D Ars_i_T Ars_i_D];
     Rs = o.Rs(:,si); mR = o.mR(:,si);
     props1 = get_props_Rs(Rs,50);
-    resp = repmat(FD_Dis_comp{2}(:,cn),1,4);
-    resp = repmat(FT_conj{2}(:,cn),1,4);
+    resp = repmat(dur_cells_T(:,cn),1,4);
+%     resp = repmat(FT_conj{2}(:,cn),1,4);
 %     resp = repmat(FT_Dur_comp{1}(:,cn),1,4);
 %     resp = repmat(FD_Dur_comp{2}(:,cn),1,4);
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...

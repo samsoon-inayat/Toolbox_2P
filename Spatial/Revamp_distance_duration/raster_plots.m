@@ -2,10 +2,10 @@ function raster_plots
 
 %%
 %%
-an = 1; cn = 1;
+an = 4; cn = 3;
 % respC = cell_list_op(FD_conj{2},dzMI_FD.resp_complex,'and'); %all_responsive_cells{an,cn}
-respC = FT_Dur_comp{3};  %respC = FD_conj{3};
-% respC = cell_list_op(dis_cells_T,dur_cells_I,'and');
+respC = FD_Dis_comp{3};  respC = FD_conj{3};
+% respC = repmat(cell_list_op(dis_cells_TC,dur_cells_IC,'and'),1,3);
 p_respC = find_percent(respC);
 
 figure(1000);clf;subplot 141;imagesc(RsTt{an,cn}.speed); set(gca,'Ydir','normal'); subplot 142;imagesc(RsDt{an,cn}.speed);set(gca,'Ydir','normal'); subplot 143;imagesc(RsTi{an,cn}.speed); set(gca,'Ydir','normal'); subplot 144;imagesc(RsDi{an,cn}.speed);set(gca,'Ydir','normal');
@@ -18,7 +18,7 @@ tprops = get_props_Rs(RsDt(an,cn),50);
 centers = tprops.centers{1}(cNs,1); [ic,vc] = sort(centers);
 cNs = cNs(vc);
 cNs = find(respC{an,cn});
-cNs = cNs(find(mean_dzMI{1,10}'==0))'
+% cNs = cNs(find(mean_dzMI{1,10}'==0))'
 plotRasters_dis_dur({RsTt{an,cn},RsDt{an,cn},RsTi{an,cn},RsDi{an,cn}},cNs);
 
 %%

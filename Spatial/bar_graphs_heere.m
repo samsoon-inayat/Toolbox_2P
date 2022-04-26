@@ -33,7 +33,7 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dur','Dis','Ind'};
+    xticks = xdata; xticklabels = {'tDur','tDis','Ind'};
     make_bars_hollow(hbs(4:end))
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.04 0.01 -0.1 0]); 
@@ -49,15 +49,15 @@ while 1
     tcolors = repmat(mData.colors(1:9),1,2);
     MmVar = max(mVar);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',MmVar/1.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',MmVar/0.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
     maxY = maxY + 0;
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dur','Dis','Ind'};
+    xticks = xdata; xticklabels = {'tDur','tDis','Ind'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.06 0.01 -0.3 0]); 
+    changePosition(gca,[0.06 0.01 -0.35 0]); 
 % put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
 %     save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
 break;
