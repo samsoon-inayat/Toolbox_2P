@@ -1,7 +1,7 @@
 function dist_dur_Hi_RF_1
 
 
-%% check the difference in zMI for Dis and Dur for the different cell types DurC, DisC, and DDM
+%% check the difference in zMI for Dis and Dur 
 while 1
     %%
     mean_dzMI = [];
@@ -28,3 +28,5 @@ while 1
     %%
     break;
 end
+
+%%
