@@ -6,7 +6,7 @@ an = 4; cn = 2;
 % respC = cell_list_op(FD_conj{2},dzMI_FD.resp_complex,'and'); %all_responsive_cells{an,cn}
 respC = FD_Dis_comp{3};  respC = FD_conj{3};
 respC = repmat(cell_list_op(dis_cells_TC,dur_cells_IC,'and'),1,3);
-respC = repmat(dis_cells_T(:,cn),1,3);
+respC = repmat(dis_cells_I(:,cn),1,3);
 p_respC = find_percent(respC);
 
 figure(1000);clf;subplot 141;imagesc(RsTt{an,cn}.speed); set(gca,'Ydir','normal'); subplot 142;imagesc(RsDt{an,cn}.speed);set(gca,'Ydir','normal'); subplot 143;imagesc(RsTi{an,cn}.speed); set(gca,'Ydir','normal'); subplot 144;imagesc(RsDi{an,cn}.speed);set(gca,'Ydir','normal');
@@ -30,6 +30,7 @@ all_cellN = [207 123 148 329 335 108 264];
 all_cellN = [278 97 329 209 132 251 149];
 all_cellN = [21 32 145];
 all_cellN = [6 36 303 140];
+all_cellN = 161;
 for ii = 1:length(all_cellN)
     cellN = all_cellN(ii);
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...

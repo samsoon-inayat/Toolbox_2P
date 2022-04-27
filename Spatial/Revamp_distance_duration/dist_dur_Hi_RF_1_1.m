@@ -123,13 +123,13 @@ for ani = 1:5
 %         dzmith = exec_fun_on_cell_mat(dzMI_FT.diff_T_D(ani,cni),'nanmean',FT_Dur_comp{rfi}(ani,cni));
         thisan = {dzMI_FT.diff_T_D{ani,cni} > dzmith};
         thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
-        thisan1 = {dzMI_FD.diff_T_D{ani,cni} > dzmith1};
+        thisan1 = {dzMI_FT.diff_T_D{ani,cni} > dzmith1};
         thisan1 = cell_list_op(FT_Dur_comp{rfi}(ani,cni),thisan1,'and');
         dur_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
         
         thisan = {dzMI_FT.diff_D_T{ani,cni} > dzmith};
         thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
-        thisan1 = {dzMI_FD.diff_D_T{ani,cni} > dzmith1};
+        thisan1 = {dzMI_FT.diff_D_T{ani,cni} > dzmith1};
         thisan1 = cell_list_op(FT_Dis_comp{rfi}(ani,cni),thisan1,'and');
         dis_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
     end
