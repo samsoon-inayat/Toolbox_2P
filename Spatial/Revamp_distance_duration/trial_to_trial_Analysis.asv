@@ -654,7 +654,7 @@ while 1
     for ii = 1:(lnsi/2)
         mrespActL = [mrespActL mrespAct(ii,:) NaN];
         semrespActL = [semrespActL semrespAct(ii,:) NaN];
-        xaxL = [xaxL 1:20 NaN];
+        xaxL = [xaxL 1:10 NaN];
         xtl = [xtl trialsStr {''}];
     end
     xax = 1:length(mrespActL); 
@@ -667,16 +667,16 @@ while 1
     
     hf = figure(100);clf;
     set(hf,'units','inches','position',[5 5 6.9 1]);
-    plot(xax,mrespActL,'color',[0, 0.4470, 0.7410]);hold on;
-    plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'color',[0, 0.4470, 0.7410]);
+    plot(xax,mrespActL,'c');hold on;
+    plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'c');
     iii=1;
     theinds = find(isnan(mrespActL));
     for ii = find(isnan(mrespActL))
         plot([ii ii],[23 56],'b-');
         if iii <= (lnsi/2)
-        text(ii+2,55,sprintf('%s',xticklabels{iii}),'FontSize',6);
+        text(ii+2,55,sprintf('%s',xticklabels{iii}),'FontSize',(lnsi/2));
         indsS = (theinds(iii)+1):(theinds(iii+1)-1);
-        shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{'color',[0, 0.4470, 0.7410]},0.5)
+        shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{},0.5)
         iii=iii+1;
         end
         

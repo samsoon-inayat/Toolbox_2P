@@ -4,7 +4,7 @@ if ~exist('cbf','var')
     cbf = 1;
 end
 
-cp = 0;
+cp = 1;
 
 if ~isempty(allP)
     FS = mData.axes_font_size;

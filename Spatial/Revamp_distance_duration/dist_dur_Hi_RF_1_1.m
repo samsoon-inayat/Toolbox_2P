@@ -6,7 +6,7 @@ while 1
     %%
     % for one RF
     cni = 1:3;
-    rfi = 2;
+    rfi = 4;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
     per_resp = find_percent(resp);
     
@@ -33,7 +33,7 @@ end
 %% check the distribution of response fidelity
 while 1
     %%
-    rfi = 2;
+    rfi = 3;
     mean_dzMI = [];
     FD_Prop = props{rfi,1}.N_Resp_Trials; FT_Prop = props{rfi,3}.N_Resp_Trials;
 
@@ -55,7 +55,7 @@ while 1
     
     (exec_fun_on_cell_mat(mean_dzMI,'min'))
 %     (exec_fun_on_cell_mat(mean_dzMI,'nanmean'))
-%    median(min(cell2mat(exec_fun_on_cell_mat(mean_dzMI,'min'))))
+%    median(min((exec_fun_on_cell_mat(mean_dzMI,'min'))))
     %%
     break;
 end
@@ -72,7 +72,7 @@ while 1
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
 %     FD_Prop = props{rfi,1}.N_Resp_Trials; FT_Prop = props{rfi,3}.N_Resp_Trials;
 %     FD_Prop = props{1}.mean_FR; FT_Prop = props{3}.mean_FR;
-    for rfi = 2
+    for rfi = 4
         TD = FD_Prop;
         cell_resp = FD_Dur_comp{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
@@ -90,6 +90,9 @@ while 1
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
     end
     [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
+    mean_dzMI(3,3) = nanmean(mean_dzMI(:,3));
+    mean_dzMI(5,14) = nanmean(mean_dzMI(:,14));
+%     mean_dzMI(isnan(mean_dzMI)) = nanmean(mean_dzMI(:));
     dataT = make_between_table({mean_dzMI},dvn);
     ra = RMA(dataT,within,{'hsd'});
     ra.ranova
@@ -101,7 +104,7 @@ end
 %%
 %%
 dzmith = 0; dzmith1 = 0;
-rfi = 2;
+rfi = 4;
 for ani = 1:5
     for cni = 1:3
 %         dzmith = exec_fun_on_cell_mat(dzMI_FD.diff_D_T(ani,cni),'nanmean',FD_Dis_comp{rfi}(ani,cni));
@@ -137,6 +140,12 @@ dur_cells_TC = cell_list_op(dur_cells_T,[],'or',1);
 dis_cells_IC = cell_list_op(dis_cells_I,[],'or',1);
 dur_cells_IC = cell_list_op(dur_cells_I,[],'or',1);
 
+dis_cells_TA = cell_list_op(dis_cells_T,[],'and',1);
+dur_cells_TA = cell_list_op(dur_cells_T,[],'and',1);
+dis_cells_IA = cell_list_op(dis_cells_I,[],'and',1);
+dur_cells_IA = cell_list_op(dur_cells_I,[],'and',1);
+%%
+
 %%
 dzmith = 1;
 rfi = 2;
@@ -162,6 +171,14 @@ end
 
 %%
 while 1
+    %%
+    resp = [dur_cells_TC dis_cells_TC dur_cells_IC dis_cells_IC];
+    per_resp = find_percent(resp);
+    [within,dvn,xlabels] = make_within_table({'TI','CT'},[2,2]);
+    dataT = make_between_table({per_resp},dvn);
+    ra = RMA(dataT,within,{'hsd'});
+    ra.ranova
+    print_for_manuscript(ra)
     %%
     resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
     per_resp = find_percent(resp);
@@ -195,7 +212,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'Dur','Dis'};
     make_bars_hollow(hbs(3:4))
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
     changePosition(gca,[0.04 0.01 -0.4 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
     %%
@@ -231,6 +248,7 @@ while 1
     rfi = 2;
 %     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
     respAll = [resp_ON dis_cells_T dur_cells_T dis_cells_I dur_cells_I resp_OFF resp_MOn resp_MOff];
+%     respAll = [resp_ON dur_cells_I dis_cells_I resp_OFF resp_MOn resp_MOff];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
 %     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
@@ -289,6 +307,7 @@ while 1
     rfi = 2;
 %     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
     respAll = [dis_cells_T dur_cells_T dis_cells_I dur_cells_I];
+%     respAll = [dur_cells_TC,dis_cells_TC,dur_cells_IC,dis_cells_IC];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
 %     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
@@ -303,6 +322,7 @@ while 1
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
     txl = {'3-T-Dis','4-T-Dis','5-T-Dis','3-T-Dur','4-T-Dur','5-T-Dur',...
         '3-I-Dis','4-I-Dis','5-I-Dis','3-I-Dur','4-I-Dur','5-I-Dur'};
+%     txl = {'T-Dur','T-Dis','I-Dur','I-Dis'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;

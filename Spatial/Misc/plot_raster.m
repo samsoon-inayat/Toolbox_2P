@@ -1,7 +1,15 @@
-function [ha,hc] = plot_raster(R,cn,ax)
+function [ha,hc] = plot_raster(R,cn,ax,sp)
+if ~exist('sp','var')
+    sp = 0;
+end
 A = R;
 axes(ax);
-thisRaster = A.sp_rasters(:,:,cn);
+if sp
+    thisRaster = A.speed;
+else
+    thisRaster = A.sp_rasters(:,:,cn);
+end
+    
 mSig = nanmean(thisRaster);
 m = round(min(mSig),1);
 M = round(max(mSig),1);
@@ -10,10 +18,13 @@ xs(length(xs)+1) = (xs(2)-xs(1))+xs(end);
 fitplot = gauss_fit(1:length(xs),A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
 box off;
 plot(xs,mSig,'b','linewidth',1);hold on;
-plot(xs,fitplot,'linewidth',0.5,'color','m');
+if ~sp
+    plot(xs,fitplot,'linewidth',0.5,'color','m');
+end
 box off;
 cols = size(thisRaster,2);
 colsHalf = ceil(cols/2);
+xlim([xs(1) xs(end)]);
 format_axes(ax);
 %% raster
 pos = get(ax,'Position');
@@ -28,14 +39,16 @@ box off;
 set(gca,'xtick',[],'ytick',[1 size(thisRaster,1)],'TickDir','out');
 format_axes(gca)
 ha.XAxis.Visible = 'Off';
+if ~sp
 text(1,size(thisRaster,1)+2,sprintf('zMI = %.2f ',R.info_metrics.ShannonMI_Zsh(cn)),'FontSize',5,'color','k');
+end
 hold on;
 if ~isempty(strfind(R.context_info,'airT')) || ~isempty(strfind(R.context_info,'airID'))
-            for bb = 1:length(R.lastBin)
-                xvalbin = R.lastBin(bb);
-                plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'r','linewidth',0.25);
-            end
-        end
+    for bb = 1:length(R.lastBin)
+        xvalbin = R.lastBin(bb);
+        plot([xvalbin xvalbin]+0.15,[bb-0.75 bb+0.75],'r','linewidth',0.25);
+    end
+end
 colormap parula;
 %% raster colorbar
 hca = ha;
