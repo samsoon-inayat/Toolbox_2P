@@ -27,7 +27,7 @@ while 1
     Ab_On = 24; Abs_On = 25; Ab_Off = 26; Abs_Off = 27; 
     Ar_On = 28; ArL_On = 29; Ars_On = 30; Ar_Off = 31; ArL_Off = 32; Ars_Off = 33;
     
-    [speedRs,resp_speed,speed_percent,resp_speedAcc] = load_speed_response(ei);
+%     [speedRs,resp_speed,speed_percent,resp_speedAcc] = load_speed_response(ei);
 %     all_xl{ii+1} = 'sp';
 %     resp = [o.resp.vals resp_speed];
   
