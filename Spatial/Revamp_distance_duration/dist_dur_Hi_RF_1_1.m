@@ -144,6 +144,9 @@ dis_cells_TA = cell_list_op(dis_cells_T,[],'and',1);
 dur_cells_TA = cell_list_op(dur_cells_T,[],'and',1);
 dis_cells_IA = cell_list_op(dis_cells_I,[],'and',1);
 dur_cells_IA = cell_list_op(dur_cells_I,[],'and',1);
+
+dur_dis_T = cell_list_op(dur_cells_T,dis_cells_T,'or');
+dur_dis_I = cell_list_op(dur_cells_I,dis_cells_I,'or');
 %%
 
 %%
@@ -173,6 +176,7 @@ end
 while 1
     %%
     resp = [dur_cells_TC dis_cells_TC dur_cells_IC dis_cells_IC];
+%     resp = [dur_cells_TA dis_cells_TA dur_cells_IA dis_cells_IA];
     per_resp = find_percent(resp);
     [within,dvn,xlabels] = make_within_table({'TI','CT'},[2,2]);
     dataT = make_between_table({per_resp},dvn);
@@ -247,7 +251,7 @@ while 1
     si = [MOff_T]; props_MOff = get_props_Rs(o.Rs(:,si)); resp_MOff = cell_list_op(props_MOff.vals,[],'or',1);
     rfi = 2;
 %     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
-    respAll = [resp_ON dis_cells_T dur_cells_T dis_cells_I dur_cells_I resp_OFF resp_MOn resp_MOff];
+    respAll = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I resp_ON resp_OFF resp_MOn resp_MOff];
 %     respAll = [resp_ON dur_cells_I dis_cells_I resp_OFF resp_MOn resp_MOff];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
@@ -261,8 +265,8 @@ while 1
     minI = min([mOI(:)]);%semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'A-On','3-T-Dis','4-T-Dis','5-T-Dis','3-T-Dur','4-T-Dur','5-T-Dur',...
-        '3-I-Dis','4-I-Dis','5-I-Dis','3-I-Dur','4-I-Dur','5-I-Dur','A-Off','M-On','M-Off'};
+    txl = {'3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis',...
+        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis','A-On','A-Off','M-On','M-Off'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
@@ -306,7 +310,10 @@ while 1
     
     rfi = 2;
 %     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
-    respAll = [dis_cells_T dur_cells_T dis_cells_I dur_cells_I];
+    respAll = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
+%     respAll = [dur_dis_T dur_dis_I];
+%     respAll = [dur_cells_I dis_cells_I];
+%     respAll = [dis_cells_T dis_cells_I];
 %     respAll = [dur_cells_TC,dis_cells_TC,dur_cells_IC,dis_cells_IC];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
@@ -320,14 +327,15 @@ while 1
     minI = min([mOI(:)]);%semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'3-T-Dis','4-T-Dis','5-T-Dis','3-T-Dur','4-T-Dur','5-T-Dur',...
-        '3-I-Dis','4-I-Dis','5-I-Dis','3-I-Dur','4-I-Dur','5-I-Dur'};
+    txl = {'3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis',...
+        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis'};
+%     txl = {'3-T','4-T','5-T','3-I','4-I','5-I'};
 %     txl = {'T-Dur','T-Dis','I-Dur','I-Dis'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 3.5 3.5]);
+    hf = get_figure(5,[8 7 2.75 2.75]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
@@ -346,7 +354,7 @@ while 1
 %     text(-0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); 
     set(gca,'Ydir','normal');ytickangle(20);
     box on
-    changePosition(gca,[-0.01 0 -0.04 0]);
+    changePosition(gca,[0.01 0 -0.04 0]);
     hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.09 0.05]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',rfi),600);
@@ -364,12 +372,12 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 3.5 1.5]);
+    set(hf,'Position',[7 3 3.5 1]);
     set(H,'linewidth',1);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
-    changePosition(gca,[0.03 0.0 0.05 0.05]);
+    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -1 0]);
+    changePosition(gca,[-0.03 0.0 0.05 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;

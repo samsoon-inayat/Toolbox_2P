@@ -8,7 +8,7 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 
 %%
 while 1
-    respfids = {[10 30],[40 100],[0 100],[50 100]};
+    respfids = {[10 30],[40 100],[0 100],[50 100],[60 100]};
     raster_types = {'RsTt','RsDt','RsTi','RsDi'};
     % raster_types = {'RsTt','RsTi'};
     clear props

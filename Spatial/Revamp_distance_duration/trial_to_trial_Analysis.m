@@ -5,9 +5,10 @@ while 1
     ntrials = 40;
 %     si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T];
     si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];
+%     si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];
 %     si = [Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];
 %     si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
-    siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = propsG.good_FR;
+    siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = [dur_dis_T dur_dis_I];%propsG.good_FR_and_tuned;
     mRsG = calc_mean_rasters(RsG,1:10);
     trials = mat2cell([1:10]',ones(size([1:10]')));
     [allRsC,allmRsT] = get_trial_Rs(o,si,1:10);
@@ -96,7 +97,7 @@ while 1
     respSeL{1} = pSeL.good_FR_and_exc;     respSeL{2} = pSeL.good_FR_and_inh;    respSeL{3} = pSeL.good_FR_and_untuned;
     
 %     avgProps = get_props_Rs(RsG,[50,100]); respG = avgProps.good_FR;
-    an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0;
+    an  = 1:5; eic = 1; sp = 0; intersect_with_global = 1;
     
     allresp = []; ind = 1;
     all_peakL = [];
@@ -159,8 +160,8 @@ end
 %% conjunction and complementation
 while 1   %%
     an = 1:5;
-%     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
-    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp_IT,0.5,0.05);
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
+%     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp_IT,0.5,0.05);
 %     [OI,mOI,semOI,OI_mat,p_vals,h_vals] = get_overlap_index(allresp,0.5,0.05,0);
 %     mOI = OI{4}; semOI = semOI;
     mOI = mCI; semOI = semCI;

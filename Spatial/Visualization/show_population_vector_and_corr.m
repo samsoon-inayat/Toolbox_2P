@@ -158,9 +158,6 @@ if isempty(allP)
                h = ylabel('Distance (cm)');    changePosition(h,[0 0 0]);
             end
         end
-        cols = size(C,2);
-        colsHalf = round(cols/2);
-        ts = floor(R.xs(1:cols)+R.bin_width/2);
         if isfield(R,'fromFrames')
             h = xlabel('Time (sec)');%    changePosition(h,[0 0 0]);
         else
@@ -168,7 +165,7 @@ if isempty(allP)
         end
         cols = size(C,2);
         colsHalf = ceil(cols/2);
-        ts = floor(R.xs(1:cols)+R.bin_width/2);
+%         ts = floor(R.xs(1:cols)+R.bin_width/2);
         if isfield(R.resp,'cis')
             cis = R.resp.cis;
             xs = R.xs;
@@ -184,13 +181,13 @@ if isempty(allP)
             set(gca,'YTick',xticks,'YTickLabel',xs(xticks));
 
         else
-             if max(ts) < 50
-                tlabels = {'0','7.5','15'};
-            else
-                tlabels = {'0','75','150'};
-            end
-            set(gca,'XTick',[1 colsHalf cols],'XTickLabel',tlabels);
-            set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
+%              if max(ts) < 50
+%                 tlabels = {'0','7.5','15'};
+%             else
+%                 tlabels = {'0','75','150'};
+%             end
+%             set(gca,'XTick',[1 colsHalf cols],'XTickLabel',tlabels);
+%             set(gca,'YTick',[1 colsHalf cols],'YTickLabel',tlabels);
         end
             set(gca,'Ydir','Normal','linewidth',0.5,'FontSize',FS,'FontWeight','Normal');
             if sii == 1
