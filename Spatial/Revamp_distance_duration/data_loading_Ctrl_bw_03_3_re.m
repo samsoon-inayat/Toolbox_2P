@@ -34,7 +34,11 @@ mData.pdf_folder = [Uleth_one_drive '\PDFs15'];
 mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
 disp('Done');
 %%
-ii = 5;
+sel_rec = [1 3 5];
+sel_rec = 1:5;
+ei = getData_py_2(T_C1(sel_rec,:));
+%%
+ii = 1;
 edit_define_contexts_file(ei{ii});
 %%
 if 1
@@ -43,10 +47,6 @@ if 1
 end
 disp('Done');
 
-%%
-sel_rec = [1 3 5];
-sel_rec = 1:5;
-ei = getData_py_2(T_C1(sel_rec,:));
 %%
 binwidths = [0.25 3];
 ctl = [3 4 5]; sml = {'airOnsets55','airOffsets55'}; owr = [0 0 0];

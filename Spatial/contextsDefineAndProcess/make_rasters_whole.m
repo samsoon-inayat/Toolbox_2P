@@ -1,13 +1,20 @@
-function rasters =  make_rasters(ei,pp,onsets,offsets,rasterType,binwidths)
+function rasters =  make_rasters_whole(ei,pp,onsets,offsets,rasterType,binwidths,caSignals,owr)
+
+file_name = fullfile(ei.plane{pp}.folderD,'whole_data_dist.mat');
+if exist(file_name,'file') && owr == 0
+    rasters = load(file_name);
+    return;
+end
+
 
 if strcmp(rasterType,'time')
     binWidth = binwidths(1); % unit of bin width is sec
-    bins = 0:binWidth:500;
+    bins = 0:binWidth:50000;
 %     maxbins = 1000;
 end
 if strcmp(rasterType,'dist')
     binWidth = binwidths(2); % unit of bin width is cm
-    bins = 0:binWidth:1000;
+    bins = 0:binWidth:100000;
 %     maxbins = 95;
 end
 ccs = 1:length(ei.plane{pp}.tP.deconv.spSigAll);
@@ -24,6 +31,7 @@ b.frameRate = ei.thorExp.frameRate;
 % end
 % spSigAll = ei.deconv.spSigAll;
 spSigAll = ei.plane{pp}.tP.deconv.spSigAll;
+spSigAll = caSignals;
 rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,nbins,rasterType);
 rasters.bin_width = binWidth;
 rasters.nbins = nbins;
@@ -45,6 +53,7 @@ end
 % rasters = getRasters_speed(b,spSigAll,rasters);
 % rasters.sp_rasters1 = 
 n = 0;
+save(file_name,'-struct','rasters','-v7.3');
 
 
 function [nbins,binWidth] = get_nbins(b,onsets,offsets,binWidth,rasterType)
@@ -114,14 +123,15 @@ for trial = 1:length(onsets)
             space(trial,bin) = -(b.dist(photo_sensor) - b.dist(bsl));
         end
         duration(trial,bin) = b.ts(se1(bin))-b.ts(st1(bin));
+        distB(trial,bin) = b.dist(se1(bin))-b.dist(st1(bin));
         timeStart(trial,bin) = b.ts(st1(bin));
         timeEnd(trial,bin) = b.ts(se1(bin));
     end
     lastBin(trial) = bin;
 end
 out.sp_rasters = raster; out.speed = speed; out.dist = dist; out.space = space; out.duration = duration;
-out.timeStart = timeStart; out.timeEnd = timeEnd; out.lastBin = lastBin; out.distL1 = distL1;  out.distL2 = distL2; 
-out.bin_markers = [st1 se1];
+out.timeStart = timeStart; out.timeEnd = timeEnd; out.lastBin = lastBin; out.distB = distB; out.bin_markers = [st1 se1];
+out.distL1 = distL1;  out.distL2 = distL2; 
 
 function cell_history = getCellHistory(ei,pp,b,onsets,rasters,bin_width)
 n_samples = floor(bin_width/195e-6);

@@ -3,14 +3,15 @@ if ~exist('flag','var')
     flag = [1 1 0 1];
 end
 if ~exist('pd_rec','var')
-    pd_rec = evalin('base','ei{3}');
+    pd_rec = evalin('base','ei{5}');
 end
+pl = 1;
 try
-signals = pd_rec.deconv';
-frames_f = pd_rec.b.frames_f;
+    signals = pd_rec.deconv';
+    frames_f = pd_rec.b.frames_f;
 catch
-    signals = pd_rec.plane{1}.tP.deconv.spSigAll;
-    frames_f = pd_rec.plane{1}.b.frames_f;
+    signals = pd_rec.plane{pl}.tP.deconv.spSigAll;
+    frames_f = pd_rec.plane{pl}.b.frames_f;
 end
 
 b = pd_rec.b;
@@ -27,7 +28,7 @@ onsets = b.air_puff_r;
 offsets = b.air_puff_f;
 light_onsets = b.stim_r;
 mData = evalin('base','mData');
-signals = get_calcium_data(pd_rec,1);
+signals = get_calcium_data(pd_rec,pl);
 n = 0;
 %%
 while 0
@@ -174,7 +175,7 @@ end
 
 %%
 while 1
-    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 5.8 2.2],'color','w'); hold on;
+    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.9 5],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
     [maxVal,maxLoc] = max(spSigAllN,[],2);
     [sorted,locs] = sort(maxLoc);
@@ -215,17 +216,20 @@ while 1
     plot(b.ts,b.fSpeed*0.25,'color',colors{4},'linewidth',lwdth);
     end
     numcells = 100;
+    numcells = size(signals,1) % added for Bruce
     ylim([0 numcells]); xlim([0 traceTime(end)]);
-    ylims = ylim;
+%     ylims = ylim;
     upfac = 3;
-    text(b.ts(light_onsets(1)),ylims(2)+upfac,'1-Light','FontSize',6);
-    text(b.ts(light_onsets(21)),ylims(2)+upfac,'6-Light','FontSize',6);
-    text(b.ts(onsets(1)),ylims(2)+upfac,'2-Air','FontSize',6);
-    text(b.ts(onsets(11)),ylims(2)+upfac,'3-Air','FontSize',6);
-    text(b.ts(onsets(21)),ylims(2)+upfac,'4-Air-Light','FontSize',6);
-    text(b.ts(onsets(31)),ylims(2)+upfac,'5-Air','FontSize',6);
-    text(b.ts(onsets(41)),ylims(2)+upfac,'7-Air','FontSize',6);
-    text(b.ts(light_onsets(1))-1.45,ylims(2)+upfac+5,'Conditions','FontSize',6);
+    upfac = -1; % added for Bruce
+    yte = numcells+5; % used to be ylims(2)+upfac
+    text(b.ts(light_onsets(1)),yte,'1-Light','FontSize',6);
+    text(b.ts(light_onsets(21)),yte,'6-Light','FontSize',6);
+    text(b.ts(onsets(1)),yte,'2-Air','FontSize',6);
+    text(b.ts(onsets(11)),yte,'3-Air','FontSize',6);
+    text(b.ts(onsets(21)),yte,'4-Air-Light','FontSize',6);
+    text(b.ts(onsets(31)),yte,'5-Air','FontSize',6);
+    text(b.ts(onsets(41)),yte,'7-Air','FontSize',6);
+    text(b.ts(light_onsets(1))-1.45,yte+5,'Conditions','FontSize',6);
     set(gca,'Ydir','Normal');
     xlabel('Time (min)');
     ylabel('Cell Number (arranged by peaks)');
@@ -234,7 +238,8 @@ while 1
     ht = title(sprintf('Normalized Calcium signal (%cF/Fo) of %d of %d cells from a representative animal',916,numcells,size(signals,1))); 
     changePosition(ht,[0 12 0]);
     set(ht,'FontSize',6,'FontWeight','Normal');
-    legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 111 0.1]};
+%     legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 111 0.1]};
+    legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 numcells+20 0.1]};
     putLegendH(gca,legs,'colors',colors);
     hc = putColorBar(gca,[0.75 0.62 -0.8 -0.6],{'0',sprintf('>%.1f',maxSig)},6,'northoutside',[0.15 0.4 0.045 0.4]);
     colormap_ig
