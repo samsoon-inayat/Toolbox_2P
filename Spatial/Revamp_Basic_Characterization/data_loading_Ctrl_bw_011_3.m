@@ -59,14 +59,26 @@ end
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
+    ei(ii) = make_and_load_motion_correction(ei(ii),binwidths,[0 0 0]);
+end
+
+%%
+binwidths = [0.11 3];
+for ii = 1:length(ei)
     ei(ii) = load_context_info(ei(ii),binwidths,[0 0 0]);
 end
 disp('Done');
 %%
+tic
+for ii = 1:length(ei)
+    ei(ii) = find_MI_MC(ei(ii),[1 0 0],{-1,{'Combined'},-1,{'airOnsets55','airOffsets55'}})
+end
+toc
+%%
 clc
 tic
 for ii = 1:length(ei)
-    ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
+    ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0],{-1,{'Combined'},-1,{'airOnsets55','airOffsets55'}});
 end
 toc
 

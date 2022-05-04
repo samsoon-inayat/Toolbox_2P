@@ -29,6 +29,10 @@ offsets = b.air_puff_f;
 light_onsets = b.stim_r;
 mData = evalin('base','mData');
 signals = get_calcium_data(pd_rec,pl);
+% [xoff,yoff] = get_ca_motion_correction_data(pd_rec,pl);
+% r = sqrt(xoff.^2 + yoff.^2);
+% figure(33);
+% plot(traceTime,r);
 n = 0;
 %%
 while 0

@@ -10,11 +10,11 @@ while 1
     per_resp = find_percent(resp);
     
 
-    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
+    [within,dvn,xlabels] = make_within_table({'Tr_ITr','Cell_Type','Cond'},[2,3,3]);
     dataT = make_between_table({per_resp},dvn);
     ra = RMA(dataT,within,{'hsd'});
     ra.ranova
-    print_for_manuscript(ra)
+    print_for_manuscript(ra);
 
     any_cells = cell_list_op(resp,[],'or',1);
     per_active_any = find_percent(any_cells);
@@ -23,6 +23,7 @@ while 1
 
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
+    out = descriptiveStatistics(per_active_any);
     
     %%
     break

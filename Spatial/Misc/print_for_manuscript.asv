@@ -34,7 +34,7 @@ catch
 end
 if length(inds) > 1
     ht = 0.15*5;
-    hf = get_figure(555,[10,10,3,ht]);
+    hf = get_figure(555,[10,10,1.5,ht]);
 end
 ys = 0; gap = 0.25;
 for ii = 1:length(inds)

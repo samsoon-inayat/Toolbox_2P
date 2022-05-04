@@ -1,138 +1,98 @@
-function dist_dur
-
-%%
-RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
-RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
-[dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
-
-%%
-RsDtMC = o.RsMC(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTtMC = o.RsMC(:,[Ar_t_T ArL_t_T Ars_t_T]);
-RsDiMC = o.RsMC(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTiMC = o.RsMC(:,[Ar_i_T ArL_i_T Ars_i_T]);
-
-%%
-while 1
-    respfids = {[10 30],[40 100],[0 100],[50 100],[60 100]};
-    raster_types = {'RsTt','RsDt','RsTi','RsDi'};
-    % raster_types = {'RsTt','RsTi'};
-    clear props
-    for ii = 1:length(respfids)
-        trialsR = respfids{ii};
-        for jj = 1:length(raster_types)
-            cmdTxt = sprintf('props{ii,jj} = get_props_Rs(%s,trialsR);',raster_types{jj});
-            eval(cmdTxt);
-        end
-    end
-    % find dis, dur, and mix cells
-
-    clear FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj
-    for ii = 1:length(respfids)
-        FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
-        FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
-%         FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_zMI,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_zMI,'and');
-%         FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_zMI,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_zMI,'and');
-%         FD_Dur = props{ii,1}.vals; FD_Dis = props{ii,2}.vals;
-%         FT_Dur = props{ii,3}.vals; FT_Dis = props{ii,4}.vals;
-        
-        cellP1 = FD_Dis; cellP2 = FD_Dur;
-        FD_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
-        FD_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
-        FD_conj{ii} = cell_list_op(cellP1,cellP2,'and');
-        
-        cellP1 = FT_Dis; cellP2 = FT_Dur;
-        FT_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
-        FT_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
-        FT_conj{ii} = cell_list_op(cellP1,cellP2,'and');
-%         an = 4; cn = 3; respC = FT_Dur_comp{2}; tempCL = respC{an,cn};
-    end
-break;
-end
+function dist_dur_Hi_RF_1
 
 %%
 while 1
     %%
     % for one RF
     cni = 1:3;
-    rfi = 1;
+    rfi = 4;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-    rfi = 2;
-    resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
+    per_resp = find_percent(resp);
+    
 
-    per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
-
-%     [within,dvn,xlabels] = make_within_table({'RF','TI','CT'},[2,2,3]);
-%     dataT = make_between_table({per_resp},dvn);
-%     ra = RMA(dataT,within,{'hsd'});
-%     ra.ranova
-
-    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
+    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
     dataT = make_between_table({per_resp},dvn);
     ra = RMA(dataT,within,{'hsd'});
     ra.ranova
+    print_for_manuscript(ra)
 
     any_cells = cell_list_op(resp,[],'or',1);
-    per_active_any = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
+    per_active_any = find_percent(any_cells);
     any_cells = cell_list_op(resp,[],'and',1);
-    per_active_all = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
+    per_active_all = find_percent(any_cells);
 
     [mra,semra] = findMeanAndStandardError(per_active_any);
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    %%
-    cni = 1:3;
-    rfi = 1;
-    resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-    rfi = 2;
-    resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-
-    per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
-
-    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
-    dataT = make_between_table({per_resp},dvn);
-    ra = RMA(dataT,within,{'hsd'});
-    ra.ranova
-
-    any_cells = cell_list_op(resp,[],'or',1);
-    per_active_any = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
-    any_cells = cell_list_op(resp,[],'and',1);
-    per_active_all = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
-
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'RF','hsd'},[1.5 1 1]);
-    h(h==1) = 0;
-    xdata = make_xdata([2],[1 1.5]);
-    hf = get_figure(5,[8 7 3.5 1]);
-    tcolors = repmat(mData.colors(1:9),1,2);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 0;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'3','4','5'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[-0.04 0.01 0.1 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','hsd'},[1.5 1 1]);
-    h(h==1) = 0;
-    xdata = make_xdata([3 3],[1 1.5]);
-    hf = get_figure(5,[8 7 3.5 1]);
-    tcolors = repmat(mData.colors(1:9),1,2);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 0;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Dur','Dis','Mix'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[-0.04 0.01 0.1 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
+    
     %%
     break
+end
+
+%% check the distribution of response fidelity
+while 1
+    %%
+    rfi = 3;
+    mean_dzMI = [];
+    FD_Prop = props{rfi,1}.N_Resp_Trials; FT_Prop = props{rfi,3}.N_Resp_Trials;
+
+    TD = FD_Prop;
+    cell_resp = FD_Dur_comp{rfi};
+    mean_dzMI = [ mean_dzMI get_vals(TD,cell_resp)];
+    cell_resp = FD_Dis_comp{rfi};
+    mean_dzMI = [ mean_dzMI get_vals(TD,cell_resp)];
+    cell_resp = FD_conj{rfi};
+    mean_dzMI = [ mean_dzMI get_vals(TD,cell_resp)];
+
+    TD = FT_Prop;
+    cell_resp = FT_Dur_comp{rfi};
+    mean_dzMI = [ mean_dzMI get_vals(TD,cell_resp)];
+    cell_resp = FT_Dis_comp{rfi};
+    mean_dzMI = [ mean_dzMI get_vals(TD,cell_resp)];
+    cell_resp = FT_conj{rfi};
+    mean_dzMI = [ mean_dzMI get_vals(TD,cell_resp)];
+    
+    (exec_fun_on_cell_mat(mean_dzMI,'min'))
+%     (exec_fun_on_cell_mat(mean_dzMI,'nanmean'))
+%    median(min((exec_fun_on_cell_mat(mean_dzMI,'min'))))
+    %%
+    break;
+end
+
+
+%% compare the values of zMI for the four raster types
+while 1
+    rfi = 4;
+    tprops = props(rfi,:);
+    mean_dzMI = [];
+    for ii = 1:length(tprops)
+        ttprops = tprops{ii};
+        mean_dzMI = [mean_dzMI exec_fun_on_cell_mat(ttprops.zMI,'nanmean',ttprops.good_FR)];
+    end
+    [within,dvn,xlabels] = make_within_table({'TI','DT','Cond'},[2,2,3]);
+    dataT = make_between_table({mean_dzMI},dvn);
+    ra = RMA(dataT,within,{'hsd'});
+    ra.ranova
+    print_for_manuscript(ra)
+    %%
+    break;
+end
+
+%% compare the values of dzMI across trials and intertrials
+while 1
+    rfi = 4;
+    FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D;
+    mean_dzMI = [];
+    for ii = 1:length(tprops)
+        ttprops = tprops{ii};
+        mean_dzMI = [mean_dzMI exec_fun_on_cell_mat(ttprops.zMI,'nanmean',ttprops.good_FR)];
+    end
+    [within,dvn,xlabels] = make_within_table({'TI','DT','Cond'},[2,2,3]);
+    dataT = make_between_table({mean_dzMI},dvn);
+    ra = RMA(dataT,within,{'hsd'});
+    ra.ranova
+    print_for_manuscript(ra)
+    %%
+    break;
 end
 
 %% check the difference in zMI for Dis and Dur for the different cell types DurC, DisC, and DDM
@@ -143,64 +103,175 @@ while 1
 %     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 2
+%     FD_Prop = props{rfi,1}.N_Resp_Trials; FT_Prop = props{rfi,3}.N_Resp_Trials;
+%     FD_Prop = props{1}.mean_FR; FT_Prop = props{3}.mean_FR;
+    for rfi = 4
         TD = FD_Prop;
-%         cell_resp = FD_Dur_comp{rfi};
-%         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-%         cell_resp = FD_Dis_comp{rfi};
-%         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FD_Dur_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FD_Dis_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
         cell_resp = FD_conj{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
 
         TD = FT_Prop;
         cell_resp = FT_Dur_comp{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-%         cell_resp = FT_Dis_comp{rfi};
-%         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-%         cell_resp = FT_conj{rfi};
-%         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FT_Dis_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FT_conj{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
     end
-    
-    [within,dvn,xlabels] = make_within_table({'TI','Cond'},[2,3]);
+    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
+    mean_dzMI(3,3) = nanmean(mean_dzMI(:,3));
+    mean_dzMI(5,14) = nanmean(mean_dzMI(:,14));
+%     mean_dzMI(isnan(mean_dzMI)) = nanmean(mean_dzMI(:));
     dataT = make_between_table({mean_dzMI},dvn);
     ra = RMA(dataT,within,{'hsd'});
     ra.ranova
-    %%
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','hsd'},[1.5 1 1]);
-    xdata = make_xdata([2],[1 1.5]);
-    hf = get_figure(5,[8 7 1.5 1]);
-    tcolors = mData.dcolors(7:end);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.75,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1)-1 maxY+1]); format_axes(gca);
-    xticks = xdata; xticklabels = {'T','I'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.03 0.01 -0.4 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('dzMI_CT.pdf'),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','hsd'},[1.5 1 1]);
-    xdata = make_xdata([2],[1 1.5]);
-    hf = get_figure(5,[8 7 1.5 1]);
-    tcolors = mData.dcolors(10:end);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.04,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.025);
-    maxY = maxY;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'T','I'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.03 0.01 -0.5 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]})
+    print_for_manuscript(ra)
     %%
     break;
 end
 
+%%
+%%
+dzmith = 0; dzmith1 = 0;
+rfi = 4;
+for ani = 1:5
+    for cni = 1:3
+%         dzmith = exec_fun_on_cell_mat(dzMI_FD.diff_D_T(ani,cni),'nanmean',FD_Dis_comp{rfi}(ani,cni));
+        thisan = {dzMI_FD.diff_D_T{ani,cni} > dzmith};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FD.diff_D_T{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FD_Dis_comp{rfi}(ani,cni),thisan1,'and');
+        dis_cells_T(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        
+        thisan = {dzMI_FD.diff_T_D{ani,cni} > dzmith};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FD.diff_T_D{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FD_Dur_comp{rfi}(ani,cni),thisan1,'and');
+        dur_cells_T(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        
+%         dzmith = exec_fun_on_cell_mat(dzMI_FT.diff_T_D(ani,cni),'nanmean',FT_Dur_comp{rfi}(ani,cni));
+        thisan = {dzMI_FT.diff_T_D{ani,cni} > dzmith};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FT.diff_T_D{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FT_Dur_comp{rfi}(ani,cni),thisan1,'and');
+        dur_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        
+        thisan = {dzMI_FT.diff_D_T{ani,cni} > dzmith};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FT.diff_D_T{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FT_Dis_comp{rfi}(ani,cni),thisan1,'and');
+        dis_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
+    end
+end
+
+dis_cells_TC = cell_list_op(dis_cells_T,[],'or',1);
+dur_cells_TC = cell_list_op(dur_cells_T,[],'or',1);
+dis_cells_IC = cell_list_op(dis_cells_I,[],'or',1);
+dur_cells_IC = cell_list_op(dur_cells_I,[],'or',1);
+
+dis_cells_TA = cell_list_op(dis_cells_T,[],'and',1);
+dur_cells_TA = cell_list_op(dur_cells_T,[],'and',1);
+dis_cells_IA = cell_list_op(dis_cells_I,[],'and',1);
+dur_cells_IA = cell_list_op(dur_cells_I,[],'and',1);
+
+dur_dis_T = cell_list_op(dur_cells_T,dis_cells_T,'or');
+dur_dis_I = cell_list_op(dur_cells_I,dis_cells_I,'or');
+%%
+
+%%
+dzmith = 1;
+rfi = 2;
+for ani = 1:5
+    for cni = 1:3
+%         dzmith = exec_fun_on_cell_mat(dzMI_FD.diff_D_T(ani,cni),'nanmean',FD_Dis_comp{rfi}(ani,cni));
+        thisan = {dzMI_FD.diff_D_T{ani,cni} > dzmith};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        dis_cells_T(ani,cni) = cell_list_op(FD_Dis_comp{rfi}(ani,cni),thisan,'or');
+        thisan = {dzMI_FD.diff_T_D{ani,cni} > dzmith};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        dur_cells_T(ani,cni) = cell_list_op(FD_Dur_comp{rfi}(ani,cni),thisan,'or');
+        
+%         dzmith = exec_fun_on_cell_mat(dzMI_FT.diff_T_D(ani,cni),'nanmean',FT_Dur_comp{rfi}(ani,cni));
+        thisan = {dzMI_FT.diff_T_D{ani,cni} > dzmith};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        dur_cells_I(ani,cni) = cell_list_op(FT_Dur_comp{rfi}(ani,cni),thisan,'or');
+        thisan = {dzMI_FT.diff_D_T{ani,cni} > dzmith};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        dis_cells_I(ani,cni) = cell_list_op(FT_Dis_comp{rfi}(ani,cni),thisan,'or');
+    end
+end
+
+%%
+while 1
+    %%
+    resp = [dur_cells_TC dis_cells_TC dur_cells_IC dis_cells_IC];
+%     resp = [dur_cells_TA dis_cells_TA dur_cells_IA dis_cells_IA];
+    per_resp = find_percent(resp);
+    [within,dvn,xlabels] = make_within_table({'TI','CT'},[2,2]);
+    dataT = make_between_table({per_resp},dvn);
+    ra = RMA(dataT,within,{'hsd'});
+    ra.ranova
+    print_for_manuscript(ra)
+    %%
+    resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
+    per_resp = find_percent(resp);
+
+    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,2,3]);
+    dataT = make_between_table({per_resp},dvn);
+    ra = RMA(dataT,within,{'hsd'});
+    ra.ranova
+    print_for_manuscript(ra)
+
+    any_cells = cell_list_op(resp,[],'or',1);
+    per_active_any = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
+    any_cells = cell_list_op(resp,[],'and',1);
+    per_active_all = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
+
+    [mra,semra] = findMeanAndStandardError(per_active_any);
+    [mrall,semrall] = findMeanAndStandardError(per_active_all);
+    
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+    xdata = make_xdata([2 2],[1 1.5]);
+    hf = get_figure(5,[8 7 1.5 1]);
+    tcolors = repmat(mData.colors(1:2),1,2);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 0;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Dur','Dis'};
+    make_bars_hollow(hbs(3:4))
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    changePosition(gca,[0.04 0.01 -0.4 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+    xdata = make_xdata([2],[1 1.5]);
+    hf = get_figure(5,[8 7 1.5 1]);
+    tcolors = repmat(mData.colors(1:2),1,2);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 0;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'Dur','Dis'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45);
+    changePosition(gca,[0.04 0.01 -0.55 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
+    %%
+    break
+end
 
 %% Overlap Indices ImageSC
 while 1
@@ -209,10 +280,12 @@ while 1
 %     si = [Ar_Off ArL_Off Ars_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
     si = [Ab_On Abs_On]; props_ON = get_props_Rs(o.Rs(:,si)); resp_ON = cell_list_op(props_ON.vals,[],'or',1);
     si = [Ab_Off Abs_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
-    rfi = 3;
-    respAll = [resp_ON cell_list_op(FD_Dur_comp{rfi},[],'or',1) cell_list_op(FD_Dis_comp{rfi},[],'or',1) cell_list_op(FD_conj{rfi},[],'or',1) ...
-        cell_list_op(FT_Dur_comp{rfi},[],'or',1) cell_list_op(FT_Dis_comp{rfi},[],'or',1) cell_list_op(FT_conj{rfi},[],'or',1) resp_OFF];
-%     respAll = [resp_ON FD_conj{rfi} FT_Dur_comp{rfi} resp_OFF];
+    si = [MOn_T]; props_MOn = get_props_Rs(o.Rs(:,si)); resp_MOn = cell_list_op(props_MOn.vals,[],'or',1);
+    si = [MOff_T]; props_MOff = get_props_Rs(o.Rs(:,si)); resp_MOff = cell_list_op(props_MOff.vals,[],'or',1);
+    rfi = 2;
+%     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
+    respAll = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I resp_ON resp_OFF resp_MOn resp_MOff];
+%     respAll = [resp_ON dur_cells_I dis_cells_I resp_OFF resp_MOn resp_MOff];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
 %     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
@@ -225,8 +298,8 @@ while 1
     minI = min([mOI(:)]);%semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'A-On','T-Dur','T-Dis','T-Mix',...
-        'I-Dur','I-Dis','I-Mix','A-Off'};
+    txl = {'3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis',...
+        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis','A-On','A-Off','M-On','M-Off'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
@@ -258,16 +331,23 @@ while 1
     break;
 end
 
-%% Overlap Indices ImageSC
+%% Overlap Indices ImageSC checking only the three conditions and dis and dur cells
 while 1
     %%
 %     si = [Ar_On ArL_On Ars_On]; props_ON = get_props_Rs(o.Rs(:,si)); resp_ON = cell_list_op(props_ON.vals,[],'or',1);
 %     si = [Ar_Off ArL_Off Ars_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
     si = [Ab_On Abs_On]; props_ON = get_props_Rs(o.Rs(:,si)); resp_ON = cell_list_op(props_ON.vals,[],'or',1);
     si = [Ab_Off Abs_Off]; props_OFF = get_props_Rs(o.Rs(:,si)); resp_OFF = cell_list_op(props_OFF.vals,[],'or',1);
-    rfi = 3;
-    respAll = [resp_ON FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi} resp_OFF];
-%     respAll = [resp_ON FD_conj{rfi} FT_Dur_comp{rfi} resp_OFF];
+    si = [MOn_T]; props_MOn = get_props_Rs(o.Rs(:,si)); resp_MOn = cell_list_op(props_MOn.vals,[],'or',1);
+    si = [MOff_T]; props_MOff = get_props_Rs(o.Rs(:,si)); resp_MOff = cell_list_op(props_MOff.vals,[],'or',1);
+    
+    rfi = 2;
+%     respAll = [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}];
+    respAll = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
+%     respAll = [dur_dis_T dur_dis_I];
+%     respAll = [dur_cells_I dis_cells_I];
+%     respAll = [dis_cells_T dis_cells_I];
+%     respAll = [dur_cells_TC,dis_cells_TC,dur_cells_IC,dis_cells_IC];
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(respAll,0.5,0.05);
     mOI = mCI; semOI = semCI;
 %     mOI = mean(uni,3); semOI = std(uni,[],3)/sqrt(5);
@@ -280,13 +360,15 @@ while 1
     minI = min([mOI(:)]);%semOI(:)]);
     
     mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
-    txl = {'A-On','3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis','3-T-Mix','4-T-Mix','5-T-Mix',...
-        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis','3-I-Mix','4-I-Mix','5-I-Mix','A-Off'};
+    txl = {'3-T-Dur','4-T-Dur','5-T-Dur','3-T-Dis','4-T-Dis','5-T-Dis',...
+        '3-I-Dur','4-I-Dur','5-I-Dur','3-I-Dis','4-I-Dis','5-I-Dis'};
+%     txl = {'3-T','4-T','5-T','3-I','4-I','5-I'};
+%     txl = {'T-Dur','T-Dis','I-Dur','I-Dis'};
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(5,[8 7 3.5 3.5]);
+    hf = get_figure(5,[8 7 2.75 2.75]);
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
@@ -305,7 +387,7 @@ while 1
 %     text(-0.5,sz+1.1,'Average Overlap Index (N = 5 animals)','FontSize',5); 
     set(gca,'Ydir','normal');ytickangle(20);
     box on
-    changePosition(gca,[-0.01 0 -0.04 0]);
+    changePosition(gca,[0.01 0 -0.04 0]);
     hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.09 0.05]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',rfi),600);
@@ -323,12 +405,12 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 3.5 1.5]);
+    set(hf,'Position',[7 3 3.5 1]);
     set(H,'linewidth',1);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
-    changePosition(gca,[0.03 0.0 0.05 0.05]);
+    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -1 0]);
+    changePosition(gca,[-0.03 0.0 0.05 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;
@@ -431,8 +513,8 @@ while 1
             for bni = 1:length(binNs)
                 cell_resp = cell_list_op({tplbin == binNs(bni)},good_FR_T,'and');
 %                 cell_resp = {tplbin == binNs(bni)};
-                mean_dzMIC = [mean_dzMIC find_percent(cell_resp)];
-%                 mean_dzMIC = [mean_dzMIC exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+%                 mean_dzMIC = [mean_dzMIC find_percent(cell_resp)];
+                mean_dzMIC = [mean_dzMIC exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
             end
         end
         mean_dzMI = [mean_dzMI;mean_dzMIC];
@@ -461,7 +543,7 @@ while 1
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_Bins','hsd'},[1.5 1 1]);
     h(h==1) = 0;
-    xdata = make_xdata([2 2 2],[1 2]);
+    xdata = make_xdata([4 4 4],[1 2]);
     hf = get_figure(5,[8 7 2.5 1]);
     tcolors = repmat(mData.dcolors(1:4),1,3);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -488,10 +570,11 @@ while 1
         end
     end
     ald = round(mean(alds(:)));
-     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],'spaceRowsCols',[0 0],'rightUpShifts',[-0.05 0.13],'widthHeightAdjustment',[-3 -350]);
-    set(gcf,'color','w'); set(gcf,'Position',[5 5 5 1]);
+    ald = floor(110/3);
+     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 6],'spaceRowsCols',[0 0.004],'rightUpShifts',[-0.035 0.13],'widthHeightAdjustment',[-9 -350]);
+    set(gcf,'color','w'); set(gcf,'Position',[5 5 4 1]);
     [Y,E] = discretize(1:49,3);
-    all_speeds = []; cTxt = {'3-Trials','3-Intertrials','4-Trials','4-Intertrials','5-Trials','5-Intertrials'}; 
+    all_speeds = []; cTxt = {'Trial (T)','Intertrial (I)','Trial','Intertrial','Trial','Intertrial'}; 
     for cn = 1:6
         mean_speed_over_trials = [];
         aThisSpeed = [];
@@ -506,6 +589,7 @@ while 1
         axes(ff.h_axes(1,cn));
         hold on;
         xs = Rs{1,cn}.xs; N = length(xs);
+        xs = 1:N;
         mspeed = mean(mean_speed_over_trials(:,1:N)); semspeed = std(mean_speed_over_trials(:,1:N))/sqrt(5);
         plot(xs,mspeed);
         shadedErrorBar(xs,mspeed,semspeed);
@@ -520,21 +604,25 @@ while 1
 %             plot([50 50],[0 30],'k--','linewidth',0.25);
 %             plot([100 100],[0 30],'k--','linewidth',0.25);
 %             bTxt = {'dB1','dB2','dB3'}; 
-%             xbTxt = [25 75 125]-7; ybTxt = 31;
+            xbTxt = [25 75 125]-7; ybTxt = 30;
 %             for ii = 1:length(bTxt)
 %                 text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
 %             end
             xlabel('Distance (cm)');
+            set(gca,'xtick',[1 25 50],'xticklabel',{'0','75','150'});
+            text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
         else
 %             plot([5 5],[0 30],'k--','linewidth',0.25);
 %             plot([10 10],[0 30],'k--','linewidth',0.25);
-%             bTxt = {'tB1','tB2','tB3'}; xbTxt = [2.5 7.5 12.5]-1; ybTxt = 31;
+            bTxt = {'tB1','tB2','tB3'}; xbTxt = [2.5 7.5 12.5]-1; ybTxt = 30;
 %             for ii = 1:length(bTxt)
 %                 text(xbTxt(ii),ybTxt,bTxt{ii},'FontSize',5);
 %             end
             xlabel('Time (sec)');
+            set(gca,'xtick',[1 25 50],'xticklabel',{'0','7.5','15'});
+            text(xbTxt(2),ybTxt+5,cTxt{cn},'FontSize',5);
         end
-        text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
+%         text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
         ylim([0 30]);
         box off;
         format_axes(gca);

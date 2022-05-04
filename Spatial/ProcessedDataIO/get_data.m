@@ -1,6 +1,6 @@
 function o = get_data(ei,selContexts,rasterNames)
 
-
+o.RsMC = get_rasters_dataMC(ei,selContexts,rasterNames); 
 o.Rs = get_rasters_data(ei,selContexts,rasterNames); 
 o.Rs = find_responsive_rasters(o.Rs,[]);
 % o.Rs = find_responsive_rasters_1(o.Rs,[]);

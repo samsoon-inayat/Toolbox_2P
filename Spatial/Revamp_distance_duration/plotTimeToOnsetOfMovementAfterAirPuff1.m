@@ -72,7 +72,80 @@ dataT = make_between_table({sase},dvn);
 ra = RMA(dataT,within,{'tukey-kramer','hsd'});
 ra.ranova
 n=0;
-%%
+%% movemenet latency distrubtion
+while 1
+    clear distD
+    for an = 1:5
+        distD{an,1} = dom(:,an);
+    end
+    
+    [distDo,allVals] = getAveragesAndAllValues(distD);
+   minBin = min(allVals);
+   maxBin = max(allVals);
+   incr = 0.25;
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+   hold on;
+   [ha,hb,hca] = plotAverageDistributions(distD,'colors',{'k'},'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','pdf');
+   set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
+   xlim([minBin maxBin]);
+   changePosition(gca,[0.12 0.13 -0.2 -0.13]);
+    put_axes_labels(gca,{'Latency (s)',[0 0 0]},{{'Trials (%)'},[0 0 0]});
+    format_axes(gca);
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution_movement_latency'),600);
+    %%
+    break;
+end
+
+%% speed at air onset or offset (change variable to do so)
+while 1
+    clear distD
+    for an = 1:5
+        distD{an,1} = saof(:,an);
+    end
+    
+    [distDo,allVals] = getAveragesAndAllValues(distD);
+   minBin = min(allVals);
+   maxBin = max(allVals);
+   incr = 3;
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+   hold on;
+   [ha,hb,hca] = plotAverageDistributions(distD,'colors',{'k'},'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','cdf');
+   set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
+   xlim([0 maxBin]);
+   changePosition(gca,[0.12 0.13 -0.2 -0.13]);
+    put_axes_labels(gca,{'Speed (cm/s)',[0 0 0]},{{'Trials (%)'},[0 0 0]});
+    format_axes(gca);
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution'),600);
+    %%
+    break;
+end
+
+%% distribution distance covered
+while 1
+    clear distD
+    for an = 1:5
+        distD{an,1} = dI(:,an);
+    end
+    
+    [distDo,allVals] = getAveragesAndAllValues(distD);
+   minBin = min(allVals);
+   maxBin = max(allVals);
+   incr = 10;
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+   hold on;
+   [ha,hb,hca] = plotAverageDistributions(distD,'colors',{'k'},'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','cdf');
+   set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
+   xlim([minBin maxBin]);
+   changePosition(gca,[0.12 0.13 -0.2 -0.13]);
+    put_axes_labels(gca,{'Distance (cm)',[0 0 0]},{{'Trials (%)'},[0 0 0]});
+    format_axes(gca);
+    save_pdf(hf,mData.pdf_folder,sprintf('Distribution'),600);
+    %%
+    break;
+end
+
+
+%% average speed at onset versus offset RMANOVA
 while 1
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'SE_by_Cond','hsd'},[1.5 1 1]);
     xdata = make_xdata([3 3],[1 1.5]);
@@ -108,9 +181,11 @@ dataD = {dom(:,1);dom(:,2);dom(:,3);dom(:,4);dom(:,5)};
     save_pdf(hf,mData.pdf_folder,'movement latency distribution',600);
 break;
 end
-%%
+%% anova movement latency across conditions
 while 1
 moas = duration_onset_moveC;
+moas = squeeze(mean(duration_onset_move,1));
+moas = moas';
 for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
 end
@@ -121,21 +196,6 @@ ra = RMA(dataT,within,{'tukey-kramer','hsd'});
 ra.ranova
 [xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
 
-% dataT = array2table(data);
-% dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
-% within = table([1 2 3]');
-% within.Properties.VariableNames = {'Condition'};
-% within.Condition = categorical(within.Condition);
-% 
-% ra = repeatedMeasuresAnova(dataT,within);
-% 
-% mVar = ra.est_marginal_means.Mean;
-% semVar = ra.est_marginal_means.Formula_StdErr;
-% combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-% % xdata = [1 2 3]; maxY = 50;
-% 
-% xdata = [1:1.15:6]; xdata = xdata(1:3);
-% maxY = 1;
 colors = mData.colors(3:end);
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
@@ -144,7 +204,7 @@ tcolors = colors;
     'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.005,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.051);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-xticks = xdata; xticklabels = {'Ar','ArL','Ar*'};
+xticks = xdata; xticklabels = {'C3','C4','C5'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
 changePosition(gca,[0.19 0.05 -0.4 -0.1])
@@ -152,9 +212,11 @@ put_axes_labels(gca,{'',[0 0 0]},{{'Movement','Latency (sec)'},[0 0 0]});
 save_pdf(hf,mData.pdf_folder,'Duration to Movement Onset',600);
 break;
 end
-%%
 
-moas = timeToCompleteC;
+%% anova distance covered during intertrials across conditions
+while 1
+moas = squeeze(mean(distI_cov_all,1));
+moas = moas';
 for ii = 1:size(moas,2)
     varNames{ii} = sprintf('Trials_Cond%d',ii);
 end
@@ -164,31 +226,63 @@ dataT = make_between_table({data},dvn);
 ra = RMA(dataT,within,{'tukey-kramer','hsd'});
 ra.ranova
 [xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
-% dataT = array2table(data);
-% dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
-% within = table([1 2 3]');
-% within.Properties.VariableNames = {'Condition'};
-% within.Condition = categorical(within.Condition);
-% 
-% ra = repeatedMeasuresAnova(dataT,within);
-% 
-% mVar = ra.est_marginal_means.Mean;
-% semVar = ra.est_marginal_means.Formula_StdErr;
-% combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
-% 
-% xdata = [1:1.15:6]; xdata = xdata(1:3);
-% maxY = 15;
+
 colors = mData.colors(3:end);
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;
 tcolors = colors;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
+    'ySpacing',0.21,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.005,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.051);
 set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-xticks = xdata; xticklabels = {'Ar','ArL','Ar*'};
+xticks = xdata; xticklabels = {'C3','C4','C5'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
-changePosition(gca,[0.13 0.05 -0.4 -0.1])
-put_axes_labels(gca,{'',[0 0 0]},{{'Trial Time (sec)'},[0 0 0]});
-save_pdf(hf,mData.pdf_folder,'Time to Complete Trial',600);
+changePosition(gca,[0.19 0.05 -0.4 -0.1])
+put_axes_labels(gca,{'',[0 0 0]},{{'Distance','Traveled (cm)'},[0 0 0]});
+save_pdf(hf,mData.pdf_folder,'Duration to Movement Onset',600);
+break;
+end
+%% Trial Time
+while 1
+    moas = timeToCompleteC;
+    for ii = 1:size(moas,2)
+        varNames{ii} = sprintf('Trials_Cond%d',ii);
+    end
+    data = [moas];
+    [within,dvn,xlabels] = make_within_table({'Cond'},[3]);
+    dataT = make_between_table({data},dvn);
+    ra = RMA(dataT,within,{'tukey-kramer','hsd'});
+    ra.ranova
+    [xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    % dataT = array2table(data);
+    % dataT.Properties.VariableNames = {varNames{1} varNames{2} varNames{3}};
+    % within = table([1 2 3]');
+    % within.Properties.VariableNames = {'Condition'};
+    % within.Condition = categorical(within.Condition);
+    % 
+    % ra = repeatedMeasuresAnova(dataT,within);
+    % 
+    % mVar = ra.est_marginal_means.Mean;
+    % semVar = ra.est_marginal_means.Formula_StdErr;
+    % combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
+    % 
+    % xdata = [1:1.15:6]; xdata = xdata(1:3);
+    % maxY = 15;
+    colors = mData.colors(3:end);
+    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+    hold on;
+    tcolors = colors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
+    set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
+    xticks = xdata; xticklabels = {'C3','C4','C5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels);
+    xtickangle(30);
+    changePosition(gca,[0.13 0.05 -0.4 -0.1])
+    put_axes_labels(gca,{'',[0 0 0]},{{'Trial Time (sec)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,'Time to Complete Trial',600);
+%%
+break;
+end

@@ -1,4 +1,4 @@
-function rasters = get_rasters_data(ei,selContexts,rasterNames)
+function rasters = get_rasters_dataMC(ei,selContexts,rasterNames)
 if ~exist('ei','var')
     ei = evalin('base','d15_2');
     selContexts = [1 2 3 3 4 4 5 5 6 7];
@@ -60,7 +60,7 @@ for ii = 1:length(selContexts)
     end
     contextNumber = selContexts(ii);
     pp = 1;
-    thisContext = ei.plane{pp}.contexts(selContexts(ii));
+    thisContext = ei.plane{pp}.contextsMC(selContexts(ii));
     disp(sprintf('%s - plane-%d',thisContext.name,pp));
     cmdTxt = sprintf('tempR = thisContext.rasters.%s;',rasterNames{ii});
     eval(cmdTxt);
@@ -102,7 +102,7 @@ for ii = 1:length(selContexts)
         rasters{ii,1}.iscell = iscell1;
     else
         pp = 2;
-        thisContext = ei.plane{pp}.contexts(selContexts(ii));
+        thisContext = ei.plane{pp}.contextsMC(selContexts(ii));
         disp(sprintf('%s - plane-%d',thisContext.name,pp));
         cmdTxt = sprintf('tempR1 = thisContext.rasters.%s;',rasterNames{ii});
         eval(cmdTxt);
@@ -158,7 +158,7 @@ end
 function tempRC = combine_planes_data(tempR,tempR1)
 struct_fields_to_combine = {'fromFrames','info_metrics','gauss_fit_on_mean','fractal_dim'};
 fields = fieldnames(tempR);
-cellmatflag = 1;
+cellmatflag = 0;
 for ff = 1:length(fields)
     thisFieldTxt = fields{ff};
     cmdTxt = sprintf('thisField = tempR.%s;',fields{ff});
@@ -173,9 +173,6 @@ for ff = 1:length(fields)
             thisFieldC = combine_planes_data(thisField,thisField1);
         end
         if strcmp(fields{ff},'info_metrics')
-            thisFieldC = combine_info_metrics(thisField,thisField1);
-        end
-        if strcmp(fields{ff},'info_metrics_MC')
             thisFieldC = combine_info_metrics(thisField,thisField1);
         end
         if strcmp(thisFieldTxt,'gauss_fit_on_mean')
@@ -217,7 +214,7 @@ for ff = 1:length(fields)
     cmdTxt = sprintf('tempRC.%s = thisFieldC;',fields{ff});
     eval(cmdTxt);
 end
-tempRC.cell_numbers = cell_numbers;
+tempRC.cell_numbers = [];
 
 function ifC = combine_info_metrics(if1,if2)
 % fields = fieldnames(if1);

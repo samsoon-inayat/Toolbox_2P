@@ -1,18 +1,7 @@
-function ei = make_and_load_rasters(ei,binwidths,owr,contextsIncExc)
+function ei = make_and_load_rasters(ei,binwidths,owr)
 
 if ~exist('owr','var')
     owr = [0 0 0];
-end
-if ~exist('contextsIncExc','var')
-    contextsIE_val = 0;
-    stimMarkerIE_val = 0;
-else
-    contextsIE_val = contextsIncExc{1};         contextsIE = contextsIncExc{2};
-    if length(contextsIncExc) > 2
-        stimMarkerIE_val = contextsIncExc{3};         stimMarkerIE = contextsIncExc{4};
-    else
-        stimMarkerIE_val = 0;
-    end
 end
 
 allContexts = contextDefinitions;
@@ -40,16 +29,6 @@ for aa = 1:length(ei)
         contexts = getContexts({ptei});
         for contextNumber = 1:length(contexts)
             thisContext = contexts(contextNumber);
-            if contextsIE_val == -1
-                if found(thisContext.name,contextsIE)
-                    continue;
-                end
-            end
-            if contextsIE_val == 1
-                if ~found(thisContext.name,contextsIE)
-                    continue;
-                end
-            end
             stimMarkers = thisContext.stimMarkers;
             trials = thisContext.trials;
             if isempty(trials)
@@ -60,17 +39,6 @@ for aa = 1:length(ei)
             end
             for jj = 1:length(stimMarkers)
                 thisStimMarker = stimMarkers{jj};
-                if stimMarkerIE_val == -1
-                    if found(thisStimMarker,stimMarkerIE)
-                        continue;
-                    end
-                end
-                if stimMarkerIE_val == 1
-                    if ~found(thisStimMarker,stimMarkerIE)
-                        continue;
-                    end
-                end
-             
                 cmdTxt = sprintf('markersOn = contexts(contextNumber).markers.%s_onsets;',thisStimMarker);
                 eval(cmdTxt);
                 cmdTxt = sprintf('markersOff = contexts(contextNumber).markers.%s_offsets;',thisStimMarker);
@@ -82,13 +50,13 @@ for aa = 1:length(ei)
                 for kk = 1:length(typesOfRasters)
                     thisRasterType = typesOfRasters{kk};
                     disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
-                    rasters = make_rasters(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
+                    rasters = make_rasters_motion_correction(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
                     trials = 1:size(rasters.sp_rasters,1);
                     if length(unique(rasters.lastBin)) > 1
                         n= 0;
                     end
                     if strcmp(thisRasterType,'dist')
-                        rasters = findRasterProperties_1(thispFolderD,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owr);
+                        rasters = findRasterProperties_1(thispFolderD,contextNumber,sprintf('%sMC',thisStimMarker),rasters,thisRasterType,trials,owr);
                         if double(rasters.bin_width) == double(binwidths(2))
                         else
                             error;
@@ -101,7 +69,7 @@ for aa = 1:length(ei)
 %                        else
 %                            owr(1) = 0;
 %                        end
-                        rasters = findRasterProperties_1(thispFolder,contextNumber,thisStimMarker,rasters,thisRasterType,trials,owr);
+                        rasters = findRasterProperties_1(thispFolder,contextNumber,sprintf('%sMC',thisStimMarker),rasters,thisRasterType,trials,owr);
                         if double(rasters.bin_width) == double(binwidths(1))
                         else
                             error;
@@ -111,20 +79,9 @@ for aa = 1:length(ei)
                 end
             end
         end
-        ptei.plane{pp}.contexts = contexts;
+        ptei.plane{pp}.contextsMC = contexts;
 %         ptei.b.belt_length = temp.belt_length;
     end
     ei{aa} = ptei;
 end
 
-
-
-function fo = found(name,contextsIE)
-fo = 0;
-for cniii = 1:length(contextsIE)
-    cniiind = strfind(name,contextsIE{cniii});
-    if ~isempty(cniiind)
-        fo = 1;
-        break;
-    end
-end

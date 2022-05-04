@@ -24,6 +24,8 @@ for rr = 1:size(Rs,1)
 %         if isempty(strfind(R.marker_name,'motion'))
             o.zMI{rr,cc} = R.info_metrics.ShannonMI_Zsh';
             o.MI{rr,cc} = R.info_metrics.ShannonMI';
+            o.zMI_MC{rr,cc} = R.info_metrics_MC.ShannonMI_Zsh';
+            o.MI_MC{rr,cc} = R.info_metrics_MC.ShannonMI';
 %         else
 %             o.good_zMI_FR{rr,cc} = R.resp.vals & R.resp.FR_based';
 %             continue;
@@ -66,6 +68,7 @@ for rr = 1:size(Rs,1)
         o.good_Gauss{rr,cc} = p';
         o.good_Gauss_loose{rr,cc} = rs' > 0.3;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
+        o.good_zMI_MC{rr,cc} = o.zMI_MC{rr,cc} > 1.65;
         [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc},o.clus_based{rr,cc},o.oc(rr,cc)] = get_FR_based(R.sp_rasters1,ntrials);
         if strcmp(R.marker_name,'airIT')
             [o.good_FR_IT{rr,cc},o.N_Resp_Trials_IT{rr,cc}] = get_FR_based_IT(R.sp_rasters1,ntrials);
@@ -76,6 +79,7 @@ for rr = 1:size(Rs,1)
             [o.good_FR_T1{rr,cc},o.N_Resp_Trials_T1{rr,cc}] = get_FR_based_T1(R.sp_rasters1,ntrials);
         end
         o.good_FR_and_zMI{rr,cc} = o.good_zMI{rr,cc} & o.good_FR{rr,cc};
+        o.good_FR_and_zMI_MC{rr,cc} = o.good_zMI_MC{rr,cc} & o.good_FR{rr,cc};
         temp_z = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.good_zMI(rr,cc),[],'not'),'and');
         o.good_FR_and_notzMI{rr,cc} = temp_z{1};
         

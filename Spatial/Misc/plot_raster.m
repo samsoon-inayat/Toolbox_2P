@@ -2,6 +2,7 @@ function [ha,hc] = plot_raster(R,cn,ax,sp)
 if ~exist('sp','var')
     sp = 0;
 end
+
 A = R;
 axes(ax);
 if sp

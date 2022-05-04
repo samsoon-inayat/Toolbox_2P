@@ -6,8 +6,8 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 [dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
 
 %%
-RsDtMC = o.RsMC(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTtMC = o.RsMC(:,[Ar_t_T ArL_t_T Ars_t_T]);
-RsDiMC = o.RsMC(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTiMC = o.RsMC(:,[Ar_i_T ArL_i_T Ars_i_T]);
+RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
+RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
 
 %%
 while 1
