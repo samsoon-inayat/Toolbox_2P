@@ -61,11 +61,19 @@ for ii = 1:length(ei)
 end
 
 %%
+tic
+for ii = 1:length(ei)
+    ei(ii) = find_MI_MC(ei(ii),[0 0 0]);
+end
+toc
+%%
+tic
 binwidths = [0.3 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
-
+toc
+%%
 clc
 tic
 for ii = 1:length(ei)

@@ -175,7 +175,7 @@ end
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off M_On M_Off];
-    si = [Ab_On Abs_On Ab_Off Abs_Off];
+    si = [Ab_On Abs_On Ar_On ArL_On Ars_On ];
     props1 = get_props_Rs(o.Rs(:,si),ntrials);
     good_FR = props1.vals;
     all_zMIs = props1.zMI;
@@ -187,7 +187,8 @@ while 1
             zMIs(rr,cc) = nanmean(tzmis(resp));
         end
     end
-    [within,dvn,xlabels] = make_within_table({'Event','Cond'},[2 2]);
+%     azMIs = zMIs
+    [within,dvn,xlabels] = make_within_table({'Cond'},[2]);
     dataT = make_between_table({zMIs},dvn);
     ra = RMA(dataT,within);
     ra.ranova
@@ -825,7 +826,7 @@ xticks = xdata; xticklabels = {'B-A','NB-A','B-L','NB-L'};    set(gca,'xtick',xt
     break;
 end
 
-%% compare percent response fidelity pooled air on or off brake vs no-brake Unt
+%% compare percent response fidelity pooled air with light brake vs no-brake
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     event_type = {'Air ON','Air OFF','Light ON'};

@@ -61,12 +61,12 @@ for aa = 1:length(ei)
             for jj = 1:length(stimMarkers)
                 thisStimMarker = stimMarkers{jj};
                 if stimMarkerIE_val == -1
-                    if found(thisStimMarker,stimMarkerIE)
+                    if exact_match(thisStimMarker,stimMarkerIE)
                         continue;
                     end
                 end
                 if stimMarkerIE_val == 1
-                    if ~found(thisStimMarker,stimMarkerIE)
+                    if ~exact_match(thisStimMarker,stimMarkerIE)
                         continue;
                     end
                 end
@@ -127,4 +127,10 @@ for cniii = 1:length(contextsIE)
         fo = 1;
         break;
     end
+end
+
+function fo = exact_match(name,contextsIE)
+fo = 0;
+if sum(strcmp(contextsIE,name)) > 0
+    fo = 1;
 end

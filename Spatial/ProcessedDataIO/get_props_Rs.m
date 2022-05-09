@@ -24,7 +24,11 @@ for rr = 1:size(Rs,1)
 %         if isempty(strfind(R.marker_name,'motion'))
             o.zMI{rr,cc} = R.info_metrics.ShannonMI_Zsh';
             o.MI{rr,cc} = R.info_metrics.ShannonMI';
-            o.zMI_MC{rr,cc} = R.info_metrics_MC.ShannonMI_Zsh';
+            try
+                o.zMI_MC{rr,cc} = R.info_metrics_MC.ShannonMI_Zsh';
+            catch
+                n = 0;
+            end
             o.MI_MC{rr,cc} = R.info_metrics_MC.ShannonMI';
 %         else
 %             o.good_zMI_FR{rr,cc} = R.resp.vals & R.resp.FR_based';

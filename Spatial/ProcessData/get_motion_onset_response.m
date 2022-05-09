@@ -13,13 +13,21 @@ for pp = 1:length(ei.plane)
     ei.deconv = ei.plane{pp}.tP.deconv;
     
     rasters = make_rasters(ei,pp,mOnst,mOnse,'time',binwidths);
+    rastersMC = make_rasters_motion_correction(ei,pp,mOnst,mOnse,'time',binwidths);
     trials = 1:size(rasters.sp_rasters1,1);
     rasters = findRasterProperties_1(thispFolder,0,'motionOnsets11T',rasters,'time',trials,owr(1:3));
+    rastersMC = findRasterProperties_1(thispFolder,0,'motionOnsets11T',rastersMC,'time',trials,owr(1:3));
+    ei.plane{pp}.motionOnset_rastersMC = rastersMC;
+    rasters = findRasterProperties_1_MC(thispFolder,0,'motionOnsets11T',{rasters,rastersMC},'time',trials,owr);
     ei.plane{pp}.motionOnset_rasters = rasters;
     
     rasters = make_rasters(ei,pp,mOffst,mOffse,'time',binwidths);
+    rastersMC = make_rasters_motion_correction(ei,pp,mOffst,mOffse,'time',binwidths);
     trials = 1:size(rasters.sp_rasters1,1);
     rasters = findRasterProperties_1(thispFolder,0,'motionOffsets11T',rasters,'time',trials,owr(1:3));
+    rastersMC = findRasterProperties_1(thispFolder,0,'motionOffsets11T',rastersMC,'time',trials,owr(1:3));
+    ei.plane{pp}.motionOffset_rastersMC = rastersMC;
+    rasters = findRasterProperties_1_MC(thispFolder,0,'motionOffsets11T',{rasters,rastersMC},'time',trials,owr);    
     ei.plane{pp}.motionOffset_rasters = rasters;
     
 %     ei.plane{pp}.acc_response = find_acc_response(ei,pp,owr(5));
