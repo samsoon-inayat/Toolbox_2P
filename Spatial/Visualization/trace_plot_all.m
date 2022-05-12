@@ -3,7 +3,7 @@ if ~exist('flag','var')
     flag = [1 1 0 1];
 end
 if ~exist('pd_rec','var')
-    pd_rec = evalin('base','ei{5}');
+    pd_rec = evalin('base','ei{1}');
 end
 pl = 1;
 try
@@ -179,7 +179,7 @@ end
 
 %%
 while 1
-    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.9 5],'color','w'); hold on;
+    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.9 3],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
     [maxVal,maxLoc] = max(spSigAllN,[],2);
     [sorted,locs] = sort(maxLoc);

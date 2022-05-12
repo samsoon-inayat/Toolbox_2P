@@ -31,6 +31,7 @@ offsets = b.air_puff_f;
 light_onsets = b.stim_r;
 mData = evalin('base','mData');
 signals = get_calcium_data(pd_rec,pl);
+signalsT = signals;
 tei = pd_rec; pp = pl; markersOn = frames_f(1); markersOff = frames_f(end); thisRasterType = 'dist'; binwidths = [0.3 3]; owr = 0;
 rasters = make_rasters_whole(tei,pp,markersOn,markersOff,thisRasterType,binwidths,signals,owr);
 % [nbins,binWidth] = get_nbins_F(b,markersOn,markersOff,binwidths(2),thisRasterType);
@@ -49,7 +50,8 @@ n = 0;
 while 1
     hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.9 5],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
-    [maxVal,maxLoc] = max(spSigAllN,[],2);
+    spSigAllNT = normalizeSignal(signalsT,2);
+    [maxVal,maxLoc] = max(spSigAllNT,[],2);
     [sorted,locs] = sort(maxLoc);
     maxSig = 0.5;
     hi = imagesc([traceTime(1), traceTime(end)],[1 size(spSigAllN,1)],spSigAllN(locs,:),[0 maxSig]);
