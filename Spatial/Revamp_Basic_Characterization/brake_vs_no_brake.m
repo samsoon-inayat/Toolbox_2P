@@ -3451,7 +3451,7 @@ while 1
         mean_speed_over_trials = [];
         aThisSpeed = [];
         for an = 1:size(Rs,1)
-            thisSpeed = nanmean(Rs{an,cn}.speed);
+%             thisSpeed = nanmean(Rs{an,cn}.speed);
             thisSpeed = nanmean(Rs_MC{an,cn}.sp_rasters);
             mean_speed_over_trials(an,:) = thisSpeed;
         end
@@ -4017,8 +4017,6 @@ while 1
     break;
 end
 
-
-
 %% Brake vs No-Brake Air on and Air off and light ON Untuned Cells
 while 1
     %%
@@ -4184,6 +4182,46 @@ while 1
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
    
+    %%
+    break;
+end
+
+
+%% compare the firing rate
+while 1
+    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_L ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off];
+    Rs = o.Rs(:,si); Rs_MC = o.RsMC(:,si);
+    props1 = get_props_Rs(Rs,ntrials);
+%     good_FR = props1.vals;
+    all_zMIs = props1.mean_FR;
+    zMIs = exec_fun_on_cell_mat(all_zMIs,'nanmean');
+%     azMIs = zMIs
+    [within,dvn,xlabels] = make_within_table({'Cond'},[13]);
+    dataT = make_between_table({zMIs},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+%     ra.mauchly
+    
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
+    xdata = make_xdata([13],[1 1.5]);
+%     xdata = make_xdata([2],[1 1.5]);
+    ptab = 0;
+    if ptab h(h==1) = 0; end
+    hf = get_figure(5,[8 7 3.5 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = colors;
+
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',0.02,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',-0.01);
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = rasterNamesTxt(si);
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    changePosition(gca,[0.01 -0.01 0.06 0.01]); put_axes_labels(gca,{[],[0 0 0]},{'Firing Rate (A.U.)',[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('zMIs_good_FR_all_Conditions.pdf'),600);
     %%
     break;
 end
