@@ -10,7 +10,11 @@ for ii = 1:length(ei)
     if sum(selContexts)==0
         rasters(ii,:) = get_data_motion(ei{ii},selContexts,rasterNames);
     else
-        rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
+        try
+            rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
+        catch
+            rasters(ii,:) = {NaN};
+        end
     end
 end
 

@@ -3,8 +3,8 @@ function trial_to_trial_Analysis_brake_vs_nobrake
 %% find spatial trial to trial correlation
 while 1
     trialNums = [1:10];
-   si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L];
-   si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off ArL_L];
+   si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L Ar_L Ars_L];
+   si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off ArL_L Ar_L Ars_L];
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si; propsG = get_props_Rs(RsG,[40,100]); respG = propsG.vals;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
     for cn = 1:length(si)
@@ -139,9 +139,6 @@ while 1
     end
     i_allresp = cell_list_op(allresp,[],'not');
 
-    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
-    mOI = mCI; semOI = semCI;
-    
     allrespOR = cell_list_op(allresp,[],'or',1);
     allrespAND = cell_list_op(allresp,[],'and',1);
     
@@ -152,6 +149,11 @@ while 1
     
     disp('Done');
     %%
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
+    %%
+    m_uni = mean(uni,3);
+    mOI = mCI; semOI = semCI;
+%     mOI = m_uni;
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
@@ -170,7 +172,61 @@ while 1
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     
-    for ii = 1:12
+    for ii = 1:15
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 150.5],'w','linewidth',0.1); 
+        plot([0 150.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+    end
+%     for ii = [2 6 9 12]   
+%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
+%         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
+%     end
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+    format_axes(gca);
+    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+    ttxl = rasterNamesTxt(siG);
+    xtickvals = 5:10:150;%[5 15 25 60 100 115 125];
+    xticklabels = rasterNamesTxt(siG);
+
+    set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);%ytickangle(45);
+    yyaxis right
+    set(gca,'ytick',xtickvals,'yticklabels',yticklabels,'tickdir','out');
+    box off
+    changePosition(gca,[-0.01 0.00 0.037 0.033]);
+    hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.07 0.09 0.02 0.09]);
+    colormap jet
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
+    
+    
+     %%
+     mCI1 = mCI;
+     mask1 = (triu(oM,0) & tril(oM,0)); mCI1(mask1==1) = NaN;
+     sts = 1:10:150; ses = 10:10:150;
+     clear mOI;
+     for rr = 1:length(siG)
+         for cc = 1:length(siG)
+             mOI(rr,cc) = mean(mCI1(sts(rr):ses(rr),sts(cc):ses(cc)),'All');
+         end
+     end
+%      mOI = mCI; semOI = semCI;
+    sz = size(mOI,1);
+%     mOI = OI_mat(:,:,4);
+    oM = ones(size(mOI));
+    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN;
+    maxI = max([mOI(:);semOI(:)]);
+    minI = min([mOI(:);semOI(:)]);
+%     minI = 0; maxI = 0.6;
+    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
+%     mOI = mOI .* mask;
+    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
+    imAlpha(mask1 == 1) = 0;
+%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+    hf = get_figure(6,[8 3 3.5 3.5]);
+%     hf = get_figure(6,[8 3 4 4]);
+    %
+%     axes(ff.h_axes(1));
+    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    
+    for ii = 1:15
         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     end
@@ -182,7 +238,7 @@ while 1
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
     ttxl = rasterNamesTxt(siG);
-    xtickvals = 5:10:130;%[5 15 25 60 100 115 125];
+    xtickvals = 5:10:150;%[5 15 25 60 100 115 125];
     xticklabels = rasterNamesTxt(siG);
 
     set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);%ytickangle(45);
@@ -193,6 +249,23 @@ while 1
     hc = putColorBar(gca,[0.1 -0.08 -0.2 0.03],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'northoutside',[0.07 0.09 0.02 0.09]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
+    
+    %%
+    mOI1 = mOI;
+%     mOI1(isnan(mOI1)) = 1;
+    Di = pdist(mOI1,@naneucdist);
+%     tree = linkage(mOI1,'average','euclidean');
+    tree = linkage(Di,'average');
+    figure(hf);clf
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    hf = gcf;
+    set(hf,'Position',[7 3 6.9 1.5]);
+    set(H,'linewidth',1);
+    set(gca,'xticklabels',txl(TC));xtickangle(45);
+    format_axes(gca);
+    hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
+    changePosition(gca,[-0.05 0.0 0.09 0.05]);
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;
 end

@@ -1,7 +1,10 @@
-function ei = make_and_load_rasters(ei,binwidths,owr)
+function ei = make_and_load_rasters(ei,binwidths,owr,dcfilename)
 
 if ~exist('owr','var')
     owr = [0 0 0];
+end
+if ~exist('dcfilename','var')
+    dcfilename = 'defind_contexts.m';
 end
 
 allContexts = contextDefinitions;
@@ -26,7 +29,7 @@ for aa = 1:length(ei)
 %         tei.ops1 = tei.plane{pp}.tP.ops;
         tei.tP = tei.plane{pp}.tP;
         tplane = tei.plane{pp};
-        contexts = getContexts({ptei});
+        contexts = getContexts({ptei},dcfilename);
         for contextNumber = 1:length(contexts)
             thisContext = contexts(contextNumber);
             stimMarkers = thisContext.stimMarkers;

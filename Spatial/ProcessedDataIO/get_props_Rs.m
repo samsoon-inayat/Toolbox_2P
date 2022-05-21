@@ -27,9 +27,13 @@ for rr = 1:size(Rs,1)
             try
                 o.zMI_MC{rr,cc} = R.info_metrics_MC.ShannonMI_Zsh';
             catch
-                n = 0;
+                o.zMI_MC{rr,cc} = NaN(size(o.zMI{rr,cc}));
             end
-            o.MI_MC{rr,cc} = R.info_metrics_MC.ShannonMI';
+            try
+                o.MI_MC{rr,cc} = R.info_metrics_MC.ShannonMI';
+            catch
+                o.MI_MC{rr,cc} = o.zMI_MC{rr,cc};
+            end
 %         else
 %             o.good_zMI_FR{rr,cc} = R.resp.vals & R.resp.FR_based';
 %             continue;

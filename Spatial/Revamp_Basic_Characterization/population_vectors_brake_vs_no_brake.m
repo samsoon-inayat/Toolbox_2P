@@ -85,6 +85,51 @@ while 1
 end
 
 
+%% population vector and correlation sensory light + Control light
+while 1
+    selected_property = 'untuned';
+    an = 1;
+    titles = {'B-L','B-L*','NB-L'};
+    si = [Ab_On Ab_Offc Ar_On Ar_Offc];
+    si = [Ab_Offc Ar_Offc];
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+    respA = props1.vals;
+    resp = respA;%[resp1(:,1:2),resp2(:,1:2)];
+%     eval(cmdTxt);
+    ffM = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[2 4],...
+        'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.08 0.11],'widthHeightAdjustment',...
+        [10 -80]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 2]);
+    sInds = 1:2;
+    [CRc,aCRc1,mRR] = find_population_vector_corr(Rs(:,sInds),mR(:,sInds),resp(:,sInds),0);
+    ff = ffM; ff.axesPos = ffM.axesPos(:,sInds); ff.h_axes = ffM.h_axes(:,sInds);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,sInds),mRR(an,:),CRc(an,:),[],[],0);
+    for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set(ht,'String',titles{ii}); end
+    
+%     sInds = 3:4;
+%     [CRc,aCRc2,mRR] = find_population_vector_corr(Rs(:,sInds),mR(:,sInds),resp(:,sInds),0);
+%     ff = ffM; ff.axesPos = ffM.axesPos(:,sInds); ff.h_axes = ffM.h_axes(:,sInds);
+%     ff = show_population_vector_and_corr(mData,ff,Rs(an,sInds),mRR(an,:),CRc(an,:),[],[]);
+%     for ii = 1:length(ff.h_axes(1,:)) ht = get_obj(ff.h_axes(1,ii),'title'); set(ht,'String',titles{ii}); end
+    
+    
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_air_%s.pdf',selected_property),600);
+
+    % average correlation of all animals
+    ffM = makeFigureRowsCols(108,[1 0.5 4 1],'RowsCols',[1 3],...
+        'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.08 0.24],'widthHeightAdjustment',...
+        [10 -300]);    set(gcf,'color','w');    set(gcf,'Position',[10 7 2.75 1]);
+    sInds = 1:3;
+    ff = ffM; ff.axesPos = ffM.axesPos(:,sInds); ff.h_axes = ffM.h_axes(:,sInds);
+    ff = show_population_vector_and_corr(mData,ff,Rs(an,sInds),[],aCRc1,[],[],0);
+
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('aPV_air_%s.pdf',selected_property),600);
+    %%
+    break;
+end
+
+
 
 %% population vector and correlation distance
 while 1

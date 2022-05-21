@@ -34,7 +34,9 @@ for rr = 1:size(Rs,1)
             end
             n = 0;
         end
-        if strcmp(R.marker_name,'light22T') || strcmp(R.marker_name,'tone22T')|| strcmp(R.marker_name,'airOnsets22T') || strcmp(R.marker_name,'airOffsets22T')
+        if strcmp(R.marker_name,'light22T') || strcmp(R.marker_name,'tone22T')|| strcmp(R.marker_name,'airOnsets22T') || strcmp(R.marker_name,'airOffsets22T')...
+            || strcmp(R.marker_name,'airOffsets22_C')|| strcmp(R.marker_name,'airOnsets22_C')|| strcmp(R.marker_name,'airOnsets22P') || strcmp(R.marker_name,'light11T')...
+            || strcmp(R.marker_name,'airOnsets11T') || strcmp(R.marker_name,'airOffsets11T')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis,Rs{rr,cc}.resp.excinh] = find_resp_time_raster_light(R,trials);
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light_fractal(R,trials);
         end
@@ -237,7 +239,11 @@ markerType = R.marker_name;
 if strfind(markerType,'air')
     n = 0;
 end
-timeBefore = str2num(markerType(end-1));
+if ~isempty(strfind(R.marker_name,'_C'))
+    timeBefore = 2;
+else
+    timeBefore = str2num(markerType(end-1));
+end
 % rasters = R.fromFrames.sp_rasters;
 rasters = R.sp_rasters1;
 number_of_columns = size(rasters,2);

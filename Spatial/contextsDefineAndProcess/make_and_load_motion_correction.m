@@ -1,4 +1,4 @@
-function ei = make_and_load_rasters(ei,binwidths,owr)
+function ei = make_and_load_motion_correction(ei,binwidths,owr)
 
 if ~exist('owr','var')
     owr = [0 0 0];

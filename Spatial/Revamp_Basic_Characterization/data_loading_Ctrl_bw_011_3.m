@@ -56,6 +56,13 @@ if 0
     ii = 5;
     edit_define_contexts_file(ei{ii});
 end
+%% get control light onsets
+for ii = 1:length(ei)
+    ei(ii) = get_control_light_onsets(ei(ii));
+    ei(ii) = get_control_air_onsets(ei(ii));
+    ei(ii) = get_control_air_onsets_C(ei(ii));
+    ei(ii) = get_control_air_offsets(ei(ii));
+end
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
