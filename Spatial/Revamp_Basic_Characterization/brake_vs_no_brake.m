@@ -2611,7 +2611,14 @@ while 1
     p_agfr = 100*exec_fun_on_cell_mat(all_good_FR,'sum')./exec_fun_on_cell_mat(all_good_FR,'length');
     [mpagfr1,sempagfr1] = findMeanAndStandardError(p_agfr(:,1));
     disp('Done');
-    
+    %%
+    avar = [all_gV(:,[1 3]) all_gV(:,[2 4]) all_gV(:,[5 6])];
+    pavar = find_percent(avar);
+    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[3,2]);
+    dataT = make_between_table({pavar},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    print_for_manuscript(ra)
     %%
     % for different VENN Diagrams change good_FRV = all_exc(:,[1 3]) or
     % all_exc(:,[2 4]) or all_exc(:,[5 6]) same thing for all_inh

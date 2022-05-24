@@ -589,7 +589,7 @@ out3 = find_population_vector_corr_remap_trials(Rs(:,3),resp,trials);
 n = 0;
 %% Speed Figure
 while 1
-    Rs = oDT.Rs;
+%     Rs = oDT.Rs;
     for ii = 1:length(ei)
         b1 = ei{ii}.b;
         for jj = 1:10
