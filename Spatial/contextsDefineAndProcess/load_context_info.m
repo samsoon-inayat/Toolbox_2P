@@ -4,7 +4,7 @@ if ~exist('owr','var')
     owr = [0 0 0];
 end
 if ~exist('dcfilename','var')
-    dcfilename = 'defind_contexts.m';
+    dcfilename = 'define_contexts.m';
 end
 
 allContexts = contextDefinitions;

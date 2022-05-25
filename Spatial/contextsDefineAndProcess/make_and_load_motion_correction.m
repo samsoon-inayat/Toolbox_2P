@@ -3,7 +3,7 @@ function ei = make_and_load_motion_correction(ei,binwidths,owr)
 if ~exist('owr','var')
     owr = [0 0 0];
 end
-
+dcfilename = evalin('base','dcfilename');
 allContexts = contextDefinitions;
 for aa = 1:length(ei)
     ptei = ei{aa};
@@ -26,7 +26,7 @@ for aa = 1:length(ei)
 %         tei.ops1 = tei.plane{pp}.tP.ops;
 %         tei.tP = tei.plane{pp}.tP;
         tplane = tei.plane{pp};
-        contexts = getContexts({ptei});
+        contexts = getContexts({ptei},dcfilename);
         for contextNumber = 1:length(contexts)
             thisContext = contexts(contextNumber);
             stimMarkers = thisContext.stimMarkers;

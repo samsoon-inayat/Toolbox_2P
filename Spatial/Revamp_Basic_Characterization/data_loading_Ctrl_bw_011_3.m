@@ -56,6 +56,7 @@ if 0
     ii = 5;
     edit_define_contexts_file(ei{ii});
 end
+dcfilename = 'define_contexts_revamp.m';
 %% get control light onsets
 for ii = 1:length(ei)
     ei(ii) = get_control_light_onsets(ei(ii));
@@ -72,7 +73,7 @@ end
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
-    ei(ii) = load_context_info(ei(ii),binwidths,[0 0 0]);
+    ei(ii) = load_context_info(ei(ii),binwidths,[0 0 0],dcfilename);
 end
 disp('Done');
 %%
