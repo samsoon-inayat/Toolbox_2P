@@ -2600,9 +2600,14 @@ while 1
     inds = 3:4;
     good_FR_pocondt = [good_FR_pocondt cell_list_op(all_exc(:,inds),[],'or',1) cell_list_op(all_inh(:,inds),[],'or',1) cell_list_op(all_gFR(:,inds),[],'or',1)];
     
+    inds = [1:2 5];
+    good_FR_pocondt_arb = [cell_list_op(all_exc(:,inds),[],'or',1) cell_list_op(all_inh(:,inds),[],'or',1) cell_list_op(all_gFR(:,inds),[],'or',1)];
+    inds = [3:4 6];
+    good_FR_pocondt_arb = [good_FR_pocondt_arb cell_list_op(all_exc(:,inds),[],'or',1) cell_list_op(all_inh(:,inds),[],'or',1) cell_list_op(all_gFR(:,inds),[],'or',1)];
+    
     good_FR_bnb(:,1) = cell_list_op(good_FR_p(:,1:2),[],'and',1);
     good_FR_bnb(:,2) = cell_list_op(good_FR_p(:,3:4),[],'and',1);
-    all_good_FR = cell_list_op(good_FR_bnb,[],'or');
+    all_good_FR = cell_list_op(good_FR_bnb,[],'or'); 
     p_agfr = 100*exec_fun_on_cell_mat(all_good_FR,'sum')./exec_fun_on_cell_mat(all_good_FR,'length');
     [mpagfr,sempagfr] = findMeanAndStandardError(p_agfr(:,1));
     
@@ -2622,9 +2627,11 @@ while 1
     %%
     % for different VENN Diagrams change good_FRV = all_exc(:,[1 3]) or
     % all_exc(:,[2 4]) or all_exc(:,[5 6]) same thing for all_inh
+    good_FRV = [cell_list_op(all_gV(:,[1:2 5]),[],'or',1) cell_list_op(all_gV(:,[3:4 6]),[],'or',1)]; 
+    cell_any = descriptiveStatistics(find_percent(cell_list_op(good_FRV,[],'or',1)));
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
-    good_FRV = good_FR_bnb; good_FRV = all_inh(:,[5 6]);
+%     good_FRV = good_FR_bnb; %good_FRV = all_inh(:,[5 6]);
     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
     p_gFR_C = [];
     for rr = 1:size(good_FRV,2)
@@ -3756,166 +3763,6 @@ while 1
     hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
     changePosition(gca,[0.03 0.0 0.05 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
-    %%
-    break;
-end
-
-%% Speed Figure
-while 1
-    si = [Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];
-    si = [Ar_Offc ArL_Offc Ars_Offc];
-    Rs = o.Rs(:,si); Rs_MC = o.RsMC(:,si);
-    for ii = 1:length(ei)
-        b1 = ei{ii}.b;
-        for jj = 1:10
-            alds(ii,jj) = b1.dist(b1.stim_r(jj+10)) - b1.dist(b1.air_puff_r(jj+20));
-        end
-    end
-    ald = round(mean(alds(:)));
-    %% speed
-     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 3],'spaceRowsCols',[0.1 0.08],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',[-125 -175]);
-    set(gcf,'color','w'); set(gcf,'Position',[5 5 2 1]);
-%     [Y,E] = discretize(1:49,3);
-    all_speeds = []; cTxt = {'NB-A','NB-AL','NB-A*','Ar-Off','ArL-Off','Ar*-Off'}; 
-    ind = 1;
-    for cn = 1:6
-        mean_speed_over_trials = [];
-        aThisSpeed = [];
-        for an = 1:size(Rs,1)
-            thisSpeed = nanmean(Rs{an,cn}.speed);
-%             thisSpeed = nanmean(Rs_MC{an,cn}.sp_rasters);
-            mean_speed_over_trials(an,:) = thisSpeed;
-        end
-        mean_speed_over_bins(:,cn) = nanmean(mean_speed_over_trials,2);
-        if ismember(cn,[1 2 3])
-            axes(ff.h_axes(1,cn));
-        else
-            axes(ff.h_axes(2,cn-3));
-%             delete(gca);
-%             continue;
-        end
-        hold on;
-        cis = Rs{1,cn}.resp.cis;
-        xs = Rs{1,cn}.xs-Rs{1,cn}.xs(cis(1,2)); N = length(xs);
-        mspeed = mean(mean_speed_over_trials(:,1:N)); semspeed = std(mean_speed_over_trials(:,1:N))/sqrt(5);
-        
-        plot(xs,mspeed);
-        shadedErrorBar(xs,mspeed,semspeed);
-%         changePosition(gca,[0.1 0.15 -0.05 -0.15]);
-%         if cn == 1 || cn ==3
-%             put_axes_labels(gca,{'',[0 0 0]},{{'Speed (cm/sec)'},[0 00 0]});
-%         end
-        xbTxt = [2.5 7.5 12.5]-3; ybTxt = 31;
-%         text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
-        ylim([0 25]);
-        box off;
-        format_axes(gca);
-        plot([0 0],[0 30],'m','linewidth',0.25);
-%         if cn == 3
-%             hx = xlabel('Time (sec)');
-%         end
-        if ismember(cn,[2 3 5 6])
-            set(gca,'YTick',[])
-        end
-        format_axes(gca);
-%         if ismember(cn,[1 2 3])
-%             set(gca,'XTick',[])
-%         end
-    end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('speeds_345'),600);
-   
-    %% motion correction
-     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[2 3],'spaceRowsCols',[0.1 0.08],'rightUpShifts',[0.13 0.2],'widthHeightAdjustment',[-125 -175]);
-    set(gcf,'color','w'); set(gcf,'Position',[5 5 2 1]);
-%     [Y,E] = discretize(1:49,3);
-    all_speeds = []; cTxt = {'NB-A','NB-AL','NB-A*','Ar-Off','ArL-Off','Ar*-Off'}; 
-    ind = 1;
-    for cn = 1:6
-        mean_speed_over_trials = [];
-        aThisSpeed = [];
-        for an = 1:size(Rs,1)
-%             thisSpeed = nanmean(Rs{an,cn}.speed);
-            thisSpeed = nanmean(Rs_MC{an,cn}.sp_rasters);
-            mean_speed_over_trials(an,:) = thisSpeed;
-        end
-        if ismember(cn,[1 2 3])
-            axes(ff.h_axes(1,cn));
-        else
-            axes(ff.h_axes(2,cn-3));
-%             delete(gca);
-%             continue;
-        end
-        hold on;
-        cis = Rs{1,cn}.resp.cis;
-        xs = Rs{1,cn}.xs-Rs{1,cn}.xs(cis(1,2)); N = length(xs);
-        mspeed = mean(mean_speed_over_trials(:,1:N)); semspeed = std(mean_speed_over_trials(:,1:N))/sqrt(5);
-        
-        plot(xs,mspeed);
-        shadedErrorBar(xs,mspeed,semspeed);
-%         changePosition(gca,[0.1 0.15 -0.05 -0.15]);
-%         if cn == 1 || cn ==3
-%             put_axes_labels(gca,{'',[0 0 0]},{{'Speed (cm/sec)'},[0 00 0]});
-%         end
-        xbTxt = [2.5 7.5 12.5]-3; ybTxt = 31;
-%         text(xbTxt(1),ybTxt+5,cTxt{cn},'FontSize',5);
-        ylim([0 10]);
-        box off;
-        format_axes(gca);
-        plot([0 0],[0 15],'m','linewidth',0.25);
-%         if cn == 3
-%             hx = xlabel('Time (sec)');
-%         end
-        if ismember(cn,[2 3 5 6])
-            set(gca,'YTick',[])
-        end
-        format_axes(gca);
-%         if ismember(cn,[1 2 3])
-%             set(gca,'XTick',[])
-%         end
-    end
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('speeds_345'),600);
-   
-    
-    
-    %%
-    cn = 4;
-     mean_speed_over_trials = [];
-     for cn = 1:3
-        for an = 1:size(Rs,1)
-            thisSpeed = nanmean(Rs{an,cn}.speed);
-            mean_speed_b(an,cn) = nanmean(thisSpeed(1:18));
-            mean_speed_a(an,cn) = nanmean(thisSpeed(19:36));
-            [h,p,ci,stats] = ttest(thisSpeed(1:18));
-            ha(an,cn) = h;
-            [h,p,ci,stats] = ttest(thisSpeed(19:36));
-            hb(an,cn) = h;
-        end
-     end
-    mean_speed_ba = [mean(mean_speed_over_trials(:,1:18),2) mean(mean_speed_over_trials(:,19:36),2)];
-    [within,dvn,xlabels] = make_within_table({'BA'},[2]);
-    dataT = make_between_table({mean_speed_ba},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    all_mean = nanmean(mean_speed_over_trials,2);
-    [h,p,ci,stats] = ttest(mean_speed_a);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'BA_by_T','hsd'},[1 1 1]);
-    xdata = make_xdata([18 18],[1 2]);
-    h(h==1) = 0;
-    hf = get_figure(5,[8 7 5 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = repmat(mData.dcolors,1,3);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.17);
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Brake','No-Brake','Motion'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.035 0.01 -0.25 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Unique Cells (%)',[0 0 0]});
-    pos = get(gca,'Position');
-    
     %%
     break;
 end

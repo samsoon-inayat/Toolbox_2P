@@ -123,24 +123,35 @@ end
 
 %% speed at air onset or offset or light onset (change variable to do so)
 while 1
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 4],'spaceRowsCols',[0.1 0.07],'rightUpShifts',[0.08 0.3],'widthHeightAdjustment',[-80 -400]);
+    set(gcf,'color','w'); set(gcf,'Position',[5 5 4 1]);
+    vars = {'sao','saof','sao_L','saof_c'};
+    for ii = 1:4
     clear distD
     for an = 1:5
-        distD{an,1} = sao(:,an);
+        cmdTxt = sprintf('distD{an,1} = %s(:,an);',vars{ii}); eval(cmdTxt);
     end
     
     [distDo,allVals] = getAveragesAndAllValues(distD);
    minBin = min(allVals);
    maxBin = max(allVals);
    incr = 3;
-   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+%    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.1 1],'color','w');
+    axes(ff.h_axes(1,ii));
    hold on;
    [ha,hb,hca] = plotAverageDistributions(distD,'colors',{'k'},'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','cdf');
    set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
-   xlim([0 maxBin]);
-   changePosition(gca,[0.12 0.13 -0.2 -0.13]);
-    put_axes_labels(gca,{'Speed (cm/s)',[0 0 0]},{{'Trials (%)'},[0 0 0]});
+   xlim([0 maxBin]); ylim([0 100]);
+%    changePosition(gca,[0.12 0.13 -0.0 -0.13]);
+   set(gca,'xtick',[0 10 20 30])
+   if ii == 1
+        put_axes_labels(gca,{'Speed (cm/s)',[0 0 0]},{{'Trials (%)'},[0 0 0]});
+   else
+       put_axes_labels(gca,{'Speed (cm/s)',[0 0 0]},{{''},[0 0 0]});
+   end
     format_axes(gca);
-    save_pdf(hf,mData.pdf_folder,sprintf('Distribution'),600);
+    end
+    save_pdf(gcf,mData.pdf_folder,sprintf('Distribution'),600);
     %%
     break;
 end
