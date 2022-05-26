@@ -36,7 +36,7 @@ for rr = 1:size(Rs,1)
         end
         if strcmp(R.marker_name,'light22T') || strcmp(R.marker_name,'tone22T')|| strcmp(R.marker_name,'airOnsets22T') || strcmp(R.marker_name,'airOffsets22T')...
             || strcmp(R.marker_name,'airOffsets22_C')|| strcmp(R.marker_name,'airOnsets22_C')|| strcmp(R.marker_name,'airOnsets22P') || strcmp(R.marker_name,'light11T')...
-            || strcmp(R.marker_name,'airOnsets11T') || strcmp(R.marker_name,'airOffsets11T')
+            || strcmp(R.marker_name,'airOnsets11T') || strcmp(R.marker_name,'airOffsets11T') || strcmp(R.marker_name,'airOffsets11_C')|| strcmp(R.marker_name,'airOnsets11_C')|| strcmp(R.marker_name,'airOnsets11P')
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis,Rs{rr,cc}.resp.excinh] = find_resp_time_raster_light(R,trials);
 %             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.cis] = find_resp_time_raster_light_fractal(R,trials);
         end
@@ -240,7 +240,7 @@ if strfind(markerType,'air')
     n = 0;
 end
 if ~isempty(strfind(R.marker_name,'_C'))
-    timeBefore = 2;
+    timeBefore = str2num(markerType(end-3));
 else
     timeBefore = str2num(markerType(end-1));
 end

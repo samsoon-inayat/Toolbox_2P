@@ -56,6 +56,7 @@ if 0
     ii = 5;
     edit_define_contexts_file(ei{ii},'define_cont_11.m');
 end
+dcfilename = 'define_cont_11.m';
 %% get control light onsets
 tic
 for ii = 1:length(ei)
@@ -93,7 +94,7 @@ end
 %%
 tic
 for ii = 1:length(ei)
-    ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
+    ei(ii) = get_motion_onset_response11(ei(ii),[0 0 0 0 0]);
 end
 toc
 disp('Done');

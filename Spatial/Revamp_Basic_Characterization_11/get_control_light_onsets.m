@@ -33,11 +33,11 @@ for pp = 1:numplanes
         
         rastersMC = make_rasters_motion_correction(tei,pp,markersOn,markersOff,'time',binwidths);
         rastersMC = findRasterProperties_1(thispFolder,ci,sprintf('%sMC',thisStimMarker),rastersMC,thisRasterType,trials,owr);
-        contextMC.rasters.light22T = rastersMC;
+        contextMC.rasters.light11T = rastersMC;
         tplane.contextsMC(ci) = contextMC;
         
         rasters = findRasterProperties_1_MC(thispFolder,ci,thisStimMarker,{rasters,rastersMC},thisRasterType,trials,owr);
-        context3.rasters.light22T = rasters;
+        context3.rasters.light11T = rasters;
         tplane.contexts(ci) = context3;
     end
     tei.plane{pp} = tplane;
