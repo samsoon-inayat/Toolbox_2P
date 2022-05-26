@@ -93,7 +93,7 @@ end
 %% for Heap Map
 while 1
     %% for heat maps
-    figdim = 3;
+    figdim = 4;
     hf = get_figure(5,[5 2 figdim figdim]);
     
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4)]; % for comparison of air onset with air offset across brake and no-brake
@@ -115,7 +115,7 @@ while 1
     mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
-    mOI = mUni2;
+%     mOI = mUni2;
     
     sz = size(mOI,1);
     oM = ones(size(mOI));
@@ -145,7 +145,7 @@ while 1
     set(gca,'Ydir','normal');ytickangle(20);
     box on
     changePosition(gca,[0.0 0 0.0 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.08 0.05 0.06 0.05]);
+    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.1 0.05]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
     %%
@@ -162,13 +162,13 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 4 1.75]);
-    set(hf,'Position',[7 3 1.19 1.19]);
+    set(hf,'Position',[7 3 3.5 3]);
+%     set(hf,'Position',[7 3 2 1]);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = ylabel({'Eucledian Distance'});changePosition(hx,[0 -0.3 0]);
-    changePosition(gca,[0.09 0.0 -0.03 0.05]);
+    hx = ylabel({'Eucledian','Distance'});changePosition(hx,[0 -0.3 0]);
+    changePosition(gca,[0 0.0 0.07 -0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;

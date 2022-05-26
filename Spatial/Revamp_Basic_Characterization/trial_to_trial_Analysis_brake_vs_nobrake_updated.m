@@ -168,7 +168,7 @@ while 1
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
-%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.18],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(6,[8 3 3.5 3.5]);
 %     hf = get_figure(6,[8 3 4 4]);
     %
@@ -180,8 +180,8 @@ while 1
         plot([0 180.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     end
 %     for ii = [2 6 9 12]   
-%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
-%         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
+%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 180.5],'k','linewidth',1); 
+%         plot([0 180.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
 %     end
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
@@ -222,7 +222,7 @@ while 1
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
-%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.18],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(6,[8 3 3.5 3.5]);
 %     hf = get_figure(6,[8 3 4 4]);
     %
@@ -230,12 +230,12 @@ while 1
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     
     for ii = 1:15
-        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
-        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 180.5],'w','linewidth',0.1); 
+        plot([0 180.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     end
 %     for ii = [2 6 9 12]   
-%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
-%         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
+%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 180.5],'k','linewidth',1); 
+%         plot([0 180.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
 %     end
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
@@ -280,13 +280,13 @@ hf = figure(200);clf;
 set(hf,'units','inches','position',[5 5 3.5 1.5]);
 plot(1:180,mask,'m');hold on;
 mconj = nanmean(mask);
-plot([1 130],[mconj mconj],'k');
-xlim([1 130]);
-for ii = 1:13
+plot([1 180],[mconj mconj],'k');
+xlim([1 180]);
+for ii = 1:18
     plot([ii*10 ii*10],ylim,'b-');
 %     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
 end
-xticks = 5:10:130;
+xticks = 5:10:180;
 yticks = [5 10 15 mconj 20];
 set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
 ylabel('Cells (%)');box off;
@@ -298,12 +298,12 @@ end
 %% along diagnol (responsiveness) all on the same trial wise
 while 1
 mask = diag(mCI);
-respTW = reshape(mask,10,13);
+respTW = reshape(mask,10,18);
 respTW = respTW';
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 3 1.5]);
-tcolors = mData.dcolors(1:13);
-for ii = 1:13
+tcolors = mData.dcolors(1:18);
+for ii = 1:18
     plot(1:10,respTW(ii,:),'color',mData.dcolors{ii});hold on;
 end
 mconj = nanmean(respTW); semconj = std(respTW)./sqrt(5);
@@ -320,19 +320,19 @@ end
 %% 1 off diagnoal (conjunctive between adjacent trials)
 while 1
 mask = diag(mCI,1);
-mask(10:10:129) = NaN;
-mask(130) = NaN;
+mask(10:10:179) = NaN;
+mask(180) = NaN;
 mconj = nanmean(mask);
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 3.5 0.75]);
-plot(1:130,mask,'m');hold on;
-plot([1 130],[mconj mconj],'k');
-xlim([1 130]);
-for ii = 1:13
+plot(1:180,mask,'m');hold on;
+plot([1 180],[mconj mconj],'k');
+xlim([1 180]);
+for ii = 1:18
     plot([ii*10 ii*10],[4 11],'b--');
 %     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
 end
-xticks = 5:10:130;
+xticks = 5:10:180;
 set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
 ylabel('Cells (%)');box off;
 format_axes(gca);
@@ -343,15 +343,15 @@ end
 %% 1 off diagnoal (conjunctive between adjacent trials) trial-pair wise
 while 1
 mask = diag(mCI,1);
-mask(10:10:129) = NaN;
-mask(130) = NaN;
+mask(10:10:179) = NaN;
+mask(180) = NaN;
 mask(isnan(mask)) = [];
-respTW = reshape(mask,9,13);
+respTW = reshape(mask,9,18);
 respTW = respTW';
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 3 1.5]);
-tcolors = mData.dcolors(1:13);
-for ii = 1:13
+tcolors = mData.dcolors(1:18);
+for ii = 1:18
     plot(1:9,respTW(ii,:),'color',mData.dcolors{ii});hold on;
 end
 mconj = nanmean(respTW); semconj = std(respTW)./sqrt(5);
@@ -374,11 +374,11 @@ while 1
     tvals = [];
     for an = 1:5
         vals = diag(all_CI_mat(:,:,an),1);
-        inds = trialN:10:129;
+        inds = trialN:10:179;
         tvals(an,:) = vals(inds);
     end
     
-    [within,dvn,xlabels] = make_within_table({'cond'},[13]);
+    [within,dvn,xlabels] = make_within_table({'cond'},[18]);
     dataT = make_between_table({tvals},dvn);
     ra = RMA(dataT,within);
     ra.ranova;
@@ -387,7 +387,7 @@ while 1
         
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([13],[1 1.5]);
+	xdata = make_xdata([18],[1 1.5]);
     hf = get_figure(5,[8 7 1.75 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
@@ -423,7 +423,7 @@ while 1
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
-%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.13],'widthHeightAdjustment',[-240 -150]);
+%     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.18],'widthHeightAdjustment',[-240 -150]);
     hf = get_figure(6,[8 3 3.5 3.5]);
 %     hf = get_figure(6,[8 3 4 4]);
     %
@@ -431,18 +431,18 @@ while 1
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     
     for ii = 1:12
-        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'w','linewidth',0.1); 
-        plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+        plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 180.5],'w','linewidth',0.1); 
+        plot([0 180.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     end
 %     for ii = [2 6 9 12]   
-%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 130.5],'k','linewidth',1); 
-%         plot([0 130.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
+%         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 180.5],'k','linewidth',1); 
+%         plot([0 180.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'k','linewidth',1); 
 %     end
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
     ttxl = rasterNamesTxt(siG);
-    xtickvals = 5:10:130;%[5 15 25 60 100 115 125];
+    xtickvals = 5:10:180;%[5 15 25 60 100 115 125];
     xticklabels = rasterNamesTxt(siG);
 %     yticklabels = {'ON','ON','ON','ON','ON','OFF','OFF','ON','ON','ON','OFF','OFF','OFF',};
 
@@ -461,19 +461,19 @@ end
 %% 1 off diagnoal (uniqe between adjacent trials)
 while 1
 mask = diag(mOI,-1);
-mask(10:10:129) = NaN;
-mask(130) = NaN;
+mask(10:10:179) = NaN;
+mask(180) = NaN;
 mconj = nanmean(mask);
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 3.5 0.75]);
-plot(1:130,mask,'m');hold on;
-plot([1 130],[mconj mconj],'k');
-xlim([1 130]);
-for ii = 1:13
+plot(1:180,mask,'m');hold on;
+plot([1 180],[mconj mconj],'k');
+xlim([1 180]);
+for ii = 1:18
     plot([ii*10 ii*10],ylim,'b--');
 %     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
 end
-xticks = 5:10:130;
+xticks = 5:10:180;
 set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
 ylabel('Cells (%)');box off;
 format_axes(gca);
@@ -485,15 +485,15 @@ end
 while 1
 
 mask = diag(mOI,-1);
-mask(10:10:129) = NaN;
-mask(130) = NaN;
+mask(10:10:179) = NaN;
+mask(180) = NaN;
 mask(isnan(mask)) = [];
-respTW = reshape(mask,9,13);
+respTW = reshape(mask,9,18);
 respTW = respTW';
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 3 1.5]);
-tcolors = mData.dcolors(1:13);
-for ii = 1:13
+tcolors = mData.dcolors(1:18);
+for ii = 1:18
     plot(1:9,respTW(ii,:),'color',mData.dcolors{ii});hold on;
 end
 mconj = nanmean(respTW); semconj = std(respTW)./sqrt(5);
@@ -517,11 +517,11 @@ while 1
     tvals = [];
     for an = 1:5
         vals = diag(uni(:,:,an),-1);
-        inds = trialN:10:129;
+        inds = trialN:10:179;
         tvals(an,:) = vals(inds);
     end
     
-    [within,dvn,xlabels] = make_within_table({'cond'},[13]);
+    [within,dvn,xlabels] = make_within_table({'cond'},[18]);
     dataT = make_between_table({tvals},dvn);
     ra = RMA(dataT,within);
     ra.ranova;
@@ -530,7 +530,7 @@ while 1
         
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([13],[1 1.5]);
+	xdata = make_xdata([18],[1 1.5]);
     hf = get_figure(5,[8 7 1.75 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
@@ -554,26 +554,26 @@ end
 %% 1 off diagnoal (disrupted between adjacent trials)
 while 1
 mask = diag(mOI,1);
-mask(10:10:129) = NaN;
-mask(130) = NaN;
+mask(10:10:179) = NaN;
+mask(180) = NaN;
 mconj = nanmean(mask);
 
 masku = diag(mOI,-1);
-masku(10:10:129) = NaN;
-masku(130) = NaN;
+masku(10:10:179) = NaN;
+masku(180) = NaN;
 mconju = nanmean(masku);
 
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 3.5 0.75]);
-plot(1:130,mask,'m');hold on;
-plot(1:130,masku,'c');
-plot([1 130],[mconj mconj],'k');
-xlim([1 130]);
-for ii = 1:13
+plot(1:180,mask,'m');hold on;
+plot(1:180,masku,'c');
+plot([1 180],[mconj mconj],'k');
+xlim([1 180]);
+for ii = 1:18
     plot([ii*10 ii*10],ylim,'b--');
 %     text(ii*10-5,23.5,sprintf('%s',xticklabels{ii}),'FontSize',6);
 end
-xticks = 5:10:130;
+xticks = 5:10:180;
 set(gca,'Xtick',xticks,'XTickLabels',xticklabels);xtickangle(30);
 ylabel('Cells (%)');box off;
 format_axes(gca);
@@ -585,15 +585,15 @@ end
 while 1
 
 mask = diag(mOI,1);
-mask(10:10:129) = NaN;
-mask(130) = NaN;
+mask(10:10:179) = NaN;
+mask(180) = NaN;
 mask(isnan(mask)) = [];
-respTW = reshape(mask,9,13);
+respTW = reshape(mask,9,18);
 respTW = respTW';
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 3 1.5]);
-tcolors = mData.dcolors(1:13);
-for ii = 1:13
+tcolors = mData.dcolors(1:18);
+for ii = 1:18
     plot(1:9,respTW(ii,:),'color',mData.dcolors{ii});hold on;
 end
 mconj = nanmean(respTW); semconj = std(respTW)./sqrt(5);
@@ -617,11 +617,11 @@ while 1
     tvals = [];
     for an = 1:5
         vals = diag(uni(:,:,an),1);
-        inds = trialN:10:129;
+        inds = trialN:10:179;
         tvals(an,:) = vals(inds);
     end
     
-    [within,dvn,xlabels] = make_within_table({'cond'},[13]);
+    [within,dvn,xlabels] = make_within_table({'cond'},[18]);
     dataT = make_between_table({tvals},dvn);
     ra = RMA(dataT,within);
     ra.ranova;
@@ -630,7 +630,7 @@ while 1
         
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([13],[1 1.5]);
+	xdata = make_xdata([18],[1 1.5]);
     hf = get_figure(5,[8 7 1.75 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
@@ -663,34 +663,34 @@ while 1
     end
     respV = respRV;
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    respTW = reshape(mrespV,10,13); mrespAct = respTW'; 
-    respTW = reshape(semrespV,10,13); semrespAct = respTW';
+    respTW = reshape(mrespV,10,18); mrespAct = respTW'; 
+    respTW = reshape(semrespV,10,18); semrespAct = respTW';
     
     respV = conjV;
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    mrespV(10:10:129) = NaN; mrespV(130) = NaN; mrespV(isnan(mrespV)) = []; 
-    semrespV(10:10:129) = NaN; semrespV(130) = NaN; semrespV(isnan(semrespV)) = []; 
-    respTW = reshape(mrespV,9,13); mconjAct = respTW'; 
-    respTW = reshape(semrespV,9,13); semconjAct = respTW';
+    mrespV(10:10:179) = NaN; mrespV(180) = NaN; mrespV(isnan(mrespV)) = []; 
+    semrespV(10:10:179) = NaN; semrespV(180) = NaN; semrespV(isnan(semrespV)) = []; 
+    respTW = reshape(mrespV,9,18); mconjAct = respTW'; 
+    respTW = reshape(semrespV,9,18); semconjAct = respTW';
     
     respV = comp1V;
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    mrespV(10:10:129) = NaN; mrespV(130) = NaN; mrespV(isnan(mrespV)) = []; 
-    semrespV(10:10:129) = NaN; semrespV(130) = NaN; semrespV(isnan(semrespV)) = []; 
-    respTW = reshape(mrespV,9,13); mcomp1Act = respTW'; 
-    respTW = reshape(semrespV,9,13); semcomp1Act = respTW';
+    mrespV(10:10:179) = NaN; mrespV(180) = NaN; mrespV(isnan(mrespV)) = []; 
+    semrespV(10:10:179) = NaN; semrespV(180) = NaN; semrespV(isnan(semrespV)) = []; 
+    respTW = reshape(mrespV,9,18); mcomp1Act = respTW'; 
+    respTW = reshape(semrespV,9,18); semcomp1Act = respTW';
     
     respV = comp2V;
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    mrespV(10:10:129) = NaN; mrespV(130) = NaN; mrespV(isnan(mrespV)) = []; 
-    semrespV(10:10:129) = NaN; semrespV(130) = NaN; semrespV(isnan(semrespV)) = []; 
-    respTW = reshape(mrespV,9,13); mcomp2Act = respTW'; 
-    respTW = reshape(semrespV,9,13); semcomp2Act = respTW';
+    mrespV(10:10:179) = NaN; mrespV(180) = NaN; mrespV(isnan(mrespV)) = []; 
+    semrespV(10:10:179) = NaN; semrespV(180) = NaN; semrespV(isnan(semrespV)) = []; 
+    respTW = reshape(mrespV,9,18); mcomp2Act = respTW'; 
+    respTW = reshape(semrespV,9,18); semcomp2Act = respTW';
     
     mrespActL = NaN;  semrespActL = NaN; 
     xtl = {''}; trialsStr = cellfun(@num2str,trials','un',0);
     xaxL = NaN; xticks = []; xtickL =[];
-    for ii = 1:13
+    for ii = 1:18
         mrespActL = [mrespActL mrespAct(ii,:) NaN]; semrespActL = [semrespActL semrespAct(ii,:) NaN];
         xaxL = [xaxL 1:10 NaN];
         xtl = [xtl trialsStr {''}];
@@ -712,7 +712,7 @@ while 1
     theinds = find(isnan(mrespActL));
     for ii = find(isnan(mrespActL))
         plot([ii ii],[4 21],'b-');
-        if iii <= 13
+        if iii <= 18
             text(ii+2,21,sprintf('%s',xticklabels{iii}),'FontSize',6);
             indsS = (theinds(iii)+1):(theinds(iii+1)-1);
 %             shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{'color',rlcolor},0.5);
@@ -744,14 +744,14 @@ while 1
         respV(an,:) = diag(all_CI_mat(:,:,an));
     end
     
-    [within,dvn,xlabels] = make_within_table({'cond','Trials'},[13,10]);
+    [within,dvn,xlabels] = make_within_table({'cond','Trials'},[18,10]);
     dataT = make_between_table({respV},dvn);
     ra = RMA(dataT,within);
     ra.ranova;
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([13],[1 1.5]);
+	xdata = make_xdata([18],[1 1.5]);
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
@@ -771,12 +771,12 @@ while 1
     
     %%
     mrespV = mean(respV); semrespV = std(respV)./sqrt(5);
-    respTW = reshape(mrespV,10,13); mrespAct = respTW';
-    respTW = reshape(semrespV,10,13); semrespAct = respTW';
+    respTW = reshape(mrespV,10,18); mrespAct = respTW';
+    respTW = reshape(semrespV,10,18); semrespAct = respTW';
     mrespActL = NaN;  semrespActL = NaN; 
     xtl = {''}; trialsStr = cellfun(@num2str,trials','un',0);
     xaxL = NaN; xticks = []; xtickL =[];
-    for ii = 1:13
+    for ii = 1:18
         mrespActL = [mrespActL mrespAct(ii,:) NaN];
         semrespActL = [semrespActL semrespAct(ii,:) NaN];
         xaxL = [xaxL 1:10 NaN];
@@ -798,7 +798,7 @@ while 1
     theinds = find(isnan(respActL));
     for ii = find(isnan(respActL))
         plot([ii ii],[11 26],'b-');
-        if iii <= 13
+        if iii <= 18
         text(ii+2,29,sprintf('%s',xticklabels{iii}),'FontSize',6);
         indsS = (theinds(iii)+1):(theinds(iii+1)-1);
         shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{},0.5)
@@ -824,10 +824,10 @@ while 1
     aVar = [];
     for an = 1:5
         tvar = conjV(an,:);
-        tvar(10:10:129) = NaN; tvar(isnan(tvar)) = []; 
+        tvar(10:10:179) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
-    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[13,9]);
+    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[18,9]);
     dataT = make_between_table({aVar},dvn);
     rac = RMA(dataT,within);
     rac.ranova
@@ -835,7 +835,7 @@ while 1
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([13],[1 1.5]);
+	xdata = make_xdata([18],[1 1.5]);
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
@@ -857,17 +857,17 @@ while 1
     aVar = [];
     for an = 1:5
         tvar = comp1V(an,:);
-        tvar(10:10:129) = NaN; tvar(isnan(tvar)) = []; 
+        tvar(10:10:179) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
-    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[13,9]);
+    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[18,9]);
     dataT = make_between_table({aVar},dvn);
     rac1 = RMA(dataT,within);
     rac1.ranova
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac1,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([13],[1 1.5]);
+	xdata = make_xdata([18],[1 1.5]);
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
@@ -888,17 +888,17 @@ while 1
     aVar = [];
     for an = 1:5
         tvar = comp2V(an,:);
-        tvar(10:10:129) = NaN; tvar(isnan(tvar)) = []; 
+        tvar(10:10:179) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
-    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[13,9]);
+    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[18,9]);
     dataT = make_between_table({aVar},dvn);
     rac2 = RMA(dataT,within);
     rac2.ranova
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([13],[1 1.5]);
+	xdata = make_xdata([18],[1 1.5]);
     hf = get_figure(5,[8 7 2 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;

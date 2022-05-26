@@ -990,8 +990,7 @@ while 1
     %%
     % for different VENN Diagrams change good_FRV = all_exc(:,[1 3]) or
     % all_exc(:,[2 4]) or all_exc(:,[5 6]) same thing for all_inh
-    good_FRV = [cell_list_op(all_gV(:,[1:3]),[],'or',1) cell_list_op(all_gV(:,[4:6]),[],'or',1)]; 
-    ds_all_gV = descriptiveStatistics(find_percent(cell_list_op(all_gV,[],'or',1)),'decimal_places',2)
+    good_FRV = [cell_list_op(all_gV(:,[1:2 5]),[],'or',1) cell_list_op(all_gV(:,[3:4 6]),[],'or',1)]; 
     cell_any = descriptiveStatistics(find_percent(cell_list_op(good_FRV,[],'or',1)));
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
@@ -1100,11 +1099,11 @@ while 1
     end
     set(gca,'Ydir','normal');ytickangle(20);
     box on
-    changePosition(gca,[0.01 0 -0.06 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.06 0.05 0.07]);
+    changePosition(gca,[0.01 0 0.04 0]);
+    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.1 0.05 0.06 0.05]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
-    txl = {'B-A','B-L','B-Arb','NB-A','NB-L','NB-Arb'};
+    
     %% with NaN
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FR,0.5,0.05);
     mOI = mCI; semOI = semCI;

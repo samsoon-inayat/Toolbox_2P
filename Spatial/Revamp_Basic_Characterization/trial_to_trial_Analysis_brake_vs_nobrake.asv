@@ -155,8 +155,7 @@ while 1
     %%
     mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
     mOI = mCI; semOI = semCI;
-    mSel = mCI;
-    mOI = mSel;
+    mOI = mUni1;
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
@@ -278,7 +277,7 @@ while 1
 mask = diag(mCI);
 hf = figure(200);clf;
 set(hf,'units','inches','position',[5 5 3.5 1.5]);
-plot(1:180,mask,'m');hold on;
+plot(1:130,mask,'m');hold on;
 mconj = nanmean(mask);
 plot([1 130],[mconj mconj],'k');
 xlim([1 130]);
