@@ -47,7 +47,7 @@ while 1
 	xdata = make_xdata([3 3],[1 1.5]);
     hf = get_figure(5,[8 7 1 1]);
     % s = generate_shades(length(bins)-1);
-    tcolors = mData.dcolors;
+    tcolors = mData.colors(3:end);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);

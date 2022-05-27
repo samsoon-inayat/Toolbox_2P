@@ -2570,7 +2570,7 @@ while 1
     %%
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     event_type = {'Air ON','Air OFF','Light ON'};
-    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ab_Offc Abs_Offc];[Ar_Offc ArL_Offc Ars_Offc]};
+    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ab_Offc Abs_Offc];[Ar_Offc ArL_Offc Ars_Offc];[Lb Lbs];[ArL_L]};
     clear all_gV all_gFR all_exc all_inh;
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -2624,10 +2624,32 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     print_for_manuscript(ra)
+    %% combined population type and exc and inh cell type RM anova test
+    inds = [7 8];
+    good_FRV = all_exc(:,inds);
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [bcellsu intcells nbcellsu];
+    
+    good_FRV = all_inh(:,inds);
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [aVar bcellsu intcells nbcellsu];
+    
+    [within,dvn,xlabels] = make_within_table({'CT','PT'},[2,3]);
+    dataT = make_between_table({aVar},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    print_for_manuscript(ra)
     %%
     % for different VENN Diagrams change good_FRV = all_exc(:,[1 3]) or
     % all_exc(:,[2 4]) or all_exc(:,[5 6]) same thing for all_inh
-    good_FRV = [cell_list_op(all_gV(:,[1:2 5]),[],'or',1) cell_list_op(all_gV(:,[3:4 6]),[],'or',1)]; 
+%     good_FRV = [cell_list_op(all_gV(:,[1:2 5]),[],'or',1) cell_list_op(all_gV(:,[3:4 6]),[],'or',1)]; 
+    good_FRV = all_exc(:,[1 3])
     cell_any = descriptiveStatistics(find_percent(cell_list_op(good_FRV,[],'or',1)));
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
@@ -2700,9 +2722,11 @@ while 1
     save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all3.pdf',ntrials),600);
     %% for heat maps
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4)]; % for comparison of air onset with air offset across brake and no-brake
-    good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,5),all_inh(:,5),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4),all_exc(:,6),all_inh(:,6)]; % for comparison of air onset offset and arb
-    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FR,0.5,0.05);
+%     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,5),all_inh(:,5),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4),all_exc(:,6),all_inh(:,6)]; % for comparison of air onset offset and arb
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FR,0.5,0.05);
+    mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
     mOI = mCI; semOI = semCI;
+%     mOI = mUni2;
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
@@ -2714,6 +2738,7 @@ while 1
 %     txl = {'B-A-On-Exc','B-A-On-Inh','B-A-On-Unt','B-A-Off-Exc','B-A-Off-Inh','B-A-Off-Unt','NB-A-On-Exc','NB-A-On-Inh','NB-A-On-Unt','NB-A-Off-Exc','NB-A-Off-Inh','NB-A-Off-Unt'};%,'M-On','M-Off'};
     txl = {'Exc','Inh'}; txl = repmat(txl,1,4);
     txl = {'Exc','Inh'}; txl = repmat(txl,1,6);
+    txl = {' B-AOn-Exc',' B-AOn-Inh',' B-AOff-Exc',' B-AOff-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh'};
 %     txl = {'Air-On','Air-Off'};txl = repmat(txl,1,2);
 %     mOI = mOI .* mask;
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
@@ -2744,6 +2769,7 @@ while 1
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
     
     %% with NaN
+    for noth = 1
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(good_FR,0.5,0.05);
     mOI = mCI; semOI = semCI;
     sz = size(mOI,1);
@@ -2780,7 +2806,7 @@ while 1
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean.pdf',ntrials),600);
     
-    
+    end
     
 %% agglomerative hierarchical clustering
 
@@ -2796,7 +2822,7 @@ while 1
 %     set(hf,'Position',[7 3 2 1]);
     set(H,'linewidth',0.5);
     txl = {' B-AOn-Exc',' B-AOn-Inh',' B-AOff-Exc',' B-AOff-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh'};
-    txl = {' B-AOn-Exc',' B-AOn-Inh',' B-AOff-Exc',' B-AOff-Inh',' B-Arb-Exc',' B-Arb-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-Arb-Exc','NB-Arb-Inh'};
+%     txl = {' B-AOn-Exc',' B-AOn-Inh',' B-AOff-Exc',' B-AOff-Inh',' B-Arb-Exc',' B-Arb-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-Arb-Exc','NB-Arb-Inh'};
 %     txl = {' Tun-B-A',' Tun-B-L','Tun-NB-A','Tun-NB-L',' Unt-B-A',' Unt-B-L','Unt-NB-A','Unt-NB-L'};
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
