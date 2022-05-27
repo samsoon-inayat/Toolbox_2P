@@ -5,8 +5,9 @@ while 1
     trialNums = [1:10];
    si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L Ar_L Ars_L];
    si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off ArL_L Ar_L Ars_L];
-   si = [Lb Ab_On Ab_Off Ab_Offc Ar_On Ar_Off Ar_Offc ArL_On ArL_Off ArL_Offc Ars_On Ars_Off Ars_Offc Lbs Abs_On Abs_Off Abs_Offc ArL_L];
-   event_type = {'1-L','2-AOn','2-AOff','2-Arb','3-AOn','3-AOff','3-Arb','4-AOn','4-AOff','4-Arb','5-AOn','5-AOff','5-Arb','6-L','7-AOn','7-AOff','7-Arb','4-L'};
+   event_type = {'1-L','2-AOn','2-AOff','3-AOn','3-AOff','4-AOn','4-AOff','5-AOn','5-AOff','6-L','7-AOn','7-AOff','4-L'};
+%    si = [Lb Ab_On Ab_Off Ab_Offc Ar_On Ar_Off Ar_Offc ArL_On ArL_Off ArL_Offc Ars_On Ars_Off Ars_Offc Lbs Abs_On Abs_Off Abs_Offc ArL_L];
+%    event_type = {'1-L','2-AOn','2-AOff','2-Arb','3-AOn','3-AOff','3-Arb','4-AOn','4-AOff','4-Arb','5-AOn','5-AOff','5-Arb','6-L','7-AOn','7-AOff','7-Arb','4-L'};
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si; propsG = get_props_Rs(RsG,[40,100]); respG = propsG.vals;
     avgProps = get_props_Rs(Rs,[40,100]); respM = avgProps.good_FR;
     for cn = 1:length(si)
@@ -155,7 +156,8 @@ while 1
     %%
     mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
     mOI = mCI; semOI = semCI;
-    mOI = mUni1;
+    mSel = mCI;
+    mOI = mSel;
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
@@ -277,7 +279,7 @@ while 1
 mask = diag(mCI);
 hf = figure(200);clf;
 set(hf,'units','inches','position',[5 5 3.5 1.5]);
-plot(1:130,mask,'m');hold on;
+plot(1:180,mask,'m');hold on;
 mconj = nanmean(mask);
 plot([1 130],[mconj mconj],'k');
 xlim([1 130]);

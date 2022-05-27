@@ -153,9 +153,13 @@ while 1
     %%
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
     %%
+    p_allresp_or = find_percent(cell_list_op(allresp,[],'or',1));
+    descriptiveStatistics(p_allresp_or)
+    %%
     mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
     mOI = mCI; semOI = semCI;
     mSel = mCI;
+%     mSel = mUni;
     mOI = mSel;
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
@@ -169,7 +173,7 @@ while 1
     imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
     imAlpha(mask1 == 1) = 0;
 %     ff = makeFigureRowsCols(2020,[10 4 6 1.5],'RowsCols',[1 2],'spaceRowsCols',[0.1 0.01],'rightUpShifts',[0.05 0.18],'widthHeightAdjustment',[-240 -150]);
-    hf = get_figure(6,[8 3 3.5 3.5]);
+    hf = get_figure(6,[8 3 3.25 3.25]);
 %     hf = get_figure(6,[8 3 4 4]);
     %
 %     axes(ff.h_axes(1));
@@ -201,7 +205,7 @@ while 1
     
     
      %%
-     mCI1 = mSel;
+     mCI1 = mUni2;
      mask1 = (triu(oM,0) & tril(oM,0)); mCI1(mask1==1) = NaN;
      sts = 1:10:size(mOI,2); ses = 10:10:size(mOI,2);
      clear mOI;
@@ -263,7 +267,7 @@ while 1
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
     txl = event_type;
-    set(hf,'Position',[7 3 6.9 1.5]);
+    set(hf,'Position',[7 3 3.3 1.5]);
     set(H,'linewidth',1);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
@@ -736,37 +740,48 @@ while 1
 break;
 end
 
-%% 1 off diagnoal (uniqe between adjacent trials)
+%% 1 off diagnoal (uniqe between adjacent trials) for responsive cells percentage graphs
 while 1
     %%
     respV = [];
     for an = 1:5
         respV(an,:) = diag(all_CI_mat(:,:,an));
     end
-    
+    %% run one grand test
     [within,dvn,xlabels] = make_within_table({'cond','Trials'},[18,10]);
     dataT = make_between_table({respV},dvn);
     ra = RMA(dataT,within);
     ra.ranova;
+    print_for_manuscript(ra)
+    %% run 18 individual tests for each condition separately
+    sts = 1:10:180; ses = 10:10:180;
+    [within,dvn,xlabels] = make_within_table({'Trials'},[10]);
+    for cni = 1:length(siG)
+        t_respV = respV(:,sts(cni):ses(cni));
+        dataT = make_between_table({t_respV},dvn);
+        raR{cni} = RMA(dataT,within);
+        raR{cni}.ranova;
+        print_for_manuscript(raR{cni})
+    end
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
 	xdata = make_xdata([18],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
+    hf = get_figure(5,[8 7 3 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
 %     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
-    maxY = maxY + 5;
+    maxY = maxY + 1;
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 15 25]); xtickangle(45)
+    changePosition(gca,[-0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('responsivity.pdf'),600);
     
     %%
@@ -782,8 +797,8 @@ while 1
         xaxL = [xaxL 1:10 NaN];
         xtl = [xtl trialsStr {''}];
     end
-    xax = 1:length(respActL); 
-    for ii = 1:length(respActL)
+    xax = 1:length(mrespActL); 
+    for ii = 1:length(mrespActL)
         if xaxL(ii) == 1 || xaxL(ii) == 10
             xticks = [xticks xax(ii)];
             xtickL = [xtickL xtl(ii)];
@@ -795,8 +810,8 @@ while 1
     plot(xax,mrespActL,'k');hold on;
     plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'m');
     iii=1;
-    theinds = find(isnan(respActL));
-    for ii = find(isnan(respActL))
+    theinds = find(isnan(mrespActL));
+    for ii = find(isnan(mrespActL))
         plot([ii ii],[11 26],'b-');
         if iii <= 18
         text(ii+2,29,sprintf('%s',xticklabels{iii}),'FontSize',6);
@@ -804,9 +819,8 @@ while 1
         shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{},0.5)
         iii=iii+1;
         end
-        
     end
-    xlim([0 length(respActL)+1]); ylim([10 30]);
+    xlim([0 length(mrespActL)+1]); ylim([10 30]);
     xlabel('Trials');ylabel('Cells (%)');box off;
     set(gca,'xtick',xticks,'xticklabel',xtickL);
 %     legs = {'Responsive Cells',[9.5 0.1 34 0.2]}; 
@@ -827,30 +841,40 @@ while 1
         tvar(10:10:179) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
+    %%
     [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[18,9]);
     dataT = make_between_table({aVar},dvn);
     rac = RMA(dataT,within);
     rac.ranova
-    
+     %% run 18 individual tests for each condition separately
+    sts = 1:9:162; ses = 9:9:162;
+    [within,dvn,xlabels] = make_within_table({'TrialsP'},[9]);
+    for cni = 1:length(siG)
+        t_aVar = aVar(:,sts(cni):ses(cni));
+        dataT = make_between_table({t_aVar},dvn);
+        raC{cni} = RMA(dataT,within);
+        raC{cni}.ranova;
+        print_for_manuscript(raC{cni})
+    end
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
 	xdata = make_xdata([18],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
+    hf = get_figure(5,[8 7 3 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
 %     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
-    maxY = maxY + 5;
+    maxY = maxY + 1;
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[10 20 30]); xtickangle(45)
+    changePosition(gca,[-0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('conj_conds.pdf'),600);
     
     %%
@@ -860,29 +884,40 @@ while 1
         tvar(10:10:179) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
+    %%
     [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[18,9]);
     dataT = make_between_table({aVar},dvn);
     rac1 = RMA(dataT,within);
     rac1.ranova
+     %% run 18 individual tests for each condition separately
+    sts = 1:9:162; ses = 9:9:162;
+    [within,dvn,xlabels] = make_within_table({'TrialsP'},[9]);
+    for cni = 1:length(siG)
+        t_aVar = aVar(:,sts(cni):ses(cni));
+        dataT = make_between_table({t_aVar},dvn);
+        raC1{cni} = RMA(dataT,within);
+        raC1{cni}.ranova;
+        print_for_manuscript(raC1{cni})
+    end
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac1,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
 	xdata = make_xdata([18],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
+    hf = get_figure(5,[8 7 3 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
 %     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
-    maxY = maxY + 5;
+    maxY = maxY + 1;
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[10 20 30]); xtickangle(45)
+    changePosition(gca,[-0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('comp1_conds.pdf'),600);
     %%
     aVar = [];
@@ -891,29 +926,40 @@ while 1
         tvar(10:10:179) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
+    %%
     [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[18,9]);
     dataT = make_between_table({aVar},dvn);
     rac2 = RMA(dataT,within);
     rac2.ranova
+     %% run 18 individual tests for each condition separately
+    sts = 1:9:162; ses = 9:9:162;
+    [within,dvn,xlabels] = make_within_table({'TrialsP'},[9]);
+    for cni = 1:length(siG)
+        t_aVar = aVar(:,sts(cni):ses(cni));
+        dataT = make_between_table({t_aVar},dvn);
+        raC2{cni} = RMA(dataT,within);
+        raC2{cni}.ranova;
+        print_for_manuscript(raC2{cni})
+    end
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
 	xdata = make_xdata([18],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
+    hf = get_figure(5,[8 7 3 1]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
 %     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
-    maxY = maxY + 5;
+    maxY = maxY + 1;
     ylims = ylim;
     format_axes(gca);
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[5 maxY]); format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[5 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[10 20 ]); xtickangle(45)
+    changePosition(gca,[-0.02 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('comp2_conds.pdf'),600);
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'TrialsP','hsd'},[1.5 1 1]);
