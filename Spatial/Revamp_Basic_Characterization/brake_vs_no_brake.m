@@ -2624,10 +2624,19 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     print_for_manuscript(ra)
+    
+    %%
+    avar = [cell_list_op(all_gV(:,[1 2 5]),[],'or',1) cell_list_op(all_gV(:,[3 4 6]),[],'or',1)];
+    pavar = find_percent(avar);
+    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[3,2]);
+    dataT = make_between_table({pavar},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    print_for_manuscript(ra)
     %% combined population type and exc and inh cell type RM anova test
     inds = [7 8];
     good_FRV = all_exc(:,inds);
-    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
     intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
     bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
     
@@ -2645,11 +2654,39 @@ while 1
     ra = RMA(dataT,within);
     ra.ranova
     print_for_manuscript(ra)
+    
+     %% combined population type and pooled exc and inh cell type RM anova test for on off arb
+    good_FRV = all_gV(:,[1 3]);
+     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [bcellsu intcells nbcellsu];
+    
+    good_FRV = all_gV(:,[2 4]);
+     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [aVar bcellsu intcells nbcellsu];
+    
+    good_FRV = all_gV(:,[5 6]);
+     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [aVar bcellsu intcells nbcellsu];
+    
+    [within,dvn,xlabels] = make_within_table({'ET','PT'},[3,3]);
+    dataT = make_between_table({aVar},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    print_for_manuscript(ra)
     %%
     % for different VENN Diagrams change good_FRV = all_exc(:,[1 3]) or
     % all_exc(:,[2 4]) or all_exc(:,[5 6]) same thing for all_inh
 %     good_FRV = [cell_list_op(all_gV(:,[1:2 5]),[],'or',1) cell_list_op(all_gV(:,[3:4 6]),[],'or',1)]; 
-    good_FRV = all_exc(:,[1 3])
+    good_FRV = avar
     cell_any = descriptiveStatistics(find_percent(cell_list_op(good_FRV,[],'or',1)));
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);

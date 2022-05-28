@@ -93,14 +93,15 @@ end
 %% for Heap Map
 while 1
     %% for heat maps
-    figdim = 2;
+    figdim = 3;
     hf = get_figure(5,[5 2 figdim figdim]);
     
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4)]; % for comparison of air onset with air offset across brake and no-brake
     txl = {'AOn-Exc','Inh'}; txl = repmat(txl,1,4);
     
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,5),all_inh(:,5),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4),all_exc(:,6),all_inh(:,6)]; % for comparison of air onset offset and arb
-    txl = {'AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh','AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh'};
+%     txl = {'AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh','AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh'};
+    txl = {'B-AOn-Exc','B-AOn-Inh','B-AOff-Exc','B-AOff-Inh','B-Arb-Exc','B-Arb-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-Arb-Exc','NB-Arb-Inh'};
 %     txl = {'Exc','Inh'}; txl = repmat(txl,1,6);
     
 %     good_FR = all_exc_inh;
@@ -116,7 +117,7 @@ while 1
     mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
-%     mOI = mUni;
+    mOI = mUni2;
     
     sz = size(mOI,1);
     oM = ones(size(mOI));
@@ -133,7 +134,7 @@ while 1
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(60);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(75);
     for rr = 1:size(mCI,1)
         for cc = 1:size(mCI,1)
             if rr == cc
@@ -143,7 +144,7 @@ while 1
     end
     plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 150.5],'w','linewidth',0.1); 
     plot([0 150.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
-    set(gca,'Ydir','normal');ytickangle(10);
+    set(gca,'Ydir','normal');ytickangle(15);
     box on
     changePosition(gca,[0.0 0 0.0 0]);
     hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.08 0.05 0.05 0.05]);
@@ -163,13 +164,13 @@ while 1
     figure(hf);clf
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
-    set(hf,'Position',[7 3 4 1.75]);
-    set(hf,'Position',[7 3 1.19 1.19]);
+    set(hf,'Position',[7 3 3.5 1.75]);
+    set(hf,'Position',[7 3 2.3 1.5]);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
-    hx = ylabel({'Eucledian Distance'});changePosition(hx,[0 -0.3 0]);
-    changePosition(gca,[0.09 0.0 -0.03 0.05]);
+    hx = ylabel({'Eucledian Distance'});changePosition(hx,[0 0 0]);
+    changePosition(gca,[0.0 0.0 0.07 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;
@@ -201,7 +202,7 @@ end
 
 
 
-%% for bar graphs type_by_cond
+%% for bar graphs CT_by_PT
 while 1
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_by_PT','hsd'},[1.5 1 1]);
@@ -237,6 +238,70 @@ while 1
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 9.5]); format_axes(gca);
     xticks = xdata; xticklabels = {'B','Con','NB'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.01 -0.6 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('bar_graph.pdf',ntrials),600);
+    %%
+    break;
+end
+
+
+
+%% for bar graphs ET_by_PT
+while 1
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'ET_by_PT','hsd'},[1.5 1 1]);
+    h(h==1) = 0;
+	xdata = make_xdata([3 3 3],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = [mData.colors(1) mData.colors(10) mData.colors(2) mData.colors(1) mData.colors(10) mData.colors(2) mData.colors(1) mData.colors(10) mData.colors(2)];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
+    xticks = xdata; xticklabels = {'B','Con','NB'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.01 -0.2 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('bar_graph.pdf',ntrials),600);
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'PT','hsd'},[1.5 1 1]);
+	xdata = make_xdata([3],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors([1 10 2]);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',-0.05);
+    maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
+    xticks = xdata; xticklabels = {'B','Con','NB'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.05 0.01 -0.55 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('bar_graph.pdf',ntrials),600);
+    
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'ET','hsd'},[1.5 1 1]);
+	xdata = make_xdata([3],[1 1.5]);
+    hf = get_figure(5,[8 7 2 1]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.colors([1 10 2]);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',1.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 30]); format_axes(gca);
+    xticks = xdata; xticklabels = {'AOn','AOff','Arb'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.05 0.01 -0.6 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('bar_graph.pdf',ntrials),600);
