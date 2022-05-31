@@ -2590,6 +2590,7 @@ while 1
         all_inh(:,ii) = gFR;
     end
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4)];
+    good_FR_grand = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,5),all_inh(:,5),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4),all_exc(:,6),all_inh(:,6)];
 %     good_FR = [all_exc(:,1),all_inh(:,1),all_gFR(:,1),all_exc(:,2),all_inh(:,2),all_gFR(:,2),all_exc(:,3),all_inh(:,3),all_gFR(:,3),all_exc(:,4),all_inh(:,4),all_gFR(:,4)];
     
     good_FR_p = cell_list_op(all_exc,all_inh,'or');
@@ -2616,6 +2617,13 @@ while 1
     p_agfr = 100*exec_fun_on_cell_mat(all_good_FR,'sum')./exec_fun_on_cell_mat(all_good_FR,'length');
     [mpagfr1,sempagfr1] = findMeanAndStandardError(p_agfr(:,1));
     disp('Done');
+    %%
+    pavar = find_percent(good_FR_grand);
+    [within,dvn,xlabels] = make_within_table({'Cond','ET','CT'},[2,3,2]);
+    dataT = make_between_table({pavar},dvn);
+    ra = RMA(dataT,within);
+    ra.ranova
+    print_for_manuscript(ra)
     %%
     avar = [all_gV(:,[1 3]) all_gV(:,[2 4]) all_gV(:,[5 6])];
     pavar = find_percent(avar);
