@@ -875,41 +875,56 @@ while 1
 end
 
 
-%% compare other variables pooled air on or off brake vs no-brake exc and inh (and controls) big ANOVA test
+%% Most Recent compare all variables pooled air on or off brake vs no-brake exc and inh (and controls) big ANOVA test
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     event_type = {'Air ON','Air OFF','Light ON'};
     sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc]};
     clear all_gFR all_exc all_inh all_gV 
-    prop_names = {'resp','N_Resp_Trials','zMI','HaFD','HiFD'};
+    prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
     cell_sel = {'good_FR','vals','exc','inh'};
     varName = {'all_gFR','all_gV','all_exc','all_inh'};
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
-    pni = 3;
+    pni = 7;
     all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};
         tRs = o.Rs(:,sit);
         props1 = get_props_Rs(tRs,ntrials);
-        for cii = 1:length(cell_sel);
+        for cii = 1:length(cell_sel)
             cmdTxt = sprintf('gFR = props1.%s;',cell_sel{cii});eval(cmdTxt);
             if pni == 1
                 rf = find_percent(gFR);
-                cmdTxt = sprintf('%s(:,ii) = mean(rf,2);',varName{cii});
+                cmdTxt = sprintf('%s(:,ii) = mean(rf,2);',varName{cii}); eval(cmdTxt)
             else
-                cmdtxt = sprintf('rf = props1.%s;',prop_names{pni}); eval(cmdtxt);
-                if pni == 3
-                    cmdTxt = all_gV(:,ii) = mean(exec_fun_on_cell_mat(rf,'nanmean',gFR),2);
+                if pni == 7
+                    
                 else
-                    all_gV(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
+                    if pni == 3 || pni == 4
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{3}); eval(cmdtxt);
+                        if pni == 3
+                            cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''nanmean'',gFR),2);',varName{cii});eval(cmdTxt);
+                        else
+                            for rrr = 1:size(rf,1)
+                                for ccc = 1:size(rf,2)
+                                    temp = isnan(rf{rrr,ccc});
+                                    rf1(rrr,ccc) = 100*sum(temp(gFR{rrr,ccc}))/size(rf{rrr,ccc},1);
+                                end
+                            end
+                            cmdTxt = sprintf('%s(:,ii) = mean(rf1,2);',varName{cii}); eval(cmdTxt)
+                        end
+                    else
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{pni}); eval(cmdtxt);
+                        cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''mean'',gFR),2);',varName{cii});eval(cmdTxt);
+                    end
                 end
             end
         end
         all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
     end
-    
+    %%
     avar = (all_exc_inh);
     [within,dvn,xlabels] = make_within_table({'Cond','ET','CT'},[2,3,2]);
     dataT = make_between_table({avar},dvn);
@@ -917,17 +932,29 @@ while 1
     ra.ranova
     print_for_manuscript(ra)
     %%
-    sti = 3;
-    avar = [all_exc(:,sti) all_inh(:,sti) all_exc(:,sti+3) all_inh(:,sti+3)];
-    [within,dvn,xlabels] = make_within_table({'Cond','Type'},[2,2]);
-    dataT = make_between_table({avar},dvn);
+     inds = [1 3];
+    good_FRV = all_exc(:,inds);
+     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [bcellsu intcells nbcellsu];
+    
+    good_FRV = all_inh(:,inds);
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [aVar bcellsu intcells nbcellsu];
+    
+    [within,dvn,xlabels] = make_within_table({'CT','PT'},[2,3]);
+    dataT = make_between_table({aVar},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     print_for_manuscript(ra)
     %%
     break;
 end
-
 
 
 %% compare percent zMI pooled air on or off brake vs no-brake
@@ -2434,7 +2461,7 @@ while 1
     ra.ranova
     print_for_manuscript(ra)
     %% combined population type and exc and inh cell type RM anova test
-    inds = [7 8];
+    inds = [1 3];
     good_FRV = all_exc(:,inds);
      [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
     intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
