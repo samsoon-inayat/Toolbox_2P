@@ -887,7 +887,7 @@ while 1
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
-    pni = 7;
+    pni = 1;
     all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -900,7 +900,7 @@ while 1
                 cmdTxt = sprintf('%s(:,ii) = mean(rf,2);',varName{cii}); eval(cmdTxt)
             else
                 if pni == 7
-                    
+                    cmdTxt = sprintf('%s(:,ii) = cell_list_op(gFR,[],''or'',1);',varName{cii});eval(cmdTxt);
                 else
                     if pni == 3 || pni == 4
                         cmdtxt = sprintf('rf = props1.%s;',prop_names{3}); eval(cmdtxt);
@@ -925,14 +925,39 @@ while 1
         all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
     end
     %%
+%     avar = find_percent(all_exc_inh);
     avar = (all_exc_inh);
-    [within,dvn,xlabels] = make_within_table({'Cond','ET','CT'},[2,3,2]);
+    [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET','CT'},[2,3,2]);
     dataT = make_between_table({avar},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     print_for_manuscript(ra)
+    
     %%
-     inds = [1 3];
+    [within,dvn,xlabels,withinD] = make_within_table({'ET','CT'},[3,2]);
+    dataT_1 = make_between_table({avar(:,1:6)},dvn);
+    ra1 = RMA(dataT_1,within);
+    ra1.ranova
+    print_for_manuscript(ra1)
+    
+    dataT_2 = make_between_table({avar(:,7:12)},dvn);
+    ra1 = RMA(dataT_2,within);
+    ra1.ranova
+    print_for_manuscript(ra1)
+    
+    %% for using RMAOV33 function downloaded from the internet
+    % I found the same result as my function RMA
+    clear avar_33
+    ind = 1;
+    for cc = 1:size(avar,2)
+        for rr = 1:size(avar,1)
+            avar_33(ind,:) = [avar(rr,cc) withinD(cc,:) rr];
+            ind = ind + 1;
+        end
+    end
+    RMAOV33(avar_33)
+    %%
+     inds = [1 4];
     good_FRV = all_exc(:,inds);
      [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
     intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));

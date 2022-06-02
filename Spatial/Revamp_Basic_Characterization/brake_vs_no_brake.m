@@ -887,7 +887,7 @@ while 1
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
-    pni = 7;
+    pni = 1;
     all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -925,12 +925,37 @@ while 1
         all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
     end
     %%
-    avar = find_percent(all_exc_inh);
-    [within,dvn,xlabels] = make_within_table({'Cond','ET','CT'},[2,3,2]);
+%     avar = find_percent(all_exc_inh);
+    avar = (all_exc_inh);
+    [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET','CT'},[2,3,2]);
     dataT = make_between_table({avar},dvn);
-    ra = RMA(dataT,within);
+    ra = RMA(dataT,within,{0.05,{'lsd','hsd','bonferroni'}});
     ra.ranova
     print_for_manuscript(ra)
+    
+    %%
+    [within,dvn,xlabels,withinD] = make_within_table({'ET','CT'},[3,2]);
+    dataT_1 = make_between_table({avar(:,1:6)},dvn);
+    ra1 = RMA(dataT_1,within);
+    ra1.ranova
+    print_for_manuscript(ra1)
+    
+    dataT_2 = make_between_table({avar(:,7:12)},dvn);
+    ra2 = RMA(dataT_2,within);
+    ra2.ranova
+    print_for_manuscript(ra2)
+    
+    %% for using RMAOV33 function downloaded from the internet
+    % I found the same result as my function RMA
+    clear avar_33
+    ind = 1;
+    for cc = 1:size(avar,2)
+        for rr = 1:size(avar,1)
+            avar_33(ind,:) = [avar(rr,cc) withinD(cc,:) rr];
+            ind = ind + 1;
+        end
+    end
+    RMAOV33(avar_33)
     %%
      inds = [1 4];
     good_FRV = all_exc(:,inds);
