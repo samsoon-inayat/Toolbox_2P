@@ -880,6 +880,7 @@ while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     event_type = {'Air ON','Air OFF','Light ON'};
     sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc]};
+    sic = {[Ab_On Abs_On];[Ar_On ArL_On Ars_On];[Ab_Off Abs_Off];[Ar_Off ArL_Off Ars_Off];[Ab_Offc Abs_Offc];[Ar_Offc ArL_Offc Ars_Offc]};
     clear all_gFR all_exc all_inh all_gV 
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
     cell_sel = {'good_FR','vals','exc','inh'};
@@ -925,11 +926,31 @@ while 1
         all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
     end
     %%
+    avar = [all_exc all_inh];
+    [within,dvn,xlabels,withinD] = make_within_table({'CT','ET','Cond'},[2,3,2]);
+    dataT = make_between_table({avar},dvn);
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    
+    %%
+    [within,dvn,xlabels,withinD] = make_within_table({'ET','Cond'},[3,2]);
+    dataT_1 = make_between_table({avar(:,1:6)},dvn);
+    ra11 = RMA(dataT_1,within);
+    ra11.ranova
+    print_for_manuscript(ra11)
+    
+    dataT_2 = make_between_table({avar(:,7:12)},dvn);
+    ra21 = RMA(dataT_2,within);
+    ra21.ranova
+    print_for_manuscript(ra21)
+    
+    %%
 %     avar = find_percent(all_exc_inh);
     avar = (all_exc_inh);
     [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET','CT'},[2,3,2]);
     dataT = make_between_table({avar},dvn);
-    ra = RMA(dataT,within,{0.05,{'lsd','hsd','bonferroni'}});
+    ra = RMA(dataT,within,{0.05,{'lsd'}});
     ra.ranova
     print_for_manuscript(ra)
     
@@ -945,6 +966,10 @@ while 1
     ra2.ranova
     print_for_manuscript(ra2)
     
+    %% for normality test
+    for ii = 1:size(avar,2)
+        [nth(ii,1),ntp(ii,1)] = swtest(avar(:,ii));
+    end
     %% for using RMAOV33 function downloaded from the internet
     % I found the same result as my function RMA
     clear avar_33
@@ -980,6 +1005,7 @@ while 1
     %%
     break;
 end
+
 
 
 %% compare percent zMI pooled air on or off brake vs no-brake
