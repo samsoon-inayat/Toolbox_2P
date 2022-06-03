@@ -938,13 +938,29 @@ while 1
     dataT_1 = make_between_table({avar(:,1:6)},dvn);
     ra11 = RMA(dataT_1,within);
     ra11.ranova
-    print_for_manuscript(ra11)
+    print_for_manuscript(ra11);
     
     dataT_2 = make_between_table({avar(:,7:12)},dvn);
     ra21 = RMA(dataT_2,within);
     ra21.ranova
-    print_for_manuscript(ra21)
+    print_for_manuscript(ra21);
     
+    %%
+    [within,dvn,xlabels,withinD] = make_within_table({'CT','Cond'},[2,2]);
+    dataT_1 = make_between_table({avar(:,[1 2 7 8])},dvn);
+    ra31 = RMA(dataT_1,within);
+    ra31.ranova
+    print_for_manuscript(ra31);
+    
+    dataT_1 = make_between_table({avar(:,[3 4 9 10])},dvn);
+    ra32 = RMA(dataT_1,within);
+    ra32.ranova
+    print_for_manuscript(ra32);
+    
+    dataT_1 = make_between_table({avar(:,[5 6 11 12])},dvn);
+    ra33 = RMA(dataT_1,within);
+    ra33.ranova
+    print_for_manuscript(ra33);
     %%
 %     avar = find_percent(all_exc_inh);
     avar = (all_exc_inh);
