@@ -888,7 +888,7 @@ while 1
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
-    pni = 1;
+    pni = 2;
     all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -926,12 +926,12 @@ while 1
         all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
     end
     
-     %%
+     %
 %     avar = find_percent(all_exc_inh);
     avar = (all_exc_inh);
     [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET','CT'},[2,3,2]);
     dataT = make_between_table({avar},dvn);
-    ra = RMA(dataT,within,{0.05,{'lsd'}});
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
     ra.ranova
     print_for_manuscript(ra)
     
@@ -947,7 +947,7 @@ while 1
     ra2.ranova
     print_for_manuscript(ra2)
    
-    %%
+    %
     [within,dvn,xlabels,withinD] = make_within_table({'ET','Cond'},[3,2]);
     dataT_1 = make_between_table({avar(:,[1 7 3 9 5 11])},dvn);
     ra11 = RMA(dataT_1,within);
@@ -959,7 +959,7 @@ while 1
     ra21.ranova
     print_for_manuscript(ra21);
     
-    %%
+    %
     [within,dvn,xlabels,withinD] = make_within_table({'CT','Cond'},[2,2]);
     dataT_1 = make_between_table({avar(:,[1 7 2 8])},dvn);
     ra31 = RMA(dataT_1,within);
