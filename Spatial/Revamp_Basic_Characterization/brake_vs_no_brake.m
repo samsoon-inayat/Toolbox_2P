@@ -888,7 +888,7 @@ while 1
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
-    pni = 1;
+    pni = 3;
     all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -934,48 +934,54 @@ while 1
     ra = RMA(dataT,within,{0.05,{'hsd'}});
     ra.ranova
     print_for_manuscript(ra)
-    
+    %%
+    r_avar = [];
+    for ii = 1:5
+        r_avar = [r_avar;[ii*ones(size(avar,2)/2,1) [1;1;1;2;2;2] repmat([1;2;3],2,1) all_exc(ii,:)' all_inh(ii,:)']];
+    end
+    r_avarT = array2table(r_avar); r_avarT.Properties.VariableNames = {'Animal','BrakeState','EventType','Exc','Inh'};
+    writetable(r_avarT,'dataT.csv');
     %%
     [within,dvn,xlabels,withinD] = make_within_table({'ET','CT'},[3,2]);
     dataT_1 = make_between_table({avar(:,1:6)},dvn);
-    ra_cond1 = RMA(dataT_1,within);
+    ra_cond1 = RMA(dataT_1,within,{0.025,{'hsd','bonferroni'}});
     ra_cond1.ranova
     print_for_manuscript(ra_cond1);
     
     dataT_2 = make_between_table({avar(:,7:12)},dvn);
-    ra_cond2 = RMA(dataT_2,within);
+    ra_cond2 = RMA(dataT_2,within,{0.025,{'hsd','bonferroni'}});
     ra_cond2.ranova
     print_for_manuscript(ra_cond2);
-    
+    %%
     [within,dvn,xlabels,withinD] = make_within_table({'CT'},[2]);
     dataT_1 = make_between_table({avar(:,1:2)},dvn);
-    ra_cond1_e1 = RMA(dataT_1,within);
+    ra_cond1_e1 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_cond1_e1.ranova
     print_for_manuscript(ra_cond1_e1);
     
     dataT_1 = make_between_table({avar(:,3:4)},dvn);
-    ra_cond1_e2 = RMA(dataT_1,within);
+    ra_cond1_e2 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_cond1_e2.ranova
     print_for_manuscript(ra_cond1_e2);
     
     dataT_1 = make_between_table({avar(:,5:6)},dvn);
-    ra_cond1_e3 = RMA(dataT_1,within);
+    ra_cond1_e3 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_cond1_e3.ranova
     print_for_manuscript(ra_cond1_e3);
     
     
     dataT_1 = make_between_table({avar(:,7:8)},dvn);
-    ra_cond2_e1 = RMA(dataT_1,within);
+    ra_cond2_e1 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_cond2_e1.ranova
     print_for_manuscript(ra_cond2_e1);
     
     dataT_1 = make_between_table({avar(:,9:10)},dvn);
-    ra_cond2_e2 = RMA(dataT_1,within);
+    ra_cond2_e2 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_cond2_e2.ranova
     print_for_manuscript(ra_cond2_e2);
     
     dataT_1 = make_between_table({avar(:,11:12)},dvn);
-    ra_cond2_e3 = RMA(dataT_1,within);
+    ra_cond2_e3 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_cond2_e3.ranova
     print_for_manuscript(ra_cond2_e3);
     
@@ -985,89 +991,99 @@ while 1
     %
     [within,dvn,xlabels,withinD] = make_within_table({'ET','Cond'},[3,2]);
     dataT_1 = make_between_table({avar(:,[1 7 3 9 5 11])},dvn);
-    ra_exc = RMA(dataT_1,within);
+    ra_exc = RMA(dataT_1,within,{0.025,{'hsd','bonferroni'}});
     ra_exc.ranova
     print_for_manuscript(ra_exc);
     
     dataT_2 = make_between_table({avar(:,[1 7 3 9 5 11]+1)},dvn);
-    ra_inh = RMA(dataT_2,within);
+    ra_inh = RMA(dataT_2,within,{0.025,{'hsd','bonferroni'}});
     ra_inh.ranova
     print_for_manuscript(ra_inh);
-    
+    %%
     
     [within,dvn,xlabels,withinD] = make_within_table({'Cond'},[2]);
     dataT_1 = make_between_table({avar(:,[1 7])},dvn);
-    ra_exc_e1 = RMA(dataT_1,within);
+    ra_exc_e1 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_exc_e1.ranova
     print_for_manuscript(ra_exc_e1);
     
     dataT_1 = make_between_table({avar(:,[3 9])},dvn);
-    ra_exc_e2 = RMA(dataT_1,within);
+    ra_exc_e2 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_exc_e2.ranova
     print_for_manuscript(ra_exc_e2);
     
      dataT_1 = make_between_table({avar(:,[5 11])},dvn);
-    ra_exc_e3 = RMA(dataT_1,within);
+    ra_exc_e3 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_exc_e3.ranova
     print_for_manuscript(ra_exc_e3);
     
     dataT_1 = make_between_table({avar(:,[1 7]+1)},dvn);
-    ra_inh_e1 = RMA(dataT_1,within);
+    ra_inh_e1 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_inh_e1.ranova
     print_for_manuscript(ra_inh_e1);
     
     dataT_1 = make_between_table({avar(:,[3 9]+1)},dvn);
-    ra_inh_e2 = RMA(dataT_1,within);
+    ra_inh_e2 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_inh_e2.ranova
     print_for_manuscript(ra_inh_e2);
     
      dataT_1 = make_between_table({avar(:,[5 11]+1)},dvn);
-    ra_inh_e3 = RMA(dataT_1,within);
+    ra_inh_e3 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
     ra_inh_e3.ranova
     print_for_manuscript(ra_inh_e3);
     
     %%
     [within,dvn,xlabels,withinD] = make_within_table({'CT','Cond'},[2,2]);
     dataT_1 = make_between_table({avar(:,[1 7 2 8])},dvn);
-    ra31 = RMA(dataT_1,within);
-    ra31.ranova
-    print_for_manuscript(ra31);
+    ra_e1 = RMA(dataT_1,within,{0.05/3,{'hsd','bonferroni'}});
+    ra_e1.ranova
+    print_for_manuscript(ra_e1);
     
     dataT_1 = make_between_table({avar(:,[3 9 4 10])},dvn);
-    ra32 = RMA(dataT_1,within);
-    ra32.ranova
-    print_for_manuscript(ra32);
+    ra_e2 = RMA(dataT_1,within,{0.05/3,{'hsd','bonferroni'}});
+    ra_e2.ranova
+    print_for_manuscript(ra_e2);
     
     dataT_1 = make_between_table({avar(:,[5 11 6 12])},dvn);
-    ra33 = RMA(dataT_1,within);
-    ra33.ranova
-    print_for_manuscript(ra33);
+    ra_e3 = RMA(dataT_1,within,{0.05/3,{'hsd','bonferroni'}});
+    ra_e3.ranova
+    print_for_manuscript(ra_e3);
     
     %%
     [within,dvn,xlabels,withinD] = make_within_table({'Cond'},[2]);
-    tempvar = avar(:,[1 2 7 8]);
+    tempvar = avar(:,[1 7 2 8]);
     dataT_1 = make_between_table({tempvar(:,1:2)},dvn);
-    ra311 = RMA(dataT_1,within);
-    ra311.ranova
-    print_for_manuscript(ra311);
+    ra_e1_exc = RMA(dataT_1,within);
+    ra_e1_exc.ranova
+    print_for_manuscript(ra_e1_exc);
     
     dataT_1 = make_between_table({tempvar(:,3:4)},dvn);
-    ra312 = RMA(dataT_1,within);
-    ra312.ranova
-    print_for_manuscript(ra312);
+    ra_e1_inh = RMA(dataT_1,within);
+    ra_e1_inh.ranova
+    print_for_manuscript(ra_e1_inh);
     
-    %%
-    [within,dvn,xlabels,withinD] = make_within_table({'Cond'},[2]);
-    tempvar = avar(:,[3 4 9 10]);
+    tempvar = avar(:,[3 9 4 10]);
     dataT_1 = make_between_table({tempvar(:,1:2)},dvn);
-    ra321 = RMA(dataT_1,within);
-    ra321.ranova
-    print_for_manuscript(ra321);
+    ra_e2_exc = RMA(dataT_1,within);
+    ra_e2_exc.ranova
+    print_for_manuscript(ra_e2_exc);
     
     dataT_1 = make_between_table({tempvar(:,3:4)},dvn);
-    ra322 = RMA(dataT_1,within);
-    ra322.ranova
-    print_for_manuscript(ra322);
+    ra_e2_inh = RMA(dataT_1,within);
+    ra_e2_inh.ranova
+    print_for_manuscript(ra_e2_inh);
+    
+    tempvar = avar(:,[5 11 6 12]);
+    dataT_1 = make_between_table({tempvar(:,1:2)},dvn);
+    ra_e3_exc = RMA(dataT_1,within);
+    ra_e3_exc.ranova
+    print_for_manuscript(ra_e3_exc);
+    
+    dataT_1 = make_between_table({tempvar(:,3:4)},dvn);
+    ra_e3_inh = RMA(dataT_1,within);
+    ra_e3_inh.ranova
+    print_for_manuscript(ra_e3_inh);
+    
     
    
     %% for normality test

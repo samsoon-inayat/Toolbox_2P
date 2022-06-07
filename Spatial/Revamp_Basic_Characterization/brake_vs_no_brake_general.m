@@ -102,6 +102,7 @@ while 1
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,5),all_inh(:,5),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4),all_exc(:,6),all_inh(:,6)]; % for comparison of air onset offset and arb
 %     txl = {'AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh','AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh'};
     txl = {'B-AOn-Exc','B-AOn-Inh','B-AOff-Exc','B-AOff-Inh','B-Arb-Exc','B-Arb-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-Arb-Exc','NB-Arb-Inh'};
+    txlV = {'B_AOn_Exc','B_AOn_Inh','B_AOff_Exc','B_AOff_Inh','B_Arb_Exc','B_Arb_Inh','NB_AOn_Exc','NB_AOn_Inh','NB_AOff_Exc','NB_AOff_Inh','NB_Arb_Exc','NB_Arb_Inh'};
 %     txl = {'Exc','Inh'}; txl = repmat(txl,1,6);
     
 %     good_FR = all_exc_inh;
@@ -579,12 +580,12 @@ end
 while 1
     clc
     title_prefix = 'C'
-    titles = {'1-Exc','2-Inh','3-Inh','4-AOn','5-AOn','6-AOff','7-Arb'};
+    titles = {'1-Exc','2-Exc','3-Inh','4-Inh','5-AOn','6-AOn','7-AOff'};
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 7],...
-        'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.06 0.26],'widthHeightAdjustment',...
-        [10 -350]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 4.85 1.3]);
-    MY = 15; ysp = 1.5; mY = 0; % responsive cells
-    stp = 0.35; widths = [1 0.35 0.6 0.35 0.35 0.65 0.65]; gap = 0.08;
+        'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',...
+        [10 -410]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 4.85 1.3]);
+    MY = 12; ysp = 1.5; mY = 0; % responsive cells
+    stp = 0.35; widths = [0.4 0.57 0.4 0.57 0.4 0.4 0.4]+0.1; gap = 0.09;
     set(ff.hf,'Units','inches');
     for aii = 1:length(ff.h_axes)
         sel_ax = ff.h_axes(1,aii);
@@ -602,75 +603,80 @@ while 1
     
     %+++++++++++++++++++++++
     axes(ff.h_axes(1,1));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra11,{'Cond_by_ET','hsd'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_exc,{'Cond','hsd'},[1.5 1 1]);
 %     inds = [1;(find(diff(combs(:,1))==1)+1)]; combs = combs(inds,:); p = p(inds,:); h = h(inds,:);
-	xdata = make_xdata([3 3],[1 1.5]);    tcolors = repmat(mData.colors([12 4 9]),1,4);
+	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([1 2]),1,4);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp-0.3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',-0.07);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'AOn','AOff','Arb'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,3,{'B','NB'});
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
     %++++++++++++++++++++++++
     axes(ff.h_axes(1,2));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra21,{'Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);    tcolors = mData.colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
-    %+++++++++++++++++++++++++++++++++++++++++++++++
-    axes(ff.h_axes(1,3));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra21,{'ET','hsd'},[1.5 1 1]);
-	xdata = make_xdata([3],[1 1.5]);    tcolors = repmat(mData.colors([12 4 9]),1,2);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_exc,{'ET','hsd'},[1.5 1 1]);
+	xdata = make_xdata([3],[1 1.5]);    tcolors = repmat(mData.colors([12 4 9]),1,4);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'AOn','AOff','Arb'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     set_bar_graph_sub_xtick_text(gcf,gca,hbs,3,{'Pooled'});
-     %++++++++++++++++++++++++
+    set_axes_top_text(ff.hf,ff.h_axes(1:2),'Exc Cells');
+    %+++++++++++++++++++++++
+    axes(ff.h_axes(1,3));
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_inh,{'Cond','hsd'},[1.5 1 1]);
+%     inds = [1;(find(diff(combs(:,1))==1)+1)]; combs = combs(inds,:); p = p(inds,:); h = h(inds,:);
+	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([1 2]),1,4);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp-0.3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
+    %++++++++++++++++++++++++
     axes(ff.h_axes(1,4));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra31,{'Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);    tcolors = mData.colors;
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_inh,{'ET','hsd'},[1.5 1 1]);
+	xdata = make_xdata([3],[1 1.5]);    tcolors = repmat(mData.colors([12 4 9]),1,4);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'AOn','AOff','Arb'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,3,{'Pooled'});
+    set_axes_top_text(ff.hf,ff.h_axes(3:4),'Inh Cells');
     % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     axes(ff.h_axes(1,5));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra31,{'CT','hsd'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_e1,{'Cond','hsd'},[1.5 1 1]);
+	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([1 2]),1,2);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);   xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
+    % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    axes(ff.h_axes(1,6));
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_e1,{'CT','hsd'},[1.5 1 1]);
 	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);   xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
-    % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    axes(ff.h_axes(1,6));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra32,{'Cond_by_CT','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'B','NB'});
+    set_axes_top_text(ff.hf,ff.h_axes(5:6),'AOn');
     % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     axes(ff.h_axes(1,7));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra33,{'Cond_by_CT','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_e2,{'Cond','hsd'},[1.5 1 1]);
+	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([1 2]),1,2);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'B','NB'});
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);   xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
+    set_axes_top_text(ff.hf,ff.h_axes(7),'AOff');
     
-    for aii = 1:length(ff.h_axes)
-        sel_ax = ff.h_axes(1,aii);axes(sel_ax);
-        xlims = get(sel_ax,'xlim'); ylims = get(sel_ax,'ylim'); xlimshalf = xlims(1) + diff(xlims)/2; title_txt = sprintf('%s%s',title_prefix,titles{aii});
-        ht = text(xlimshalf,ylims(2)+ysp,title_txt,'FontSize',6); ht_ex = get(ht,'Extent'); ht_pos = get(ht,'Position'); 
-        new_x = xlims(1) + (xlims(2) - xlims(1) - ht_ex(3))/2; set(ht,'Position',[new_x ht_pos(2:3)]);
-    end
+%     for aii = 1:length(ff.h_axes)
+%         sel_ax = ff.h_axes(1,aii);axes(sel_ax);
+%         xlims = get(sel_ax,'xlim'); ylims = get(sel_ax,'ylim'); xlimshalf = xlims(1) + diff(xlims)/2; title_txt = sprintf('%s%s',title_prefix,titles{aii});
+%         ht = text(xlimshalf,ylims(2)+ysp,title_txt,'FontSize',6); ht_ex = get(ht,'Extent'); ht_pos = get(ht,'Position'); 
+%         new_x = xlims(1) + (xlims(2) - xlims(1) - ht_ex(3))/2; set(ht,'Position',[new_x ht_pos(2:3)]);
+%     end
     
     save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs_3_factors.pdf',ntrials),600);
     %%
@@ -681,13 +687,13 @@ end
 %% Figure 2 Percentage of Trials response fidelity
 while 1
     clc
-    title_prefix = 'D'
-    titles = {'1-Exc','2-Inh','3-Inh','4-AOn','5-AOn','6-AOff','7-Arb'};
+    title_prefix = 'C'
+    titles = {'1-Exc','2-Exc','3-Inh','4-Inh','5-AOn','6-AOn','7-AOff'};
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 7],...
-        'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.06 0.26],'widthHeightAdjustment',...
-        [10 -350]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 4.85 1.3]);
-    MY = 100; ysp = 10; mY = 0; % responsive cells
-    stp = 0.42; widths = [0.35 1 0.6 0.35 0.35 0.65 0.65]; gap = 0.08;
+        'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',...
+        [10 -410]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 4.85 1.3]);
+    MY = 100; ysp = 7; mY = 0; % responsive cells
+    stp = 0.45; widths = [0.4 1.2 1.2 0.57 0.4 0.4 0.4]+0.1; gap = 0.09;
     set(ff.hf,'Units','inches');
     for aii = 1:length(ff.h_axes)
         sel_ax = ff.h_axes(1,aii);
@@ -701,79 +707,115 @@ while 1
         end
         set(sel_ax,'Position',[rt axesPosd(2) widths(aii) axesPosd(4)]);
         ylim(sel_ax,[mY MY]);
+        if aii > 3
+            delete(ff.h_axes(1,aii));
+        end
     end
     
     %+++++++++++++++++++++++
     axes(ff.h_axes(1,1));
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);    tcolors = mData.colors;
+%     inds = [1;(find(diff(combs(:,1))==1)+1)]; combs = combs(inds,:); p = p(inds,:); h = h(inds,:);
+	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([1 2]),1,4);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'ySpacing',ysp-0.3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
     set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
     %++++++++++++++++++++++++
     axes(ff.h_axes(1,2));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra21,{'Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);    tcolors = mData.colors;
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_cond1,{'ET_by_CT','hsd'},[1.5 1 1]);
+	xdata = make_xdata([2 2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
-    %+++++++++++++++++++++++++++++++++++++++++++++++
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'AOn','AOff','Arb'});
+    set_axes_top_text(ff.hf,ff.h_axes(2),'Brake');
+    %+++++++++++++++++++++++
     axes(ff.h_axes(1,3));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra21,{'ET','hsd'},[1.5 1 1]);
-	xdata = make_xdata([3],[1 1.5]);    tcolors = repmat(mData.colors([12 4 9]),1,2);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'AOn','AOff','Arb'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,3,{'Pooled'});
-     %++++++++++++++++++++++++
-    axes(ff.h_axes(1,4));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra31,{'Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);    tcolors = mData.colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
-    % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    axes(ff.h_axes(1,5));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra31,{'CT','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,2);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);   xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
-    % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    axes(ff.h_axes(1,6));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra32,{'Cond_by_CT','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_cond2,{'ET_by_CT','hsd'},[1.5 1 1]);
+	xdata = make_xdata([2 2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'B','NB'});
-    % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    axes(ff.h_axes(1,7));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra33,{'Cond_by_CT','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'B','NB'});
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'AOn','AOff','Arb'});
+    set_axes_top_text(ff.hf,ff.h_axes(3),'No-Brake');
+    %++++++++++++++++++++++++
     
+    
+    
+   
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs_3_factors.pdf',ntrials),600);
+    %%
+    
+    break;
+end
+
+%% Figure 2 Percentage of Trials response fidelity
+while 1
+    clc
+    title_prefix = 'C'
+    titles = {'1-Exc','2-Exc','3-Inh','4-Inh','5-AOn','6-AOn','7-AOff'};
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 7],...
+        'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',...
+        [10 -410]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 4.85 1.3]);
+    MY = 2; ysp = 0.1; mY = 0; % responsive cells
+    stp = 0.45; widths = [0.4 1.2 1.2 0.57 0.4 0.4 0.4]+0.1; gap = 0.09;
+    set(ff.hf,'Units','inches');
     for aii = 1:length(ff.h_axes)
-        sel_ax = ff.h_axes(1,aii);axes(sel_ax);
-        xlims = get(sel_ax,'xlim'); ylims = get(sel_ax,'ylim'); xlimshalf = xlims(1) + diff(xlims)/2; title_txt = sprintf('%s%s',title_prefix,titles{aii});
-        ht = text(xlimshalf,ylims(2)+ysp,title_txt,'FontSize',6); ht_ex = get(ht,'Extent'); ht_pos = get(ht,'Position'); 
-        new_x = xlims(1) + (xlims(2) - xlims(1) - ht_ex(3))/2; set(ht,'Position',[new_x ht_pos(2:3)]);
+        sel_ax = ff.h_axes(1,aii);
+        set(sel_ax,'Units','inches');
+        axesPosd = get(sel_ax,'Position');
+        if aii == 1
+            rt = stp; 
+            ylabel(sel_ax,{'Estimated','Marginal Means'});
+        else
+            rt = rt + widths(aii-1) + gap; set(sel_ax,'yticklabels',[]);
+        end
+        set(sel_ax,'Position',[rt axesPosd(2) widths(aii) axesPosd(4)]);
+        ylim(sel_ax,[mY MY]);
+        if aii > 3
+            delete(ff.h_axes(1,aii));
+        end
     end
     
+    %+++++++++++++++++++++++
+    axes(ff.h_axes(1,1));
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
+%     inds = [1;(find(diff(combs(:,1))==1)+1)]; combs = combs(inds,:); p = p(inds,:); h = h(inds,:);
+	xdata = make_xdata([2],[1 1.5]);    tcolors = repmat(mData.colors([1 2]),1,4);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp-0.3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'Pooled'});
+    %++++++++++++++++++++++++
+    axes(ff.h_axes(1,2));
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_cond1,{'ET_by_CT','hsd'},[1.5 1 1]);
+	xdata = make_xdata([2 2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'AOn','AOff','Arb'});
+    set_axes_top_text(ff.hf,ff.h_axes(2),'Brake');
+    %+++++++++++++++++++++++
+    axes(ff.h_axes(1,3));
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_cond2,{'ET_by_CT','hsd'},[1.5 1 1]);
+	xdata = make_xdata([2 2 2],[1 1.5]);    tcolors = repmat(mData.colors([7 6]),1,4);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,2,{'AOn','AOff','Arb'});
+    set_axes_top_text(ff.hf,ff.h_axes(3),'No-Brake');
+    %++++++++++++++++++++++++
+    
+    
+    
+   
     save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs_3_factors.pdf',ntrials),600);
     %%
     
