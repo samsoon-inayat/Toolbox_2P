@@ -927,13 +927,20 @@ while 1
     end
     %%
      %
-    avar = find_percent(all_exc_inh);
-%     avar = (all_exc_inh);
+%     avar = find_percent(all_exc_inh);
+    avar = (all_exc_inh);
     [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET','CT'},[2,3,2]); withinD3 = withinD;
     dataT = make_between_table({avar},dvn);
     ra = RMA(dataT,within,{0.05,{'lsd','hsd','bonferroni'}});
     ra.ranova
     print_for_manuscript(ra)
+    %%
+    avar1 = (all_gV);
+    [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET'},[2,3]); withinD3 = withinD;
+    dataT = make_between_table({avar1},dvn);
+    ra_cond_et = RMA(dataT,within,{0.05,{'lsd','hsd','bonferroni'}});
+    ra_cond_et.ranova
+    print_for_manuscript(ra_cond_et)
     %%
 %     r_avar = [];
 %     for ii = 1:5
@@ -1248,6 +1255,27 @@ while 1
     %%
     break;
 end
+
+%% Conjunction Complementation of both Exc and Inh pooled cells
+while 1
+    inds_all = {[1 4],[2 5],[3 6]};
+    aVar = [];
+    for ii = 1:length(inds_all)
+        [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_gV(:,inds_all{ii}),0.5,0.05);
+        intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+        bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+        aVar = [aVar bcellsu intcells nbcellsu];
+    end
+    
+    [within,dvn,xlabels,withinD] = make_within_table({'ET','PT'},[3,3]); withinD3 = withinD;
+    dataT = make_between_table({aVar},dvn);
+    ra_et_pt = RMA(dataT,within,{0.05,{'hsd','bonferroni'}});
+    ra_et_pt.ranova
+    print_for_manuscript(ra_et_pt)
+    %%
+    break;
+end
+
 
 
 %% compare percent zMI pooled air on or off brake vs no-brake
