@@ -139,9 +139,13 @@ while 1
     txl = {'AOn-Exc','Inh'}; txl = repmat(txl,1,4);
     
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4),all_exc(:,5),all_inh(:,5),all_exc(:,6),all_inh(:,6)]; % for comparison of air onset offset and arb
+%     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,4),all_inh(:,4),all_exc(:,5),all_inh(:,5)]; % for comparison of air onset offset and arb
 %     txl = {'AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh','AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh'};
     txl = {'B-AOn-Exc','B-AOn-Inh','B-AOff-Exc','B-AOff-Inh','B-Arb-Exc','B-Arb-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-Arb-Exc','NB-Arb-Inh'};
     txlV = {'B_AOn_Exc','B_AOn_Inh','B_AOff_Exc','B_AOff_Inh','B_Arb_Exc','B_Arb_Inh','NB_AOn_Exc','NB_AOn_Inh','NB_AOff_Exc','NB_AOff_Inh','NB_Arb_Exc','NB_Arb_Inh'};
+    
+%     txl = {'B-AOn-Exc','B-AOn-Inh','B-AOff-Exc','B-AOff-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh'};
+%     txlV = {'B_AOn_Exc','B_AOn_Inh','B_AOff_Exc','B_AOff_Inh','NB_AOn_Exc','NB_AOn_Inh','NB_AOff_Exc','NB_AOff_Inh'};
 %     txl = {'Exc','Inh'}; txl = repmat(txl,1,6);
     
 %     good_FR = all_exc_inh;
@@ -158,8 +162,9 @@ while 1
     semUni = nanstd(uni,[],3)/sqrt(5); semUni1 = tril(semUni,-1) + tril(semUni,-1)'; semUni2 = triu(semUni,1) + triu(semUni,1)'; msemUni = min(semUni(:)); MsemUni = max(semUni(:));
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
-    mOI = mUni1; semOI = semUni1;
-    mOI = mUni2; semOI = semUni2;
+    mOI = mUni;
+%     mOI = mUni1; semOI = semUni1;
+%     mOI = mUni2; semOI = semUni2;
     
     sz = size(mOI,1);
     oM = ones(size(mOI));
@@ -1109,8 +1114,8 @@ while 1
         'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',...
         [10 -410]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 1.5 1.25]);
     MY = 15; ysp = 0.75; sigLinesStartYFactor = 1.5; mY = 0; % responsive cells
-%     MY = 70; ysp = 5; sigLinesStartYFactor = 1.5; mY = 0; % responsive fidelity
-%     MY = 1.5; ysp = 0.15; sigLinesStartYFactor = 0.1; mY = -0.25; % responsive fidelity
+    MY = 70; ysp = 5; sigLinesStartYFactor = 1.5; mY = 0; % responsive fidelity
+    MY = 1.5; ysp = 0.15; sigLinesStartYFactor = 0.1; mY = -0.25; % responsive fidelity
     stp = 0.43; widths = [0.3 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
     set(ff.hf,'Units','inches');
     for aii = 1:length(ff.h_axes)
@@ -1138,7 +1143,7 @@ while 1
     %+++++++++++++++++++++++
      axes(ff.h_axes(1,2));
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra_cond_et,{'ET','bonferroni'},[1.5 1 1]); 
-	xdata = make_xdata([3],[1 1.5]);    tcolors = repmat(mData.colors([12 4 9]),1,4);
+	xdata = make_xdata([4],[1 1.5]);    tcolors = repmat(mData.colors([12 4 9]),1,4);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);

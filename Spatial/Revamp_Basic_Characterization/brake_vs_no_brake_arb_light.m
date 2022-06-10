@@ -1,668 +1,289 @@
-%% compare percent responsive cells pooled light ON brake vs no-brake exc and inh ArL_L
+
+%% Three-Way RM-ANOVA Most Recent compare all variables pooled air on or off brake vs no-brake exc and inh (and controls) big ANOVA test
 while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    allsic = {{[Lb Lbs];[ArL_L]};
-    };
-    
-%     ind = 3;
-%     sic = allsic{1:6};
-    all_resp = []; all_resp_exc = []; all_resp_inh = []; all_resp_unt = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh all_unt
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_gFR(:,ii) = gFR;
-            gFR = props1.exc;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_exc(:,ii) = gFR;
-            gFR = props1.inh;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_inh(:,ii) = gFR;
-            gFR = props1.good_FR_and_untuned;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_unt(:,ii) = gFR;
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-        all_resp_unt = [all_resp_unt all_unt];
-    end
-    good_FR = [all_resp_exc all_resp_inh];
-    good_FR_any = cell_list_op(good_FR,[],'or',1);
-    good_FR_all = cell_list_op(good_FR,[],'and',1);
-    per_active =[]; 
-    for rr = 1:size(good_FR,1)
-        for cc = 1:size(good_FR,2)
-            tts = good_FR{rr,cc};
-            per_active(rr,cc) = 100*sum(tts)/length(tts);
-        end
-        tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
-        tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
-    end
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,2]);
-    dataT = make_between_table({per_active},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-
-    %%
-    break;
-end
-
-%% compare percent response fidelity pooled light on brake vs no-brake ArL_L
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    allsic = {{[Lb Lbs];[ArL_L]};
-    };
-    all_resp = []; all_resp_exc = []; all_resp_inh = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals; rf = props1.N_Resp_Trials;
-            all_gFR(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.exc; rf = props1.N_Resp_Trials;
-            all_exc(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.inh; rf = props1.N_Resp_Trials;
-            all_inh(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-    end
-    good_FR = [all_resp_exc all_resp_inh];
-
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,2]);
-    dataT = make_between_table({good_FR},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    %%
-    break;
-end
-
-
-%% compare percent responsive cells pooled light ON brake vs no-brake exc and inh Ar_L
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    allsic = {{[Lb Lbs];[Ars_L]};
-    };
-    
-%     ind = 3;
-%     sic = allsic{1:6};
-    all_resp = []; all_resp_exc = []; all_resp_inh = []; all_resp_unt = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh all_unt
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_gFR(:,ii) = gFR;
-            gFR = props1.exc;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_exc(:,ii) = gFR;
-            gFR = props1.inh;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_inh(:,ii) = gFR;
-            gFR = props1.good_FR_and_untuned;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_unt(:,ii) = gFR;
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-        all_resp_unt = [all_resp_unt all_unt];
-    end
-    good_FR = [all_resp_exc all_resp_inh];
-    good_FR_any = cell_list_op(good_FR,[],'or',1);
-    good_FR_all = cell_list_op(good_FR,[],'and',1);
-    per_active =[]; 
-    for rr = 1:size(good_FR,1)
-        for cc = 1:size(good_FR,2)
-            tts = good_FR{rr,cc};
-            per_active(rr,cc) = 100*sum(tts)/length(tts);
-        end
-        tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
-        tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
-    end
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,2]);
-    dataT = make_between_table({per_active},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-
-    %%
-    break;
-end
-
-%% compare percent response fidelity pooled light on brake vs no-brake Ar_L
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    allsic = {{[Lb Lbs];[ArL_L]};
-    };
-    all_resp = []; all_resp_exc = []; all_resp_inh = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals; rf = props1.N_Resp_Trials;
-            all_gFR(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.exc; rf = props1.N_Resp_Trials;
-            all_exc(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.inh; rf = props1.N_Resp_Trials;
-            all_inh(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-    end
-    good_FR = [all_resp_exc all_resp_inh];
-
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,2]);
-    dataT = make_between_table({good_FR},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    %%
-    break;
-end
-
-%% for heatmap of all air onset and offset and arb and light (conditions and cell types) GRAND one
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    event_type = {'B-AOn','B-AOff','B-Arb','B-L','NB-AOn','NB-AOff','NB-Arb','NB-L','NB-ArbL'};
-    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Lb Lbs];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc];[ArL_L];[Ar_L Ars_L];};
-    
-    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','2-B-Arb','7-B-Arb','1-B-L','6-B-L','3-NB-AOn','4-NB-AOn','5-NB-AOn',...
-        '3-NB-AOff','4-NB-AOff','5-NB-AOff','3-NB-Arb','4-NB-Arb','5-NB-Arb','3-NB-AL','4-NB-L','5-NB-AL'};
-    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ab_Offc];[Abs_Offc];[Lb];[Lbs];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Ar_Offc];[ArL_Offc];[Ars_Offc];[ArL_L];[Ar_L];[Ars_L]};
-    
-    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','2-B-Arb','7-B-Arb','1-B-L','6-B-L','3-NB-AOn','4-NB-AOn','5-NB-AOn',...
-        '3-NB-OArb','4-NB-OArb','5-NB-OArb','3-NB-AOff','4-NB-AOff','5-NB-AOff','3-NB-Arb','4-NB-Arb','5-NB-Arb','3-NB-AL','4-NB-L','5-NB-AL'};
-    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ab_Offc];[Abs_Offc];[Lb];[Lbs];[Ar_On];[ArL_On];[Ars_On];[Ar_Onc];[ArL_Onc];[Ars_Onc];[Ar_Off];[ArL_Off];[Ars_Off];[Ar_Offc];[ArL_Offc];[Ars_Offc];[ArL_L];[Ar_L];[Ars_L]};
-    
-    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','2-B-Arb','7-B-Arb','1-B-L','6-B-L','3-NB-AOn','4-NB-AOn','5-NB-AOn',...
-        '3-NB-AOff','4-NB-AOff','5-NB-AOff','3-NB-Arb','4-NB-Arb','5-NB-Arb','4-NB-L'};
-    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ab_Offc];[Abs_Offc];[Lb];[Lbs];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Ar_Offc];[ArL_Offc];[Ars_Offc];[ArL_L]};
-    
-    event_type = {'2-AOn','7-AOn','2-AOff','7-AOff','2-Arb','7-Arb','1-L','6-L','3-AOn','4-AOn','5-AOn',...
-        '3-AOff','4-AOff','5-AOff','3-Arb','4-Arb','5-Arb','4-L','M-On','M-Off'};
-    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ab_Offc];[Abs_Offc];[Lb];[Lbs];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Ar_Offc];[ArL_Offc];[Ars_Offc];[ArL_L];[M_On];[M_Off]};
-    
-    event_type = {'1-L','2-AOn','2-AOff','2-Arb','3-AOn','3-AOff','3-Arb','4-AOn','4-AOff','4-Arb','5-AOn','5-AOff','5-Arb','6-L','7-AOn','7-AOff','7-Arb','4-L','M-On','M-Off'};
-    sic = {[Lb];[Ab_On];[Ab_Off];[Ab_Offc];[Ar_On];[Ar_Off];[Ar_Offc];[ArL_On];[ArL_Off];[ArL_Offc];[Ars_On];[Ars_Off];[Ars_Offc];[Lbs];[Abs_On];[Abs_Off];[Abs_Offc];[ArL_L];[M_On];[M_Off]};
-    
-    clear all_gV all_gFR all_exc all_inh;
-    all_exc_inh = []; xtl = []; 
-    
-    for ii = 1:length(sic)
-        sit = sic{ii};
-        tRs = o.Rs(:,sit);
-        props1 = get_props_Rs(tRs,ntrials);
-        gFR = props1.vals;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_gV(:,ii) = gFR;
-        gFR = props1.good_FR_and_untuned;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_gFR(:,ii) = gFR;
-        gFR = props1.exc; %gFR = props1.good_FR_and_exc;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_exc(:,ii) = gFR;
-        gFR = props1.inh; %gFR = props1.good_FR_and_inh;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_inh(:,ii) = gFR;
-        all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
-        xtl = [xtl {sprintf('%s-Exc',event_type{ii})} {sprintf('%s-Inh',event_type{ii})}];
-    end
-    %%
-    break;
-end
-
-
-%% compare percent responsive cells pooled air vs light vs arb
-while 1
-    %%
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     event_type = {'Air ON','Air OFF','Light ON'};
-    sic = {[Ab_On Abs_On Ab_Off Abs_Off];[Lb Lbs];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];[ArL_L];[Ar_Offc ArL_Offc Ars_Offc]};
-    clear all_gV all_gFR all_exc all_inh;
+    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Lb Lbs];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc];[ArL_L]};
+%     sic = {[Ab_On Abs_On];[Ar_On ArL_On Ars_On];[Ab_Off Abs_Off];[Ar_Off ArL_Off Ars_Off];[Ab_Offc Abs_Offc];[Ar_Offc ArL_Offc Ars_Offc]};
+    clear all_gFR all_exc all_inh all_gV 
+    prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
+    cell_sel = {'good_FR','vals','exc','inh'};
+    varName = {'all_gFR','all_gV','all_exc','all_inh'};
+    for cii = 1:length(cell_sel);
+        cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
+    end
+    pni = 3;
+    all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};
         tRs = o.Rs(:,sit);
         props1 = get_props_Rs(tRs,ntrials);
-        gFR = props1.vals;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_gV(:,ii) = gFR;
-        gFR = props1.good_FR_and_untuned;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_gFR(:,ii) = gFR;
-        gFR = props1.exc; %gFR = props1.good_FR_and_exc;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_exc(:,ii) = gFR;
-        gFR = props1.inh; %gFR = props1.good_FR_and_inh;
-        gFR = cell_list_op(gFR,[],'or',1);
-        all_inh(:,ii) = gFR;
+        for cii = 1:length(cell_sel)
+            cmdTxt = sprintf('gFR = props1.%s;',cell_sel{cii});eval(cmdTxt);
+            if pni == 1
+                rf = find_percent(gFR);
+                cmdTxt = sprintf('%s(:,ii) = mean(rf,2);',varName{cii}); eval(cmdTxt)
+            else
+                if pni == 7
+                    cmdTxt = sprintf('%s(:,ii) = cell_list_op(gFR,[],''or'',1);',varName{cii});eval(cmdTxt);
+                else
+                    if pni == 3 || pni == 4
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{3}); eval(cmdtxt);
+                        if pni == 3
+                            cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''nanmean'',gFR),2);',varName{cii});eval(cmdTxt);
+                        else
+                            for rrr = 1:size(rf,1)
+                                for ccc = 1:size(rf,2)
+                                    temp = isnan(rf{rrr,ccc});
+                                    rf1(rrr,ccc) = 100*sum(temp(gFR{rrr,ccc}))/size(rf{rrr,ccc},1);
+                                end
+                            end
+                            cmdTxt = sprintf('%s(:,ii) = mean(rf1,2);',varName{cii}); eval(cmdTxt)
+                        end
+                    else
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{pni}); eval(cmdtxt);
+                        cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''mean'',gFR),2);',varName{cii});eval(cmdTxt);
+                    end
+                end
+            end
+        end
+        all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
     end
-    avar = all_gV;
-    pavar = find_percent(avar);
-    [within,dvn,xlabels] = make_within_table({'Cond','Event'},[2 3]);
-    dataT = make_between_table({pavar},dvn);
+    %%
+     %
+%     avar = find_percent(all_exc_inh);
+    avar = (all_exc_inh);
+    [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET','CT'},[2,4,2]); withinD3 = withinD;
+    dataT = make_between_table({avar},dvn);
+    ra = RMA(dataT,within,{0.05,{'lsd','hsd','bonferroni'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    %%
+    avar1 = (all_gV);
+    [within,dvn,xlabels,withinD] = make_within_table({'Cond','ET'},[2,4]); withinD3 = withinD;
+    dataT = make_between_table({avar1},dvn);
+    ra_cond_et = RMA(dataT,within,{0.05,{'lsd','hsd','bonferroni'}});
+    ra_cond_et.ranova
+    print_for_manuscript(ra_cond_et)
+    %%
+%     r_avar = [];
+%     for ii = 1:5
+%         r_avar = [r_avar;[ii*ones(size(avar,2)/2,1) [1;1;1;2;2;2] repmat([1;2;3],2,1) all_exc(ii,:)' all_inh(ii,:)']];
+%     end
+%     r_avarT = array2table(r_avar); r_avarT.Properties.VariableNames = {'Animal','BrakeState','EventType','Exc','Inh'};
+%     writetable(r_avarT,'dataT.csv');
+    %%
+    [within,dvn,xlabels,withinD] = make_within_table({'ET','CT'},[3,2]);
+    dataT_1 = make_between_table({avar(:,find(withinD3(:,1)==1))},dvn);
+    ra_cond1 = RMA(dataT_1,within,{0.025,{'hsd','bonferroni'}});
+    ra_cond1.ranova
+    print_for_manuscript(ra_cond1);
+    
+    dataT_2 = make_between_table({avar(:,find(withinD3(:,1)==2))},dvn);
+    ra_cond2 = RMA(dataT_2,within,{0.025,{'hsd','bonferroni'}});
+    ra_cond2.ranova
+    print_for_manuscript(ra_cond2);
+    %%
+    alpha = 0.025/3;
+    [within,dvn,xlabels,withinD] = make_within_table({'CT'},[2]);
+    dataT_1 = make_between_table({avar(:,find(withinD3(:,1)==1 & withinD3(:,2) == 1))},dvn);
+    ra_cond1_e1 = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond1_e1.ranova
+    print_for_manuscript(ra_cond1_e1);
+    
+    dataT_1 = make_between_table({avar(:,find(withinD3(:,1)==1 & withinD3(:,2) == 2))},dvn);
+    ra_cond1_e2 = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond1_e2.ranova
+    print_for_manuscript(ra_cond1_e2);
+    
+    dataT_1 = make_between_table({avar(:,find(withinD3(:,1)==1 & withinD3(:,2) == 3))},dvn);
+    ra_cond1_e3 = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond1_e3.ranova
+    print_for_manuscript(ra_cond1_e3);
+    
+    
+    dataT_1 = make_between_table({avar(:,find(withinD3(:,1)==2 & withinD3(:,2) == 1))},dvn);
+    ra_cond2_e1 = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond2_e1.ranova
+    print_for_manuscript(ra_cond2_e1);
+    
+    dataT_1 = make_between_table({avar(:,find(withinD3(:,1)==2 & withinD3(:,2) == 2))},dvn);
+    ra_cond2_e2 = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond2_e2.ranova
+    print_for_manuscript(ra_cond2_e2);
+    
+    dataT_1 = make_between_table({avar(:,find(withinD3(:,1)==2 & withinD3(:,2) == 3))},dvn);
+    ra_cond2_e3 = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond2_e3.ranova
+    print_for_manuscript(ra_cond2_e3);
+    
+    %%
+    alpha = 0.025/4;
+    [within,dvn,xlabels,withinD] = make_within_table({'ET'},[3]);
+    dataT_1 = make_between_table({avar(:,[1 3 5])},dvn);
+    ra_cond1_exc = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond1_exc.ranova
+    print_for_manuscript(ra_cond1_exc);
+    
+    dataT_1 = make_between_table({avar(:,[2 4 6])},dvn);
+    ra_cond1_inh = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond1_inh.ranova
+    print_for_manuscript(ra_cond1_inh);
+    
+    dataT_1 = make_between_table({avar(:,[1 3 5]+6)},dvn);
+    ra_cond2_exc = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond2_exc.ranova
+    print_for_manuscript(ra_cond2_exc);
+    
+    dataT_1 = make_between_table({avar(:,[2 4 6]+6)},dvn);
+    ra_cond2_inh = RMA(dataT_1,within,{alpha,{'hsd','bonferroni'}});
+    ra_cond2_inh.ranova
+    print_for_manuscript(ra_cond2_inh);
+    
+    
+    
+    %%
+   
+    %
+    [within,dvn,xlabels,withinD] = make_within_table({'ET','Cond'},[3,2]);
+    dataT_1 = make_between_table({avar(:,[1 7 3 9 5 11])},dvn);
+    ra_exc = RMA(dataT_1,within,{0.025,{'hsd','bonferroni'}});
+    ra_exc.ranova
+    print_for_manuscript(ra_exc);
+    
+    dataT_2 = make_between_table({avar(:,[1 7 3 9 5 11]+1)},dvn);
+    ra_inh = RMA(dataT_2,within,{0.025,{'hsd','bonferroni'}});
+    ra_inh.ranova
+    print_for_manuscript(ra_inh);
+    %%
+    
+    [within,dvn,xlabels,withinD] = make_within_table({'Cond'},[2]);
+    dataT_1 = make_between_table({avar(:,[1 7])},dvn);
+    ra_exc_e1 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
+    ra_exc_e1.ranova
+    print_for_manuscript(ra_exc_e1);
+    
+    dataT_1 = make_between_table({avar(:,[3 9])},dvn);
+    ra_exc_e2 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
+    ra_exc_e2.ranova
+    print_for_manuscript(ra_exc_e2);
+    
+     dataT_1 = make_between_table({avar(:,[5 11])},dvn);
+    ra_exc_e3 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
+    ra_exc_e3.ranova
+    print_for_manuscript(ra_exc_e3);
+    
+    dataT_1 = make_between_table({avar(:,[1 7]+1)},dvn);
+    ra_inh_e1 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
+    ra_inh_e1.ranova
+    print_for_manuscript(ra_inh_e1);
+    
+    dataT_1 = make_between_table({avar(:,[3 9]+1)},dvn);
+    ra_inh_e2 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
+    ra_inh_e2.ranova
+    print_for_manuscript(ra_inh_e2);
+    
+     dataT_1 = make_between_table({avar(:,[5 11]+1)},dvn);
+    ra_inh_e3 = RMA(dataT_1,within,{0.05,{'hsd','bonferroni'}});
+    ra_inh_e3.ranova
+    print_for_manuscript(ra_inh_e3);
+    
+    %%
+    [within,dvn,xlabels,withinD] = make_within_table({'CT','Cond'},[2,2]);
+    dataT_1 = make_between_table({avar(:,[1 7 2 8])},dvn);
+    ra_e1 = RMA(dataT_1,within,{0.05/3,{'hsd','bonferroni'}});
+    ra_e1.ranova
+    print_for_manuscript(ra_e1);
+    
+    dataT_1 = make_between_table({avar(:,[3 9 4 10])},dvn);
+    ra_e2 = RMA(dataT_1,within,{0.05/3,{'hsd','bonferroni'}});
+    ra_e2.ranova
+    print_for_manuscript(ra_e2);
+    
+    dataT_1 = make_between_table({avar(:,[5 11 6 12])},dvn);
+    ra_e3 = RMA(dataT_1,within,{0.05/3,{'hsd','bonferroni'}});
+    ra_e3.ranova
+    print_for_manuscript(ra_e3);
+    
+    %%
+    [within,dvn,xlabels,withinD] = make_within_table({'Cond'},[2]);
+    tempvar = avar(:,[1 7 2 8]);
+    dataT_1 = make_between_table({tempvar(:,1:2)},dvn);
+    ra_e1_exc = RMA(dataT_1,within);
+    ra_e1_exc.ranova
+    print_for_manuscript(ra_e1_exc);
+    
+    dataT_1 = make_between_table({tempvar(:,3:4)},dvn);
+    ra_e1_inh = RMA(dataT_1,within);
+    ra_e1_inh.ranova
+    print_for_manuscript(ra_e1_inh);
+    
+    tempvar = avar(:,[3 9 4 10]);
+    dataT_1 = make_between_table({tempvar(:,1:2)},dvn);
+    ra_e2_exc = RMA(dataT_1,within);
+    ra_e2_exc.ranova
+    print_for_manuscript(ra_e2_exc);
+    
+    dataT_1 = make_between_table({tempvar(:,3:4)},dvn);
+    ra_e2_inh = RMA(dataT_1,within);
+    ra_e2_inh.ranova
+    print_for_manuscript(ra_e2_inh);
+    
+    tempvar = avar(:,[5 11 6 12]);
+    dataT_1 = make_between_table({tempvar(:,1:2)},dvn);
+    ra_e3_exc = RMA(dataT_1,within);
+    ra_e3_exc.ranova
+    print_for_manuscript(ra_e3_exc);
+    
+    dataT_1 = make_between_table({tempvar(:,3:4)},dvn);
+    ra_e3_inh = RMA(dataT_1,within);
+    ra_e3_inh.ranova
+    print_for_manuscript(ra_e3_inh);
+    
+    
+   
+    %% for normality test
+    for ii = 1:size(avar,2)
+        [nth(ii,1),ntp(ii,1)] = swtest(avar(:,ii));
+    end
+    %% for using RMAOV33 function downloaded from the internet
+    % I found the same result as my function RMA
+    clear avar_33
+    ind = 1;
+    for cc = 1:size(avar,2)
+        for rr = 1:size(avar,1)
+            avar_33(ind,:) = [avar(rr,cc) withinD(cc,:) rr];
+            ind = ind + 1;
+        end
+    end
+    RMAOV33(avar_33)
+    %%
+     inds = [1 4];
+    good_FRV = all_exc(:,inds);
+     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [bcellsu intcells nbcellsu];
+    
+    good_FRV = all_inh(:,inds);
+    [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FRV,0.5,0.05);
+    intcells = squeeze(all_CI_mat(1,2,:));    bcells = squeeze(all_CI_mat(1,1,:)); nbcells = squeeze(all_CI_mat(2,2,:));
+    bcellsu = squeeze(uni(1,2,:)); nbcellsu = squeeze(uni(2,1,:));
+    
+    aVar = [aVar bcellsu intcells nbcellsu];
+    
+    [within,dvn,xlabels] = make_within_table({'CT','PT'},[2,3]);
+    dataT = make_between_table({aVar},dvn);
     ra = RMA(dataT,within);
     ra.ranova
     print_for_manuscript(ra)
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_Event','hsd'},[1.5 1 1]);
-    h(h==1) = 0;
-	xdata = make_xdata([3 3],[1 1.5]);
-    hf = get_figure(5,[8 7 1 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.dcolors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 1;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 56]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Air','Light','Arb'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15 30 45]); xtickangle(45)
-    changePosition(gca,[0.09 0.01 -0.1 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);
-    hf = get_figure(5,[8 7 1 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.dcolors(7:end);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    maxY = maxY + 1;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 56]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Air','Light','AOn','AOff'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15 30 45]); xtickangle(45)
-    changePosition(gca,[0.09 0.01 -0.5 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Event','hsd'},[1.5 1 1]);
-	xdata = make_xdata([3],[1 1.5]);
-    hf = get_figure(5,[8 7 1 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.dcolors(9:end);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',7,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.1);
-    maxY = maxY + 5;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 56]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Air','Light','Arb'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 15 30 45]); xtickangle(45)
-    changePosition(gca,[0.09 0.01 -0.4 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{''},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
-    %%
-    break;
-end
-
-
-%% compare percent responsive cells pooled light ON brake vs no-brake exc and inh and Control Light (from Condition 3 and 5 where there is no light stimulus)
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    allsic = {{[Lb Lbs];[ArL_L];[Ar_L];[Ars_L]};
-    };
-    allsic = {{[ArL_L];[Ar_L];[ Ars_L]};
-        };
-
-    all_resp = []; all_resp_exc = []; all_resp_inh = []; all_resp_unt = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh all_unt
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_gFR(:,ii) = gFR;
-            gFR = props1.exc;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_exc(:,ii) = gFR;
-            gFR = props1.inh;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_inh(:,ii) = gFR;
-            gFR = props1.good_FR_and_untuned;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_unt(:,ii) = gFR;
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-        all_resp_unt = [all_resp_unt all_unt];
-    end
-    good_FR = [all_resp_exc all_resp_inh];
-    good_FR_any = cell_list_op(good_FR,[],'or',1);
-    good_FR_all = cell_list_op(good_FR,[],'and',1);
-    per_active =[]; 
-    for rr = 1:size(good_FR,1)
-        for cc = 1:size(good_FR,2)
-            tts = good_FR{rr,cc};
-            per_active(rr,cc) = 100*sum(tts)/length(tts);
-        end
-        tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
-        tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
-    end
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,length(sic)]);
-    dataT = make_between_table({per_active},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type_by_Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([length(sic) length(sic)],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 5;    
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'NB-Exc','NB-Exc-CP','NB-Exc-CA','NB-Inh','NB-Inh-CP','NB-Inh-CP'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.1 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
-    
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
-	xdata = make_xdata([2],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 5;    
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'NB','NB-C'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 5 10]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.3 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
-    %%
-    break;
-end
-
-%% compare percent response fidelity pooled light on brake vs no-brake and Control Light (from Condition 3 and 5 where there is no light stimulus)
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    allsic = {{[Lb Lbs];[ArL_L];[Ar_L Ars_L]};
-    };
-%     ind = 3;
-%     sic = allsic{1:6};
-    all_resp = []; all_resp_exc = []; all_resp_inh = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals; rf = props1.N_Resp_Trials;
-            all_gFR(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.exc; rf = props1.N_Resp_Trials;
-            all_exc(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.inh; rf = props1.N_Resp_Trials;
-            all_inh(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-    end
-    good_FR = [all_resp_exc all_resp_inh];
-
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,3]);
-    dataT = make_between_table({good_FR},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-  
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type_by_Cond','hsd'},[1.5 1 1]);
-    h(2)= 0;
-	xdata = make_xdata([3 3],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 5;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'B-Exc','NB-Exc','B-Inh','NB-Inh'};
-    xticklabels = {'B-Exc','NB-Exc','NB-Exc-C','B-Inh','NB-Inh','NB-Inh-C'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 35 70]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.2 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Trials (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
     %%
     break;
 end
 
 
 
-%% compare zMI pooled light on brake vs no-brake
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    allsic = {{[Lb Lbs];[ArL_L]};
-    };
-%     ind = 3;
-%     sic = allsic{1:6};
-    all_resp = []; all_resp_exc = []; all_resp_inh = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals; rf = props1.zMI;
-            all_gFR(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.exc; rf = props1.zMI;
-            all_exc(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.inh; rf = props1.zMI;
-            all_inh(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-    end
-    good_FR = [all_resp_exc all_resp_inh];
-
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,2]);
-    dataT = make_between_table({good_FR},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-  
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type_by_Cond','hsd'},[1.5 1 1]);
-    h(2)= 0;
-	xdata = make_xdata([2 2],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 0;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'B-Exc','NB-Exc','B-Inh','NB-Inh'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 35 70]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.5 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Trials (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_all.pdf',ntrials),600);
-    %%
-    break;
-end
-
-
-
-%% compare percent responsive cells pooled air on or off brake vs no-brake Unt
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    event_type = {'Air ON','Air OFF','Light ON'};
-
-    allsic = {{[Ab_On Abs_On Ab_Off Abs_Off];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];[Lb Lbs];[ArL_L]};};
-
-    all_resp = []; all_resp_exc = []; all_resp_inh = [];
-    all_respV = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh all_gV
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.vals;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_gV(:,ii) = gFR;
-            gFR = props1.good_FR_and_untuned;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_gFR(:,ii) = gFR;
-            gFR = props1.exc;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_exc(:,ii) = gFR;
-            gFR = props1.inh;
-            gFR = cell_list_op(gFR,[],'or',1);
-            all_inh(:,ii) = gFR;
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-        all_respV = [all_respV all_gV]; 
-    end
-    good_FR = all_gFR;%[all_resp_exc all_resp_inh];
-    good_FR_any = cell_list_op(good_FR,[],'or',1);
-    good_FR_all = cell_list_op(good_FR,[],'and',1);
-    per_active =[]; 
-    for rr = 1:size(good_FR,1)
-        for cc = 1:size(good_FR,2)
-            tts = good_FR{rr,cc};
-            per_active(rr,cc) = 100*sum(tts)/length(tts);
-        end
-        tts = good_FR_any{rr,1};        per_active_any(rr) = 100*sum(tts)/length(tts);
-        tts = good_FR_all{rr,1};        per_active_all(rr) = 100*sum(tts)/length(tts);
-    end
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,2]);
-    dataT = make_between_table({per_active},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    %%
-    break;
-end
-
-%% compare percent response fidelity pooled air with light brake vs no-brake
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    event_type = {'Air ON','Air OFF','Light ON'};
-    allsic = {{[Ab_On Abs_On Ab_Off Abs_Off];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off];[Lb Lbs];[ArL_L]};};
-    all_resp = []; all_resp_exc = []; all_resp_inh = [];
-    for jj = 1:length(allsic)
-        sic = allsic{jj};
-        clear all_gFR all_exc all_inh
-        for ii = 1:length(sic)
-            sit = sic{ii};
-            tRs = o.Rs(:,sit);
-            props1 = get_props_Rs(tRs,ntrials);
-            gFR = props1.good_FR_and_untuned; rf = props1.N_Resp_Trials;
-            all_gFR(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.exc; rf = props1.N_Resp_Trials;
-            all_exc(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-            gFR = props1.inh;rf = props1.N_Resp_Trials;
-            all_inh(:,ii) = mean(exec_fun_on_cell_mat(rf,'mean',gFR),2);
-        end
-        all_resp = [all_resp all_gFR]; all_resp_exc = [all_resp_exc all_exc]; all_resp_inh = [all_resp_inh all_inh];
-    end
-    good_FR = all_resp;%[all_resp_exc all_resp_inh];
-
-    [within,dvn,xlabels] = make_within_table({'Type','Cond'},[2,2]);
-    dataT = make_between_table({good_FR},dvn);
-    ra = RMA(dataT,within);
-    ra.ranova
-  
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type_by_Cond','hsd'},[1.5 1 1]);
-    h(h==1) = 0;
-	xdata = make_xdata([2 2],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.colors(3:6);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 5;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[50 75]); format_axes(gca);
-    xticks = xdata; xticklabels = {'B-A','NB-A','B-L','NB-L'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[50 70]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.5 -0.04]); put_axes_labels(gca,{[],[0 0 0]},{{'Trials (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_allf1.pdf',ntrials),600);
-     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
-    mVar(3) = NaN; mVar(4) = NaN; semVar(3:4) = NaN;
-	xdata = make_xdata([2 2],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.colors;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',20,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 5;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) 90]); format_axes(gca);
-    xticks = xdata; xticklabels = {'B-Act','NB-Act','B-Sup','NB-Sup'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 35 70]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.5 -0.04]); %put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_allf2.pdf',ntrials),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Type','hsd'},[1.5 1 1]);
-    mVar(3) = NaN; mVar(4) = NaN; semVar(3:4) = NaN;
-%     h(h==1) = 0;
-	xdata = make_xdata([2 2],[1 1.5]);
-    hf = get_figure(5,[8 7 2 1]);
-    % s = generate_shades(length(bins)-1);
-    tcolors = mData.colors(7:end);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
-    maxY = maxY + 5;
-    ylims = ylim;
-    format_axes(gca);
-%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[50 75]); format_axes(gca);
-    xticks = xdata; xticklabels = {'B-A','NB-A','B-L','NB-L'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[50 70]); xtickangle(45)
-    changePosition(gca,[0.05 0.01 -0.5 -0.04]); %put_axes_labels(gca,{[],[0 0 0]},{{'Responsive','Cells (%)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('active_cells_across_conditions_%d_allf3.pdf',ntrials),600);
-    %%
-    break;
-end
 
 
 %% compare percent responsive cells pooled
