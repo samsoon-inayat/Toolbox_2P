@@ -138,11 +138,12 @@ while 1
     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4)]; % for comparison of air onset with air offset across brake and no-brake
     txl = {'AOn-Exc','Inh'}; txl = repmat(txl,1,4);
     
-    good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4),all_exc(:,5),all_inh(:,5),all_exc(:,6),all_inh(:,6)]; % for comparison of air onset offset and arb
+    good_FR = all_exc_inh;
+    good_FR = all_gV;
 %     good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,4),all_inh(:,4),all_exc(:,5),all_inh(:,5)]; % for comparison of air onset offset and arb
 %     txl = {'AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh','AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh'};
-    txl = {'B-AOn-Exc','B-AOn-Inh','B-AOff-Exc','B-AOff-Inh','B-Arb-Exc','B-Arb-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-Arb-Exc','NB-Arb-Inh'};
-    txlV = {'B_AOn_Exc','B_AOn_Inh','B_AOff_Exc','B_AOff_Inh','B_Arb_Exc','B_Arb_Inh','NB_AOn_Exc','NB_AOn_Inh','NB_AOff_Exc','NB_AOff_Inh','NB_Arb_Exc','NB_Arb_Inh'};
+    txl = {'B-AOn-Exc','B-AOn-Inh','B-AOff-Exc','B-AOff-Inh','B-Arb-Exc','B-Arb-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh','NB-Arb-Exc','NB-Arb-Inh','B-L-Exc','B-L-Inh','NB-A-Exc','NB-A-Inh','NB-AL-Exc','NB-AL-Inh'};
+%     txlV = {'B_AOn_Exc','B_AOn_Inh','B_AOff_Exc','B_AOff_Inh','B_Arb_Exc','B_Arb_Inh','NB_AOn_Exc','NB_AOn_Inh','NB_AOff_Exc','NB_AOff_Inh','NB_Arb_Exc','NB_Arb_Inh','B-L-Exc','B-L-Inh','NB-A-Exc','NB-A-Inh','NB-AL-Exc','NB-AL-Inh'};
     
 %     txl = {'B-AOn-Exc','B-AOn-Inh','B-AOff-Exc','B-AOff-Inh','NB-AOn-Exc','NB-AOn-Inh','NB-AOff-Exc','NB-AOff-Inh'};
 %     txlV = {'B_AOn_Exc','B_AOn_Inh','B_AOff_Exc','B_AOff_Inh','NB_AOn_Exc','NB_AOn_Inh','NB_AOff_Exc','NB_AOff_Inh'};
@@ -152,7 +153,7 @@ while 1
 %     txl = xtl;
 %     
 %     good_FR = all_gV;
-%     txl = event_type;
+    txl = event_type;
     
    
     [OI,mOI,semOI,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FR,0.5,0.05);
@@ -162,7 +163,7 @@ while 1
     semUni = nanstd(uni,[],3)/sqrt(5); semUni1 = tril(semUni,-1) + tril(semUni,-1)'; semUni2 = triu(semUni,1) + triu(semUni,1)'; msemUni = min(semUni(:)); MsemUni = max(semUni(:));
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
-    mOI = mUni;
+%     mOI = mUni;
 %     mOI = mUni1; semOI = semUni1;
 %     mOI = mUni2; semOI = semUni2;
     
@@ -212,7 +213,7 @@ while 1
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
     hf = gcf;
     set(hf,'Position',[7 3 3.5 1.75]);
-    set(hf,'Position',[7 3 2.3 1.5]);
+    set(hf,'Position',[7 3 2.3 1.25]);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
@@ -1114,8 +1115,8 @@ while 1
         'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',...
         [10 -410]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 1.5 1.25]);
     MY = 15; ysp = 0.75; sigLinesStartYFactor = 1.5; mY = 0; % responsive cells
-    MY = 70; ysp = 5; sigLinesStartYFactor = 1.5; mY = 0; % responsive fidelity
-    MY = 1.5; ysp = 0.15; sigLinesStartYFactor = 0.1; mY = -0.25; % responsive fidelity
+%     MY = 70; ysp = 5; sigLinesStartYFactor = 1.5; mY = 0; % responsive fidelity
+%     MY = 1.5; ysp = 0.15; sigLinesStartYFactor = 0.1; mY = -0.25; % responsive fidelity
     stp = 0.43; widths = [0.3 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
     set(ff.hf,'Units','inches');
     for aii = 1:length(ff.h_axes)
