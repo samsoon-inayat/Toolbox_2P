@@ -164,7 +164,7 @@ while 1
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
 %     mOI = mUni;
-%     mOI = mUni1; semOI = semUni1;
+    mOI = mUni1; semOI = semUni1;
 %     mOI = mUni2; semOI = semUni2;
     
     sz = size(mOI,1);

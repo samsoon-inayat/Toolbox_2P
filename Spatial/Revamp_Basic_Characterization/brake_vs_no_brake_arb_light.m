@@ -277,7 +277,7 @@ end
 while 1
     all_resp = [];
     ntrials = 50;
-    sic = {[Lb Lbs];[Ar_L Ars_L];[Ar_L]};
+    sic = {[Lb Lbs];[Ar_L Ars_L];[ArL_L]};
     clear all_gFR
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -317,7 +317,7 @@ while 1
 %     h(h==1) = 0;
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
     set(gcf,'color','w');    set(gcf,'Position',[10 3 1.6 1.25]);
-    MY = 15; ysp = 1.5; mY = 0; % responsive cells
+    MY = 19; ysp = 1.5; mY = 0; % responsive cells
     stp = 0.43; widths = [0.4 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Estimated','Marginal Means'});
     % s = generate_shades(length(bins)-1);
@@ -398,7 +398,7 @@ while 1
     
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
     set(gcf,'color','w');    set(gcf,'Position',[10 3 1.6 1.25]);
-    MY = 15; ysp = 1.5; mY = 0; % responsive cells
+    MY = 8; ysp = 1; mY = 0; % responsive cells
     stp = 0.43; widths = [0.4 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Estimated','Marginal Means'});
     % s = generate_shades(length(bins)-1);
