@@ -881,11 +881,11 @@ while 1
     event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','2-B-Arb','7-B-Arb','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
         '4-NB-AOff','5-NB-AOff','3-NB-Arb','4-NB-Arb','5-NB-Arb','1-B-L','6-B-L','3-NB-A','5-NB-A','4-NB-AL'};
     sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc]};
-    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ab_Offc];[Abs_Offc];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Ar_Offc];[ArL_Offc];[Ars_Offc];[Lb];[Lbs];[Ar_L];[Ars_L];[Ar_L]}; % for heat map after light sitmulus
+%     sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ab_Offc];[Abs_Offc];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Ar_Offc];[ArL_Offc];[Ars_Offc];[Lb];[Lbs];[Ar_L];[Ars_L];[Ar_L]}; % for heat map after light sitmulus
     
-    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
-        '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','4-NB-AL','3-NB-A','5-NB-A'};
-    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[ArL_L];[Ar_L];[Ars_L]}; % for heat map after light sitmulus
+%     event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
+%         '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','4-NB-AL','3-NB-A','5-NB-A'};
+%     sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[ArL_L];[Ar_L];[Ars_L]}; % for heat map after light sitmulus
 %     sic = {[Ab_On Abs_On];[Ar_On ArL_On Ars_On];[Ab_Off Abs_Off];[Ar_Off ArL_Off Ars_Off];[Ab_Offc Abs_Offc];[Ar_Offc ArL_Offc Ars_Offc]};
     clear all_gFR all_exc all_inh all_gV 
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};

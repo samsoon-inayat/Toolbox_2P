@@ -165,7 +165,7 @@ while 1
     
 %     mOI = mUni;
     mOI = mUni1; semOI = semUni1;
-%     mOI = mUni2; semOI = semUni2;
+    mOI = mUni2; semOI = semUni2;
     
     sz = size(mOI,1);
     oM = ones(size(mOI));
@@ -214,6 +214,7 @@ while 1
     hf = gcf;
     set(hf,'Position',[7 3 3.5 1.75]);
     set(hf,'Position',[7 3 2.3 1.25]);
+    set(hf,'Position',[7 3 2.4 1.15]);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);

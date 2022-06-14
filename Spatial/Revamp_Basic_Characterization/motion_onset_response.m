@@ -168,65 +168,12 @@ while 1
 end 
 
 
-
-%% Motion onset and offset events Conjunction and Complementation
-while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    sic = {[Ab_On Abs_On Ab_Off Abs_Off Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Ar_Offc ArL_Offc Ars_Offc];[M_On M_Off]};
-    clear all_gFR all_exc all_inh all_gV 
-    prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
-    cell_sel = {'good_FR','vals','exc','inh'};
-    varName = {'all_gFR','all_gV','all_exc','all_inh'};
-    for cii = 1:length(cell_sel);
-        cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
-    end
-    pni = 7;
-    all_exc_inh = [];
-    for ii = 1:length(sic)
-        sit = sic{ii};
-        tRs = o.Rs(:,sit);
-        props1 = get_props_Rs(tRs,ntrials);
-        for cii = 1:length(cell_sel)
-            cmdTxt = sprintf('gFR = props1.%s;',cell_sel{cii});eval(cmdTxt);
-            if pni == 1
-                rf = find_percent(gFR);
-                cmdTxt = sprintf('%s(:,ii) = mean(rf,2);',varName{cii}); eval(cmdTxt)
-            else
-                if pni == 7
-                    cmdTxt = sprintf('%s(:,ii) = cell_list_op(gFR,[],''or'',1);',varName{cii});eval(cmdTxt);
-                else
-                    if pni == 3 || pni == 4
-                        cmdtxt = sprintf('rf = props1.%s;',prop_names{3}); eval(cmdtxt);
-                        if pni == 3
-                            cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''nanmean'',gFR),2);',varName{cii});eval(cmdTxt);
-                        else
-                            for rrr = 1:size(rf,1)
-                                for ccc = 1:size(rf,2)
-                                    temp = isnan(rf{rrr,ccc});
-                                    rf1(rrr,ccc) = 100*sum(temp(gFR{rrr,ccc}))/size(rf{rrr,ccc},1);
-                                end
-                            end
-                            cmdTxt = sprintf('%s(:,ii) = mean(rf1,2);',varName{cii}); eval(cmdTxt)
-                        end
-                    else
-                        cmdtxt = sprintf('rf = props1.%s;',prop_names{pni}); eval(cmdtxt);
-                        cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''mean'',gFR),2);',varName{cii});eval(cmdTxt);
-                    end
-                end
-            end
-        end
-        all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
-    end
-    %%
-    break;
-end
-
-
 %% Brake vs No-Brake and Voluntary Motion On Off
+% three circle Venn diagram, percentages of complementary and conjunctive cells compared among Lb/Lbs, Ar_L/Ars_L, and ArL_L
 while 1
     all_resp = [];
     ntrials = 50;
-    sic = {[Ab_On Abs_On Ab_Off Abs_Off Ab_Offc Abs_Offc Lb Lbs];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Ar_Offc ArL_Offc Ars_Offc ArL_L];[M_On M_Off]};
+    sic = {[Ab_On Abs_On Ab_Off Abs_Off Ab_Offc Abs_Offc Lb Lbs];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Ar_Offc ArL_Offc Ars_Offc Ar_L ArL_L Ars_L];[M_On M_Off]};
     clear all_gFR
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -260,22 +207,25 @@ while 1
     any_gFR = cell_list_op(all_gFR,[],'or',1);
     pangfr = 100*exec_fun_on_cell_mat(any_gFR,'sum')./exec_fun_on_cell_mat(any_gFR,'length');
     [mpangfr,sempangfr] = findMeanAndStandardError(pangfr);
-    
+    %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     xdata = make_xdata([size(good_FR,2)],[1]);
 %     h(h==1) = 0;
-    hf = get_figure(5,[8 7 1.5 1]);
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+    set(gcf,'color','w');    set(gcf,'Position',[10 3 1.6 1.25]);
+    MY = 39; ysp = 1.5; mY = 0; % responsive cells
+    stp = 0.43; widths = [0.4 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{'Estimated','Marginal Means'});
     % s = generate_shades(length(bins)-1);
     tcolors = [mData.colors(1:2);mData.dcolors(8)];
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.17);
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Brake','No-Brake','Motion'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.035 0.01 -0.25 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','NB','M'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_axes_top_text(ff.hf,ff.h_axes(1),'Complementary',[-0.04 0 0 0]);
+    
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs_3_factors.pdf',ntrials),600);
+
     pos = get(gca,'Position');
 %     text(1,ylims(2),sprintf('%s',event_type{ind}),'FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('unique_cells_across_conditions_%s_volunM.pdf',event_type{ind}),600);
@@ -313,6 +263,13 @@ while 1
     ylims = ylim;
 %     text(1,ylims(2)+0.51,sprintf('%s',event_type{ind}),'FontSize',6);
 %     text(5,ylims(2)-0.51,sprintf('%.0f%%',IVenn(end)),'FontSize',6);
+    btxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(1,1),pmchar,sem_p_gFR_C(1,1)));
+    nbtxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(2,2),pmchar,sem_p_gFR_C(2,2)));
+    inttxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(1,2),pmchar,sem_p_gFR_C(1,2)));
+    clc
+    disp(btxt);
+    disp(inttxt);
+    disp(nbtxt);
     save_pdf(hf,mData.pdf_folder,sprintf('conjunctive_cells_venn_diagram_%s_volunM.pdf',event_type{ind}),600);
 
     %%
@@ -333,22 +290,23 @@ while 1
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1 1 1]);
     xdata = make_xdata([size(good_FR,2)],[1]);
-%     h(h==1) = 0;
-    hf = get_figure(5,[8 7 1.5 1]);
+
+    
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+    set(gcf,'color','w');    set(gcf,'Position',[10 3 1.6 1.25]);
+    MY = 25; ysp = 1; mY = 0; % responsive cells
+    stp = 0.43; widths = [0.4 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{'Estimated','Marginal Means'});
     % s = generate_shades(length(bins)-1);
-    tcolors = mData.dcolors(4:6);
+    tcolors = [mData.dcolors(1:2);mData.dcolors(9)];
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.17);
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'B-NB','B-M','NB-M'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20 30]); xtickangle(45)
-    changePosition(gca,[0.035 0.01 -0.25 0.05]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    pos = get(gca,'Position');
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B-NB','B-M','NB-M'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_axes_top_text(ff.hf,ff.h_axes(1),'Conjunctive',[0.0 0 0 0]);
+
 %     text(1,ylims(2),sprintf('%s',event_type{ind}),'FontSize',6);
-    save_pdf(hf,mData.pdf_folder,sprintf('unique_cells_across_conditions_%s_volunM.pdf',event_type{ind}),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('unique_cells_across_conditions_%s_volunM.pdf','L'),600);
     
     %%
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(all_gFR,0.5,0.05);
@@ -490,6 +448,67 @@ while 1
     break;
 end
 
+
+%% for heat map and clustering
+while 1
+    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
+        '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','4-NB-AL','3-NB-A','5-NB-A','M-On','M-Off'};
+    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[ArL_L];[Ar_L];[Ars_L];[M_On];[M_Off]}; 
+    
+    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
+        '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','M-On','M-Off'};
+    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[M_On];[M_Off]}; 
+    
+    
+    clear all_gFR all_exc all_inh all_gV 
+    prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
+    cell_sel = {'good_FR','vals','exc','inh'};
+    varName = {'all_gFR','all_gV','all_exc','all_inh'};
+    for cii = 1:length(cell_sel);
+        cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
+    end
+    pni = 7;
+    all_exc_inh = [];
+    for ii = 1:length(sic)
+        sit = sic{ii};
+        tRs = o.Rs(:,sit);
+        props1 = get_props_Rs(tRs,ntrials);
+        for cii = 1:length(cell_sel)
+            cmdTxt = sprintf('gFR = props1.%s;',cell_sel{cii});eval(cmdTxt);
+            if pni == 1
+                rf = find_percent(gFR);
+                cmdTxt = sprintf('%s(:,ii) = mean(rf,2);',varName{cii}); eval(cmdTxt)
+            else
+                if pni == 7
+                    cmdTxt = sprintf('%s(:,ii) = cell_list_op(gFR,[],''or'',1);',varName{cii});eval(cmdTxt);
+                else
+                    if pni == 3 || pni == 4
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{3}); eval(cmdtxt);
+                        if pni == 3
+                            cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''nanmean'',gFR),2);',varName{cii});eval(cmdTxt);
+                        else
+                            for rrr = 1:size(rf,1)
+                                for ccc = 1:size(rf,2)
+                                    temp = isnan(rf{rrr,ccc});
+                                    rf1(rrr,ccc) = 100*sum(temp(gFR{rrr,ccc}))/size(rf{rrr,ccc},1);
+                                end
+                            end
+                            cmdTxt = sprintf('%s(:,ii) = mean(rf1,2);',varName{cii}); eval(cmdTxt)
+                        end
+                    else
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{pni}); eval(cmdtxt);
+                        cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''mean'',gFR),2);',varName{cii});eval(cmdTxt);
+                    end
+                end
+            end
+        end
+        all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
+    end
+
+    %%
+    break;
+end
 
 
 % 
