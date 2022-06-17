@@ -199,7 +199,62 @@ while 1
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_sem_%d.pdf',ntrials,sh),600);
    %%
+   ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[10 -450]);
+    set(gcf,'color','w');    set(gcf,'Position',[10 3 4.95 1.25]);
+    stp = 0.25; widths = [1.33 1.33 1.33 0.4 0.4 0.4]+0.1; gap = 0.13; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    %%
     mOI1 = mCI;
+%     mOI1 = mUni2;
+    mOI1(mask1==1) = NaN; 
+    Di = pdist(mOI1,@naneucdist);
+    tree = linkage(Di,'average');
+    [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
+    leafOrder = optimalleaforder(tree,Di);
+    hf = figure(100000000);
+    leafOrder1 = leafOrder([1:3 10:12 4:9])
+    figure(hf);clf
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder1);ylims = ylim; xlims = xlim;
+    set(gca,'xtick',[],'ytick',[]);
+    set(gcf,'units','inches'); set(gcf,'Position',[5 2 0.9 0.5])
+    %%
+    close(hf);
+%     
+    
+    axes(ff.h_axes(1,1));
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);
+    set(H,'linewidth',0.5);
+    set(gca,'xticklabels',txl(leafOrder));xtickangle(45);
+    format_axes(gca);
+    hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
+%     xlim([xlims(1)+0.5 xlims(2)-0.5]);
+    changePosition(gca,[0.0 0.0 0.07 0.05]);
+    text(0.5,ylims(2)+0.3,sprintf('CC = %.2f',c),'FontSize',6);
+%     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
+
+%     mOI1 = mCI;
+    mOI1 = mUni1;
+    mOI1(mask1==1) = NaN; 
+    Di = pdist(mOI1,@naneucdist);
+    tree = linkage(Di,'average');
+    [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
+    leafOrder = optimalleaforder(tree,Di);
+    hf = figure(100000000);
+    figure(hf);clf
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    close(hf);
+%     
+    
+    axes(ff.h_axes(1,2));
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);
+    set(H,'linewidth',0.5);
+    set(gca,'xticklabels',txl(leafOrder));xtickangle(45);
+    format_axes(gca);
+%     xlim([xlims(1)+0.5 xlims(2)-0.5]);
+    changePosition(gca,[0.0 0.0 0.07 0.05]);
+    text(0.5,ylims(2)+1,sprintf('CC = %.2f',c),'FontSize',6);
+
+    
+%     mOI1 = mCI;
     mOI1 = mUni2;
     mOI1(mask1==1) = NaN; 
     Di = pdist(mOI1,@naneucdist);
@@ -211,19 +266,16 @@ while 1
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
     close(hf);
 %     
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[10 -450]);
-    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 1.25]);
-    stp = 0.25; widths = [3 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
-    axes(ff.h_axes(1,1));
+    
+    axes(ff.h_axes(1,3));
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(leafOrder));xtickangle(45);
     format_axes(gca);
-    hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
 %     xlim([xlims(1)+0.5 xlims(2)-0.5]);
     changePosition(gca,[0.0 0.0 0.07 0.05]);
-    text(0.5,ylims(2)+0.75,sprintf('CC = %.2f',c),'FontSize',6);
-%     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
+    text(0.5,ylims(2)+1,sprintf('CC = %.2f',c),'FontSize',6);
+    
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster_%d.pdf',sh),600);
     
     %%

@@ -591,9 +591,11 @@ end
 %% for heat map and clustering
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
-        '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','4-NB-AL','3-NB-A','5-NB-A','M-On','M-Off'};
-    sic = {Lb;Ab_On;Ab_Off;Ab_Offc;Ar_On;Ar_L;Ar_Off;Ar_Offc;ArL_On;ArL_L;ArL_Off;ArL_Offc;Ars_On;Ars_L;Ars_Off;Ars_Offc;Lbs;Abs_On;Abs_Off;Abs_Offc;M_On;M_Off};
+    event_type = {'1-L','2-AOn','2-AOff','2-Arb','3-AOn','3-A','3-AOff','3-Arb','4-AOn','4-AL','4-AOff','4-Arb','5-AOn','5-A','5-AOff','5-Arb','6-L','7-AOn','7-AOff','7-Arb'};
+    sic = {Lb;Ab_On;Ab_Off;Ab_Offc;Ar_On;Ar_L;Ar_Off;Ar_Offc;ArL_On;ArL_L;ArL_Off;ArL_Offc;Ars_On;Ars_L;Ars_Off;Ars_Offc;Lbs;Abs_On;Abs_Off;Abs_Offc};
+    
+    event_type = {'1-L','2-AOn','2-AOff','3-AOn','3-AOff','4-AOn','4-AL','4-AOff','5-AOn','5-AOff','6-L','7-AOn','7-AOff'};
+    sic = {Lb;Ab_On;Ab_Off;Ar_On;Ar_Off;ArL_On;ArL_L;ArL_Off;Ars_On;Ars_Off;Lbs;Abs_On;Abs_Off};
     
     clear all_gFR all_exc all_inh all_gV 
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
