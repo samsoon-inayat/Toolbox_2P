@@ -455,16 +455,11 @@ while 1
     event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
         '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','4-NB-AL','3-NB-A','5-NB-A','M-On','M-Off'};
     sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[ArL_L];[Ar_L];[Ars_L];[M_On];[M_Off]}; 
-    event_type = rasterNamesTxt([Lb Ab_On Ab_Off Ab_Offc Ar_On Ar_L Ar_Off Ar_Offc ArL_On ArL_L ArL_Off ArL_Offc Ars_On Ars_L Ars_Off Ars_Offc Lbs Abs_On Abs_Off Abs_Offc M_On M_Off]);
-    sic = {Lb;Ab_On;Ab_Off;Ab_Offc;Ar_On;Ar_L;Ar_Off;Ar_Offc;ArL_On;ArL_L;ArL_Off;ArL_Offc;Ars_On;Ars_L;Ars_Off;Ars_Offc;Lbs;Abs_On;Abs_Off;Abs_Offc;M_On;M_Off};
     
-    event_type = {'B-AOn','B-AOff','B-Arb','NB-AOn','NB-AOff','NB-Arb','B-L','NB-AL','NB-A','M-On','M-Off'};
-    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc];[Lb Lbs];[ArL_L];[Ar_L Ars_L];[M_On];[M_Off]}; % for heat map after light sitmulus
+    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
+        '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','M-On','M-Off'};
+    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[M_On];[M_Off]}; 
     
-%     event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
-%         '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','M-On','M-Off'};
-%     sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[M_On];[M_Off]}; 
-%     
     
     clear all_gFR all_exc all_inh all_gV 
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
@@ -568,7 +563,7 @@ while 1
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','M','NB'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B','M','NB-AL'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     set_axes_top_text(ff.hf,ff.h_axes(1),'Complementary',[-0.04 0 0 0]);
     
     save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs_3_factors.pdf',ntrials),600);
@@ -652,7 +647,7 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Comp1','Conj','Comp2'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
 %     put_sig_lines(gcf,gca,hbs(1:3),mVar(1:3)
 %     set_axes_top_text(ff.hf,ff.h_axes(1),'Conjunctive',[0.0 0 0 0]);
-    set_bar_graph_sub_xtick_text(gcf,gca,hbs,3,{'B-NB','B-M','NB-M'});
+    set_bar_graph_sub_xtick_text(gcf,gca,hbs,3,{'P1-P2','P1-P3','P2-P3'});
     save_pdf(ff.hf,mData.pdf_folder,sprintf('unique_cells_across_conditions_%s_volunM.pdf','L'),600);
     
    

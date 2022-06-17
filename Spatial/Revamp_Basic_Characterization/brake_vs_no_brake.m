@@ -2717,7 +2717,7 @@ while 1
     %%
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     event_type = {'Air ON','Air OFF','Light ON'};
-    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ab_Offc Abs_Offc];[Ar_Offc ArL_Offc Ars_Offc];[Lb Lbs];[ArL_L]};
+    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ab_Offc Abs_Offc];[Ar_Offc ArL_Offc Ars_Offc]};
     clear all_gV all_gFR all_exc all_inh;
     for ii = 1:length(sic)
         sit = sic{ii};

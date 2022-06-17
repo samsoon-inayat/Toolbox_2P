@@ -3,7 +3,7 @@ while 1
     %%
     % for different VENN Diagrams change good_FRV = all_exc(:,[1 3]) or
     % all_exc(:,[2 4]) or all_exc(:,[5 6]) same thing for all_inh
-    good_FRV = [cell_list_op(all_gV(:,[1:3]),[],'or',1) cell_list_op(all_gV(:,[4:6]),[],'or',1)]; 
+    good_FRV = [cell_list_op(all_gV(:,[1:3 7]),[],'or',1) cell_list_op(all_gV(:,[4:6 8 9]),[],'or',1)]; 
     cell_any = descriptiveStatistics(find_percent(cell_list_op(good_FRV,[],'or',1)));
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
@@ -16,7 +16,7 @@ while 1
     [within,dvn,xlabels,withinD] = make_within_table({'PT'},[3]); withinD3 = withinD;
     dataT = make_between_table({aVar_P},dvn);
     ra_pt = RMA(dataT,within,{0.05,{'hsd','bonferroni'}}); ra_pt.ranova
-    print_for_manuscript(ra_et_pt); 
+    print_for_manuscript(ra_pt); 
     
     
     p_gFR_C = [];
@@ -55,7 +55,7 @@ while 1
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],...
         'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.29],'widthHeightAdjustment',...
         [10 -410]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 1 1.25]);
-    MY = 50; ysp = 4; sigLinesStartYFactor = 1.5; mY = 0; % responsive cells
+    MY = 60; ysp = 4; sigLinesStartYFactor = 1.5; mY = 0; % responsive cells
     stp = 0.43; widths = [0.4 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
     set(ff.hf,'Units','inches');
     for aii = 1:length(ff.h_axes)
@@ -133,26 +133,26 @@ end
 while 1
     %% for heat maps
     figdim = 3;
-    hf = get_figure(5,[5 2 figdim figdim]);
-    
-    good_FR = [all_exc(:,1),all_inh(:,1),all_exc(:,2),all_inh(:,2),all_exc(:,3),all_inh(:,3),all_exc(:,4),all_inh(:,4)]; % for comparison of air onset with air offset across brake and no-brake
-    txl = {'AOn-Exc','Inh'}; txl = repmat(txl,1,4);
-    
+    hf = get_figure(5,[9 2 figdim figdim]);
+            
+    all_cells_list = all_exc_inh;
+    all_cells_list = all_gV;
     sh = 0;
-    good_FR = circshift(all_exc_inh,sh,2);
+    good_FR = circshift(all_cells_list,sh,2);
     txl = circshift(event_type,sh,2);
-    seq_nums = circshift(1:12,sh,2);
+    seq_nums = circshift(1:size(all_cells_list,2),sh,2);
   
     [OIo,mOIo,semOIo,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(good_FR,0.5,0.05);
     mOI = mCI; semOI = semCI;
+
 
     mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
     semUni = nanstd(uni,[],3)/sqrt(5); semUni1 = tril(semUni,-1) + tril(semUni,-1)'; semUni2 = triu(semUni,1) + triu(semUni,1)'; msemUni = min(semUni(:)); MsemUni = max(semUni(:));
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
-%     mOI = mUni;
-    mOI = mUni1; semOI = semUni1;
-    mOI = mUni2; semOI = semUni2;
+    mOI = mUni;
+%     mOI = mUni1; semOI = semUni1;
+%     mOI = mUni2; semOI = semUni2;
     
     sz = size(mOI,1);
     oM = ones(size(mOI));
@@ -177,18 +177,31 @@ while 1
             end
         end
     end
-    plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 150.5],'w','linewidth',0.1); 
-    plot([0 150.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+%     plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 150.5],'w','linewidth',0.1); 
+%     plot([0 150.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
     set(gca,'Ydir','normal');ytickangle(15);
     box on
     changePosition(gca,[0.0 0 0.0 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.08 0.05 0.05 0.05]);
+    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.07 0.05 0.07 0.05]);
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean_%d.pdf',ntrials,sh),600);
     
-   
-    mOI1 = mOI;
-%     mOI1(isnan(mOI1)) = 1;
+    figdim = 1;
+    hf = get_figure(6,[5 2 figdim+0.1 figdim]);
+    im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+    format_axes(gca);
+    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',[],'yticklabels',[],'Ydir','reverse'); xtickangle(75);
+    changePosition(gca,[0.0 0 -0.05 0]);
+    set(gca,'Ydir','normal');
+    box on
+    colormap jet
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_sem_%d.pdf',ntrials,sh),600);
+   %%
+    mOI1 = mCI;
+    mOI1 = mUni2;
+    mOI1(mask1==1) = NaN; 
     Di = pdist(mOI1,@naneucdist);
     tree = linkage(Di,'average');
     [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
@@ -198,17 +211,18 @@ while 1
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
     close(hf);
 %     
-    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],'widthHeightAdjustment',[10 -450]);
-    set(gcf,'color','w');    set(gcf,'Position',[10 3 2.3 1.5]);
-    stp = 0.25; widths = [1.8 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[10 -450]);
+    set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 1.25]);
+    stp = 0.25; widths = [3 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     axes(ff.h_axes(1,1));
     [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(leafOrder));xtickangle(45);
     format_axes(gca);
-    hx = ylabel({'Eucledian Distance'});changePosition(hx,[0 0 0]);
+    hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
+%     xlim([xlims(1)+0.5 xlims(2)-0.5]);
     changePosition(gca,[0.0 0.0 0.07 0.05]);
-    text(0.5,ylims(2),sprintf('CC = %.2f',c),'FontSize',6);
+    text(0.5,ylims(2)+0.75,sprintf('CC = %.2f',c),'FontSize',6);
 %     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster_%d.pdf',sh),600);
     
