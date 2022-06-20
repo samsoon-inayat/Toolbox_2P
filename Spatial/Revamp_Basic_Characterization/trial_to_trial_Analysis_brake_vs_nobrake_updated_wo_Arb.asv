@@ -1017,7 +1017,7 @@ end
 while 1
     %%
     txl = event_type;
-    oM = ones(size(mCIm));
+    oM = ones(20,20);
     mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN; semOI(mask1 == 1) = NaN;
     
    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.25],'widthHeightAdjustment',[10 -450]);

@@ -11,7 +11,7 @@ while 1
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
-    pni = 2;
+    pni = 7;
     all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};
@@ -77,7 +77,7 @@ while 1
         [10 -410]);    set(gcf,'color','w');    set(gcf,'Position',[10 3 1.25 1.25]);
     MY = 18; ysp = 1; sigLinesStartYFactor = 1.5; mY = 0; % responsive cells
 %     MY = 70; ysp = 5; sigLinesStartYFactor = 1.5; mY = 0; % responsive fidelity
-    MY = 1; ysp = 0.15; sigLinesStartYFactor = 0.1; mY = -0.35; % responsive fidelity
+%     MY = 1; ysp = 0.15; sigLinesStartYFactor = 0.1; mY = -0.35; % responsive fidelity
     stp = 0.43; widths = [0.55 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
     set(ff.hf,'Units','inches');
     for aii = 1:length(ff.h_axes)
@@ -98,7 +98,7 @@ while 1
     axes(ff.h_axes(1,1));
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'ET_by_CT','bonferroni'},[1.5 1 1]); 
 	xdata = make_xdata([2 2],[1 1.5]);    tcolors = repmat(mData.dcolors([3 5]),1,4);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'Exc','Inh'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
@@ -452,15 +452,14 @@ end
 %% for heat map and clustering
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
-    event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
-        '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','4-NB-AL','3-NB-A','5-NB-A','M-On','M-Off'};
-    sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[ArL_L];[Ar_L];[Ars_L];[M_On];[M_Off]}; 
-    event_type = rasterNamesTxt([Lb Ab_On Ab_Off Ab_Offc Ar_On Ar_L Ar_Off Ar_Offc ArL_On ArL_L ArL_Off ArL_Offc Ars_On Ars_L Ars_Off Ars_Offc Lbs Abs_On Abs_Off Abs_Offc M_On M_Off]);
+    event_type = {'1-L','2-AOn','2-AOff','2-Arb','3-AOn','3-A','3-AOff','3-Arb','4-AOn','4-AL','4-AOff','4-Arb','5-AOn','5-A','5-AOff','5-Arb','6-L','7-AOn','7-AOff','7-Arb','M-On','M-Off'};
     sic = {Lb;Ab_On;Ab_Off;Ab_Offc;Ar_On;Ar_L;Ar_Off;Ar_Offc;ArL_On;ArL_L;ArL_Off;ArL_Offc;Ars_On;Ars_L;Ars_Off;Ars_Offc;Lbs;Abs_On;Abs_Off;Abs_Offc;M_On;M_Off};
-    
-    event_type = {'B-AOn','B-AOff','B-Arb','NB-AOn','NB-AOff','NB-Arb','B-L','NB-AL','NB-A','M-On','M-Off'};
-    sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc];[Lb Lbs];[ArL_L];[Ar_L Ars_L];[M_On];[M_Off]}; % for heat map after light sitmulus
-    
+%     event_type = rasterNamesTxt([Lb Ab_On Ab_Off Ab_Offc Ar_On Ar_L Ar_Off Ar_Offc ArL_On ArL_L ArL_Off ArL_Offc Ars_On Ars_L Ars_Off Ars_Offc Lbs Abs_On Abs_Off Abs_Offc M_On M_Off]);
+%     sic = {Lb;Ab_On;Ab_Off;Ab_Offc;Ar_On;Ar_L;Ar_Off;Ar_Offc;ArL_On;ArL_L;ArL_Off;ArL_Offc;Ars_On;Ars_L;Ars_Off;Ars_Offc;Lbs;Abs_On;Abs_Off;Abs_Offc;M_On;M_Off};
+%     
+%     event_type = {'B-AOn','B-AOff','B-Arb','NB-AOn','NB-AOff','NB-Arb','B-L','NB-AL','NB-A','M-On','M-Off'};
+%     sic = {[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc];[Lb Lbs];[ArL_L];[Ar_L Ars_L];[M_On];[M_Off]}; % for heat map after light sitmulus
+%     
 %     event_type = {'2-B-AOn','7-B-AOn','2-B-AOff','7-B-AOff','3-NB-AOn','4-NB-AOn','5-NB-AOn','3-NB-AOff',...
 %         '4-NB-AOff','5-NB-AOff','1-B-L','6-B-L','M-On','M-Off'};
 %     sic = {[Ab_On];[Abs_On];[Ab_Off];[Abs_Off];[Ar_On];[ArL_On];[Ars_On];[Ar_Off];[ArL_Off];[Ars_Off];[Lb];[Lbs];[M_On];[M_Off]}; 
@@ -622,6 +621,8 @@ while 1
     
     
     %%
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_gFR,0.5,0.05);
+    
     per_comp1(:,1) = squeeze(uni(1,2,:));
     per_comp1(:,2) = squeeze(uni(1,3,:));
     per_comp1(:,3) = squeeze(uni(2,3,:));
@@ -632,10 +633,10 @@ while 1
     
     [within,dvn,xlabels] = make_within_table({'PT','CondP'},[3,3]); inds = [1 2 3];
     dataTP = make_between_table({[per_comp1(:,[inds]) per_conj(:,[inds]) per_comp2(:,[inds])]},dvn);
-    raP = RMA(dataTP,within);
+    raP = RMA(dataTP,within,{0.05,{'hsd','bonferroni'}});
     raP.ranova
     
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,raP,{'CondP_by_PT','hsd'},[1 1 1]); [combs,p,h] = reduce_combs(combs,p,h,{[1:3],[4:6],[7:9]})
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,raP,{'CondP_by_PT','bonferroni'},[1 1 1]); [combs,p,h] = reduce_combs(combs,p,h,{[1:3],[4:6],[7:9]});
     xdata = make_xdata([3 3 3],[1 1.5]);
     
     ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -410]);
