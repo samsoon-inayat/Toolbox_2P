@@ -239,6 +239,7 @@ while 1
      end
      %%
 %      mOI = mCI; semOI = semCI;
+    ahc_col_th
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);
     oM = ones(size(mOI));
@@ -288,7 +289,7 @@ while 1
 %     tree = linkage(mOI1,'average','euclidean');
     tree = linkage(Di,'average');
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
     hf = gcf;
     txl = event_type;
     set(hf,'Position',[7 3 3.6 1.9]);
@@ -1036,7 +1037,9 @@ while 1
 %     leafOrder1 = leafOrder([1:3 10:12 4:9]);
 %     leafOrder1 = circshift(leafOrder,3);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th,'Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    figure(hf);clf
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',0.5*max(tree(:,3)),'Reorder',leafOrder);ylims = ylim; xlims = xlim;
     set(gca,'xtick',[],'ytick',[]);
     set(gcf,'units','inches'); set(gcf,'Position',[5 2 0.9 0.5])
     %
@@ -1044,7 +1047,7 @@ while 1
 %     
     
     axes(ff.h_axes(1,1));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
@@ -1063,12 +1066,12 @@ while 1
     leafOrder = optimalleaforder(tree,Di);
     hf = figure(100000000);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th,'Reorder',leafOrder);ylims = ylim; xlims = xlim;
     close(hf);
 %     
     
     axes(ff.h_axes(1,2));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
@@ -1086,12 +1089,12 @@ while 1
     leafOrder = optimalleaforder(tree,Di);
     hf = figure(100000000);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th,'Reorder',leafOrder);ylims = ylim; xlims = xlim;
     close(hf);
 %     
     
     axes(ff.h_axes(1,3));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);

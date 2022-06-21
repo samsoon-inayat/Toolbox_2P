@@ -150,7 +150,7 @@ while 1
     semUni = nanstd(uni,[],3)/sqrt(5); semUni1 = tril(semUni,-1) + tril(semUni,-1)'; semUni2 = triu(semUni,1) + triu(semUni,1)'; msemUni = min(semUni(:)); MsemUni = max(semUni(:));
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
-    mOI = mUni;
+%     mOI = mUni;
 %     mOI = mUni1; semOI = semUni1;
 %     mOI = mUni2; semOI = semUni2;
     
@@ -202,8 +202,9 @@ while 1
    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[10 -450]);
     set(gcf,'color','w');    set(gcf,'Position',[10 3 6.95 1.25]);
     stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.1; gap = 0.13; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
-    stp = 0.25; widths = [2.1 2.1 2 0.4 0.4 0.4]+0.1; gap = 0.21; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.1; gap = 0.17; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     %
+    ahc_col_th = 0.7;
     mOI1 = mCI;
 %     mOI1 = mUni1;
     mOI1(mask1==1) = NaN; 
@@ -215,7 +216,7 @@ while 1
 %     leafOrder1 = leafOrder([1:3 10:12 4:9]);
 %     leafOrder1 = circshift(leafOrder,3);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);ylims = ylim; xlims = xlim;
     set(gca,'xtick',[],'ytick',[]);
     set(gcf,'units','inches'); set(gcf,'Position',[5 2 0.9 0.5])
     %
@@ -223,14 +224,14 @@ while 1
 %     
     
     axes(ff.h_axes(1,1));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(leafOrder));xtickangle(45);
     format_axes(gca);
     hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
 %     xlim([xlims(1)+0.5 xlims(2)-0.5]);
     changePosition(gca,[0.0 0.0 0.07 0.05]);
-    text(0.5,ylims(2)+0.3,sprintf('CC = %.2f',c),'FontSize',6);
+    text(0.5,ylims(2)+0,sprintf('CC = %.2f',c),'FontSize',6);
 %     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
 
 %     mOI1 = mCI;
@@ -242,12 +243,12 @@ while 1
     leafOrder = optimalleaforder(tree,Di);
     hf = figure(100000000);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);ylims = ylim; xlims = xlim;
     close(hf);
 %     
     
     axes(ff.h_axes(1,2));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(leafOrder));xtickangle(45);
     format_axes(gca);
@@ -265,19 +266,19 @@ while 1
     leafOrder = optimalleaforder(tree,Di);
     hf = figure(100000000);
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);ylims = ylim; xlims = xlim;
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);ylims = ylim; xlims = xlim;
     close(hf);
 %     
     
     axes(ff.h_axes(1,3));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default','Reorder',leafOrder);
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);
     set(H,'linewidth',0.5);
     set(gca,'xticklabels',txl(leafOrder));xtickangle(45);
     format_axes(gca);
 %     xlim([xlims(1)+0.5 xlims(2)-0.5]);
     changePosition(gca,[0.0 0.0 0.07 0.05]);
     text(0.5,ylims(2)+1,sprintf('CC = %.2f',c),'FontSize',6);
-    delete(ff.h_axes(1,3));
+%     delete(ff.h_axes(1,3));
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster_%d.pdf',sh),600);
     
     %%
@@ -286,14 +287,15 @@ end
 
 %% Agglomerative hierarchical clustering
 while 1
-    mOI1 = mCI;
-    mOI1 = mUni2;
-    mOI1(mask1==1) = NaN; 
-    Di = pdist(mOI1,@naneucdist);
+    mOI1 = mCI; mOI1(mask1==1) = NaN; DiC = pdist(mOI1,@naneucdist); 
+    mOI1 = mUni1; mOI1(mask1==1) = NaN; DiC1 = pdist(mOI1,@naneucdist); 
+    mOI1 = mUni2; mOI1(mask1==1) = NaN; DiC2 = pdist(mOI1,@naneucdist);
+    Di = mean([DiC1;DiC2]);
 %     tree = linkage(mOI1,'average','euclidean');
     tree = linkage(Di,'average');
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold','default');
+    hf = figure(1000);clf; set(hf,'Units','Inches');
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)));
+    [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
     hf = gcf;
     set(hf,'Position',[7 3 3.5 1.75]);
     set(hf,'Position',[7 3 2.3 1.25]);
@@ -302,7 +304,8 @@ while 1
     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
     hx = ylabel({'Eucledian Distance'});changePosition(hx,[0 0 0]);
-    changePosition(gca,[0.0 0.0 0.07 0.05]);
+    changePosition(gca,[0.0 0.0 0.07 0.05]); ylims = ylim;
+    text(0.5,ylims(2),sprintf('CC = %.2f',c),'FontSize',6);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
     %%
     break;
