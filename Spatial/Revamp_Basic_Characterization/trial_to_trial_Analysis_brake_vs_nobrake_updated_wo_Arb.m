@@ -158,6 +158,7 @@ while 1
     disp('Done');
     %%
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
+     disp('Done');
     %%
     p_allresp_or = find_percent(cell_list_op(allresp,[],'or',1));
     descriptiveStatistics(p_allresp_or)
@@ -283,18 +284,20 @@ while 1
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
     disp('Done');
     %%
-    mOI1 = mOI;
+    ahc_col_th = 0.7;
+    mOI1 = mCI;
+    mOI1(mask1 == 1) = NaN;
 %     mOI1(isnan(mOI1)) = 1;
     Di = pdist(mOI1,@naneucdist);
 %     tree = linkage(mOI1,'average','euclidean');
     tree = linkage(Di,'average');
     figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
+    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)));
     hf = gcf;
     txl = event_type;
-    set(hf,'Position',[7 3 3.6 1.9]);
+%     set(hf,'Position',[7 3 3.6 1.9]);
     set(H,'linewidth',1);
-    set(gca,'xticklabels',txl(TC));xtickangle(45);
+%     set(gca,'xticklabels',txl(TC));xtickangle(45);
     format_axes(gca);
     hx = ylabel('Eucledian Distance');changePosition(hx,[0 -0.1 0]);
     changePosition(gca,[-0.05 0.0 0.09 0.05]);
@@ -302,6 +305,7 @@ while 1
     %%
     break;
 end
+
 %% along diagnol (responsiveness)
 while 1
 mask = diag(mCI);

@@ -30,8 +30,8 @@ mData.shades = generate_shades(3);
 mData.conj_comp_colors = [mData.dcolors(9);mData.colors([3 5])];
 % display_colors(mData.colors);
 % Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
-% Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
+% Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
+Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
 mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
 mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
 disp('Done');
@@ -75,6 +75,7 @@ end
 binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = load_context_info(ei(ii),binwidths,[0 0 0],dcfilename);
+    ei(ii) = load_motion_correction_empty(ei(ii),binwidths,[0 0 0]);
 end
 disp('Done');
 %%
