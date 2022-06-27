@@ -273,7 +273,7 @@ while 1
     save_pdf(hf,mData.pdf_folder,sprintf('conjunctive_cells_venn_diagram_%s_volunM.pdf',event_type{ind}),600);
 
     %%
-    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat] = get_overlap_index(all_gFR,0.5,0.05);
+    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_gFR,0.5,0.05);
     
     allrespcells = cell_list_op(all_gFR,[],'or',1);
     pallrespcells = 100*exec_fun_on_cell_mat(allrespcells,'sum')./exec_fun_on_cell_mat(allrespcells,'length');
