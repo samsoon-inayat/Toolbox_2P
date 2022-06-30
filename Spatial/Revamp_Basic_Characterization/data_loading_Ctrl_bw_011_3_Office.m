@@ -7,25 +7,19 @@ add_to_path
 clear all
 % clc
 %%
-
-% data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
-% data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
-% processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
-% processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabRe';
-% processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabReD';
-
 data_folder1 = 'E:\Data';%'\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
 data_folder2 = 'E:\Data';%'\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
 processed_data_folder{1} = 'E:\PData\Processed_Data_15';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
-processed_data_folder{2} = 'E:\PData\Processed_Data_15\MatlabRe';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
-processed_data_folder{3} = 'E:\PData\Processed_Data_15\MatlabReD';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
-
+processed_data_folder{2} = 'E:\PData\Processed_Data_15\Matlab';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
+processed_data_folder{3} = 'E:\PData\Processed_Data_15\Matlab_bw3';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
 animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
 date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
 [dS_C,T_C] = get_exp_info_from_folder(data_folder1,processed_data_folder,animal_list_control,date_list_control);
 T_C = [T_C];
 T_C1 = reduce_table(T_C,animal_list_control,date_list_control);
 disp('Done');
+%% check for video files
+% T_C1 = check_for_video_files(T_C1);
 %%
 colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
@@ -36,49 +30,54 @@ mData.shades = generate_shades(3);
 mData.conj_comp_colors = [mData.dcolors(9);mData.colors([3 5])];
 % display_colors(mData.colors);
 % Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
-% Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
+% Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
+Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
 mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
 mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
+disp('Done');
+%%
+if 0
+%     make_db(T_C);
+    process_abf(T_C,0);
+end
 disp('Done');
 %%
 sel_rec = [1 3 5];
 sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
+
+%% tag videos with event related signals
+if 0
+    ei = check_for_video_files_ei(ei);
+    ei = load_video_frame_inds(ei,1);
+    tag_videos(ei,0);
+end
 %%
 if 0
-    ii = 1;
+    ii = 5;
     edit_define_contexts_file(ei{ii});
 end
-dcfilename = 'define_contexts.m';
-%%
-if 1
-%     make_db(T_C);
-    process_abf(T_C,0);
+dcfilename = 'define_contexts_revamp.m';
+%% get control light onsets
+for ii = 1:length(ei)
+    ei(ii) = get_control_light_onsets(ei(ii));
+    ei(ii) = get_control_air_onsets(ei(ii));
+    ei(ii) = get_control_air_onsets_C(ei(ii));
+    ei(ii) = get_control_air_offsets(ei(ii));
 end
-disp('Done');
-
 %%
-binwidths = [0.3 3];
+binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_motion_correction(ei(ii),binwidths,[0 0 0]);
 end
 
 %%
-binwidths = [0.3 3];
+binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = load_context_info(ei(ii),binwidths,[0 0 0],dcfilename);
     ei(ii) = load_motion_correction_empty(ei(ii),binwidths,[0 0 0]);
 end
 disp('Done');
-
-%%
-binwidths = [0.25 3];
-ctl = [3 4 5]; sml = {'airOnsets55','airOffsets55'}; owr = [0 0 0];
-for ii = 1:length(ei)
-    ei(ii) = make_and_load_rasters_selected_contexts(ei(ii),binwidths,owr,ctl,sml);
-end
-
 %%
 tic
 for ii = 1:length(ei)
@@ -86,20 +85,19 @@ for ii = 1:length(ei)
 end
 toc
 %%
+clc
 tic
-binwidths = [0.3 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
 toc
 %%
-clc
 tic
 for ii = 1:length(ei)
     ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 end
 toc
-
+disp('Done');
 %%
 tic
 for ii = 1:length(ei)
@@ -120,10 +118,25 @@ for ii = 1:length(ei)
 end
 toc
 
+%% this information is already in the previous function
+% tic
+% for ii = 1:length(ei)
+%     ei(ii) = get_accel_response_gauss(ei(ii),[0 1]);
+% end
+% toc
+
+
 %%
 for ii = 1:length(ei)
     min_speed(ii) = min(ei{ii}.b.fSpeed);
     max_speed(ii) = max(ei{ii}.b.fSpeed);
+    
+    t_accel = diff(ei{ii}.b.fSpeed)./diff(ei{ii}.b.ts);
+    samplingRate = floor(1/(ei{ii}.b.si*1e-6));
+    coeffs = ones(1, samplingRate)/samplingRate;
+    ft_accel = filter(coeffs, 1, t_accel);
+    min_accel(ii) = min(ft_accel);
+    max_accel(ii) = max(ft_accel);
 end
 %%
 %%
@@ -147,7 +160,9 @@ training_data.weight = [34.5000   34.2000   33.7000   33.5000   34.6
    35.8000   35.4000   35.3000   35.1000   35.1];
 
 
+
 animal_id_A = [183633,183761,183745,183628,183762];
+gender_animals = {'M','M','F','F','M'};
 date_of_rec_A = {'2019-06-04','2019-06-06','2019-06-07','2019-06-11','2019-06-11'};
 date_of_surg_A = {'2019-03-27','2019-03-29','2019-04-30','2019-04-03','2019-04-26'};
 for rr = 1:length(animal_id_A)
