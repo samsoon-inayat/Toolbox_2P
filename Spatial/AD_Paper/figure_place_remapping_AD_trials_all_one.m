@@ -1,64 +1,27 @@
-function figure_place_remapping_AD(fn,allRs,ccs)
+function figure_place_remapping_AD_trials_all_one
 
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C'); 
-ei_A = evalin('base','ei10_A'); 
+%% Load Data
+while 1
+    mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+    ei_A = evalin('base','ei10_A'); 
+    ei_C = evalin('base','ei10_C'); 
+    
+    selContexts = [1 2 3 4];
+    rasterNames = {'airD','airD','airD','airD'};
+    rasterNamesTxt = {'C1','C2','C3','C4'};
+    xlabelsSeq = rasterNamesTxt;
 
-selContexts = [1];
-rasterNames = {'airD'};
-trials = mat2cell([1:10]',ones(10,1));
-
-RsC = get_rasters_data(ei_C,selContexts,rasterNames);
-RsC = find_responsive_rasters(RsC,1:10);
-[resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(RsC);
-respC = get_cell_list(resp_valsC,[]);
-out_C = find_population_vector_corr_remap_trials(RsC,respC,trials);
-
-
-RsA = get_rasters_data(ei_A,selContexts,rasterNames);
-RsA = find_responsive_rasters(RsA,1:10);
-[resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
-respA = get_cell_list(resp_valsA,[]);
-out_A = find_population_vector_corr_remap_trials(RsA,respA,trials);
-
-
-% 
-% RsC = get_rasters_data(ei_C,selContexts,rasterNames);
-% RsC = repmat(RsC,1,length(trials));
-% mRsC = calc_mean_rasters(RsC,1:10);
-% for ii = 1:length(trials)
-%     [mRsCT(:,ii),RsCT(:,ii)] = calc_mean_rasters(RsC(:,1),trials{ii});
-% end
-% RsC = find_responsive_rasters(RsC,1:10);
-% [CR_C,aCR_C] = find_population_vector_corr(RsC,mRsC,1,0);
-% [resp_fractionC,resp_valsC,OIC,mean_OIC,resp_ORC,resp_OR_fractionC,resp_ANDC,resp_AND_fractionC] = get_responsive_fraction(RsC);
-% 
-% respC_pop = get_cell_list(resp_valsC,[]);
-% respC = get_cell_list(resp_valsC,[1]);
-% 
-% 
-% RsA = get_rasters_data(ei_A,selContexts,rasterNames);
-% RsA = repmat(RsA,1,length(trials));
-% mRsA = calc_mean_rasters(RsA,1:10);
-% for ii = 1:length(trials)
-%     [mRsAT(:,ii),RsAT(:,ii)] = calc_mean_rasters(RsA(:,1),trials{ii});
-% end
-% RsA = find_responsive_rasters(RsA,1:10);
-% [CR_A,aCR_A] = find_population_vector_corr(RsA,mRsA,1,0);
-% [resp_fractionA,resp_valsA,OIA,mean_OIA,resp_ORA,resp_OR_fractionA,resp_ANDA,resp_AND_fractionA] = get_responsive_fraction(RsA);
-% 
-% respA_pop = get_cell_list(resp_valsA,[]);
-% respA = get_cell_list(resp_valsA,[1]);
-% 
-% out_C = find_population_vector_corr_remap_trials(RsC,mRsCT,respC);
-% out_A = find_population_vector_corr_remap(RsA,mRsAT,respA);
-% 
-% % out_C_pop = find_population_vector_corr_remap(RsC,mRsCT,respC_pop);
-% % out_A_pop = find_population_vector_corr_remap(RsA,mRsAT,respA_pop);
-
-selC = out_C;
-selA = out_A;
+    oA = get_data(ei_A,selContexts,rasterNames);
+    oC = get_data(ei_C,selContexts,rasterNames);
+    for ii = 1:length(selContexts)
+        all_xl{ii} = sprintf('%c%c-%d',rasterNames{ii}(1),rasterNames{ii}(end),selContexts(ii));
+    end
+    C1 = 1; C2 = 2; C3 = 3; C4 = 4;
+    
+    break
+end
 n = 0;
+
 %%
 varC = selC.adj_SP_corr_diag;
 varA = selA.adj_SP_corr_diag;

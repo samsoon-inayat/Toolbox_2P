@@ -1,7 +1,6 @@
 function [BL1,onsetsO,offsetsO,inds] = get_belt_length(ei)
 
 b = ei.b;
-
 d = b.dist;
 
 onsets = b.photo_sensor_f(1:(length(b.photo_sensor_f)-1));

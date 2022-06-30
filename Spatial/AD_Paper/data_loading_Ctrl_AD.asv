@@ -39,8 +39,8 @@ mData.conj_comp_colors = [mData.dcolors(9);mData.colors([3 5])];
 % display_colors(mData.colors);
 Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
 Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-mData.pdf_folder = [Uleth_one_drive '\Revamp_2022\PDFs']; 
-mData.pd_folder = [Uleth_one_drive '\Revamp_2022\ProcessedDataMatlab'];
+mData.pdf_folder = [Uleth_one_drive 'Revamp_2022\PDFs']; 
+mData.pd_folder = [Uleth_one_drive 'Revamp_2022\ProcessedDataMatlab'];
 disp('Done');
 
 %%
@@ -63,7 +63,7 @@ binwidths = [0.11 1.5];
 for ii = 1:length(ei10_C)
     ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths,nowr);
 end
-for ii = 1:length(ei10_A)
+for ii = 5%1:length(ei10_A)
     ei10_A(ii) = make_and_load_rasters(ei10_A(ii),binwidths,nowr);
 end
 
