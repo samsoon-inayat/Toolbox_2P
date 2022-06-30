@@ -6,9 +6,9 @@ while 1
     ei_A = evalin('base','ei10_A'); 
     ei_C = evalin('base','ei10_C'); 
     
-    selContexts = [1 2 3 4];
-    rasterNames = {'airD','airD','airD','airD'};
-    rasterNamesTxt = {'C1','C2','C3','C4'};
+    selContexts = [1 2 3 4 1 2 3 4];
+    rasterNames = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT'};
+    rasterNamesTxt = {'C1-t-D','C2-t-D','C3-t-D','C4-t-D','C1-i-T','C2-i-T','C3-i-T','C4-i-T'};
     xlabelsSeq = rasterNamesTxt;
 
     oA = get_data(ei_A,selContexts,rasterNames);

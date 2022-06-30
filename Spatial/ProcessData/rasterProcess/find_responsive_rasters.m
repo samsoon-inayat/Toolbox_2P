@@ -62,8 +62,8 @@ for rr = 1:size(Rs,1)
             zMIs = R.info_metrics.ShannonMI_Zsh;
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.96 & rs > 0.25 & PWs < 150 & centers > 0 & centers < 150;
 %             Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25 & PWs > 1 & PWs < 15 & centers > 0 & centers < 15 & MFR < 10000;
-            Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65 & rs > 0.25;
-            Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals';
+            Rs{rr,cc}.resp.valsA = R.iscell' & zMIs > 1.65 & rs > 0.25;
+            Rs{rr,cc}.resp.valsA = Rs{rr,cc}.resp.valsA';
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
             Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end

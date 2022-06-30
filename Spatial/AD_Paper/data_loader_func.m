@@ -22,3 +22,5 @@ while 1
 end
 n = 0;
 
+%%
+props1 = get_props_Rs(o.Rs,50);
