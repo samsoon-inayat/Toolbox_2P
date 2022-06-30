@@ -1,8 +1,8 @@
 function overall_population_vectors
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C1'); 
-ei_A = evalin('base','ei10_A1'); 
+ei_C = evalin('base','ei10_C'); 
+ei_A = evalin('base','ei10_A'); 
 
 
 selContexts = [1 2 3 4];
@@ -28,7 +28,7 @@ within.Cond = categorical(within.Cond);
 dataT.Group = categorical(dataT.Group);
 ra = repeatedMeasuresAnova(dataT,within,0.05);
 % writetable(dataT,fullfile(mData.pdf_folder,'percentage_of_place_cells.xls'));
-
+n = 0;
 %%
 mVar = ra.est_marginal_means.Mean;
 semVar = ra.est_marginal_means.Formula_StdErr;

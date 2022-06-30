@@ -25,10 +25,10 @@ for rr = 1:size(RsC,1)
     for cc = 1:size(RsC,2)
         R = RsC{rr,cc};
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-        zMIsC{rr,cc} = centers(R.resp.vals)';
+        zMIsC{rr,cc} = centers(R.resp.valsA)';
         R = RsA{rr,cc};
         [rs,MFR,centers,PWs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-        zMIsA{rr,cc} = centers(R.resp.vals)';
+        zMIsA{rr,cc} = centers(R.resp.valsA)';
     end
 end
 n = 0;

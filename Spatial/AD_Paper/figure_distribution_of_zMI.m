@@ -1,8 +1,8 @@
 function figure_distribution_of_zMI
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C1'); 
-ei_A = evalin('base','ei10_A1'); 
+ei_C = evalin('base','ei10_C'); 
+ei_A = evalin('base','ei10_A'); 
 
 selContexts = [1 2 3 4];
 rasterNames = {'airD','airD','airD','airD'};
@@ -31,8 +31,8 @@ for rr = 1:size(RsC,1)
 end
 n = 0;
 %%
-if 1
-CN = 4;
+if 0
+CN = 1;
 tcolors = {'k','r'};
 distD(:,1) = zMIsC(:,CN);
 distD(:,2) = zMIsA(:,CN);

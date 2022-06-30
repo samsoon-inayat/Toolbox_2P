@@ -8,8 +8,16 @@ for rr = 1:size(Rs,1)
     inh = [];
     for cc = 1:size(Rs,2)
         R = Rs{rr,cc};
-        ccs(:,cc) = R.resp.vals';
-        resp_fraction(rr,cc) = R.resp.fraction;
+        try
+            ccs(:,cc) = R.resp.vals';
+        catch
+            ccs(:,cc) = R.resp.valsA';
+        end
+        try
+            resp_fraction(rr,cc) = R.resp.fraction;
+        catch
+            resp_fraction(rr,cc) = R.resp.fractionA;
+        end
         if isfield(R.resp,'excinh')
             exc(:,cc) = R.resp.excinh==1;
             inh(:,cc) = R.resp.excinh==0;

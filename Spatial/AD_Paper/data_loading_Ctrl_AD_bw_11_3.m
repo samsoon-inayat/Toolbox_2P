@@ -58,11 +58,11 @@ mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
 mData.shades = generate_shades(3);
 mData.conj_comp_colors = [mData.dcolors(9);mData.colors([3 5])];
 % display_colors(mData.colors);
-% Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
+Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
+% Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
 % Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
 
-mData.pdf_folder = [Uleth_one_drive '\PDFs']; 
+mData.pdf_folder = [Uleth_one_drive '\PDFs_AD_10']; 
 mData.pd_folder = [Uleth_one_drive '\ProcessedDataMatlab'];
 disp('Done');
 
@@ -93,7 +93,9 @@ for ii = 1:length(ei10_A1)
     ei10_A1(ii) = make_and_load_rasters(ei10_A1(ii),binwidths,nowr);
 %     ei10_A2(ii) = make_and_load_rasters(ei10_A2(ii),binwidths,nowr);
 end
-
+%%
+ei10_C = ei10_C1;
+ei10_A = ei10_A1;
 %%
 % ei10_C = loadContextsResponses_ctrl_old(ei10_C,[1 1],[0 0 0]);
 % ei10_A = loadContextsResponses_ctrl_old(ei10_A,[1 1],[0 0 0]);
