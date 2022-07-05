@@ -68,14 +68,16 @@ for rr = 1:size(Rs,1)
         xs = R.xs;
 %         if ~isempty(strfind(R.marker_name,'D'))
 %             p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers >= xs(1)  & centers <= xs(end) & MFR < 10000;
-            p = rs > 0.3 & PWs > 1 & PWs < 150 & centers >= 1  & centers <= 150 & MFR < 10000;
+            p = rs > 0.25 & PWs > 1 & PWs < 150 & centers >= 1  & centers <= 150;
 %         end
 %         if ~isempty(strfind(R.marker_name,'T'))
 %             p = (ones(size(o.zMI{rr,cc})))';
 %         end
+        o.good_MFR{rr,cc} = MFR' < 10000;
         o.good_Gauss{rr,cc} = p';
-        o.good_Gauss_loose{rr,cc} = rs' > 0.3;
+        o.good_Gauss_loose{rr,cc} = rs' > 0.25;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
+        o.nan_zMI{rr,cc} = isnan(o.zMI{rr,cc});
         o.good_zMI_MC{rr,cc} = o.zMI_MC{rr,cc} > 1.65;
         [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc},o.clus_based{rr,cc},o.oc(rr,cc)] = get_FR_based(R.sp_rasters1,ntrials);
         if strcmp(R.marker_name,'airIT')
@@ -95,6 +97,12 @@ for rr = 1:size(Rs,1)
         o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.trial_scores{rr,cc} = R.resp.trial_scores';
+        if isfield(R.resp,'valsA')
+            o.valsA{rr,cc} = R.resp.valsA;
+        end
+        o.valsAD1{rr,cc} = o.good_zMI{rr,cc};
+        o.valsAD2{rr,cc} = o.valsAD1{rr,cc} & o.good_MFR{rr,cc};
+        o.valsAD3{rr,cc} = o.valsAD2{rr,cc} & o.good_Gauss{rr,cc};
         if size(R.resp.vals,2) == 1
             o.vals{rr,cc} = R.resp.vals;
         else

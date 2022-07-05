@@ -46,11 +46,11 @@ mData.dcolors = mat2cell(distinguishable_colors(20,'w'),[ones(1,20)]);
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
 mData.shades = generate_shades(3);
 % display_colors(mData.shades.c);
-% Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
+Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P\Revamp_2022';
+% Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
 % Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
-mData.pdf_folder = [Uleth_one_drive '\PDFs_AD_15']; 
-mData.pd_folder = [Uleth_one_drive '\PDFs_AD_15\ProcessedDataMatlab'];
+mData.pdf_folder = [Uleth_one_drive '\PDFs_15']; 
+mData.pd_folder = [Uleth_one_drive '\PDFs_15\ProcessedDataMatlab'];
 disp('Done');
 %%
 if 1

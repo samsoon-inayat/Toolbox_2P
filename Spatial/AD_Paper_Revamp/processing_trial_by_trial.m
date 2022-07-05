@@ -4,6 +4,7 @@ function processing_trial_by_trial
 % G = 'A'; o = oA;
 
 si = [C1_t_D C1_i_T C2_t_D C2_i_T C3_t_D C3_i_T C4_t_D C4_i_T];
+si = [C1_t_D C2_t_D C3_t_D C4_t_D];
 [allRsC_C,allmRsT_C,allresp_C,pcs_C,event_type] = return_values_trial_to_trial_Analysis(oC,si);
 
 [allRsC_A,allmRsT_A,allresp_A,pcs_A,~] = return_values_trial_to_trial_Analysis(oA,si);

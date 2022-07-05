@@ -10,10 +10,10 @@ function [allRsC,allmRsT,allresp,pcs,event_type] = return_values_trial_to_trial_
            event_type{ind} = sprintf('D%d%d',rr,cc-1);
            ind = ind + 1;
        end
-       for cc = 1:10
-           event_type{ind} = sprintf('T%d%d',rr,cc-1);
-           ind = ind + 1;
-       end
+%        for cc = 1:10
+%            event_type{ind} = sprintf('T%d%d',rr,cc-1);
+%            ind = ind + 1;
+%        end
    end
    
     Rs = o.Rs(:,si);mR = o.mR(:,si); RsG = Rs; siG = si; propsG = get_props_Rs(RsG,[40,100]); respG = propsG.vals;

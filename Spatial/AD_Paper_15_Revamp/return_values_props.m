@@ -1,4 +1,4 @@
-function [all_gFR,all_gV,good_zMI,good_zMI_MFR,good_zMI_MFR_Gauss,nan_zMI,allC] = return_values_props(o,sic,pni)
+function [all_gFR,all_gV,all_exc,all_inh,all_exc_inh] = return_values_props(o,sic,pni)
 %%
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
 %     event_type = {'1-D','2-D','3-D','4-D','1-T','2-T','3-T','4-T'};
@@ -6,10 +6,8 @@ function [all_gFR,all_gV,good_zMI,good_zMI_MFR,good_zMI_MFR_Gauss,nan_zMI,allC] 
 
     clear all_gFR all_gV
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
-    cell_sel = {'good_FR','vals'};
-    varName = {'all_gFR','all_gV'};
-    cell_sel = {'good_FR','vals','valsAD1','valsAD2','valsAD3','nan_zMI','all'};
-    varName = {'all_gFR','all_gV','good_zMI','good_zMI_MFR','good_zMI_MFR_Gauss','nan_zMI','allC'};
+    cell_sel = {'good_FR','vals','exc','inh'};
+    varName = {'all_gFR','all_gV','all_exc','all_inh'};
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
@@ -48,4 +46,5 @@ function [all_gFR,all_gV,good_zMI,good_zMI_MFR,good_zMI_MFR_Gauss,nan_zMI,allC] 
                 end
             end
         end
+        all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
     end
