@@ -138,7 +138,7 @@ while 1
     hf = get_figure(5,[9 2 figdim figdim]);
             
 %     all_cells_list = all_exc_inh;
-    all_cells_list = all_gV;
+    all_cells_list = all_gV_A;
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);
     txl = circshift(event_type,sh,2);

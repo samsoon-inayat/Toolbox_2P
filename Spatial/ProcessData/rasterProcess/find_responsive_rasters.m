@@ -49,9 +49,9 @@ for rr = 1:size(Rs,1)
         if strcmp(R.marker_name,'airT') || strcmp(R.marker_name,'beltT') || strcmp(R.marker_name,'airIRT') || strcmp(R.marker_name,'airRT')
             zMIs = R.info_metrics.ShannonMI_Zsh';
             if size(R.iscell,2) == 1
-                Rs{rr,cc}.resp.vals = R.iscell & zMIs > 1.65;% & R.resp.FR_based;
+                Rs{rr,cc}.resp.valsA = R.iscell & zMIs > 1.65;% & R.resp.FR_based;
             else
-                Rs{rr,cc}.resp.vals = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
+                Rs{rr,cc}.resp.valsA = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
             end
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
             Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
@@ -79,7 +79,11 @@ for rr = 1:size(Rs,1)
             Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
+        try
         Rs{rr,cc}.resp.fractionA = sum(Rs{rr,cc}.resp.valsA)/length(Rs{rr,cc}.resp.valsA);
+        catch
+            
+        end
 %         Rs{rr,cc}.resp.vals = Rs{rr,cc}.resp.vals;% & Rs{rr,cc}.resp.FR_based;
         n = 0;
     end

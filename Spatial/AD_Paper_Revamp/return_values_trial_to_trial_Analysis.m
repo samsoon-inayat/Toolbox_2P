@@ -1,4 +1,4 @@
-function [allRsC,allmRsT,allresp,pcs] = return_values_trial_to_trial_Analysis(o,si)
+function [allRsC,allmRsT,allresp,pcs,event_type] = return_values_trial_to_trial_Analysis(o,si)
 %%
 
 %% find spatial trial to trial correlation

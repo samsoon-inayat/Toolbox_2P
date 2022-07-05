@@ -63,14 +63,14 @@ disp('Done');
 %%
 ei_C = getData_py_2(T_Ca);
 ei_A = getData_py_2(T_Aa);
-ei_A(1) = [];
+% ei_A(1) = [];
 %%
 ii = 1;
 edit_define_contexts_file(ei_C{ii},dcfilename);
 % plotMarkers(ei_C{ii}.b,ei_C{ii}.b.stim_r,[],100,0)
 % plotMarkers(ei_C{ii}.b,ei_C{ii}.b.air_puff_r,[],101,0)
 %%
-ii = 1;
+ii = 6;
 edit_define_contexts_file(ei_A{ii},dcfilename);
 % plotMarkers(ei_A{ii}.b,ei_A{ii}.b.stim_r,[],100,0)
 % plotMarkers(ei_A{ii}.b,ei_A{ii}.b.air_puff_r,[],101,0)
@@ -90,33 +90,15 @@ for ii = 1:length(ei_A)
 end
 disp('Done');
 %%
-tic
+
 binwidths = [0.11 3];
-for ii = 1:length(ei_C)
+for ii = 1%:length(ei_C)
     ei_C(ii) = make_and_load_rasters(ei_C(ii),binwidths,[0 0 0]);
 end
 for ii = 1:length(ei_A)
     ei_A(ii) = make_and_load_rasters(ei_A(ii),binwidths,[0 0 0]);
 end
-toc
 
-%% get control light onsets
-for ii = 1:length(ei_C)
-    ei_C(ii) = get_control_light_onsets(ei_C(ii));
-    ei_C(ii) = get_control_air_onsets(ei_C(ii));
-    ei_C(ii) = get_control_air_onsets_C(ei_C(ii));
-    ei_C(ii) = get_control_air_offsets(ei_C(ii));
-end
-
-%% get control light onsets
-for ii = 1:length(ei_A)
-    ei_A(ii) = get_control_light_onsets(ei_A(ii));
-    ei_A(ii) = get_control_air_onsets(ei_A(ii));
-    ei_A(ii) = get_control_air_onsets_C(ei_A(ii));
-    ei_A(ii) = get_control_air_offsets(ei_A(ii));
-end
-
-%%
 clc
 tic
 for ii = 1:length(ei_C)

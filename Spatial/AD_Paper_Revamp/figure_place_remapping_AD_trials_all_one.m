@@ -6,9 +6,9 @@ while 1
     ei_A = evalin('base','ei10_A'); 
     ei_C = evalin('base','ei10_C'); 
     
-    selContexts = [1 2 3 4 1 2 3 4 1 2 1 2];
-    rasterNames = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT','airT','airT','airID','airID'};
-    rasterNamesTxt = {'1-t-D','2-t-D','3-t-D','4-t-D','1-i-T','2-i-T','3-i-T','4-i-T','1-t-T','2-t-T','1-i-D','2-i-D'};
+    selContexts = [1 2 3 4];
+    rasterNames = {'airD','airD','airD','airD'};
+    rasterNamesTxt = {'C1','C2','C3','C4'};
     xlabelsSeq = rasterNamesTxt;
 
     oA = get_data(ei_A,selContexts,rasterNames);
@@ -16,9 +16,7 @@ while 1
     for ii = 1:length(selContexts)
         all_xl{ii} = sprintf('%c%c-%d',rasterNames{ii}(1),rasterNames{ii}(end),selContexts(ii));
     end
-    C1_t_D = 1; C2_t_D = 2; C3_t_D = 3; C4_t_D = 4;
-    C1_i_T = 5; C2_i_T = 6; C3_i_T = 7; C4_i_T = 8;
-    C1_t_T = 9; C2_t_T = 10; C1_i_D = 11; C2_i_D = 12; 
+    C1 = 1; C2 = 2; C3 = 3; C4 = 4;
     
     break
 end
