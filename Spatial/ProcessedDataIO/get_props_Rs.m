@@ -78,6 +78,7 @@ for rr = 1:size(Rs,1)
         o.good_Gauss_loose{rr,cc} = rs' > 0.25;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
         o.nan_zMI{rr,cc} = isnan(o.zMI{rr,cc});
+        o.nan_rs{rr,cc} = isnan(o.rs{rr,cc});
         o.good_zMI_MC{rr,cc} = o.zMI_MC{rr,cc} > 1.65;
         [o.good_FR{rr,cc},o.N_Resp_Trials{rr,cc},o.clus_based{rr,cc},o.oc(rr,cc)] = get_FR_based(R.sp_rasters1,ntrials);
         if strcmp(R.marker_name,'airIT')

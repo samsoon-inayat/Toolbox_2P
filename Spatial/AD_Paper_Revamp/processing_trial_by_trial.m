@@ -138,3 +138,19 @@ for ti = 1:length(types)
     cluster_conj_comp(hf,mOI,event_type,[]);
     save_pdf(hf,mData.pdf_folder,sprintf('heatmap_cluster_C_%s.pdf',types{ti}),600);
 end
+
+%% calculate grand correlation
+while 1
+    all_tMR = [];
+    an = 2;
+    for cn = 1:4
+        tMR = allmRsT_C{1,cn};
+        for cc = 1:size(tMR,2)
+            all_tMR = [all_tMR tMR{an,cc}];
+        end
+    end
+    CRc = corr(all_tMR);
+    figure(1000);clf;imagesc(CRc');colorbar;set(gca,'YDir','Normal')
+    %%
+    break;
+end

@@ -4,6 +4,7 @@ function processing_trial_by_trial
 % G = 'A'; o = oA;
 
 si = [C1_t_D C1_i_T C2_t_D C2_i_T C3_t_D C3_i_T C4_t_D C4_i_T];
+si = [C1_t_D C2_t_D C3_t_D C4_t_D];
 [allRsC_C,allmRsT_C,allresp_C,pcs_C,event_type] = return_values_trial_to_trial_Analysis(oC,si);
 
 [allRsC_A,allmRsT_A,allresp_A,pcs_A,~] = return_values_trial_to_trial_Analysis(oA,si);
@@ -136,4 +137,20 @@ for ti = 1:length(types)
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial_C_%s.pdf',types{ti}),600);
     cluster_conj_comp(hf,mOI,event_type,[]);
     save_pdf(hf,mData.pdf_folder,sprintf('heatmap_cluster_C_%s.pdf',types{ti}),600);
+end
+
+%% calculate grand correlation
+while 1
+    tMR = allmRsT_C{1,1};
+    all_tMR = [];
+    an = 1;
+    for cc = 1:size(tMR,2)
+        all_tMR = [all_tMR tMR{an,cc}];
+    end
+    CRc = corr(all_tMR);
+    % CRc = fillmissing(CRc,'linear',2,'EndValues','nearest');
+    % CRc = fillmissing(CRc','linear',2,'EndValues','nearest');
+    CRc = CRc';
+    %%
+    break;
 end
