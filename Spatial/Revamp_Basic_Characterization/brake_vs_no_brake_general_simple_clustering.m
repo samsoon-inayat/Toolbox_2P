@@ -137,8 +137,8 @@ while 1
     figdim = 3;
     hf = get_figure(5,[9 2 figdim figdim]);
             
-    all_cells_list = all_exc_inh;
-%     all_cells_list = all_gV_A;
+%     all_cells_list = all_exc_inh;
+    all_cells_list = all_gV;
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);
     txl = circshift(event_type,sh,2);
@@ -209,8 +209,10 @@ while 1
     ahc_col_th = 0.7;
     mOI1 = mCI;
 %     mOI1 = mUni1;
-    mOI1(mask1==1) = NaN; 
+    mOI1(mask1==1) = 0; 
     Di = pdist(mOI1,@naneucdist);
+    Di = 100-mOI1;
+    Di(mask1 == 1) = 0;
     tree = linkage(Di,'average');
     [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
     leafOrder = optimalleaforder(tree,Di);
@@ -238,8 +240,10 @@ while 1
 
 %     mOI1 = mCI;
     mOI1 = mUni1;
-    mOI1(mask1==1) = NaN; 
+    mOI1(mask1==1) = 0; 
     Di = pdist(mOI1,@naneucdist);
+    Di = 100-mOI1;
+    Di(mask1 == 1) = 0;
     tree = linkage(Di,'average');
     [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
     leafOrder = optimalleaforder(tree,Di);
@@ -261,8 +265,10 @@ while 1
     
 %     mOI1 = mCI;
     mOI1 = mUni2;
-    mOI1(mask1==1) = NaN; 
+    mOI1(mask1==1) = 0; 
     Di = pdist(mOI1,@naneucdist);
+    Di = 100-mOI1;
+    Di(mask1 == 1) = 0;
     tree = linkage(Di,'average');
     [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
     leafOrder = optimalleaforder(tree,Di);
@@ -281,7 +287,7 @@ while 1
     changePosition(gca,[0.0 0.0 0.07 0.05]);
     text(0.5,ylims(2)+1,sprintf('CC = %.2f',c),'FontSize',6);
 %     delete(ff.h_axes(1,3));
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster_%d.pdf',sh),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster_%d_u1.pdf',sh),600);
     
     %%
     break;

@@ -7,16 +7,14 @@ while 1
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
     an = 2;o = oA; G = 'A';  
-%     an = 2;o = oC; G = 'C';
+    an = 4;o = oC; G = 'C';
     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-    si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-%     good_FR = cell_list_op(props1.good_Gauss,props1.good_zMI,'and');
-    good_FR = props1.vals; 
-%     good_FR = props1.good_FR_and_tuned;
-%     good_FR = cell_list_op(props1.good_FR_and_tuned,props1.good_zMI,'and');
+    good_FR = props1.vals_and_not_good_zMI; 
+    good_FR = props1.not_vals_and_not_good_zMI;
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
     for ii = 1:size(mRR,2)
@@ -43,7 +41,7 @@ while 1
         set(gca,'YTick',[],'XTick',[]);
 
         ylims = ylim;
-        textstr = sprintf('%d',ceil(ylims(2)));
+        textstr = sprintf('%d',floor(ylims(2)));
         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.13 0 0]);
         format_axes(gca);
         mM = min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);

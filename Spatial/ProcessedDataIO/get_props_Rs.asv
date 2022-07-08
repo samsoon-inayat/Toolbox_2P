@@ -159,8 +159,8 @@ o.vals_and_good_zMI = cell_list_op(o.vals,o.good_zMI,'and');
 o.not_vals = cell_list_op(o.vals,[],'not'); o.not_good_zMI = cell_list_op(o.good_zMI,[],'not');
 o.vals_and_not_good_zMI = cell_list_op(o.vals,o.not_good_zMI,'and');
 
-o.not_vals_and_good_zMI = cell_list_op(o.not_vals,o.good_zMI,'and');
-o.not_vals_and_not_good_zMI = cell_list_op(o.not_vals,o.not_good_zMI,'and');
+o.vals_and_good_zMI = cell_list_op(o.vals,o.good_zMI,'and');
+o.vals_and_not_good_zMI = cell_list_op(o.vals,o.not_good_zMI,'and');
 
 function [FR_based,sR,sRp1,oc] = get_FR_based(rasters,ntrials)
 rasters = permute(rasters,[2 1 3]);
