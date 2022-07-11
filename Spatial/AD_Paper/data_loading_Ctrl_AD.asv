@@ -62,12 +62,12 @@ dcfilename = 'define_contexts.m';
 nowr = [0 0 0];
 owr = [1 1 1];
 binwidths = [0.11 3];
-contextIE = {[],{},-1,{'airI'}};
+contextIE = {[],{},-1,{'airID'}};
 for ii = 1:length(ei10_C)
-    ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths,nowr);
+    ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths,nowr,contextIE);
 end
 for ii = 1:length(ei10_A)
-    ei10_A(ii) = make_and_load_rasters(ei10_A(ii),binwidths,nowr);
+    ei10_A(ii) = make_and_load_rasters(ei10_A(ii),binwidths,nowr,contextIE);
 end
 
 %%

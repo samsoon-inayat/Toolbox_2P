@@ -14,6 +14,7 @@ pni = 7;
 while 1
     ntrials = 50; 
     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
+%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
     sel_pop_C = props_C.vals; sel_pop_A = props_A.vals;
     sel_pop_C = props_C.vals_and_good_zMI; sel_pop_A = props_A.vals_and_good_zMI;
@@ -82,6 +83,10 @@ while 1
             MY = 0.7; ysp = 3; mY = 0; titletxt = 'R-squared'; ylabeltxt = {'A.U.'};
         case 7
             MY = 0.65; ysp = 0.05; mY = 0.3; titletxt = 'Hausdorff Frac. Dim'; ylabeltxt = {'A.U.'};
+        case 10
+            MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
+        case 11
+            MY = 15; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
     end
     stp = 0.25; widths = [1.2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25; gap = 0.16;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'R-squared'});
@@ -118,6 +123,8 @@ while 1
             MY = 70; ysp = 4; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};% for all cells (vals) MY = 70
         case 3
             MY = 0.1; ysp = 0.01; mY = -0.15; titletxt = 'Mutual Information'; ylabeltxt = {'Z-Score'};
+        case 9
+            MY = 20; ysp = 1; mY = -0.15; titletxt = 'Spatial Tuning'; ylabeltxt = {'Width (cm)'};
     end
     stp = 0.28; widths = [1.2 0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.25; gap = 0.1;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
@@ -148,7 +155,7 @@ while 1
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
     xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
-    make_bars_hollow(hbs(5:end));
+    make_bars_transparent(hbs,0.5);
     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Pooled'});
     save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
     %%

@@ -1,4 +1,4 @@
-function ei = make_and_load_rasters(ei,binwidths,owr,contextsIncExc)
+function ei = make_and_load_rasters_time(ei,binwidths,owr,contextsIncExc)
 
 if ~exist('owr','var')
     owr = [0 0 0];
@@ -83,10 +83,10 @@ for aa = 1:length(ei)
                 typesOfRasters = getTypesOfRasters(allContexts,thisStimMarker);
                 for kk = 1:length(typesOfRasters)
                     thisRasterType = typesOfRasters{kk};
-                    disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
-                    if isempty(strfind(thisContext.name,'No Brake')) & strcmp(stimMarkers{jj},'airI') & strcmp(thisRasterType,'dist')
+                    if strcmp(thisRasterType,'dist')
                         continue;
                     end
+                    disp(sprintf('%s--- %s -- %s',thisContext.name,stimMarkers{jj},thisRasterType));
                     rasters = make_rasters(tei,pp,markersOn,markersOff,thisRasterType,binwidths);
                     trials = 1:size(rasters.sp_rasters,1);
                     if length(unique(rasters.lastBin)) > 1

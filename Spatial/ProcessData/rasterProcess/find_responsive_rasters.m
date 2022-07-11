@@ -54,6 +54,7 @@ for rr = 1:size(Rs,1)
                 Rs{rr,cc}.resp.valsA = R.iscell' & zMIs > 1.65;% & R.resp.FR_based;
             end
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
+            [Rs{rr,cc}.resp.valsKW,Rs{rr,cc}.resp.facKW] = find_resp_no_before_after_KW(R,1:10);
             Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
         if strcmp(R.marker_name,'airIT') || strcmp(R.marker_name,'airOnsets55T') || strcmp(R.marker_name,'airOffsets55T')
@@ -65,6 +66,7 @@ for rr = 1:size(Rs,1)
             Rs{rr,cc}.resp.valsA = R.iscell' & zMIs > 1.65 & rs > 0.25;
             Rs{rr,cc}.resp.valsA = Rs{rr,cc}.resp.valsA';
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
+            [Rs{rr,cc}.resp.valsKW,Rs{rr,cc}.resp.facKW] = find_resp_no_before_after_KW(R,1:10);
             Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
         if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
@@ -76,6 +78,7 @@ for rr = 1:size(Rs,1)
 %             Rs{rr,cc}.resp.valsA = R.iscell' & zMIs > 1.65 & MFR < 10000;
             Rs{rr,cc}.resp.valsA = Rs{rr,cc}.resp.valsA';
             [Rs{rr,cc}.resp.vals,Rs{rr,cc}.resp.fac] = find_resp_no_before_after_anova(R,1:10);
+            [Rs{rr,cc}.resp.valsKW,Rs{rr,cc}.resp.facKW] = find_resp_no_before_after_KW(R,1:10);
             Rs{rr,cc}.resp.valsC = sum(Rs{rr,cc}.resp.vals,2)>0;
         end
         Rs{rr,cc}.resp.fraction = sum(Rs{rr,cc}.resp.vals)/length(Rs{rr,cc}.resp.vals);
@@ -373,6 +376,53 @@ for ni = 1:length(fac)
         thisRaster = rasters(trials,:,ii);
 %         thisRasterG = make_gauss_fit_raster(R,ii);
         p(ii,ni) = anova1(thisRaster,group,'nodisplay');
+%         pG(ii,ni) = anova1(thisRasterG,group,'nodisplay');
+    end
+end
+resp = sum(p<0.05,2)>0;
+save(file_name,'resp','p','fac');
+% respG = sum(pG<0.05,2)>0;
+
+function [resp,fac] = find_resp_no_before_after_KW(R,trials)
+% SR = R.thorexp.frameRate;
+file_name = fullfile(R.pd_folder,sprintf('responsive_cells_pyramidal_KW_%s.mat',R.context_info));
+if exist(file_name,'file')
+    te = load(file_name);
+    resp = te.resp;
+    resp = te.p<0.05;
+    fac = te.fac;
+    return;
+end
+SR = 1/R.bin_width;
+markerType = R.marker_name;
+timeBefore = str2num(markerType(end-1));
+% rasters = R.fromFrames.sp_rasters;
+rasters = R.sp_rasters1;
+number_of_columns = size(rasters,2);
+half_num_col = floor(number_of_columns/2);
+fac = 1:1:half_num_col;
+for ii = 1:length(fac)
+    os = ones(1,fac(ii));
+    num_groups = floor(number_of_columns/fac(ii));
+    tgroup = [];
+    for jj = 1:num_groups
+        tgroup = [tgroup jj*os];
+    end
+    diffL = number_of_columns - length(tgroup);
+    if diffL > 0
+        tgroup = [tgroup ones(1,diffL)*(tgroup(end)+1)];
+    end
+    groups{ii} = tgroup;
+end
+p = NaN(size(rasters,3),length(fac));
+resp = logical(zeros(size(p)));
+pG = p;
+for ni = 1:length(fac)
+    group = groups{ni};
+    parfor ii = 1:size(rasters,3)
+        thisRaster = rasters(trials,:,ii);
+%         thisRasterG = make_gauss_fit_raster(R,ii);
+        p(ii,ni) = kruskalwallis(thisRaster,group,'nodisplay');
 %         pG(ii,ni) = anova1(thisRasterG,group,'nodisplay');
     end
 end

@@ -61,8 +61,7 @@ ei10_A = getData_py_2(T_A);
 dcfilename = 'define_contexts.m';
 nowr = [0 0 0];
 owr = [1 1 1];
-binwidths = [0.11 3];
-contextIE = {[],{},-1,{'airI'}};
+binwidths = [0.3 3];
 for ii = 1:length(ei10_C)
     ei10_C(ii) = make_and_load_rasters(ei10_C(ii),binwidths,nowr);
 end

@@ -9,12 +9,14 @@ while 1
     an = 2;o = oA; G = 'A';  
     an = 4;o = oC; G = 'C';
     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+    si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    good_FR = props1.vals_and_not_good_zMI; 
-    good_FR = props1.not_vals_and_not_good_zMI;
+    good_FR = props1.vals;
+    good_FR = props1.vals_and_good_zMI;
+%     good_FR = props1.vals_and_not_good_zMI;
+    %     good_FR = props1.not_vals_and_not_good_zMI;
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
     for ii = 1:size(mRR,2)
