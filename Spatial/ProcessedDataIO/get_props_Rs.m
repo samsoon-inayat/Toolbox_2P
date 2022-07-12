@@ -106,9 +106,11 @@ for rr = 1:size(Rs,1)
         o.valsAD3{rr,cc} = o.valsAD2{rr,cc} & o.good_Gauss{rr,cc};
         if size(R.resp.vals,2) == 1
             o.vals{rr,cc} = R.resp.vals;
+            o.valsKW{rr,cc} = R.resp.vals;
         else
 %             o.vals{rr,cc} = R.resp.vals(:,1);%sum(R.resp.vals,2)>0;
             o.vals{rr,cc} = sum(R.resp.vals,2)>0;
+            o.valsKW{rr,cc} = sum(R.resp.valsKW,2)>0;
 %             o.vals{rr,cc} = sum(R.resp.vals,2)>floor(size(R.resp.vals,2)/2);
 %             tempRespFacVals = R.resp.vals(:,1) | R.resp.vals(:,2);
 %             indfac = floor(length(R.resp.fac)/2);
@@ -155,12 +157,21 @@ for rr = 1:size(Rs,1)
         end
     end
 end
+o.vals_and_good_FR = cell_list_op(o.vals,o.good_FR,'and');
 o.vals_and_good_zMI = cell_list_op(o.vals,o.good_zMI,'and');
 o.not_vals = cell_list_op(o.vals,[],'not'); o.not_good_zMI = cell_list_op(o.good_zMI,[],'not');
 o.vals_and_not_good_zMI = cell_list_op(o.vals,o.not_good_zMI,'and');
-
 o.not_vals_and_good_zMI = cell_list_op(o.not_vals,o.good_zMI,'and');
 o.not_vals_and_not_good_zMI = cell_list_op(o.not_vals,o.not_good_zMI,'and');
+
+o.valsKW_and_good_FR = cell_list_op(o.valsKW,o.good_FR,'and');
+o.valsKW_and_good_zMI = cell_list_op(o.valsKW,o.good_zMI,'and');
+o.not_valsKW = cell_list_op(o.valsKW,[],'not'); o.not_good_zMI = cell_list_op(o.good_zMI,[],'not');
+o.valsKW_and_not_good_zMI = cell_list_op(o.valsKW,o.not_good_zMI,'and');
+o.not_valsKW_and_good_zMI = cell_list_op(o.not_valsKW,o.good_zMI,'and');
+o.not_valsKW_and_not_good_zMI = cell_list_op(o.not_valsKW,o.not_good_zMI,'and');
+
+
 
 function [FR_based,sR,sRp1,oc] = get_FR_based(rasters,ntrials)
 rasters = permute(rasters,[2 1 3]);

@@ -14,8 +14,8 @@ while 1
 %     rasterNamesTxt = {'1-t-D','2-t-D','3-t-D','4-t-D','1-b-D','2-b-D'};
     xlabelsSeq = rasterNamesTxt;
 
-    oA = get_data(ei_A,selContexts,rasterNames);
-    oC = get_data(ei_C,selContexts,rasterNames);
+    oA = get_data(ei_A(5),selContexts,rasterNames);
+    oC = get_data(ei_C(5),selContexts,rasterNames);
     for ii = 1:length(selContexts)
         all_xl{ii} = sprintf('%c%c-%d',rasterNames{ii}(1),rasterNames{ii}(end),selContexts(ii));
     end
