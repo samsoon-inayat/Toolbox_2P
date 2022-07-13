@@ -1,6 +1,6 @@
 %% population vector and correlation sensory
 while 1
-    ff = makeFigureRowsCols(107,[10 3 3.35 2.4],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -75]);
+    ff = makeFigureRowsCols(108,[10 3 3.35 2.4],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -75]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
     stp = 0.15; widths = [0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]+0.11; gap = 0.19;
@@ -13,7 +13,7 @@ while 1
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    good_FR = props1.valsKW;
+    good_FR = cell_list_op(props1,{'vals','goo});
 %     good_FR = props1.vals_and_good_zMI;
 %     good_FR = props1.vals_and_not_good_zMI;
     %     good_FR = props1.not_vals_and_not_good_zMI;

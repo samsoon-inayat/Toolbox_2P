@@ -6,19 +6,13 @@ if nargin == 2
     for rr = 1:size(combs,1)
         varN = combs{rr,1};
         if varN(1) == 'N'
-            eval(sprintf('respR = cell_list_op(props.%s,[],''not'');',combs{rr,1}(2:end)));
+            eval(sprintf('respR = cell_list_op(props.%s,[],''not'');',combs{rr,1}));
         else
             eval(sprintf('respR = props.%s;',combs{rr,1}));
         end
             
         for cc = 2:size(combs,2)
-            varN = combs{rr,cc};
-            if varN(1) == 'N'
-                eval(sprintf('respR1 = cell_list_op(props.%s,[],''not'');',combs{rr,cc}(2:end)));
-            else
-                eval(sprintf('respR1 = props.%s;',combs{rr,cc}));
-            end
-            respR = cell_list_op(respR,respR1,'and');
+            eval(sprintf('respR = cell_list_op(respR,props.%s,''and'');',combs{rr,cc}));
         end
     end
     resp = respR;

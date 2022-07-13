@@ -14,7 +14,7 @@ for rr = 1:size(Rs,1)
     end
 end
 
-ar_owr = [1 1 1 1];
+ar_owr = [0 0 0 0];
 
 for rr = 1:size(Rs,1)
     for cc = 1:size(Rs,2)

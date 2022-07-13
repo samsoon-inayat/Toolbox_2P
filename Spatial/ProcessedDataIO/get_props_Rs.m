@@ -127,6 +127,29 @@ for rr = 1:size(Rs,1)
 %                 o.vals{rr,cc} = ~tempRespFacVals & R.resp.vals(:,indfac) & R.resp.vals(:,end);
 %             end
         end
+        if size(R.resp.valsT,2) == 1
+            o.valsT{rr,cc} = R.resp.vals;
+            o.valsKWT{rr,cc} = R.resp.vals;
+        else
+%             o.vals{rr,cc} = R.resp.vals(:,1);%sum(R.resp.vals,2)>0;
+            o.valsT{rr,cc} = sum(R.resp.valsT,2)>0;
+            o.valsKWT{rr,cc} = sum(R.resp.valsKWT,2)>0;
+%             o.vals{rr,cc} = sum(R.resp.vals,2)>floor(size(R.resp.vals,2)/2);
+%             tempRespFacVals = R.resp.vals(:,1) | R.resp.vals(:,2);
+%             indfac = floor(length(R.resp.fac)/2);
+%             if scale == 1
+%                 o.vals{rr,cc} = tempRespFacVals & ~R.resp.vals(:,indfac) & ~R.resp.vals(:,end);
+%             end
+%             if scale == 2
+%                 o.vals{rr,cc} = ~tempRespFacVals & R.resp.vals(:,indfac) & ~R.resp.vals(:,end);
+%             end
+%             if scale == 3
+%                 o.vals{rr,cc} = ~tempRespFacVals & R.resp.vals(:,indfac) & R.resp.vals(:,end);
+%             end
+%             if scale == 4
+%                 o.vals{rr,cc} = ~tempRespFacVals & R.resp.vals(:,indfac) & R.resp.vals(:,end);
+%             end
+        end
         temp_cl = cell_list_op(o.good_FR(rr,cc),o.vals(rr,cc),'and');
         temp_c2 = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.vals(rr,cc),[],'not'),'and');
         o.good_FR_and_tuned{rr,cc} = temp_cl{1};
@@ -163,6 +186,8 @@ o.not_vals = cell_list_op(o.vals,[],'not'); o.not_good_zMI = cell_list_op(o.good
 o.vals_and_not_good_zMI = cell_list_op(o.vals,o.not_good_zMI,'and');
 o.not_vals_and_good_zMI = cell_list_op(o.not_vals,o.good_zMI,'and');
 o.not_vals_and_not_good_zMI = cell_list_op(o.not_vals,o.not_good_zMI,'and');
+o.vals_and_valsT = cell_list_op(o.vals,o.valsT,'and');
+o.vals_or_valsT = cell_list_op(o.vals,o.valsT,'or');
 
 o.valsKW_and_good_FR = cell_list_op(o.valsKW,o.good_FR,'and');
 o.valsKW_and_good_zMI = cell_list_op(o.valsKW,o.good_zMI,'and');
@@ -170,6 +195,9 @@ o.not_valsKW = cell_list_op(o.valsKW,[],'not'); o.not_good_zMI = cell_list_op(o.
 o.valsKW_and_not_good_zMI = cell_list_op(o.valsKW,o.not_good_zMI,'and');
 o.not_valsKW_and_good_zMI = cell_list_op(o.not_valsKW,o.good_zMI,'and');
 o.not_valsKW_and_not_good_zMI = cell_list_op(o.not_valsKW,o.not_good_zMI,'and');
+o.valsKW_and_valsKWT = cell_list_op(o.valsKW,o.valsKWT,'and');
+o.valsKW_or_valsKWT = cell_list_op(o.valsKW,o.valsKWT,'or');
+
 
 
 

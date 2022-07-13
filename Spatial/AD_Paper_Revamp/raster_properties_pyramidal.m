@@ -16,9 +16,9 @@ while 1
     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
-    pop_var_name = {'vals','not_vals','vals_and_good_zMI','vals_and_not_good_zMI'};     pop_var_nameKW = {'valsKW','not_valsKW','valsKW_and_good_zMI','valsKW_and_not_good_zMI'};
-    sel_pop_var_name = pop_var_name;
-    popN = 2; eval(sprintf('sel_pop_C = props_C.%s;',sel_pop_var_name{popN})); eval(sprintf('sel_pop_A = props_A.%s;',sel_pop_var_name{popN}));
+    pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
+    pop_var_name = pop_var_name([1 4]);
+    sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
     
     params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
     varT = 1;%:length(params)
@@ -46,6 +46,7 @@ end
 
 %% one graph
 while 1
+    magfac = mData.magfac;
     ff = makeFigureRowsCols(108,[10 3 1.75 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
     switch varT
         case 1 % responsive cells 
@@ -61,8 +62,8 @@ while 1
         case 11
             MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
     end
-    stp = 0.25; widths = [1.2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25; gap = 0.16;
-    adjust_axes(ff,[mY MY],stp,widths,gap,{'R-squared'});
+    stp = 0.25*magfac; widths = ([1.2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25)*magfac; gap = 0.16*magfac;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{''});
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
 
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','hsd'},[1.5 1 1]);
@@ -75,10 +76,10 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
     xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
     make_bars_hollow(hbs(5:end));
-    put_axes_labels(gca,{'',[0 0 0]},{ylabeltxt,[0 -0.1 0]});
+    put_axes_labels(gca,{'',[0 0 0]},{ylabeltxt,[0 0 0]});
     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
-    
+    format_axes(gca);
     set(ht,'FontWeight','Bold');
     save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
     %%
@@ -100,7 +101,7 @@ while 1
         case 9
             MY = 20; ysp = 1; mY = -0.15; titletxt = 'Spatial Tuning'; ylabeltxt = {'Width (cm)'};
     end
-    stp = 0.28; widths = [1.2 0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.25; gap = 0.1;
+    stp = 0.28*magfac; widths = ([1.2 0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.25)*magfac; gap = 0.1*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     axes(ff.h_axes(1,1));
@@ -114,10 +115,11 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
     xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
     make_bars_hollow(hbs(5:end));
-    put_axes_labels(gca,{'',[0 0 0]},{ylabeltxt,[0 0 0]});
+    put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
     set(ht,'FontWeight','Bold');
+    format_axes(gca);
     
     axes(ff.h_axes(1,2));
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
@@ -131,6 +133,7 @@ while 1
     xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
     make_bars_transparent(hbs,0.5);
     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Pooled'});
+    format_axes(gca);
     save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
     %%
     break;
