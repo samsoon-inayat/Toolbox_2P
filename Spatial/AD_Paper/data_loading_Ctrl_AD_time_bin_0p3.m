@@ -44,7 +44,7 @@ Uleth_one_drive = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P
 mData.pdf_folder = [Uleth_one_drive '\Revamp_2022\PDFs']; 
 mData.pd_folder = [Uleth_one_drive '\Revamp_2022\ProcessedDataMatlab'];
 disp('Done');
-mData.magfac = 3;
+mData.magfac = 1;
 %%
 %%
 if 0
