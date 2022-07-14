@@ -76,10 +76,6 @@ training_data_C = behaviorProcessor;
 training_data_A = behaviorProcessor_AD;
 
 
-
-
-
-
 %% OLD Code below
 % this is just to load behavior
 
