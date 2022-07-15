@@ -2,7 +2,7 @@ function behaviorProcessor_1_AD_Ctrl
 mData = evalin('base','mData');
 data_C = get_training_data_C;
 data_A = get_training_data_A;
-
+n = 0;
 %%
 runthis =0;
 if runthis
@@ -216,11 +216,14 @@ for ii = 1:length(ei)
     masd(ii) = mean(asd{ii});
     semasd(ii) = std(asd{ii})/sqrt(lenT(ii));
     
+%     HiFD{ii} = findHiFD_here(b);
+    
     n = 0;
 end
 out.asT = as; out.lenT = lenT; out.masT = mas; out.semasT = semas;
 out.asIT = as1; out.lenIT = lenT1; out.masIT = mas1; out.semasIT = semas1;
 out.masD = masd; out.semasD = semasd;
+% out.HiFD = HiFD;
 n = 0;
 
 
@@ -238,6 +241,13 @@ for ii = 1:(length(b.air_puff_r)-1)
     end
     assi = nanmean(speeds);
     as(ii) = ass - assi;
+end
+
+function as = findHiFD_here (b)
+as = [];
+parfor ii = 1:length(b.air_puff_r)
+    speeds = b.fSpeed(b.air_puff_r(ii):b.air_puff_f(ii));
+    as(ii) = Higuchi_FD(speeds,20);
 end
 
 
@@ -376,4 +386,5 @@ for iii = 1:size(ei,1)
 end
 out1.moas = moas;
 out1.moasi = moasi;
+
 n = 0;
