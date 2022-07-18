@@ -55,9 +55,9 @@ while 1
         case 2
             MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
         case 4
-            MY = 0.7; ysp = 3; mY = 0; titletxt = 'R-squared'; ylabeltxt = {'A.U.'};
+            MY = 1.7; ysp = 3; mY = 0; titletxt = 'R-squared'; ylabeltxt = {'A.U.'};
         case 7
-            MY = 0.65; ysp = 0.05; mY = 0.3; titletxt = 'Hausdorff Frac. Dim'; ylabeltxt = {'A.U.'};
+            MY = 1.7; ysp = 0.05; mY = 1; titletxt = 'Hausdorff Frac. Dim'; ylabeltxt = {'A.U.'};
         case 10
             MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
         case 11

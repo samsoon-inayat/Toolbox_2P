@@ -10,6 +10,82 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 out_C = get_speeds(ei_C);
 out_A = get_speeds(ei_A);
 n = 0;
+
+%%
+Kmax = 20;
+tic
+for an = 1:5
+    for cn = 1:4
+        [an cn]
+        parfor tn = 1:10
+            t_fspeed = out_C.fspeeds{an,cn,tn};
+            hifd_Ct(an,cn,tn) = Higuchi_FD(zscore(t_fspeed),Kmax);
+            t_fspeed = out_A.fspeeds{an,cn,tn};
+            hifd_At(an,cn,tn) = Higuchi_FD(zscore(t_fspeed),Kmax);
+        end
+    end
+end
+toc
+n = 0;
+%%
+var_C = reshape(permute(hifd_Ct,[3 2 1]),40,5)';
+var_A = reshape(permute(hifd_At,[3 2 1]),40,5)';
+[within,dvn,xlabels] = make_within_table({'Cond','Trials'},[4,10]);
+dataT = make_between_table({var_C;var_A},dvn);
+ra = RMA(dataT,within,{0.05,{}});
+ra.ranova
+%%
+Kmax = 20;
+tic
+for an = 1:5
+    for cn = 1:4
+        [an cn]
+        t_fspeed = out_C.fspeeds_cn{an,cn};
+        hifd_C(an,cn) = Higuchi_FD(zscore(t_fspeed),Kmax);
+        t_fspeed = out_A.fspeeds_cn{an,cn};
+        hifd_A(an,cn) = Higuchi_FD(zscore(t_fspeed),Kmax);
+    end
+end
+toc
+n = 0;
+
+[within,dvn,xlabels] = make_within_table({'Cond'},[4]);
+dataT = make_between_table({hifd_C;hifd_A},dvn);
+ra = RMA(dataT,within,{0.05,{'hsd','bonferroni'}});
+ra.ranova
+
+%%
+Kmax = 20;
+tic
+for an = 1:5
+    for cn = 1:4
+        [an cn]
+        t_fspeed = out_C.fspeeds_cn{an,cn};
+        hifd_C(an,cn) = mean(t_fspeed);
+        t_fspeed = out_A.fspeeds_cn{an,cn};
+        hifd_A(an,cn) = mean(t_fspeed);
+    end
+end
+toc
+n = 0;
+%%
+figure(1000);clf;
+for scn = 1:4
+    for an = 1:5
+        for cn = scn
+            t_fspeed_C(an,:) = (out_C.fspeeds_cn{an,cn});
+            t_fspeed_A(an,:) = (out_A.fspeeds_cn{an,cn});
+        end
+    end
+    ax(scn) = subplot(4,1,scn);
+    mspeed_C = mean(t_fspeed_C);
+    mspeed_A = mean(t_fspeed_A);
+    semspeed_C = std(t_fspeed_C)/sqrt(5);
+    semspeed_A = std(t_fspeed_A)/sqrt(5);
+    shadedErrorBar(1:length(mspeed_C),mspeed_C,semspeed_C,'b'); hold on;
+    shadedErrorBar(1:length(mspeed_A),mspeed_A,semspeed_A,'r');
+end
+linkaxes(ax);
 %%
 while 0
     msr_C = mean(out_C.mspeed_raster,3);
@@ -184,8 +260,78 @@ file_name = fullfile(mData.pdf_folder,sprintf('%s_RANOVA_multcompare.xlsx',mfile
 
 save_pdf(hf,mData.pdf_folder,sprintf('%s_speed',mfilename),600);
 
-    
+   
 function out = get_speeds(ei_C)
+    for an = 1:length(ei_C)
+        temp_bl = [];
+        for cn = 1:4
+%             [an cn]
+            onsets = ei_C{an}.plane{1}.contexts(cn).markers.air_onsets;
+            offsets = ei_C{an}.plane{1}.contexts(cn).markers.air_offsets;
+            onsetsI = ei_C{an}.plane{1}.contexts(cn).markers.airI_onsets;
+            offsetsI = ei_C{an}.plane{1}.contexts(cn).markers.airI_offsets;
+            b = ei_C{an}.b;
+            temp_bl(cn,:) = b.dist(offsets)-b.dist(onsets);
+            m_belt_length(an,cn) = mean(b.dist(offsets)-b.dist(onsets));
+            sz(an,cn) = size(ei_C{an}.plane{1}.contexts(cn).rasters.airD.sp_rasters_nan_corrected,2);
+            speeds_C{an,cn} = ei_C{an}.plane{1}.contexts(cn).rasters.airD.speed(:,1:sz(an,cn));
+            this_speed_raster = speeds_C{an,cn};
+            mspeed_raster(:,cn,an) = mean(this_speed_raster(:,1:35));
+            c_s = corr(this_speed_raster');
+            mask = ones(size(c_s)); mask = triu(mask,1) & ~triu(mask,2);
+            c_s_tp(:,cn,an) = c_s(mask);
+            middle_bin = floor(sz(an,cn)/2);
+            start_bin = middle_bin - 2;
+            end_bin = middle_bin + 2;
+            middle_speeds = this_speed_raster(:,start_bin:end_bin);
+            mean_speed_middle(an,cn) = nanmean(middle_speeds(:));
+            end_speeds = this_speed_raster(:,(sz(an,cn)-4):end);
+            mean_speed_end(an,cn) = nanmean(end_speeds(:));
+            seconds_before = 3; seconds_after = 5; 
+            tfspeed = [];
+            for tn = 1:10
+                st = onsets(tn) - round(1e6 * seconds_before/b.si); se = onsets(tn) - round(1e6 * 0.01/b.si);
+                speed_sig = b.fSpeed(st:se); ms_b(tn,cn,an) = mean(speed_sig);
+                se = onsets(tn) + round(1e6 * seconds_after/b.si); st = onsets(tn) + round(1e6 * 0.01/b.si);
+                speed_sig = b.fSpeed(st:se); ms_a(tn,cn,an) = mean(speed_sig);
+                mspeed(tn,cn,an) = mean(b.fSpeed(onsets(tn):offsets(tn)));
+                mspeedI(tn,cn,an) = mean(b.fSpeed(onsetsI(tn):offsetsI(tn)));
+                son(tn,cn,an) = b.speed(onsets(tn));
+                soff(tn,cn,an) = b.speed(offsets(tn));
+                movL(tn,cn,an) = find(b.fSpeed(onsets(tn):offsets(tn)) > 0.1,1,'first')*b.si*1e-6;
+                durT(tn,cn,an) = b.ts(offsets(tn))-b.ts(onsets(tn));
+                durIT(tn,cn,an) = b.ts(offsetsI(tn))-b.ts(onsetsI(tn));
+                below7(tn,cn,an) = sum(b.fSpeed(onsets(tn):offsets(tn)) < 7)*b.si*1e-6;
+                above7(tn,cn,an) = sum(b.fSpeed(onsets(tn):offsets(tn)) > 7)*b.si*1e-6;
+%                 t_speed = b.fSpeed(onsets(tn):offsets(tn));
+%                 ts = b.ts(onsets(tn):offsets(tn))-b.ts(onsets(tn));
+%                 figure(100);clf;plot(ts,t_speed);
+                st = onsets(tn) - round(1e6 * 1/b.si); se = onsets(tn) + round(1e6 * 5/b.si);
+                t_speed = b.fSpeed(st:1:se);
+                tfspeed = [tfspeed t_speed];
+                fspeeds{an,cn,tn} = t_speed;
+                n = 0;
+            end
+            fspeeds_cn{an,cn} = tfspeed; %b.fSpeed(onsets(1):offsets(end));
+            n = 0;
+        end
+        belt_lengths{an} = temp_bl;
+    end
+    out.diff_ms = ms_a - ms_b;
+    out.mean_speed_middle = mean_speed_middle;
+    out.mean_speed_end = mean_speed_end;
+    out.corr_s_tp = c_s_tp;
+    out.mspeed = mspeed;
+    out.mspeedI = mspeedI;
+    out.son = son;     out.soff = soff;
+    out.movL = movL; out.durT = durT; out.durIT = durIT;
+    out.below7 = below7; out.above7 = above7;
+    out.mspeed_raster = mspeed_raster;
+    out.fspeeds = fspeeds;
+    out.fspeeds_cn = fspeeds_cn;
+    n = 0;
+    
+function out = get_higuchi(ei_C)
     for an = 1:length(ei_C)
         temp_bl = [];
         for cn = 1:4
@@ -213,44 +359,11 @@ function out = get_speeds(ei_C)
             mean_speed_end(an,cn) = nanmean(end_speeds(:));
             seconds_before = 3; seconds_after = 5; 
             parfor tn = 1:10
-%                 st = onsets(tn) - round(1e6 * seconds_before/b.si); se = onsets(tn) - round(1e6 * 0.01/b.si);
-%                 speed_sig = b.fSpeed(st:se); ms_b(tn,cn,an) = mean(speed_sig);
-%                 se = onsets(tn) + round(1e6 * seconds_after/b.si); st = onsets(tn) + round(1e6 * 0.01/b.si);
-%                 speed_sig = b.fSpeed(st:se); ms_a(tn,cn,an) = mean(speed_sig);
-%                 mspeed(tn,cn,an) = mean(b.fSpeed(onsets(tn):offsets(tn)));
-%                 mspeedI(tn,cn,an) = mean(b.fSpeed(onsetsI(tn):offsetsI(tn)));
-%                 son(tn,cn,an) = b.speed(onsets(tn));
-%                 soff(tn,cn,an) = b.speed(offsets(tn));
-%                 
-%                 movL(tn,cn,an) = find(b.fSpeed(onsets(tn):offsets(tn)) > 0.1,1,'first')*b.si*1e-6;
-%                 
-%                 durT(tn,cn,an) = b.ts(offsets(tn))-b.ts(onsets(tn));
-%                 durIT(tn,cn,an) = b.ts(offsetsI(tn))-b.ts(onsetsI(tn));
-%                 below7(tn,cn,an) = sum(b.fSpeed(onsets(tn):offsets(tn)) < 7)*b.si*1e-6;
-%                 above7(tn,cn,an) = sum(b.fSpeed(onsets(tn):offsets(tn)) > 7)*b.si*1e-6;
-%                 
-%                 t_speed = b.fSpeed(onsets(tn):offsets(tn));
-%                 ts = b.ts(onsets(tn):offsets(tn))-b.ts(onsets(tn));
-%                 figure(100);clf;plot(ts,t_speed);
-%                 n = 0;
                 hifd(tn,cn,an) = Higuchi_FD(b.fSpeed(onsets(tn):offsets(tn)),20);
-%                 hifd(tn,cn,an) = myHiguchi_FD(b.fSpeed(onsets(tn):offsets(tn)),20);
-%                 ent(tn,cn,an) = Entropy(t_speed');
             end
             
         end
         belt_lengths{an} = temp_bl;
     end
-%     out.diff_ms = ms_a - ms_b;
-%     out.mean_speed_middle = mean_speed_middle;
-%     out.mean_speed_end = mean_speed_end;
-%     out.corr_s_tp = c_s_tp;
-%     out.mspeed = mspeed;
-%     out.mspeedI = mspeedI;
-%     out.son = son;     out.soff = soff;
-%     out.movL = movL; out.durT = durT; out.durIT = durIT;
-%     out.below7 = below7; out.above7 = above7;
-%     out.mspeed_raster = mspeed_raster;
-%     out.ent = ent;
     out.hifd = hifd;
     n = 0;
