@@ -1,4 +1,4 @@
-function raster_properties_pyramidal_belt_C2
+function raster_properties
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 
@@ -13,56 +13,33 @@ pni = 7;
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 while 1
     ntrials = 50; 
-    si = [C1_t_D C1_b_D];
+    si = [C1_t_D C2_t_D C1_b_D C2_b_D];
+%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+    Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
     props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
-    sel_pop_C = props_C.vals; sel_pop_A = props_A.vals;
-%     sel_pop_C = cell_list_op(props_C.vals,props_C.good_zMI,'and'); sel_pop_A = cell_list_op(props_A.vals,props_A.good_zMI,'and');
-%     sel_pop_C = cell_list_op(sel_pop_C,[],'not'); sel_pop_A = cell_list_op(sel_pop_A,[],'not');
-%     sel_pop_C = props_C.good_FR_and_tuned; sel_pop_A = props_A.good_FR_and_tuned;
-%     sel_pop_C = cell_list_op(props_C.good_FR_and_tuned,props_C.good_zMI,'and'); sel_pop_A = cell_list_op(props_A.good_FR_and_tuned,props_A.good_zMI,'and');
-    sel_pop_C = cell_list_op(props_C.good_Gauss,props_C.good_zMI,'and'); sel_pop_A = cell_list_op(props_A.good_Gauss,props_A.good_zMI,'and');
-    varT = 1;
-    switch varT % 1-Responsivity, 2-RF, 3-zMI, 4-RS, 5-nanzMI, 6-nanRS, 7-HaFD, 8-HiFD, 9-PWs, 10-Centers, 11-PeakLocations
-        case 1
-            var_C = sel_pop_C; mean_var_C = find_percent(var_C); 
-            var_A = sel_pop_A; mean_var_A = find_percent(var_A);
-        case 2
-            var_C = get_vals(props_C.N_Resp_Trials,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean'); 
-            var_A = get_vals(props_A.N_Resp_Trials,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
-        case 3
-            var_C = get_vals(props_C.zMI,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean');
-            var_A = get_vals(props_A.zMI,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
-        case 4
-            var_C = get_vals(props_C.rs,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean'); 
-            var_A = get_vals(props_A.rs,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
-        case 5
-            var_C = get_vals(props_C.nan_zMI,sel_pop_C); mean_var_C = find_percent(var_C); 
-            var_A = get_vals(props_A.nan_zMI,sel_pop_A); mean_var_A = find_percent(var_A);
-        case 6
-            var_C = get_vals(props_C.nan_rs,sel_pop_C); mean_var_C = find_percent(var_C); 
-            var_A = get_vals(props_A.nan_rs,sel_pop_A); mean_var_A = find_percent(var_A);
-        case 7
-            var_C = get_vals(props_C.HaFD,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean');
-            var_A = get_vals(props_A.HaFD,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
-        case 8
-            var_C = get_vals(props_C.HiFD,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean');
-            var_A = get_vals(props_A.HiFD,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
-        case 9
-            var_C = get_vals(props_C.PWs,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean');
-            var_A = get_vals(props_A.PWs,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
-        case 10
-            var_C = get_vals(props_C.centers,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean');
-            var_A = get_vals(props_A.centers,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
-        case 11
-            var_C = get_vals(props_C.peak_locations,sel_pop_C); mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean');
-            var_A = get_vals(props_A.peak_locations,sel_pop_A); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean');
+    pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
+    pop_var_name = {'vals'};
+    sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
+    
+    params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
+    varT = 3;%:length(params)
+    for pii = varT
+        if pii == 1
+            mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); mean_var_A = exec_fun_on_cell_mat(sel_pop_A,'percent'); 
+        else
+            eval(sprintf('var_C = get_vals(props_C.%s,sel_pop_C);',params{pii})); eval(sprintf('var_A = get_vals(props_A.%s,sel_pop_A);',params{pii}));
+            if pii == 5 || pii == 6
+                mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); mean_var_A = exec_fun_on_cell_mat(sel_pop_A,'percent'); 
+            else
+                mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean'); mean_var_A = exec_fun_on_cell_mat(var_A,'nanmean'); 
+            end
+        end
     end
-
     varC = mean_var_C;
     varA = mean_var_A;
-    [within,dvn,xlabels] = make_within_table({'AB'},[2]);
+    [within,dvn,xlabels] = make_within_table({'FoF','Cond'},[2,2]);
     dataT = make_between_table({varC;varA},dvn);
-    ra = RMA(dataT,within,{0.05,{'hsd','bonferroni'}});
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
     ra.ranova
 break;
 end
@@ -70,22 +47,29 @@ end
 
 %% one graph
 while 1
-    ff = makeFigureRowsCols(107,[10 3 1.75 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+    magfac = mData.magfac;
+    ff = makeFigureRowsCols(108,[10 3 1.75 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
     switch varT
         case 1 % responsive cells 
-            MY = 80; ysp = 3; mY = 0; titletxt = 'Responsivity (Percent of Cells)';
+            MY = 50; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
         case 2
-            MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity (Percent of Trials)';
+            MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
         case 4
-            MY = 0.7; ysp = 3; mY = 0; titletxt = 'R-squared (Arb)';
+            MY = 1.7; ysp = 3; mY = 0; titletxt = 'R-squared'; ylabeltxt = {'A.U.'};
+        case 7
+            MY = 1.7; ysp = 0.05; mY = 1; titletxt = 'Hausdorff Frac. Dim'; ylabeltxt = {'A.U.'};
+        case 10
+            MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
+        case 11
+            MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
     end
-    stp = 0.25; widths = [1.2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25; gap = 0.16;
-    adjust_axes(ff,[mY MY],stp,widths,gap,{'R-squared'});
+    stp = 0.25*magfac; widths = ([1.2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25)*magfac; gap = 0.16*magfac;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{''});
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
 
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','hsd'},[1.5 1 1]);
         xdata = make_xdata([4 4],[1 1.5]);   
-    %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+%         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
     h(h==1) = 0;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
@@ -93,10 +77,10 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
     xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
     make_bars_hollow(hbs(5:end));
-    put_axes_labels(gca,{'',[0 0 0]},{{'EMM'},[0 -0.1 0]});
+    put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
-    
+    format_axes_b(gca);
     set(ht,'FontWeight','Bold');
     save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
     %%
@@ -109,13 +93,16 @@ while 1
     ff = makeFigureRowsCols(107,[10 3 2.62 1.25],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
     switch varT
         case 1 % responsive cells 
-            MY = 45; ysp = 3; mY = 0; titletxt = 'Responsivity (Percent of Cells)'; % for all cells (vals) MY = 80
+            MY = 70; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'}; % for all cells (vals) MY = 80
         case 2
-            MY = 90; ysp = 4; mY = 0; titletxt = 'Response Fidelity (Percent of Trials)'; % for all cells (vals) MY = 70
+            MY = 70; ysp = 4; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};% for all cells (vals) MY = 70
         case 3
-            MY = 3.9; ysp = 0.3; mY = 0; titletxt = 'Mutual Information (Z-Score)';
+            MY = 0.1; ysp = 0.01; mY = -0.15; titletxt = 'Mutual Information'; ylabeltxt = {'Z-Score'};
+            MY = 3.5; ysp = 0.3; mY = 0; titletxt = 'Mutual Information'; ylabeltxt = {'Z-Score'};
+        case 9
+            MY = 20; ysp = 1; mY = -0.15; titletxt = 'Spatial Tuning'; ylabeltxt = {'Width (cm)'};
     end
-    stp = 0.25; widths = [1.2 0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.25; gap = 0.1;
+    stp = 0.28*magfac; widths = ([1.2 0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.25)*magfac; gap = 0.1*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     axes(ff.h_axes(1,1));
@@ -129,10 +116,11 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
     xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
     make_bars_hollow(hbs(5:end));
-    put_axes_labels(gca,{'',[0 0 0]},{{'EMM'},[0 -0.1 0]});
+    put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
     set(ht,'FontWeight','Bold');
+    format_axes(gca);
     
     axes(ff.h_axes(1,2));
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
@@ -144,10 +132,60 @@ while 1
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
     xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
-    make_bars_hollow(hbs(5:end));
+    make_bars_transparent(hbs,0.5);
+%     hatch(hbs,0,'w','-',2,0.25); %hatch(obj,angle,color,style,step,width)
     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Pooled'});
+    format_axes(gca);
     save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
     %%
     break;
 end
 
+%% remapping across conditions
+while 1
+    tic
+    remap_C = find_population_vector_corr_remap(Rs_C,mRs_C,sel_pop_C);
+    remap_A = find_population_vector_corr_remap(Rs_A,mRs_A,sel_pop_A);
+    toc
+    
+    %% Correlations across conditions
+    selC = remap_C; selA = remap_A;
+    typeCorr = {'Spatial Correlation','Pop. Vec. Correlation','\Delta FR Score'};
+    FF = {'SP','PV','RR'};
+    ysp = [0.05 0.05 0.1];
+    for ci = 3;
+    if 1
+        [within,dvn,xlabels] = make_within_table({'Cond'},3);
+        switch ci
+            case 1
+                var_C = arrayfun(@(x) mean(x{1}),selC.adj_SP_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_SP_corr_diag);
+            case 2
+                var_C = arrayfun(@(x) mean(x{1}),selC.adj_PV_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_PV_corr_diag);
+            case 3
+                var_C = arrayfun(@(x) nanmean(x{1}),selC.adj_RR_SP);var_A = arrayfun(@(x) nanmean(x{1}),selA.adj_RR_SP);
+        end
+        dataT = make_between_table({var_C;var_A},dvn);
+        ra = repeatedMeasuresAnova(dataT,within);
+        rar = RMA(dataT,within);
+        [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+        colors = mData.colors;
+        hf = get_figure(5,[3 7 1.5 1]);
+        tcolors = mData.colors(1:3); tcolors = repmat(tcolors,1,2);
+        [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+            'ySpacing',ysp(ci),'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+            'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+        set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
+        xticks = xdata(1:end)+0; xticklabels = {'C12','C23','C34','C12','C23','C34'};
+        set(gca,'xtick',xticks,'xticklabels',xticklabels);
+        for ii = 4:6
+            set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
+        end
+        xtickangle(45);
+        changePosition(gca,[0.1 0.03 -0.1 -0.1]);
+        put_axes_labels(gca,{[],[0 0 0]},{typeCorr{ci},[0 0 0]});
+        save_pdf(hf,mData.pdf_folder,sprintf('%s_correlation',FF{ci}),600);
+    end
+    end
+    %%
+    break;
+end
