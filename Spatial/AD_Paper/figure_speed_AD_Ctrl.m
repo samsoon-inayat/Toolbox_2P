@@ -57,13 +57,11 @@ ra.ranova
 Kmax = 20;
 tic
 for an = 1:5
-    for cn = 1:4
-        [an cn]
-        t_fspeed = out_C.fspeeds_cn{an,cn};
-        hifd_C(an,cn) = Higuchi_FD(zscore(t_fspeed),Kmax);
-        t_fspeed = out_A.fspeeds_cn{an,cn};
-        hifd_A(an,cn) = Higuchi_FD(zscore(t_fspeed),Kmax);
-    end
+        [an]
+        t_fspeed = out_C.fspeeds_an{an};
+        hifd_Can(an) = Higuchi_FD(zscore(t_fspeed),Kmax);
+        t_fspeed = out_A.fspeeds_an{an};
+        hifd_Aan(an) = Higuchi_FD(zscore(t_fspeed),Kmax);
 end
 toc
 n = 0;
@@ -322,13 +320,15 @@ function out = get_speeds(ei_C)
                 durIT(tn,cn,an) = b.ts(offsetsI(tn))-b.ts(onsetsI(tn));
                 below7(tn,cn,an) = sum(b.fSpeed(onsets(tn):offsets(tn)) < 7)*b.si*1e-6;
                 above7(tn,cn,an) = sum(b.fSpeed(onsets(tn):offsets(tn)) > 7)*b.si*1e-6;
-%                 t_speed = b.fSpeed(onsets(tn):offsets(tn));
+                t_speed = b.fSpeed(onsets(tn):offsets(tn));
 %                 ts = b.ts(onsets(tn):offsets(tn))-b.ts(onsets(tn));
 %                 figure(100);clf;plot(ts,t_speed);
-                st = onsets(tn) - round(1e6 * 1/b.si); se = onsets(tn) + round(1e6 * 5/b.si);
-                t_speed = b.fSpeed(st:1:se);
+%                 st = onsets(tn) - round(1e6 * 1/b.si); se = onsets(tn) + round(1e6 * 5/b.si);
+%                 t_speed = b.fSpeed(st:1:se);
                 tfspeed = [tfspeed t_speed];
                 fspeeds{an,cn,tn} = t_speed;
+                t_speed = b.fSpeed(onsetsI(tn):offsetsI(tn));
+                fspeedsI{an,cn,tn} = t_speed;
                 n = 0;
             end
             fspeeds_cn{an,cn} = tfspeed; %b.fSpeed(onsets(1):offsets(end));
@@ -347,7 +347,7 @@ function out = get_speeds(ei_C)
     out.movL = movL; out.durT = durT; out.durIT = durIT;
     out.below7 = below7; out.above7 = above7;
     out.mspeed_raster = mspeed_raster;
-    out.fspeeds = fspeeds;
+    out.fspeeds = fspeeds;out.fspeedsI = fspeedsI;
     out.fspeeds_cn = fspeeds_cn;
     out.fspeeds_an = fspeeds_an;
     n = 0;

@@ -13,16 +13,22 @@ n = 0;
 %%
 
 figure(100);clf;
-training_data = training_data_C; an = 9; trials = [1 30]; timePre = 1; timePost = 1; T = [0 20*60];
-for sr = selRows_C
-for dn = 1:3
-    subplot(3,1,dn);
-    b = training_data.bs{an,dn}; %t1 = b.air_puff_r(trials(1)) - round(1e6 * timePre/b.si); t2 = b.air_puff_f(trials(2)) - round(1e6 * timePost/b.si);
-    t1 = find(b.ts-T(1)>0,1,'first')-1; t2 = find(b.ts-T(2)>0,1,'first')-1;
-    xs = b.ts(t1:t2); ys1 = b.fSpeed(t1:t2); ys2 = b.air_puff_raw(t1:t2);
-    plot(xs,ys1);%hold on; plot(xs,ys2*max(ys1)); axis off;
-    format_axes_b(gca);
-end
+training_data = training_data_C; sel_rows = selRows_C;
+training_data = training_data_A; sel_rows = selRows_A;
+trials = [1 30]; timePre = 1; timePost = 1; T = [0 20*60];
+for ani = 1:length(sel_rows)
+    an = sel_rows(ani);
+    for dn = 1:3
+        subplot(3,1,dn);
+        b = training_data.bs{an,dn}; %t1 = b.air_puff_r(trials(1)) - round(1e6 * timePre/b.si); t2 = b.air_puff_f(trials(2)) - round(1e6 * timePost/b.si);
+        t1 = find(b.ts-T(1)>0,1,'first')-1; t2 = find(b.ts-T(2)>0,1,'first')-1;
+        t1 = b.air_puff_r(1); t2 = b.air_puff_f(end);
+        xs = b.ts(t1:t2); ys1 = b.fSpeed(t1:t2); ys2 = b.air_puff_raw(t1:t2);
+        plot(xs,ys1);%hold on; plot(xs,ys2*max(ys1)); axis off;
+        format_axes_b(gca);
+    end
+    title(ani)
+pause;
 end
 
 %% Raw speeds 

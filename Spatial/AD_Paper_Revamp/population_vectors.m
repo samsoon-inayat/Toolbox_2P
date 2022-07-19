@@ -8,13 +8,13 @@ while 1
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
     an = 2;o = oA; G = 'A';  
-    an = 4;o = oC; G = 'C';
+%     an = 1;o = oC; G = 'C';
     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    good_FR = cell_list_op(props1,{'NvalsT'});
+    good_FR = cell_list_op(props1,{'good_zMI','good_Gauss'});
 %     good_FR = props1.vals_and_good_zMI;
 %     good_FR = props1.vals_and_not_good_zMI;
     %     good_FR = props1.not_vals_and_not_good_zMI;
@@ -51,6 +51,13 @@ while 1
         
         axes(ff.h_axes(2,ii));
         tmRR = CRc{an,ii};
+        if sum(isnan(tmRR(:))) > 0
+            tmRR = fillmissing(tmRR,'linear',2,'EndValues','nearest');
+            if sum(isnan(tmRR(:))) > 0
+                tmRR = tmRR'; tmRR = fillmissing(tmRR,'linear',2,'EndValues','nearest'); tmRR = tmRR';
+            end
+        end
+        
         if ii < 5
             xdata = [0 75 150];
         else
@@ -67,7 +74,7 @@ while 1
         textstr = sprintf('%d',ceil(ylims(2)));
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
         format_axes(gca);
-        mM = min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
+        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
         
         axes(ff.h_axes(3,ii));
         tmRR = aCRc{ii};
@@ -91,7 +98,7 @@ while 1
         textstr = sprintf('%d',ceil(ylims(2)));
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
         format_axes(gca);
-        mM = min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
+        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%c.pdf',ntrials,G),600);
     
