@@ -33,7 +33,62 @@ while 1
     ra.ranova
 break;
 end
+%% separate populations based on dist and time
+while 1
+    sel_pop_C = cell_list_op(props_C,pop_var_name);
 
+    dist_based_trials = sel_pop_C(:,awithinD(:,1) == 1 & awithinD(:,2) == 1);
+    dist_based_itrials = sel_pop_C(:,awithinD(:,1) == 2 & awithinD(:,2) == 1);
+
+    time_based_trials = sel_pop_C(:,awithinD(:,1) == 1 & awithinD(:,2) == 2);
+    time_based_itrials = sel_pop_C(:,awithinD(:,1) == 2 & awithinD(:,2) == 2);
+
+    dist_trials = cell_list_op(dist_based_trials,time_based_trials,'separate');
+    time_trials = cell_list_op(time_based_trials,dist_based_trials,'separate');
+    both_trials = cell_list_op(time_based_trials,dist_based_trials,'and');
+
+    dist_itrials = cell_list_op(dist_based_itrials,time_based_itrials,'separate');
+    time_itrials = cell_list_op(time_based_itrials,dist_based_itrials,'separate');
+    both_itrials = cell_list_op(time_based_itrials,dist_based_itrials,'and');
+
+    all_types_cat = [dist_trials both_trials time_trials dist_itrials both_itrials time_itrials];
+    ii = 1; cc_types = {'D','B','T'}; rr_types = {'T','I'}; cn_types = {'1','2','3'};
+    for rr = 1:2
+        for cc = 1:3
+            for cn = 1:3
+                cell_types{1,ii} = sprintf('%s-%s-%s',cn_types{cn},cc_types{cc},rr_types{rr}); ii = ii + 1;
+            end
+        end
+    end
+    
+    ntrials = 50; 
+    si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
+    props_C = get_props_Rs(Rs_C,ntrials);
+    
+    params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
+    varT = 1;%:length(params)
+    for pii = varT
+        if pii == 1
+            mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
+        else
+            eval(sprintf('var_C = get_vals(props_C.%s,sel_pop_C);',params{pii})); 
+            if pii == 5 || pii == 6
+                mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
+            else
+                mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean'); 
+            end
+        end
+    end
+    varC = mean_var_C;
+    
+    [within,dvn,xlabels,awithinD1] = make_within_table({'TI','DT','Cond'},[2,3,3]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
+    ra.ranova
+    %%
+    break;
+end
 
 %%
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);

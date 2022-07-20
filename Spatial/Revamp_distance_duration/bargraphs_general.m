@@ -1,12 +1,10 @@
-
-
-%% one graph - 2x2x3
+%% one graph - 2x3x3
 while 1
     magfac = mData.magfac;
-    ff = makeFigureRowsCols(108,[10 3 1.75 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+    ff = makeFigureRowsCols(108,[10 3 2.5 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
     switch varT
         case 1 % responsive cells 
-            MY = 50; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+            MY = 70; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
         case 2
             MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
         case 3
@@ -20,12 +18,57 @@ while 1
         case 11
             MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
     end
-    stp = 0.25*magfac; widths = ([1.2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25)*magfac; gap = 0.16*magfac;
+    stp = 0.25*magfac; widths = ([2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25)*magfac; gap = 0.16*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-    tcolors = {colors{1};colors{2};colors{1};colors{2};colors{1};colors{2};colors{1};colors{2}};
+    tcolors = repmat(mData.colors(1:9),2,1);%{colors{1};colors{2};colors{1};colors{2};colors{1};colors{2};colors{1};colors{2}};
 
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_FoF_Cond','hsd'},[1.5 1 1]);
-        xdata = make_xdata([2 2 2 2],[1 2 3]);   
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT_Cond','hsd'},[1.5 1 1]);
+        xdata = make_xdata([3 3 3 3 3 3],[1 2 3]);   
+%         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+    xticklabels = {'1','2','3'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
+    make_bars_hollow(hbs(10:end));
+    put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Dist','Both','Time','Dist','Both','Time'});
+    ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
+    format_axes_b(gca);
+    set(ht,'FontWeight','Bold');
+    save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+    %%
+    break;
+end
+
+
+
+%% one graph - 2x2x3
+while 1
+    magfac = mData.magfac;
+    ff = makeFigureRowsCols(108,[10 3 2.5 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+    switch varT
+        case 1 % responsive cells 
+            MY = 70; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+        case 2
+            MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
+        case 3
+            MY = 2; ysp = 0.01; mY = 0; titletxt = 'Mutual Information'; ylabeltxt = {'Z-Score'};
+        case 4
+            MY = 1.7; ysp = 3; mY = 0; titletxt = 'R-squared'; ylabeltxt = {'A.U.'};
+        case 7
+            MY = 1.7; ysp = 0.05; mY = 1; titletxt = 'Hausdorff Frac. Dim'; ylabeltxt = {'A.U.'};
+        case 10
+            MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
+        case 11
+            MY = 80; ysp = 1; mY = 0; titletxt = 'Peak Locations'; ylabeltxt = {'cm'};
+    end
+    stp = 0.25*magfac; widths = ([1.5 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.25)*magfac; gap = 0.16*magfac;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+    tcolors = mData.colors;%{colors{1};colors{2};colors{1};colors{2};colors{1};colors{2};colors{1};colors{2}};
+
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT_Cond','hsd'},[1.5 1 1]);
+        xdata = make_xdata([3 3 3 3],[1 2 3]);   
 %         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
     h(h==1) = 0;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
