@@ -20,7 +20,7 @@ while 1
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
 %     mOI = mUni;
-%     mOI = mUni1; semOI = semUni1;
+    mOI = mUni1; semOI = semUni1;
 %     mOI = mUni2; semOI = semUni2;
     
     sz = size(mOI,1);
@@ -68,16 +68,18 @@ while 1
     colormap jet
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_sem_%d.pdf',ntrials,sh),600);
    %%
-   ff = makeFigureRowsCols(107,[10 3 6.95 2.5],'RowsCols',[2 3],'spaceRowsCols',[0.2 -0.02],'rightUpShifts',[0.07 0.13],'widthHeightAdjustment',[10 -200]);
+   ff = makeFigureRowsCols(107,[10 3 6.95 2.5],'RowsCols',[2 3],'spaceRowsCols',[0.2 -0.02],'rightUpShifts',[0.15 0.13],'widthHeightAdjustment',[-10 -200]);
     set(gcf,'color','w');     ylims = [0 1];
-    stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.1; gap = 0.13; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
-    stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.1; gap = 0.17; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.07; gap = 0.13; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.3; widths = [2 2 2 0.4 0.4 0.4]+0.07; gap = 0.17; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     %
     hms = {mCI,mUni1,mUni2};
     ahc_col_th = 0.7;
-    for hi = 1:length(hms)
-        mOI1 = hms{hi}; mOI1(mask1==1) = NaN; Di = pdist(mOI1,@naneucdist);
-        tree = linkage(Di,'average'); [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');    leafOrder = optimalleaforder(tree,Di);
+    
+    hms1 = {100-mCI,mUni1,mUni2};
+    for hi = 1:length(hms1)
+        mOI1 = hms1{hi}; mOI1(mask1==1) = 0; %Di = pdist(mOI1,@naneucdist);
+        tree = linkage(mOI1,'average'); [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');    leafOrder = optimalleaforder(tree,Di);
         hf = figure(100000000); %     leafOrder1 = leafOrder([1:3 10:12 4:9]);
     %     leafOrder1 = circshift(leafOrder,3);
         figure(hf);clf
@@ -94,10 +96,9 @@ while 1
     %     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
     end
     
-    hms1 = {100-mCI,mUni1,mUni2};
-    for hi = 1:length(hms1)
-        mOI1 = hms1{hi}; mOI1(mask1==1) = 0; %Di = pdist(mOI1,@naneucdist);
-        tree = linkage(mOI1,'average'); [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');    leafOrder = optimalleaforder(tree,Di);
+    for hi = 1:length(hms)
+        mOI1 = hms{hi}; mOI1(mask1==1) = NaN; Di = pdist(mOI1,@naneucdist);
+        tree = linkage(Di,'average'); [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');    leafOrder = optimalleaforder(tree,Di);
         hf = figure(100000000); %     leafOrder1 = leafOrder([1:3 10:12 4:9]);
     %     leafOrder1 = circshift(leafOrder,3);
         figure(hf);clf
@@ -113,7 +114,6 @@ while 1
         changePosition(gca,[0.0 0.0 0.07 0.05]); text(0.5,ylims(2)+0,sprintf('CC = %.2f',c),'FontSize',6);
     %     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
     end
-
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster_%d.pdf',sh),600);
     
     %%
