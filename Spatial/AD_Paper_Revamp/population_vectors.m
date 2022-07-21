@@ -8,7 +8,7 @@ while 1
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
     an = 2;o = oA; G = 'A';  
-%     an = 1;o = oC; G = 'C';
+    an = 1;o = oC; G = 'C';
     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);

@@ -204,10 +204,6 @@ end
 %% Spatially Tuned Cells Pooled
 while 1
 ntrials = 50; 
-sel_pop_C = all_C; sel_pop_A = all_A;
-sel_pop_C = good_zMI_C; sel_pop_A = good_zMI_A;
-% sel_pop_C = good_zMI_MFR_C; sel_pop_A = good_zMI_MFR_A;
-% sel_pop_C = good_zMI_MFR_Gauss_C; sel_pop_A = good_zMI_MFR_Gauss_A;
 var_C = cell_list_op(sel_pop_C,[],'or',1); var_A = cell_list_op(sel_pop_A,[],'or',1);
 mean_var_C = find_percent(var_C); mean_var_A = find_percent(var_A);
 
@@ -219,10 +215,10 @@ ra = RMA(dataT,within,{0.05,{'hsd','bonferroni'}});
 ra.ranova
 
 
-ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -310]);
+ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[-350 -310]);
 set(gcf,'color','w');    set(gcf,'Position',[10 3 1.1 1]);
 MY = 50; ysp = 1; mY = 0; % responsive cells
-stp = 0.45; widths = [1 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.3; gap = 0.16;
+stp = 0.45; widths = [1 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.4; gap = 0.16;
 adjust_axes(ff,[mY MY],stp,widths,gap,{'R-squared'});
 tcolors = {'k','r'};
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
@@ -237,6 +233,8 @@ tcolors = {'k','r'};
     xticklabels = {'Control','APP','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
     make_bars_hollow(hbs(1:end));
     put_axes_labels(gca,{'',[0 0 0]},{{'Spatially Tuned Cells','in any Condition (%)'},[0 -5 0]});
+    format_axes_b(gca);
     save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+    
 break;
 end

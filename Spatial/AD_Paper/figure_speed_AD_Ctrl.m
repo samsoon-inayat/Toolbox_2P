@@ -12,6 +12,33 @@ out_A = get_speeds(ei_A);
 n = 0;
 
 %%
+tic
+for an = 1:5
+    for cn = 1:4
+        [an cn]
+        for tn = 1:10
+            mspeed_C(tn,cn,an) = mean(out_C.fspeeds{an,cn,tn});
+            mspeed_A(tn,cn,an) = mean(out_A.fspeeds{an,cn,tn});
+            mspeed_CI(tn,cn,an) = mean(out_C.fspeedsI{an,cn,tn});
+            mspeed_AI(tn,cn,an) = mean(out_A.fspeedsI{an,cn,tn});
+        end
+    end
+end
+toc
+
+rmspeed_C = mspeed_C;
+rmspeed_A = mspeed_A;
+
+var_C = reshape(rmspeed_C,40,5)';
+var_A = reshape(rmspeed_A,40,5)';
+[within,dvn,xlabels] = make_within_table({'Cond','Trials'},[4,10]);
+dataT = make_between_table({var_C;var_A},dvn);
+ra = RMA(dataT,within,{0.05,{}});
+ra = RMA(dataT,within,{0.05,{'hsd'}});
+ra.ranova
+
+
+%%
 Kmax = 20;
 tic
 for an = 1:5
@@ -323,10 +350,11 @@ function out = get_speeds(ei_C)
                 t_speed = b.fSpeed(onsets(tn):offsets(tn));
 %                 ts = b.ts(onsets(tn):offsets(tn))-b.ts(onsets(tn));
 %                 figure(100);clf;plot(ts,t_speed);
-%                 st = onsets(tn) - round(1e6 * 1/b.si); se = onsets(tn) + round(1e6 * 5/b.si);
-%                 t_speed = b.fSpeed(st:1:se);
-                tfspeed = [tfspeed t_speed];
+                st = onsets(tn) - round(1e6 * 1/b.si); se = onsets(tn) + round(1e6 * 5/b.si);
+                t_speed1 = b.fSpeed(st:100:se);
+                tfspeed = [tfspeed t_speed1];
                 fspeeds{an,cn,tn} = t_speed;
+                fspeeds1{an,cn,tn} = t_speed1;
                 t_speed = b.fSpeed(onsetsI(tn):offsetsI(tn));
                 fspeedsI{an,cn,tn} = t_speed;
                 n = 0;
@@ -348,6 +376,7 @@ function out = get_speeds(ei_C)
     out.below7 = below7; out.above7 = above7;
     out.mspeed_raster = mspeed_raster;
     out.fspeeds = fspeeds;out.fspeedsI = fspeedsI;
+    out.fspeeds1 = fspeeds1;
     out.fspeeds_cn = fspeeds_cn;
     out.fspeeds_an = fspeeds_an;
     n = 0;
