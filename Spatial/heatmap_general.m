@@ -4,7 +4,7 @@ while 1
     figdim = 3;
     hf = get_figure(5,[9 2 figdim figdim]);
             
-    all_cells_list = all_types_cat; event_type = cell_types;
+    all_cells_list = sel_pop_C; event_type = cell_types;
 %     all_cells_list = all_gV_A;
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);
@@ -19,54 +19,56 @@ while 1
     semUni = nanstd(uni,[],3)/sqrt(5); semUni1 = tril(semUni,-1) + tril(semUni,-1)'; semUni2 = triu(semUni,1) + triu(semUni,1)'; msemUni = min(semUni(:)); MsemUni = max(semUni(:));
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
-%     mOI = mUni;
-    mOI = mUni1; semOI = semUni1;
-%     mOI = mUni2; semOI = semUni2;
     
-    sz = size(mOI,1);
-    oM = ones(size(mOI));
-    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN; semOI(mask1 == 1) = NaN;
-    maxI = max([mOI(:);semOI(:)]);    
-    minI = min([mOI(:);semOI(:)]);
+   ff = makeFigureRowsCols(107,[10 3 6.95 2.5],'RowsCols',[1 4],'spaceRowsCols',[0.2 -0.02],'rightUpShifts',[0.15 0.13],'widthHeightAdjustment',[-10 -300]);
+    set(gcf,'color','w');     ylims = [0 1];
+    stp = 0.3; widths = [2 2 2 2 0.4 0.4]-0.7; gap = 0.22; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     
-    mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
+    mats = {mCI,mUni}; semmats = {semCI,semUni};
+    jj = [0 1];
+    for ii = 1:length(mats)
+        mOI = mats{ii}; semOI = semmats{ii};
+        sz = size(mOI,1);        oM = ones(size(mOI));
+        mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN; semOI(mask1 == 1) = NaN;
+        maxI = max([mOI(:);semOI(:)]);            minI = min([mOI(:);semOI(:)]);
 
-    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
-    imAlpha(mask1 == 1) = 0;
+        mask = tril(NaN(size(mOI)),0); mask(mask==0) = 1; 
 
-    im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
-    format_axes(gca);
-    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(75);
-    for rr = 1:size(mCI,1)
-        for cc = 1:size(mCI,1)
-            if rr == cc
-                text(rr-0.25,cc,sprintf('%.0f',mCI(rr,cc)),'FontSize',5);
+        imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
+        imAlpha(mask1 == 1) = 0;
+        axes(ff.h_axes(1,jj(ii)+ii));
+        im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+        set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+        format_axes(gca);
+        set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+        set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',txl,'yticklabels',txl,'Ydir','reverse'); xtickangle(75);
+        for rr = 1:size(mCI,1)
+            for cc = 1:size(mCI,1)
+                if rr == cc
+                    text(rr-0.25,cc,sprintf('%.0f',mCI(rr,cc)),'FontSize',5);
+                end
             end
         end
+    %     plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 150.5],'w','linewidth',0.1); 
+    %     plot([0 150.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+        set(gca,'Ydir','normal');ytickangle(15);        box on
+        changePosition(gca,[0.0 0 0.0 0]);
+        hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.07 0.05 0.07 0.05]);
+        colormap jet
+        save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean_%d.pdf',ntrials,sh),600);
+
+        axes(ff.h_axes(1,jj(ii)+ii+1));
+        im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
+        set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
+        format_axes(gca);
+        set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
+        set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',[],'yticklabels',[],'Ydir','reverse'); xtickangle(75);
+        changePosition(gca,[0.0 0 -0.05 0]);
+        set(gca,'Ydir','normal');
+        box on
+        colormap jet
     end
-%     plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 150.5],'w','linewidth',0.1); 
-%     plot([0 150.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
-    set(gca,'Ydir','normal');ytickangle(15);
-    box on
-    changePosition(gca,[0.0 0 0.0 0]);
-    hc = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.07 0.05 0.07 0.05]);
-    colormap jet
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean_%d.pdf',ntrials,sh),600);
-    
-    figdim = 1;
-    hf = get_figure(6,[5 2 figdim+0.1 figdim]);
-    im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
-    format_axes(gca);
-    set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
-    set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',[],'yticklabels',[],'Ydir','reverse'); xtickangle(75);
-    changePosition(gca,[0.0 0 -0.05 0]);
-    set(gca,'Ydir','normal');
-    box on
-    colormap jet
-    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_sem_%d.pdf',ntrials,sh),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_%d_sem_%d.pdf',ntrials,sh),600);
    %%
    ff = makeFigureRowsCols(107,[10 3 6.95 2.5],'RowsCols',[2 3],'spaceRowsCols',[0.2 -0.02],'rightUpShifts',[0.15 0.13],'widthHeightAdjustment',[-10 -200]);
     set(gcf,'color','w');     ylims = [0 1];
@@ -78,7 +80,7 @@ while 1
     
     hms1 = {100-mCI,mUni1,mUni2};
     for hi = 1:length(hms1)
-        mOI1 = hms1{hi}; mOI1(mask1==1) = 0; %Di = pdist(mOI1,@naneucdist);
+        mOI1 = hms1{hi}; mOI1(mask1==1) = 0; Di = squareform(mOI1,'tovector');%pdist(mOI1,@naneucdist);
         tree = linkage(mOI1,'average'); [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');    leafOrder = optimalleaforder(tree,Di);
         hf = figure(100000000); %     leafOrder1 = leafOrder([1:3 10:12 4:9]);
     %     leafOrder1 = circshift(leafOrder,3);

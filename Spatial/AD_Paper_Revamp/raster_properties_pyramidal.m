@@ -21,6 +21,7 @@ while 1
     pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 %     pop_var_name = {'nan_zMI'};
     sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
+    cell_types = {'C1','C2','C3','C4'};
     
     params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
     varT = 13;%:length(params)
