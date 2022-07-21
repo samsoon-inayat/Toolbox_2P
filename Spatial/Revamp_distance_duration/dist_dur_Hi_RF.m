@@ -35,7 +35,7 @@ break;
 end
 %% separate populations based on dist and time
 while 1
-    sel_pop_C = cell_list_op(props_C,pop_var_name);
+%     sel_pop_C = cell_list_op(props_C,pop_var_name);
 
     dist_based_trials = sel_pop_C(:,awithinD(:,1) == 1 & awithinD(:,2) == 1);
     dist_based_itrials = sel_pop_C(:,awithinD(:,1) == 2 & awithinD(:,2) == 1);
@@ -60,7 +60,7 @@ while 1
             end
         end
     end
-    
+    %%
     ntrials = 50; 
     si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
@@ -81,11 +81,31 @@ while 1
         end
     end
     varC = mean_var_C;
-    
+    %%
+    varC = find_percent(all_types_cat);
     [within,dvn,xlabels,awithinD1] = make_within_table({'TI','DT','Cond'},[2,3,3]);
     dataT = make_between_table({varC},dvn);
     ra = RMA(dataT,within,{0.05,{'hsd'}});
     ra.ranova
+    
+    %%
+    alpha = 0.05/3;
+    for cni = 1:3
+        varC1 = varC(:,awithinD1(:,3) == cni);
+        [within,dvn,xlabels] = make_within_table({'TI','DT'},[2,3]);
+        dataT = make_between_table({varC1},dvn);
+        ra_cond{cni} = RMA(dataT,within,{alpha,{'hsd'}});
+        ra_cond{cni}.ranova
+    end
+    %%
+    alpha = 0.05/2;
+    for ti = 1:2
+        varC1 = varC(:,awithinD1(:,1) == ti);
+        [within,dvn,xlabels] = make_within_table({'DT','Cond'},[3,3]);
+        dataT = make_between_table({varC1},dvn);
+        ra_ti{ti} = RMA(dataT,within,{alpha,{'hsd'}});
+        ra_ti{ti}.ranova
+    end
     %%
     break;
 end
