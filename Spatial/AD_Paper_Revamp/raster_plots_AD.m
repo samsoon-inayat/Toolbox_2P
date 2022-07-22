@@ -1,17 +1,17 @@
 an = 4; cn = 1
-plotRasters_simplest(Rs_C{an,cn})
+plotRasters_simplest(Rs_C{an,cn},find(sel_pop_C{an,cn}))
 
 %%
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 5 1.25],'RowsCols',[1 5],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+ff = makeFigureRowsCols(108,[10 3 5 1.5],'RowsCols',[1 5],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.02 0.16],'widthHeightAdjustment',[10 -500]);
 MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
-stp = 0.3*magfac; widths = ([1.3 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.51)*magfac; gap = 0.16*magfac;
+stp = 0.3*magfac; widths = ([1.3 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.61)*magfac; gap = 0.25*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 
 an = 4; cn = 1;
 R = Rs_C{an,cn};
-cellN = [322 233 306 313 255];
-cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
+cellN = [68 33 255 88 181];
+cbar_p_shift = [0.01 0.09 -0.05 -0.3];
 for cc = 1:5
     c = cellN(cc);
     thisRaster = R.sp_rasters(:,:,c);
@@ -21,25 +21,40 @@ for cc = 1:5
     M = max(thisRaster(:));
     xdata = [0 75 150]; ydata = [1 10];
     imagesc(xdata,ydata,thisRaster,[m M]);
+    hold on;
     set(gca,'Ydir','normal');
-%     mSig = nanmean(thisRaster);
-%     m = round(min(mSig),1);
-%     M = round(max(mSig),1);
-%     hold on;
-%     plot(10*mSig/M,'w');
-    box off;
     if cc > 1
             set(gca,'ytick',[]);
     else
         ylabel('Trial #');
     end
-    
     xlabel('Distance (cm)'); 
     format_axes_b(gca)
-    colormap jet;
-    textstr = sprintf('%d',c);
-    ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]); set(ht,'Fontsize',7);
-    mM = min(thisRaster(:)); MM = max(thisRaster(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
+    colormap parula;
+    box off;
+    
+    %****** color bar
+    mM = round(min(thisRaster(:)),1); MM = round(max(thisRaster(:)),1);
+    [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.1 0.11 0.09 0.16]);
+    
+    %******* make new axes and plot mean and gaussian fitting
+    pos = get(ax,'Position'); ha = axes; set(ha,'units','inches');set(ha,'Position',pos);
+    changePosition(ha,[0 pos(4)+0.05 0 -0.5]);
+    
+    xs = linspace(0,150,50);
+    mSig = nanmean(thisRaster);
+    plot(xs,mSig,'b');hold on;
+    fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(c,1:3),R.gauss_fit_on_mean.gauss1Formula);
+    plot(xs,fitplot,'linewidth',0.5,'color','m');
+    box off;
+    ylim([0 round(max(mSig),1)])
+    set(ha,'xtick',[],'ytick',round(max(mSig),1));
+    format_axes_b(gca);
+    textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
+    ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
+    if cc == 1
+        ylabel('FR (AU)');
+    end
 end
 
 save_pdf(ff.hf,mData.pdf_folder,'rasters.pdf',600);
