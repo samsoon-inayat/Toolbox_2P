@@ -20,10 +20,10 @@ while 1
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
     
-   ff = makeFigureRowsCols(107,[10 3 6.95 2.5],'RowsCols',[1 2],'spaceRowsCols',[0.2 0.2],'rightUpShifts',[0.15 0.13],'widthHeightAdjustment',[-10 -300]);
+   ff = makeFigureRowsCols(107,[10 3 3.5 1.3],'RowsCols',[1 2],'spaceRowsCols',[0.2 0.2],'rightUpShifts',[0.12 0.13],'widthHeightAdjustment',[-10 -300]);
     set(gcf,'color','w');     ylims = [0 1];
-    stp = 0.3; widths = [2 2 2 2 0.4 0.4]-0.2; gap = 1.75; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
-    gap1 = 0.4; widths1 = 0.75;
+    stp = 0.2; widths = 0.5*([2 2 2 2 0.4 0.4]-0.2); gap = 0.5*1.75; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    gap1 = 0.22; widths1 = 0.5*0.75; height1 = widths1 - 0.05;
     
     mats = {mCI,mUni}; semmats = {semCI,semUni};
     titles = {'Conjunction','Complementation'};
@@ -56,14 +56,14 @@ while 1
         format_axes_b(gca);
         [hc,hca] = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.07 0.05 0.07 0.05]);
         colormap jet
-        htit = title('Mean'); changePosition(htit,[0 0.05 0]); set(htit,'FontSize',6);
-        ht = set_axes_top_text_no_line(gcf,gca,titles{ii},[0 0.01 0 0]);set(ht,'FontSize',9,'FontWeight','Bold')
+        htit = title('Mean'); changePosition(htit,[0 0.07 0]); set(htit,'FontSize',6);
+        ht = set_axes_top_text_no_line(gcf,gca,titles{ii},[0 0.07 0 0]);set(ht,'FontSize',6,'FontWeight','Bold')
 
 %         save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean_%d.pdf',ntrials,sh),600);
         hai = ff.h_axes(1,ii);
         pos = get(hai,'Position'); units = get(hai,'Units');
         ha = axes('Position',pos,'Visible','on','Units',units); poshca =  get(hca,'Position');
-        set(ha,'Position',[hai.Position(1)+hai.Position(3)+gap1 (hai.Position(2)+hai.Position(4)-widths1) widths1 widths1]);
+        set(ha,'Position',[hai.Position(1)+hai.Position(3)+gap1 (hai.Position(2)+hai.Position(4)-height1) widths1 height1]);
 %         axes(ff.h_axes(1,jj(ii)+ii+1));
         im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
         set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
@@ -72,17 +72,17 @@ while 1
         set(gca,'xtick',1:length(txl),'ytick',1:length(txl),'xticklabels',[],'yticklabels',[],'Ydir','reverse'); xtickangle(75);
         changePosition(gca,[0.0 0 -0.05 0]);
         set(gca,'Ydir','normal');
-        htit = title('SEM'); changePosition(htit,[0 0.05 0]); set(htit,'FontSize',6);
+        htit = title('SEM'); changePosition(htit,[0 -0.2 0]); set(htit,'FontSize',6);
         box on
         format_axes_b(gca);
         colormap jet
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_%d_%d.pdf',ntrials,sh),600);
    %%
-   ff = makeFigureRowsCols(107,[10 3 6.95 2.5],'RowsCols',[2 3],'spaceRowsCols',[0.2 -0.02],'rightUpShifts',[0.15 0.13],'widthHeightAdjustment',[-10 -200]);
+   ff = makeFigureRowsCols(107,[10 3 3.5 1.5],'RowsCols',[2 3],'spaceRowsCols',[0.3 -0.02],'rightUpShifts',[1 0.13],'widthHeightAdjustment',[-10 -300]);
     set(gcf,'color','w');     ylims = [0 1];
     stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.07; gap = 0.13; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
-    stp = 0.3; widths = [2 2 2 0.4 0.4 0.4]+0.07; gap = 0.17; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.35; widths = 0.45*([2 2 2 0.4 0.4 0.4]+0.07); gap = 0.15; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     %
     hms = {mCI,mUni1,mUni2};
     ahc_col_th = 0.7;
@@ -103,8 +103,8 @@ while 1
             hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
         end
     %     xlim([xlims(1)+0.5 xlims(2)-0.5]);
-        changePosition(gca,[0.0 0.0 0.07 0.05]); text(0.5,ylims(2)+0,sprintf('CC = %.2f',c),'FontSize',6);
-    %     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
+%         changePosition(gca,[0.0 0.0 0.07 0.05]); text(0.5,ylims(2)+0,sprintf('CC = %.2f',c),'FontSize',6);
+        hcct = set_axes_top_text_no_line(ff.hf,gca,sprintf('CC = %.2f',c),[0 -0.05 0 0]); set(hcct,'FontWeight','Normal')
     end
     
     for hi = 1:length(hms)
@@ -122,7 +122,8 @@ while 1
             hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
         end
     %     xlim([xlims(1)+0.5 xlims(2)-0.5]);
-        changePosition(gca,[0.0 0.0 0.07 0.05]); text(0.5,ylims(2)+0,sprintf('CC = %.2f',c),'FontSize',6);
+%         changePosition(gca,[0.0 0.0 0.07 0.05]); text(0.5,ylims(2)+0,sprintf('CC = %.2f',c),'FontSize',6);
+        hcct = set_axes_top_text_no_line(ff.hf,gca,sprintf('CC = %.2f',c),[0 0.05 0 0]); set(hcct,'FontWeight','Normal')
     %     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster_%d.pdf',sh),600);
