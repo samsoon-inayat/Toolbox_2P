@@ -12,15 +12,15 @@ pni = 7;
 [all_gFR_A,all_gV_A,good_zMI_A,good_zMI_MFR_A,good_zMI_MFR_Gauss_A,nan_zMI_A,all_A] = return_values_props(oA,sic,pni);
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 while 1
-    ntrials = 50; 
+    ntrials = 80; 
     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
     props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
     pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
     pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
-%     pop_var_name = {'all'};
-%     pop_var_name = {'nan_zMI'};
+    pop_var_name = {'all'};
+    pop_var_name = {'vals','good_FR'};
     sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
     cell_types = {'C1','C2','C3','C4'};
     
