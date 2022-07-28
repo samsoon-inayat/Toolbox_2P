@@ -58,8 +58,8 @@ while 1
             f_TR = (fft2(thisRaster));
             af_TR = abs(f_TR);
             mf_TR = angle(f_TR);
-            haa = findHaFD(af_TR,1:size(thisRaster,1));
-            ham = findHaFD(mf_TR,1:size(thisRaster,1));
+%             haa = findHaFD(af_TR,1:size(thisRaster,1));
+%             ham = findHaFD(mf_TR,1:size(thisRaster,1));
 %             htR = R.fractal_dim.HaFD(cn);
 %             [~,CRR] = findPopulationVectorPlot(thisRaster',1:size(thisRaster,2));
 %             haCRR = findHaFD(CRR,1:size(CRR,1));

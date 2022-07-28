@@ -5,27 +5,27 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
 event_type = {'1-D','2-D','3-D','4-D','1-T','2-T','3-T','4-T'};
 sic = {[C1_t_D];[C2_t_D];[C3_t_D];[C4_t_D];[C1_i_T];[C2_i_T];[C3_i_T];[C4_i_T]};
-event_type = {'1-D','2-D','3-D','4-D'};
-sic = {[C1_t_D];[C2_t_D];[C3_t_D];[C4_t_D]};
+event_type = {'1-T','2-T','3-T','4-T'};
+sic = {[C1_i_T];[C2_i_T];[C3_i_T];[C4_i_T]};
 pni = 7;
 [all_gFR_C,all_gV_C,good_zMI_C,good_zMI_MFR_C,good_zMI_MFR_Gauss_C,nan_zMI_C,all_C] = return_values_props(oC,sic,pni);
 [all_gFR_A,all_gV_A,good_zMI_A,good_zMI_MFR_A,good_zMI_MFR_Gauss_A,nan_zMI_A,all_A] = return_values_props(oA,sic,pni);
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 while 1
     ntrials = 50;
-    si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+%     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
+    si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
     props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
     pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
     pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
-    pop_var_name = {'all'};
-    pop_var_name = {'vals','good_zMI'};
+%     pop_var_name = {'all'};
+    pop_var_name = {'vals'};
     sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
     cell_types = {'C1','C2','C3','C4'};
     
     params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
-    varT = 3;%:length(params)
+    varT = 4;%:length(params)
     for pii = varT
         if pii == 1
             mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); mean_var_A = exec_fun_on_cell_mat(sel_pop_A,'percent'); 
@@ -88,7 +88,7 @@ while 1
         case 4
             MY = 0.7; ysp = 3; mY = 0; titletxt = 'Goodness-of-Fit (1D Gauss)'; ylabeltxt = {'R-squared'};
         case 3
-            MY = 7; ysp = 0.3; mY = 0; titletxt = ''; ylabeltxt = {'Mutual Information','(z-score)'};
+            MY = 0.75; ysp = 0.3; mY = 0; titletxt = 'Mutual Information'; ylabeltxt = {'(z-score)'};
         case 5
             MY = 60; ysp = 4; mY = 0; titletxt = ''; ylabeltxt = {'Percent of Silent','Neurons'};% for all cells (vals) MY = 70
         case 7
@@ -105,7 +105,7 @@ while 1
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','bonferroni'},[1.5 1 1]);
         xdata = make_xdata([4 4],[1 1.5]);   
 %         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
-%     h(h==1) = 0;
+    h(h==1) = 0;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
@@ -128,23 +128,23 @@ while 1
     ff = makeFigureRowsCols(107,[10 5 2 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
     switch varT
         case 1 % responsive cells 
-            MY = 20; ysp = 2; mY = 0; titletxt = ''; ylabeltxt = {'Percent of Spatially','Tuned Cells'}; % for all cells (vals) MY = 80
+            MY = 75; ysp = 5; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'}; % for all cells (vals) MY = 80
         case 2
             MY = 70; ysp = 4; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};% for all cells (vals) MY = 70
         case 3
             MY = 0.1; ysp = 0.01; mY = -0.15; titletxt = 'Mutual Information'; ylabeltxt = {'Mutual Information','Z-Score'};
             MY = 3.5; ysp = 0.3; mY = 0; titletxt = 'Mutual Information'; ylabeltxt = {'(z-score)'};
         case 9
-            MY = 20; ysp = 1; mY = -0.15; titletxt = 'Tuning Width'; ylabeltxt = {'cm'};
+            MY = 20; ysp = 1; mY = -0.15; titletxt = ''; ylabeltxt = {'Place','Field Width (cm)'};
     end
-    stp = 0.225*magfac; widths = ([1.2 0.6 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+    stp = 0.23*magfac; widths = ([1.18 0.6 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.07*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
     tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     axes(ff.h_axes(1,1));
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','bonferroni'},[1.5 1 1]);
         xdata = make_xdata([4 4],[1 1.5]);   
     %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
-%     h(h==1) = 0;
+    h(h==1) = 0;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
