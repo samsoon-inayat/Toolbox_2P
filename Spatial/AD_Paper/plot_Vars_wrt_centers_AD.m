@@ -40,7 +40,7 @@ number_of_bins = 3;
 [all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn},sel_pop_C);
 [all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn},sel_pop_A);
 
-if 1
+if 0
     all_valsC = all_vals_NC;
     all_valsA = all_vals_NA;
     vn = 5;
@@ -83,10 +83,10 @@ n = 0;
 %% average distributions w.r.t centers for the two groups
 while 1
     magfac = mData.magfac;
-    ff = makeFigureRowsCols(108,[10 3 6.9 1.1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -550]);
+    ff = makeFigureRowsCols(108,[10 3 6.9 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
     switch vn
         case 5 % responsive cells 
-            MY = 90; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+            MY = 85; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
         case 2
             MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
         case 4
@@ -94,7 +94,7 @@ while 1
 %         case 5
 %             MY = 90; ysp = 4; mY = 0; titletxt = ''; ylabeltxt = {'Percent of Silent','Neurons'};% for all cells (vals) MY = 70
     end
-    stp = 0.3;magfac; widths = ([4 1.8 1.3 1.3 1.3 0.5 0.5 0.5]+0.18)*magfac; gap = 0.16*magfac;
+    stp = 0.3;magfac; widths = ([4.1 1.9 1.3 1.3 1.3 0.5 0.5 0.5]+0.18)*magfac; gap = 0.1*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond_Bin','bonferroni'},[1.5 1 1]);
@@ -115,8 +115,8 @@ while 1
     put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
 %     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
-    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4','C1','C2','C3','C4'},{[0 0.02]});
-    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Control','APP'},{[-0.1 0]});
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4','C1','C2','C3','C4'},{[-0.01 0.02]});
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Control','APP'},{[-0.12 0]});
     
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond_by_Bin','hsd'},[1.5 1 1]);
     xdata = make_xdata([3 3 3 3],[1 1.5]);   
@@ -132,8 +132,8 @@ while 1
     put_axes_labels(gca,{[],[0 0 0]},{[],[0 0 0]});
 %     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
 %     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'});
-    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'},{[0 0.05]});
-    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Pooled'},{[-0.11 0]});
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'},{[-0.02 0.01]});
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Pooled'},{[-0.14 0]});
 
     
     save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_variables{vn},number_of_bins),600);
