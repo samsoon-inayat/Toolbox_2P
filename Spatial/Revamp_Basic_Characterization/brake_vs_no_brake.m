@@ -895,7 +895,7 @@ while 1
     for cii = 1:length(cell_sel);
         cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
     end
-    pni = 1;
+    pni = 7;
     all_exc_inh = [];
     for ii = 1:length(sic)
         sit = sic{ii};

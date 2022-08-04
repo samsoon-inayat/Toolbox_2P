@@ -34,6 +34,7 @@ Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\P
 % Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
 mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
 mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
+mData.magfac = 1;
 disp('Done');
 %%
 if 0
