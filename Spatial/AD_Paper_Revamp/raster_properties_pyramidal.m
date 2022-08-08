@@ -25,7 +25,7 @@ while 1
     cell_types = {'C1','C2','C3','C4'};
     
     params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
-    varT = 1;%:length(params)
+    varT = 3;%:length(params)
     for pii = varT
         if pii == 1
             mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); mean_var_A = exec_fun_on_cell_mat(sel_pop_A,'percent'); 
