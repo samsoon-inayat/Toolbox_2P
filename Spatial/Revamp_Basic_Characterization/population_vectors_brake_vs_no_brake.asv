@@ -1,15 +1,13 @@
 %% population vector and correlation sensory for time rasters
 
-    ff = makeFigureRowsCols(108,[6 3 2 2.9],'RowsCols',[3 2],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -85]);
+    ff = makeFigureRowsCols(108,[6 3 3.35 2.5],'RowsCols',[3 2],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -85]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
-    stp = 0.15*magfac; widths = ([0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]+0.2)*magfac; gap = 0.19*magfac;
+    stp = 0.15*magfac; widths = ([0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]+0.11)*magfac; gap = 0.19*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
-    an = 1;G = 'C';
-    si = [Ab_On Ar_On];
-    si = [Lb ArL_L];
-    si = [M_On M_Off];
+    an = 4;o = oC; G = 'C';
+    si = [Ab_On ];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
@@ -24,7 +22,7 @@
         m_aCRc_ii(ii) = min(min(aCRc{ii}));        M_aCRc_ii(ii) = max(max(aCRc{ii}));
     end
     m_mRR = min(m_mRR_ii); M_mRR = max(M_mRR_ii); m_CRc = min(m_CRc_ii); M_CRc = max(M_CRc_ii); m_aCRc = min(m_aCRc_ii); M_aCRc = max(M_aCRc_ii);
-    cbar_p_shift = [-0.007 0.09 -0.03 -0.3];
+    cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
     for ii = 1:size(ff.h_axes,2)
         tR = Rs{an,ii};
         tmRR = mRR{an,ii};
@@ -44,18 +42,9 @@
         ylims = ylim;
         textstr = sprintf('%d',floor(ylims(2)));
         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.13 0 0]);
-        if ii == 1
-%           textstr = sprintf('Brake (B)'); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
-          textstr = sprintf('Motion Onset (MOn)'); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0.05 0]);
-        else
-%           textstr = sprintf('No-Brake (NB)'); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
-          textstr = sprintf('Motion Offset (MOff)'); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0.05 0]);
-        end
-        format_axes(gca);
-        mM = min(tmRR(:)); MM = max(tmRR(:)); 
-        if ii == 1
-        [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
-        end
+        textstr = sprintf('Condition %d (C%d)',ii,ii); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
+        format_axes_b(gca);
+        mM = min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
         
         axes(ff.h_axes(2,ii));
         tmRR = CRc{an,ii};
@@ -78,10 +67,8 @@
         ylims = ylim;
         textstr = sprintf('%d',ceil(ylims(2)));
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
-        format_axes(gca);
-        if ii == 1
+        format_axes_b(gca);
         mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
-        end
         
         axes(ff.h_axes(3,ii));
         tmRR = aCRc{ii};
@@ -100,10 +87,8 @@
         ylims = ylim;
         textstr = sprintf('%d',ceil(ylims(2)));
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
-        format_axes(gca);
-        if ii == 1
+        format_axes_b(gca);
         mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
-        end
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%c.pdf',ntrials,G),600);
 

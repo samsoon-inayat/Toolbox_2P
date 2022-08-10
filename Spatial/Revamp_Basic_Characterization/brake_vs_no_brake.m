@@ -47,7 +47,7 @@ while 1
         [552 567 165 103]};
     an = 1; cn = 3;
     ntrials = 50;
-    asi = [Lb ArL_L Ab_On Abs_Off Ar_On Ar_Off Ar_D Ar_T];
+    asi = [Lb ArL_L Ab_On Abs_Off Ar_On Ar_Off ];
     si = asi(cn);
 %     si = [Lb];
     Rs = o.Rs(:,si);
@@ -151,9 +151,9 @@ while 1
         [439 42 215 353];
         [11 54 116 165];
         [328 565 390 406]};
-    an = 1; cn = 8;
+    an = 1; cn = 3;
     ntrials = 50;
-    asi = [Lb ArL_L Ab_On Abs_Off Ar_On Ar_Off Ar_D Ar_T];
+    asi = [Lb ArL_L Ab_On Abs_Off Ar_On Ar_Off];
     si = asi(cn);
 %     si = [Lb];
     Rs = o.Rs(:,si);
