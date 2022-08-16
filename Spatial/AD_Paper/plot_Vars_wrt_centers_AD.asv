@@ -37,11 +37,11 @@ all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs','P'};
 
 vn = 1;
 
-number_of_bins = 3;
+number_of_bins = 4;
 [all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn},sel_pop_C);
 [all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn},sel_pop_A);
 
-if 0
+if 1
     all_valsC = all_vals_NC;
     all_valsA = all_vals_NA;
     vn = 5;
@@ -63,7 +63,7 @@ if number_of_bins > 1
     
     [within,dvn,xlabels] = make_within_table({'Cond','Bin'},[4,number_of_bins]);
     dataT = make_between_table({all_valsC;all_valsA},dvn);
-    ra = RMA(dataT,within,{0.05,{'hsd','bonferroni'}});
+    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
     ra.ranova
 else
     temp_tcolors = repmat(colors(1:4),2,1);
@@ -83,10 +83,10 @@ n = 0;
 %% average distributions w.r.t centers for the two groups
 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[5 5 6.9 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
+ff = makeFigureRowsCols(108,[5 5 6.9 1.25],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
 switch vn
     case 5 % responsive cells 
-        MY = 85; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+        MY = 150; ysp = 10; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
     case 2
         MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
     case 4
@@ -107,7 +107,7 @@ colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
 axes(ff.h_axes(1,1))
 [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.3);
 make_bars_hollow(hbs(13:end));
 set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes_b(gca); xticks = xdata; 
@@ -124,7 +124,7 @@ xdata = make_xdata([3 3 3 3],[1 1.5]);
 tcolors = [temp_tcolors temp_tcolors];
 axes(ff.h_axes(1,2))
 [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 make_bars_hollow(hbs(13:end));
 set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes_b(gca); xticks = xdata; 
@@ -211,8 +211,7 @@ set(ff.h_axes(1,3),'Visible','Off');
 % 
 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_variables{vn},number_of_bins),600);
-
-%% average distributions w.r.t centers for the two groups all bars and main effect of bins
+%% average distributions w.r.t centers for the two groups all bars and main effect of bins and Cond
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[5 5 6.9 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
 switch vn
@@ -249,7 +248,7 @@ ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]); set(ht,'FontWei
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4','C1','C2','C3','C4'},{[-0.01 0.02]});
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Control','APP'},{[-0.12 0]});
 
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','hsd'},[1.5 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','bonferroni'},[1.5 1 1]);
 xdata = make_xdata([3],[1 1.5]);   
 %     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
 tcolors = mData.dcolors;
@@ -266,24 +265,24 @@ put_axes_labels(gca,{[],[0 0 0]},{[],[0 0 0]});
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'},{[-0.02 0.01]});
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'},{[0 0]});
 
-set(ff.h_axes(1,3),'Visible','Off');
-% [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
-% xdata = make_xdata([4],[1 1.5]);   
-% %     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
-% tcolors = colors;
-% axes(ff.h_axes(1,3))
-% [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-%     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-%     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.01);
-% make_bars_hollow(hbs(13:end));
-% set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes_b(gca); xticks = xdata; 
-% set(gca,'xtick',xticks,'xticklabels',{'C1','C2','C3','C4'});
-% put_axes_labels(gca,{[],[0 0 0]},{[],[0 0 0]});
-% %     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
-% %     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'});
-% % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'},{[-0.02 0.01]});
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'},{[0 0]});
-% 
+% set(ff.h_axes(1,3),'Visible','Off');
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','bonferroni'},[1.5 1 1]);
+xdata = make_xdata([4],[1 1.5]);   
+%     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
+tcolors = colors;
+axes(ff.h_axes(1,3))
+[hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+make_bars_hollow(hbs(13:end));
+set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes_b(gca); xticks = xdata; 
+set(gca,'xtick',xticks,'xticklabels',{'C1','C2','C3','C4'});
+put_axes_labels(gca,{[],[0 0 0]},{[],[0 0 0]});
+%     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
+%     set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4'},{[-0.02 0.01]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'},{[0 0]});
+
 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_variables{vn},number_of_bins),600);
 

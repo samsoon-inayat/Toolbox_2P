@@ -27,7 +27,7 @@ props_C = get_props_Rs(RsC,ntrials); props_A = get_props_Rs(RsA,ntrials);
 pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'vals','good_zMI'};
-sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
+sel_pop_CA = cell_list_op(props_C,pop_var_name); sel_pop_AA = cell_list_op(props_A,pop_var_name);
 colors = mData.colors;
 n = 0;
 %% Run the Statistical test
@@ -38,8 +38,8 @@ all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs','P'};
 vn = 1;
 
 number_of_bins = 3;
-[all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn},sel_pop_C);
-[all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn},sel_pop_A);
+[all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn},sel_pop_CA);
+[all_valsA,all_vals_NA] = get_values(RsA,number_of_bins,all_variables{vn},sel_pop_AA);
 
 if 1
     all_valsC = all_vals_NC;
@@ -83,10 +83,10 @@ n = 0;
 %% average distributions w.r.t centers for the two groups
 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[5 5 6.9 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
+ff = makeFigureRowsCols(108,[5 5 6.9 1.25],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
 switch vn
     case 5 % responsive cells 
-        MY = 85; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+        MY = 150; ysp = 10; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
     case 2
         MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
     case 4
@@ -107,7 +107,7 @@ colors = mData.colors;
 %     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
 axes(ff.h_axes(1,1))
 [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.3);
 make_bars_hollow(hbs(13:end));
 set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes_b(gca); xticks = xdata; 
@@ -124,7 +124,7 @@ xdata = make_xdata([3 3 3 3],[1 1.5]);
 tcolors = [temp_tcolors temp_tcolors];
 axes(ff.h_axes(1,2))
 [hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 make_bars_hollow(hbs(13:end));
 set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes_b(gca); xticks = xdata; 
@@ -142,13 +142,13 @@ magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[5 5 6.9 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
 switch vn
     case 5 % responsive cells 
-        MY = 80; ysp = 7; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+        MY = 5; ysp = 7; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
     case 2
         MY = 70; ysp = 3; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};
     case 4
         MY = 0.7; ysp = 3; mY = 0; titletxt = ''; ylabeltxt = {'R-squared'};
     case 1
-        MY = 10; ysp = 0.5; mY = 0; titletxt = 'Mutual Information'; ylabeltxt = {'Z-Score'};% for all cells (vals) MY = 70
+        MY = 1.5; ysp = 0.5; mY = 0; titletxt = 'Mutual Information'; ylabeltxt = {'Z-Score'};% for all cells (vals) MY = 70
 end
 stp = 0.3;magfac; widths = ([4.1 0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.18)*magfac; gap = 0.1*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
@@ -174,7 +174,7 @@ ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]); set(ht,'FontWei
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4','C1','C2','C3','C4'},{[-0.01 0.02]});
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Control','APP'},{[-0.12 0]});
 
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','hsd'},[1.5 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','bonferroni'},[1.5 1 1]);
 xdata = make_xdata([3],[1 1.5]);   
 %     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
 tcolors = mData.dcolors;
@@ -286,53 +286,4 @@ set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'},{[0 0]});
 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_variables{vn},number_of_bins),600);
 
-function [all_vals,all_vals_N] = get_values(Rs,number_of_bins,var,sel_pop)
-
-all_vals = [];
-all_vals_N = [];
-
-for cc = 1:size(Rs,2)
-    these_vals = NaN(size(Rs,1),number_of_bins);
-    these_vals_N = NaN(size(Rs,1),number_of_bins);
-    for rr = 1:size(Rs,1)
-        if cc == 4
-            n = 0;
-        end
-        R = Rs{rr,cc};
-        mbl = mean(R.beltLength);
-        binSize = mbl/number_of_bins;
-        resp = sel_pop{rr,cc};
-        [rs,as,bs,cs] = get_gauss_fit_parameters(R.gauss_fit_on_mean,R.bin_width);
-        if strcmp(var,'all_zMIs')
-            vals = R.info_metrics.ShannonMI_Zsh';
-        end
-        if strcmp(var,'all_fFR')
-            vals = as';
-%             resp(vals>5000) = 0;
-        end
-        if strcmp(var,'all_fwidths')
-            vals = cs';
-        end
-        if strcmp(var,'all_frs')
-            vals = rs';
-        end
-        vals = vals(resp);
-        if number_of_bins > 1
-        bs = bs(resp);
-        bins = 0:binSize:mbl;
-        [N,E,Bi] = histcounts(bs,bins);
-        mean_sv_Vals = [];
-        for bb = 1:length(N)
-            mean_sv_Vals(bb) = nanmean(vals(Bi == bb));
-        end
-        these_vals(rr,:) = mean_sv_Vals;
-        these_vals_N(rr,:) = 100*(N/sum(N));
-        else
-            these_vals(rr,:) = nanmean(vals);
-            these_vals_N(rr,:) = 100*length(vals)/length(resp);
-        end
-    end
-    all_vals = [all_vals these_vals];
-    all_vals_N = [all_vals_N these_vals_N];
-end
 

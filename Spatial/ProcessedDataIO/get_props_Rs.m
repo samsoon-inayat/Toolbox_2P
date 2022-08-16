@@ -94,9 +94,9 @@ for rr = 1:size(Rs,1)
         temp_z = cell_list_op(o.good_FR(rr,cc),cell_list_op(o.good_zMI(rr,cc),[],'not'),'and');
         o.good_FR_and_notzMI{rr,cc} = temp_z{1};
         
-        o.centers{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
-        o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
-        o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
+%         o.centers{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
+%         o.PWs{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
+%         o.MFR{rr,cc}(~o.good_Gauss{rr,cc}) = NaN;
         o.trial_scores{rr,cc} = R.resp.trial_scores';
         if isfield(R.resp,'valsA')
             o.valsA{rr,cc} = R.resp.valsA;

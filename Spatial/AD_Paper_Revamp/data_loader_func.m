@@ -27,4 +27,3 @@ while 1
     break
 end
 n = 0;
-mData.magfac = 3;

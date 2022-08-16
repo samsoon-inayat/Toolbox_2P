@@ -13,7 +13,7 @@ while 1
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 
     an = 4; cn = 3;R = Rs_C{an,cn};cellN = [68 33 255 88 181];cellN = [212 288 275 299];
-    % an = 2; cn = 3;R = Rs_A{an,cn};cellN = [222 199 5 73];
+    an = 2; cn = 3;R = Rs_A{an,cn};cellN = [222 199 5 73];
     cbar_p_shift = [0.01 0.09 -0.05 -0.3];
     for cc = 1:4
         c = cellN(cc);

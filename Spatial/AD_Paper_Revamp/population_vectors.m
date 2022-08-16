@@ -13,7 +13,7 @@
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
     good_FR = cell_list_op(props1,{'good_zMI','good_Gauss'});
-    good_FR = cell_list_op(props1,{'vals','good_FR'});
+    good_FR = cell_list_op(props1,{'vals','good_zMI','good_Gauss'});
 %     good_FR = cell_list_op(props1,{'vals'});
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
