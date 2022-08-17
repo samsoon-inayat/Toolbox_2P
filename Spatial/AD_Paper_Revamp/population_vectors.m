@@ -12,8 +12,7 @@
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    good_FR = cell_list_op(props1,{'good_zMI','good_Gauss'});
-    good_FR = cell_list_op(props1,{'vals','good_zMI','good_Gauss'});
+    good_FR = cell_list_op(props1,{'vals','good_zMI'});
 %     good_FR = cell_list_op(props1,{'vals'});
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
@@ -26,6 +25,7 @@
     cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
     for ii = 1:size(ff.h_axes,2)
         tR = Rs{an,ii};
+        NCells = size(tR.sp_rasters,3);
         tmRR = mRR{an,ii};
         axes(ff.h_axes(1,ii));
         if ii < 5
@@ -41,8 +41,12 @@
         set(gca,'YTick',[],'XTick',[]);
 
         ylims = ylim;
-        textstr = sprintf('%d',floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.13 0 0]);
-        textstr = sprintf('Condition %d (C%d)',ii,ii); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
+        if ii == 1
+            textstr = sprintf('%d/%d',floor(ylims(2)),NCells); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.125 0 0]);
+        else
+            textstr = sprintf('%d',floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.125 0 0]);
+        end
+        textstr = sprintf('Config. %d (C%d)',ii,ii); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
         format_axes_b(gca);
         mM = min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
         
@@ -110,7 +114,7 @@
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
     an = 2;o = oA; G = 'A';  
-    an = 4;o = oC; G = 'C';
+%     an = 4;o = oC; G = 'C';
 %     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
@@ -118,7 +122,6 @@
     props1 = get_props_Rs(Rs,ntrials);
     good_FR = cell_list_op(props1,{'good_zMI','good_Gauss'});
     good_FR = cell_list_op(props1,{'vals','good_zMI'});
-    good_FR = cell_list_op(props1,{'vals'});
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
     for ii = 1:size(mRR,2)
@@ -130,6 +133,7 @@
     cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
     for ii = 1:size(ff.h_axes,2)
         tR = Rs{an,ii};
+        NCells = size(tR.sp_rasters,3);
         tmRR = mRR{an,ii};
         axes(ff.h_axes(1,ii));
         if ii < 5
@@ -145,9 +149,13 @@
         set(gca,'YTick',[],'XTick',[]);
 
         ylims = ylim;
-        textstr = sprintf('%d',floor(ylims(2)));
-        set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.13 0 0]);
-        textstr = sprintf('Condition %d (C%d)',ii,ii); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
+        if ii == 1
+            textstr = sprintf('%d/%d',floor(ylims(2)),NCells); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.125 0 0]);
+        else
+            textstr = sprintf('%d',floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.125 0 0]);
+        end
+%         textstr = sprintf('%d',floor(ylims(2)));set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.13 0 0]);
+        textstr = sprintf('Config. %d (C%d)',ii,ii); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
         format_axes_b(gca);
         mM = min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
         

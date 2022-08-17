@@ -214,7 +214,7 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_vari
 %% average distributions w.r.t centers for the two groups all bars and main effect of bins and Cond
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[5 5 6.9 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.39],'widthHeightAdjustment',[10 -520]);
-switch vn
+switch varT
     case 5 % responsive cells 
         MY = 80; ysp = 7; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
     case 2
