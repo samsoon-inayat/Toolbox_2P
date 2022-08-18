@@ -481,8 +481,8 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graph'),600);
 
 tic
 ntrials = 50;
-si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+% si = [C1_t_D C2_t_D C3_t_D C4_t_D];
+si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 pop_var_name = {'vals'};
@@ -503,15 +503,15 @@ selC = remap_C; selA = remap_A;
 typeCorr = {'Spatial Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
 FF = {'SP','PV','RR'};
 ysp = [0.05 0.05 0.1];
-ci = 1;
+ci = 2;
 [within,dvn,xlabels] = make_within_table({'Cond'},3);
 switch ci
     case 1
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_SP_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_SP_corr_diag);
-        MY = 0.25; ysp = 0.05; mY = 0; titletxt = 'Spatial Correlation'; ylabeltxt = {'A.U.'};
+        MY = 0.12; ysp = 0.01; mY = 0; titletxt = 'Temporal Correlation'; ylabeltxt = {'A.U.'};
     case 2
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_PV_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_PV_corr_diag);
-        MY = 0.1; ysp = 0.05; mY = 0; titletxt = 'PV Correlation'; ylabeltxt = {'A.U.'};
+        MY = 0.2; ysp = 0.05; mY = 0; titletxt = 'PV Correlation'; ylabeltxt = {'A.U.'};
     case 3
         var_C = arrayfun(@(x) nanmean(x{1}),selC.adj_RR_SP);var_A = arrayfun(@(x) nanmean(x{1}),selA.adj_RR_SP);
         MY = 0.51; ysp = 0.01; mY = 0; titletxt = 'Rate Remap'; ylabeltxt = {'A.U.'};
@@ -519,6 +519,33 @@ end
 dataT = make_between_table({var_C;var_A},dvn);
 ra = RMA(dataT,within);
 ra.ranova
+% just cond
+ff = makeFigureRowsCols(108,[10 5 2.25 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+stp = 0.3*magfac; widths = ([0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.)*magfac; gap = 0.1*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+
+
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
+xdata = make_xdata([3],[1 1.5]);   
+%         [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+colors = mData.dcolors;
+axes(ff.h_axes(1,1));
+tcolors = mData.dcolors(1:3); tcolors = repmat(tcolors,1,2);
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[mY MY],'FontSize',6,'FontWeight','Normal','TickDir','out');
+xticks = xdata(1:end)+0; xticklabels = {'C12','C23','C34','C12','C23','C34'};
+set(gca,'xtick',xticks,'xticklabels',xticklabels);
+make_bars_hollow(hbs(4:end));
+xtickangle(30);
+put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'});
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]); set(ht,'FontWeight','Bold');
+format_axes_b(gca);
+
+save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_correlation',FF{ci}),600);
 %%
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','hsd'},[1.5 1 1]);
 xdata = make_xdata([3 3],[1 1.5]);   
@@ -543,7 +570,7 @@ format_axes_b(gca);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_correlation',FF{ci}),600);
 %%
 %%%% Correlations across conditions
-ff = makeFigureRowsCols(108,[10 3 2.25 1.25],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+ff = makeFigureRowsCols(108,[10 7 2.25 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
 stp = 0.3*magfac; widths = ([1.2 0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.)*magfac; gap = 0.1*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
@@ -556,7 +583,7 @@ colors = mData.dcolors;
 axes(ff.h_axes(1,1));
 tcolors = mData.dcolors(1:3); tcolors = repmat(tcolors,1,2);
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',ysp(ci),'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[mY MY],'FontSize',6,'FontWeight','Normal','TickDir','out');
 xticks = xdata(1:end)+0; xticklabels = {'C12','C23','C34','C12','C23','C34'};
@@ -578,7 +605,7 @@ colors = mData.dcolors;
 axes(ff.h_axes(1,2));
 tcolors = mData.dcolors(1:3); tcolors = repmat(tcolors,1,2);
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',ysp(ci),'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
 set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[mY MY],'FontSize',6,'FontWeight','Normal','TickDir','out');
 xticks = xdata(1:end)+0; xticklabels = {'C12','C23','C34','C12','C23','C34'};

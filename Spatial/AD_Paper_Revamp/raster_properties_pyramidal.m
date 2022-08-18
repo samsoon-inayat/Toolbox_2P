@@ -478,7 +478,7 @@ toc
 selC = remap_C; selA = remap_A;
 typeCorr = {'Spatial Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
 FF = {'SP','PV','RR'};
-ci = 2;
+ci = 3;
 [within,dvn,xlabels] = make_within_table({'Cond'},3);
 switch ci
     case 1
