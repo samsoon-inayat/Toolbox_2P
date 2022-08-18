@@ -12,7 +12,7 @@ if isempty(ccs)
 end
 
 ptc = ptc(ccs,:);
-ptc = normalizeSignal(ptc,2);
+% ptc = normalizeSignal(ptc,2);
 if ~exist('cellNums','var')
     [~,peakPos] = max(ptc,[],2);
     [~,cellNums] = sort(peakPos);

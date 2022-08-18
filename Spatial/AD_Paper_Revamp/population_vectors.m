@@ -107,17 +107,17 @@
 %% population vector and correlation sensory for time rasters
 
     magfac = mData.magfac;
-    ff = makeFigureRowsCols(108,[6 3 3.35 2.5],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -85]);
+    ff = makeFigureRowsCols(108,[8 3 3.35 2.5],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -85]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
     stp = 0.15*magfac; widths = ([0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]+0.11)*magfac; gap = 0.19*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
     an = 2;o = oA; G = 'A';  
-%     an = 4;o = oC; G = 'C';
+    an = 4;o = oC; G = 'C';
 %     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    Rs = o.Rs(:,si);mR = o.mR1(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
     good_FR = cell_list_op(props1,{'good_zMI','good_Gauss'});

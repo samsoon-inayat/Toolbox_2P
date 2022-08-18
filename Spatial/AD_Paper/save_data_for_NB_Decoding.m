@@ -1,8 +1,8 @@
 function save_data_for_NB_Decoding
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C1'); 
-ei_A = evalin('base','ei10_A1'); 
+ei_C = evalin('base','ei10_C'); 
+ei_A = evalin('base','ei10_A'); 
 
 % [out.aXs_C,out.aYs_C,out.aYs1_C] = getXYs(ei_C,selAnimals_C);
 % [out.aXs_A,out.aYs_A,out.aYs1_A] = getXYs(ei_A,selAnimals_A);
@@ -31,7 +31,7 @@ RsA = find_responsive_rasters(RsA,1:10);
 % view_population_vector(Rs,mRs,400);
 [resp_fractionA,resp_valsA,OIA,mean_OIA] = get_responsive_fraction(RsA);
 
-pcs = 2;
+pcs = 0;
 
 for an = 1:5
     for cn = 1:4

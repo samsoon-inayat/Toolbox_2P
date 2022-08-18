@@ -2,6 +2,7 @@ function trial_to_trial_Analysis_brake_vs_nobrake
 %%
 G = 'C'; o = oC;
 G = 'A'; o = oA;
+n = 0;
 %% find spatial trial to trial correlation
 while 1
     trialNums = [1:10];

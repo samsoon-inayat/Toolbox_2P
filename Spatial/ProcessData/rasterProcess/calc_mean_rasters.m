@@ -1,4 +1,4 @@
-function [mRs,Rs] = calc_mean_rasters(Rs,trialsi)
+function [mRs,Rs,mRs1] = calc_mean_rasters(Rs,trialsi)
 if ~iscell(trialsi)
     for ii = 1:size(Rs,1)
         for cc = 1:size(Rs,2)
@@ -17,10 +17,20 @@ if ~iscell(trialsi)
 %                 temp1 = (squeeze(nanmean(Rs{ii,cc}.fromFrames.sp_rasters(trials,:,:),1)))';
                 temp1 = (squeeze(nanmean(Rs{ii,cc}.sp_rasters1(trials,:,:),1)))';
                 mRsi{ii,cc} = normalizeSignal(temp1,2);
+                mRsi1{ii,cc} = temp1;
+                % I want to check if normalization makes a difference in
+                % later calculations of population vector correlation and
+                % remapping calculcations
+%                 temp2 = mRsi{ii,cc};
+%                 [ctemp1,~] = corr(temp1); % find correlation
+%                 [ctemp2,~] = corr(temp2); % find correlation
+%                 figure(1000);clf;subplot 211;imagesc(temp1);colorbar;subplot 212;imagesc(temp2);colorbar;
+%                 figure(1000);clf;subplot 211;imagesc(ctemp1);colorbar;subplot 212;imagesc(ctemp2);colorbar;
             end
             if strcmp(R.marker_name,'airD') || strcmp(R.marker_name,'beltD') || strcmp(R.marker_name,'airID')
                 temp1 = (squeeze(nanmean(Rs{ii,cc}.sp_rasters1(trials,:,:),1)))';
                 mRsi{ii,cc} = normalizeSignal(temp1,2);
+                mRsi1{ii,cc} = temp1;
             end
             if length(trials) < 5
                 Rs{ii,cc} = reduce_R(Rs{ii,cc},trials);
@@ -28,9 +38,10 @@ if ~iscell(trialsi)
         end
     end
     mRs = mRsi;
+    mRs1 = mRsi1;
 else
     for tt = 1:length(trialsi)
-        mRs{tt} = calc_mean_rasters(Rs,trialsi{tt});
+        [mRs{tt},~,mRs1{tt}] = calc_mean_rasters(Rs,trialsi{tt});
     end
 end
 
