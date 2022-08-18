@@ -484,7 +484,7 @@ ci = 3;
 switch ci
     case 1
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_SP_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_SP_corr_diag);
-        MY = 0.35; ysp = 0.04; mY = 0; titletxt = 'Spatial Corr.'; ylabeltxt = {'A.U.'};
+        MY = 0.25; ysp = 0.04; mY = 0; titletxt = 'Spatial Corr.'; ylabeltxt = {'A.U.'};
     case 2
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_PV_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_PV_corr_diag);
         MY = 0.25; ysp = 0.05; mY = 0; titletxt = 'PV Corr.'; ylabeltxt = {'A.U.'};
@@ -524,15 +524,6 @@ stp = 0.3*magfac; widths = ([0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.)*magfac; gap = 0.1*
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
 
-
-switch ci
-    case 1
-        MY = 0.35; ysp = 0.04; mY = 0; titletxt = 'Spatial Corr.'; ylabeltxt = {'A.U.'};
-    case 2
-        MY = 0.25; ysp = 0.05; mY = 0; titletxt = 'PV Corr.'; ylabeltxt = {'A.U.'};
-    case 3
-        MY = 0.95; ysp = 0.01; mY = 0.8; titletxt = 'Rate Remap'; ylabeltxt = {'A.U.'};
-end
 
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
 xdata = make_xdata([3],[1 1.5]);   

@@ -40,7 +40,7 @@ end
 
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 4;%:length(params)
+varT = 3;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); mean_var_A = exec_fun_on_cell_mat(sel_pop_A,'percent');
@@ -68,6 +68,7 @@ else
     ra = RMA(dataT,within,{0.05,{'bonferroni'}});
     ra.ranova
 end
+print_for_manuscript(ra)
 
 %% one graph main effect
 magfac = mData.magfac;
@@ -487,40 +488,35 @@ Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si)
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 pop_var_name = {'vals'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
-remap_C = find_population_vector_corr_remap(Rs_C,mRs_C,sel_pop_C);
-remap_A = find_population_vector_corr_remap(Rs_A,mRs_A,sel_pop_A);
+r_sel_pop_C = cell_list_op(sel_pop_C,[],'or',1);  r_sel_pop_A = cell_list_op(sel_pop_A,[],'or',1);
+remap_C = find_population_vector_corr_remap(Rs_C,mRs_C,r_sel_pop_C);
+remap_A = find_population_vector_corr_remap(Rs_A,mRs_A,r_sel_pop_A);
 toc
 %%
 %%%%% Correlations across conditions
 magfac = mData.magfac
-ff = makeFigureRowsCols(108,[10 3 1.75 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
-MY = 1; ysp = 0.1; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
-stp = 0.4*magfac; widths = ([1.2 1.3 1.3 1.3 1.3 0.5 0.5 0.5]+0.1)*magfac; gap = 0.16*magfac;
-adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
-
 selC = remap_C; selA = remap_A;
 typeCorr = {'Spatial Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
 FF = {'SP','PV','RR'};
 ysp = [0.05 0.05 0.1];
-ci = 2;
+ci = 3;
 [within,dvn,xlabels] = make_within_table({'Cond'},3);
 switch ci
     case 1
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_SP_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_SP_corr_diag);
-        MY = 0.12; ysp = 0.01; mY = 0; titletxt = 'Temporal Correlation'; ylabeltxt = {'A.U.'};
+        MY = 0.25; ysp = 0.03; mY = 0; titletxt = 'Temporal Correlation'; ylabeltxt = {'A.U.'};
     case 2
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_PV_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_PV_corr_diag);
-        MY = 0.2; ysp = 0.05; mY = 0; titletxt = 'PV Correlation'; ylabeltxt = {'A.U.'};
+        MY = 0.25; ysp = 0.02; mY = 0; titletxt = 'PV Correlation'; ylabeltxt = {'A.U.'};
     case 3
         var_C = arrayfun(@(x) nanmean(x{1}),selC.adj_RR_SP);var_A = arrayfun(@(x) nanmean(x{1}),selA.adj_RR_SP);
-        MY = 0.51; ysp = 0.01; mY = 0; titletxt = 'Rate Remap'; ylabeltxt = {'A.U.'};
+        MY = 1; ysp = 0.01; mY = 0.85; titletxt = 'Rate Remap'; ylabeltxt = {'A.U.'};
 end
 dataT = make_between_table({var_C;var_A},dvn);
 ra = RMA(dataT,within);
 ra.ranova
 % just cond
-ff = makeFigureRowsCols(108,[10 5 2.25 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+ff = makeFigureRowsCols(108,[10 5 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],'widthHeightAdjustment',[10 -450]);
 stp = 0.3*magfac; widths = ([0.5 1.3 1.3 1.3 0.5 0.5 0.5]+0.)*magfac; gap = 0.1*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
@@ -582,9 +578,9 @@ xdata = make_xdata([3 3],[1 1.5]);
 colors = mData.dcolors;
 axes(ff.h_axes(1,1));
 tcolors = mData.dcolors(1:3); tcolors = repmat(tcolors,1,2);
-[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.1);
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',-0.13);
 set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[mY MY],'FontSize',6,'FontWeight','Normal','TickDir','out');
 xticks = xdata(1:end)+0; xticklabels = {'C12','C23','C34','C12','C23','C34'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
@@ -597,7 +593,9 @@ put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Control','APP'});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 0 0 0]); set(ht,'FontWeight','Bold');
 format_axes_b(gca);
+save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_correlation',FF{ci}),600);
 
+%%
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);
 xdata = make_xdata([3],[1 1.5]);   
 %         [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
