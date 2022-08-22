@@ -14,7 +14,7 @@ sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A
 figdim = 3;
 % hf = get_figure(5,[9 2 figdim figdim]);
 
-all_cells_list = sel_pop_C; event_type = {'C1-D','C2-D','C3-D','C4-D','C1-T','C2-T','C3-T','C4-T'};
+all_cells_list = sel_pop_A; event_type = {'C1-D','C2-D','C3-D','C4-D','C1-T','C2-T','C3-T','C4-T'};
 %     all_cells_list = all_gV_A;
 sh = 0;
 good_FR = circshift(all_cells_list,sh,2);
