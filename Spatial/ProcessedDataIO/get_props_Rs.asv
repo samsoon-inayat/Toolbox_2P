@@ -18,12 +18,7 @@ for rr = 1:size(Rs,1)
             continue;
         end
         nbins = size(R.sp_rasters,2);
-        if 50-size(R.speed,2) < 0
-          tempS = nanmean(R.speed);
-          o.speed{rr,cc} = tempS(1:50);
-        else
-          o.speed{rr,cc} = padarray(nanmean(R.speed),[0 50-size(R.speed,2)],'post');
-        end
+        o.speed_trial{rr,cc} = padarray(nanmean(R.speed),50-size(R.speed,2));
         temp_mean = squeeze(nanmean(R.sp_rasters1,[1]));
         o.mean_FR{rr,cc} = (nanmean(temp_mean,1))';
         o.max_FR{rr,cc} = (max(temp_mean,[],1))';
