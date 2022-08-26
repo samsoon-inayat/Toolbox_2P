@@ -154,7 +154,7 @@ plotRasters_simplest(R,find(sel_pop{an}))
 an = 4;
 si = M_On ;
 Rs = o.Rs(:,si);
-props1 = get_props_Rs(Rs,ntrials);
+props1 = get_props_Rs(Rs,50);
 R = Rs{an};
 sel_pop = cell_list_op(props1,{'exc'});
 plotRasters_simplest(R,find(sel_pop{an}))
@@ -178,7 +178,7 @@ plotRasters_simplest(R,find(sel_pop{an}))
         axes(ax); xlabel(ax,'Time (s)');
         m = min(thisRaster(:));
         M = max(thisRaster(:));
-        xdata = [-2 0 2]; ydata = [1 10];
+        xdata = [-1.5 0 1.5]; ydata = [1 10];
         imagesc(xdata,ydata,thisRaster,[m M]);
         hold on;
         set(gca,'Ydir','normal');
@@ -192,6 +192,7 @@ plotRasters_simplest(R,find(sel_pop{an}))
         colormap parula;
         box off;
         ylims = ylim;
+        set(gca,'xtick',[-1.5 0 1.5],'xticklabel',{'-1.5','0','1.5'});
         plot([0 0],ylims,'m');
         %****** color bar
         mM = round(min(thisRaster(:)),1); MM = round(max(thisRaster(:)),1);
@@ -201,7 +202,7 @@ plotRasters_simplest(R,find(sel_pop{an}))
         pos = get(ax,'Position'); ha = axes; set(ha,'units','inches');set(ha,'Position',pos);
         changePosition(ha,[0 pos(4)+0.05 0 -0.35]);
 
-        xs = linspace(-2,2,size(thisRaster,2));
+        xs = linspace(-1.5,1.5,size(thisRaster,2));
         mSig = nanmean(thisRaster);
         plot(xs,mSig,'b');hold on;
         fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(c,1:3),R.gauss_fit_on_mean.gauss1Formula);
@@ -222,6 +223,7 @@ plotRasters_simplest(R,find(sel_pop{an}))
         else
           textstr = sprintf('Inhibited (Inh)'); ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Normal');
         end
+        xlim([min(xs) max(xs)]);
     end
 
     save_pdf(ff.hf,mData.pdf_folder,'rasters.pdf',600);
