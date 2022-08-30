@@ -11,18 +11,10 @@ mSize = 5;
 tcolors = {'k','r'};
 %% 12months speed
 if 1
-[num,strings,raw] = xlsread(filename,1,'A1:I24');
-% data = array2table(num);
-% data.Properties.VariableNames = strings;
-% data.Group = categorical(data.Group);
-% within = [1:8]';
-% within = array2table(within);
-% within.Properties.VariableNames = {'Day'};
-% within.Day = categorical(within.Day);
-% ra = repeatedMeasuresAnova(data,within,0.05);
-
-[within,dvn,xlabels] = make_within_table({'Day'},[8]);
-dataT = make_between_table({num(num(:,1)==1,2:end);num(num(:,1)==2,2:end)},dvn);
+[num12,strings12,raw12] = xlsread(filename,1,'A1:I24');
+[num18,strings18,raw18] = xlsread(filename,5,'A1:I24');
+[within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
+dataT = make_between_table({[num12(num12(:,1)==1,2:end) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,2)==1,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 n = 0;
@@ -45,13 +37,13 @@ n = 0;
 %     xtickangle(30);
     changePosition(gca,[0.08 0.13 -0.01 -0.1])
     put_axes_labels(gca,{'Days',[0 0 0]},{{'Average','Speed (m/s)'},[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_anova_speed.pdf',600);
+    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_anova_speed_18.pdf',600);
 return;
 end
 
 %% 12months latency
 if 0
-[num,strings,raw] = xlsread(filename,2,'A1:I24');
+[num,strings,raw] = xlsread(filename,6,'A1:I24');
 data = array2table(num);
 data.Properties.VariableNames = strings;
 data.Group = categorical(data.Group);
@@ -80,20 +72,21 @@ n = 0;
 %     xtickangle(30);
     changePosition(gca,[0.08 0.13 -0.01 -0.1])
     put_axes_labels(gca,{'Days',[0 0 0]},{{'Average','Latency (s)'},[0 0 0]});
-    putLegend(gca,{'Control','APP',[5 1 4 50]});
-    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_anova_latency.pdf',600);
+    legs = {'Control','APP',[6 0.5 60 8]};
+%     putLegend(gca,legs,'colors',tcolors,'sigR',{[],'anova',[],5});
+    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_anova_latency_18.pdf',600);
 return;
 end
 
 %% 12months probe time
 if 0
-[num,strings,raw] = xlsread(filename,3,'A1:B24');
-[h,p,stat] = ttest2(num(1:11,2),num(12:23,2))
-% [hc,pc,statc] = ttest(num(1:11,2),25)
-% [ha,pa,stata] = ttest(num(12:23,2),25)
+[num,strings,raw] = xlsread(filename,7,'A1:B24');
+[h,p,stat] = ttest2(num(1:9,2),num(10:21,2))
+% [hc,pc,statc] = ttest(num(1:9,2),25)
+% [ha,pa,stata] = ttest(num(10:21,2),25)
 n = 0;
-[mC,semC] = findMeanAndStandardError(num(1:11,2));
-[mA,semA] = findMeanAndStandardError(num(12:23,2));
+[mC,semC] = findMeanAndStandardError(num(1:9,2));
+[mA,semA] = findMeanAndStandardError(num(10:21,2));
     mVar = [mC mA];
     semVar = [semC semA];
     combs = [1 2]; 
@@ -101,8 +94,8 @@ n = 0;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
     hold on;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.5,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
+        'ySpacing',10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.5,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     plot([0 3],[25 25],':','color','k')
     set(gca,'xlim',[0.25 2.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     xticks = [1 2]; xticklabels = {'Control','APP'}; 
@@ -118,17 +111,17 @@ n = 0;
     changePosition(gca,[0.03 0.13 -0.2 -0.1])
     put_axes_labels(gca,{[],[0 0 0]},{{'Probe Time (%)'},[0 0 0]});
     
-    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_probe_time.pdf',600);
+    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_probe_time_18.pdf',600);
 return;
 end
 
 %% 12months platform proximity
 if 1
-[num,strings,raw] = xlsread(filename,4,'A1:B24');
-[h,p,stat] = ttest2(num(1:11,2),num(12:23,2))
+[num,strings,raw] = xlsread(filename,8,'A1:B24');
+[h,p,stat] = ttest2(num(1:9,2),num(10:21,2))
 n = 0;
-[mC,semC] = findMeanAndStandardError(num(1:11,2));
-[mA,semA] = findMeanAndStandardError(num(12:23,2));
+[mC,semC] = findMeanAndStandardError(num(1:9,2));
+[mA,semA] = findMeanAndStandardError(num(10:21,2));
     mVar = [mC mA];
     semVar = [semC semA];
     combs = [1 2]; 
@@ -137,7 +130,7 @@ n = 0;
     hold on;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.001);
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     plot([0 3],[25 25],':','color','k')
     set(gca,'xlim',[0.25 2.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     xticks = [1 2]; xticklabels = {'Control','APP'}; 
@@ -153,6 +146,6 @@ n = 0;
     changePosition(gca,[0.14 0.13 -0.2 -0.1])
     put_axes_labels(gca,{[],[0 0 0]},{{'Platform','Proximity (m)'},[0 0 0]});
     
-    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_platform_proximity.pdf',600);
+    save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_platform_proximity_18.pdf',600);
 return;
 end

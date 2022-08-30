@@ -18,6 +18,7 @@ date_list_control = {'2019-02-14';'2019-06-19';'2019-06-19';'2019-06-21';'2019-0
 [dS_C1,T_C1] = get_exp_info_from_folder(data_folder2,processed_data_folder,animal_list_control,date_list_control);
 T_C = [T_C;T_C1];
 T_C = reduce_table(T_C,animal_list_control,date_list_control);
+T_C(1:2:end,:) = [];
 disp('Done');
 %% APP data folder reading
 animal_list_APP = {'183227';'183228';'183329';'001567';'001569'};
@@ -57,7 +58,7 @@ disp('Done');
 %% Load Primary Data
 ei10_C = getData_py_2(T_C);
 ei10_A = getData_py_2(T_A);
-%% Load secondary processed data (raster plots and MI etc.,)
+% Load secondary processed data (raster plots and MI etc.,)
 dcfilename = 'define_contexts.m';
 nowr = [0 0 0];
 owr = [1 1 1];

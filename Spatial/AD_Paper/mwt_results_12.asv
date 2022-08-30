@@ -12,14 +12,15 @@ tcolors = {'k','r'};
 %% 12months speed
 if 1
 [num,strings,raw] = xlsread(filename,1,'A1:I24');
-% data = array2table(num);
-% data.Properties.VariableNames = strings;
-% data.Group = categorical(data.Group);
-% within = [1:8]';
-% within = array2table(within);
-% within.Properties.VariableNames = {'Day'};
-% within.Day = categorical(within.Day);
-% ra = repeatedMeasuresAnova(data,within,0.05);
+data = array2table(num);
+data.Properties.VariableNames = strings;
+data.Group = categorical(data.Group);
+within = [1:8]';
+within = array2table(within);
+within.Properties.VariableNames = {'Day'};
+within.Day = categorical(within.Day);
+
+ra = repeatedMeasuresAnova(data,within,0.05);
 
 [within,dvn,xlabels] = make_within_table({'Day'},[8]);
 dataT = make_between_table({num(num(:,1)==1,2:end);num(num(:,1)==2,2:end)},dvn);
