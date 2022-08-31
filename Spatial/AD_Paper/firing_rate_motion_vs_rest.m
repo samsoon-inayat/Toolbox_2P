@@ -1,8 +1,8 @@
 function firing_rate_motion_vs_rest
 
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei_C = evalin('base','ei10_C2'); 
-ei_A = evalin('base','ei10_A2'); 
+ei_C = evalin('base','ei10_C'); 
+ei_A = evalin('base','ei10_A'); 
 
 selContexts = [1 2 3 4];
 rasterNames = {'airD','airD','airD','airD'};
@@ -13,7 +13,7 @@ typeP = 'Population';
 thr = -1;
 %%
 fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
-if 0
+if 1
     out_C = get_spike_rate(ei_C,thr);
     out_A = get_spike_rate(ei_A,thr);
     save(fileName,'out_C','out_A','thr');
