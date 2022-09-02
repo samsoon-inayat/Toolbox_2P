@@ -10,7 +10,7 @@ line_styles = {'-',':','-.','-',':','-.'};
 mSize = 5;
 tcolors = {'k','r'};
 %% 12months speed
-if 1
+if 0
 [num,strings,raw] = xlsread(filename,1,'A1:I24');
 % data = array2table(num);
 % data.Properties.VariableNames = strings;
@@ -50,16 +50,20 @@ return;
 end
 
 %% 12months latency
-if 0
+if 1
 [num,strings,raw] = xlsread(filename,2,'A1:I24');
-data = array2table(num);
-data.Properties.VariableNames = strings;
-data.Group = categorical(data.Group);
-within = [1:8]';
-within = array2table(within);
-within.Properties.VariableNames = {'Day'};
-within.Day = categorical(within.Day);
-ra = repeatedMeasuresAnova(data,within,0.05);
+% data = array2table(num);
+% data.Properties.VariableNames = strings;
+% data.Group = categorical(data.Group);
+% within = [1:8]';
+% within = array2table(within);
+% within.Properties.VariableNames = {'Day'};
+% within.Day = categorical(within.Day);
+% ra = repeatedMeasuresAnova(data,within,0.05);
+[within,dvn,xlabels] = make_within_table({'Day'},[8]);
+dataT = make_between_table({num(num(:,1)==1,2:end);num(num(:,1)==2,2:end)},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
 n = 0;
 
 
