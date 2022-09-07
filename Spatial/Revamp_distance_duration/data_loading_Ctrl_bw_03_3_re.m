@@ -14,11 +14,11 @@ clear all
 % processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabRe';
 % processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabReD';
 
-data_folder1 = 'Y:\Data';%'\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
-data_folder2 = 'Y:\Data';%'\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
-processed_data_folder{1} = 'Y:\PData\Processed_Data_15';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
-processed_data_folder{2} = 'Y:\PData\Processed_Data_15\MatlabRe';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
-processed_data_folder{3} = 'Y:\PData\Processed_Data_15\MatlabReD';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
+data_folder1 = 'S:\Data';%'\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
+data_folder2 = 'S:\Data';%'\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
+processed_data_folder{1} = 'S:\PData\Processed_Data_15';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
+processed_data_folder{2} = 'S:\PData\Processed_Data_15\MatlabRe';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
+processed_data_folder{3} = 'S:\PData\Processed_Data_15\MatlabReD';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
 
 animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
 date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
