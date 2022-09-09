@@ -124,10 +124,10 @@ end
  end
  %% TI cond
 while 1
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT','bonferroni'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT','hsd'},[1.5 1 1]);
     xdata = make_xdata([2 2 2],[1 1.5]);
     hf = get_figure(5,[8 7 1.5 1]);
-    tcolors = repmat(mData.colors(1:2),1,3);
+    tcolors = repmat(mData.colors(1:3),1,2);
     MmVar = max(mVar);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',MmVar/3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...

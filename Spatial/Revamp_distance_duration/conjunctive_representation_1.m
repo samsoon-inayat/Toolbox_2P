@@ -13,7 +13,7 @@ while 1
                     'airOffsets22T','airOffsets22T','airOffsets22T','beltD','beltD','beltD','beltT','beltT','beltT'};
     rasterNamesTxt = {'Lb-T','ArL-L-T','Lb*-T','Ab-T','Ab*-T','Ar-t-D','Ar-i-D','ArL-t-D','ArL-i-D','Ar*-t-D','Ar*-i-D','Ar-t-T','Ar-i-T','ArL-t-T','ArL-i-T','Ar*-t-T','Ar*-i-T','MOn-T','MOff-T','Ab-t-T','Ab-i-T','Ab*-t-T','Ab*-i-T',...
         '2-AOn','7-AOn','2-AOff','7-AOff',...
-        '3-AOn','4-AOn','5-AOn','3-AOff','4-AOff','5-AOff'};
+        '3-AOn','4-AOn','5-AOn','3-AOff','4-AOff','5-AOff','3-B-D','4-B-D','5-B-D','3-B-T','4-B-T','5-B-T'};
     xlabelsSeq = {'Lb','ArL-L','Lb*','Ab','Ab*','Ar-t','ArL-t','Ar*-t','Ar-i','ArL-i','Ar*-i'};
 
     o = get_data(ei,selContexts,rasterNames);
@@ -25,7 +25,8 @@ while 1
     Ar_i_D = 7; Ar_i_T = 13; ArL_i_D = 9; ArL_i_T = 15; Ars_i_D = 11; Ars_i_T = 17;
     MOn_T = 18; MOff_T = 19;
     Ab_On = 24; Abs_On = 25; Ab_Off = 26; Abs_Off = 27; 
-    Ar_On = 28; ArL_On = 29; Ars_On = 30; Ar_Off = 31; ArL_Off = 32; Ars_Off = 33;
+    Ar_On = 28; ArL_On = 29; Ars_On = 30; Ar_Off = 31; ArL_Off = 32; Ars_Off = 33; Ar_B_D = 34; ArL_B_D = 35; Ars_B_D = 36;
+    Ar_B_T = 37; ArL_B_T = 38; Ars_B_T = 39;
     
 %     [speedRs,resp_speed,speed_percent,resp_speedAcc] = load_speed_response(ei);
 %     all_xl{ii+1} = 'sp';

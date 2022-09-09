@@ -9,11 +9,11 @@ while 1
     Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
     props_C = get_props_Rs(Rs_C,ntrials);
     pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
-    pop_var_name = {'vals'};
+    pop_var_name = {'vals','good_zMI'};
     sel_pop_C = cell_list_op(props_C,pop_var_name); 
     
     params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
-    varT = 1;%:length(params)
+    varT = 2;%:length(params)
     for pii = varT
         if pii == 1
             mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
@@ -29,7 +29,7 @@ while 1
     varC = mean_var_C;
     [within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Cond'},[3,2,3]);
     dataT = make_between_table({varC},dvn);
-    ra = RMA(dataT,within,{0.05,{'hsd'}});
+    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
     ra.ranova
 break;
 end
