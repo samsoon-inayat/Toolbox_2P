@@ -2,10 +2,10 @@
 %% population vector and correlation Distance 
 while 1
     titles = {'Dur','Dis','Dur','Dis'};
-    an = 4; cn = 2;
+    an = 4; cn = 1;
     cell_vars = {dur_cells_T dis_cells_T dur_cells_I dis_cells_I};
     si = [Ars_t_T Ars_t_D Ars_i_T Ars_i_D];
-%     si = [Ars_t_D Ars_t_D Ars_i_T Ars_i_T];
+    si = [Ars_t_D Ars_t_D Ars_i_T Ars_i_T];
     Rs = o.Rs(:,si); mR = o.mR(:,si);
     props1 = get_props_Rs(Rs,50);
     cii = 4; cellvar = cell_vars{cii};

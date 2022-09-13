@@ -73,7 +73,8 @@ while 1
                 imagesc(thisRaster);
 %                 continue;
             end
-            colormap_ig;
+%             colormap_ig;
+            colormap jet;
             colorbar;hold on;
 %             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
             try

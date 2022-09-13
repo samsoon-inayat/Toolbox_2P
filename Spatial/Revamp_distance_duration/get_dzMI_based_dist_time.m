@@ -1,10 +1,8 @@
-function [dzMIt,dzMIi] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi)
+function [dzMIt] = get_dzMI_based_dist_time(RsDt,RsTt)
 
 ntrials = 50;
-propsD = get_props_Rs(RsDt,ntrials);
-propsT = get_props_Rs(RsTi,ntrials);
-dzMIt = do_the_math_get(RsDt,RsTt,propsD,ntrials);
-dzMIi = do_the_math_get(RsDi,RsTi,propsT,ntrials);
+dzMIt = do_the_math_get(RsDt,RsTt,[],ntrials);
+
 
 
 
