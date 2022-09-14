@@ -3,9 +3,9 @@ function raster_plots
 
 %% rasters
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 6.9 2],'RowsCols',[2 6],'spaceRowsCols',[0.3 0.02],'rightUpShifts',[0.02 0.15],'widthHeightAdjustment',[10 -325]);
+ff = makeFigureRowsCols(108,[10 3 6.9 2.25],'RowsCols',[2 6],'spaceRowsCols',[0.25 -0.02],'rightUpShifts',[0.02 0.15],'widthHeightAdjustment',[10 -350]);
 MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
-stp = 0.35*magfac; widths = (ones(1,18)*0.77)*magfac; gap = 0.3*magfac;
+stp = 0.37*magfac; widths = (ones(1,18)*0.75)*magfac; gap = 0.2*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 pos_msig = [0 pos(4)+0.05 0 -0.15];
 
@@ -20,7 +20,7 @@ sel_pop_C = cell_list_op(props_C,pop_var_name);
 
 an = 4; Rs = Rs_C(an,:);
 sel_pop = sel_pop_C(an,5); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
-cellN = find(sel_pop_or); ci = 12;
+cellN = find(sel_pop_or); ci = 6;
 cbar_p_shift = [0.01 0.09 -0.05 -0.2];
 for cc = 1:6
     c = cellN(ci);
@@ -94,8 +94,8 @@ pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); 
 
-Rs = Rs_C(an,:);
-% sel_pop = sel_pop_C(an,:); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
+an = 4; Rs = Rs_C(an,:);
+sel_pop = sel_pop_C(an,:); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
 % cellN = find(sel_pop_or);
 % cbar_p_shift = [0.01 0.09 -0.05 -0.3];
 for cc = 1:6
