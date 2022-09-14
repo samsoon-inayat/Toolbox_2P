@@ -10,7 +10,7 @@ pop_var_name = {'vals'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); 
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
-varT = 9;%:length(params)
+varT = 1;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
@@ -29,6 +29,14 @@ dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 
+%%
+an = 4;
+pop_var_name = {'all'};
+sel_pop_C = cell_list_op(props_C,pop_var_name); 
+var_C = get_vals(props_C.zMI,sel_pop_C);
+
+
+
 
 %%
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
@@ -36,6 +44,27 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 [dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
 
 %%
+sel_pop_C = [dzMI_FD.resp_T_g_D dzMI_FD.resp_D_g_T dzMI_FT.resp_T_g_D dzMI_FT.resp_D_g_T];
+
+params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
+varT = 3;%:length(params)
+for pii = varT
+    if pii == 1
+        mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
+    else
+        eval(sprintf('var_C = get_vals(props_C.%s,sel_pop_C);',params{pii})); 
+        if pii == 5 || pii == 6
+            mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
+        else
+            mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean'); 
+        end
+    end
+end
+varC = mean_var_C;
+[within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Cond'},[2,2,3]);
+dataT = make_between_table({varC},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
 
 
 

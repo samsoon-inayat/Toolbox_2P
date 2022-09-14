@@ -29,6 +29,21 @@ dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 
+%%
+an = 4;
+pop_var_name = {'all'};
+sel_pop_C = cell_list_op(props_C,pop_var_name); 
+var_C = get_vals(props_C.zMI,sel_pop_C);
+
+var_CM = [];
+for cc = 1:size(var_C,2)
+  var_CM = [var_CM var_C{an,cc}];
+end
+
+[within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Cond'},[2,2,3]);
+dataT = make_between_table({var_CM},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
 
 %%
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);

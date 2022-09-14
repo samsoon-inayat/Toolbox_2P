@@ -386,6 +386,9 @@ end
 p = NaN(size(rasters,3),length(fac));
 resp = logical(zeros(size(p)));
 pG = p;
+tvS = 1:size(rasters,2):numel(rasters(:,:,1));
+tvE = size(rasters,2):size(rasters,2):numel(rasters(:,:,1));
+matEventTimes = [tvS' tvE'];vecTime = 1:numel(rasters(:,:,1)); dblUseMaxDur = 49;
 for ni = 1:length(fac)
     group = groups{ni};
     for ii = 1:size(rasters,3)
@@ -394,6 +397,8 @@ for ni = 1:length(fac)
         if sum(isnan(thisRaster(:)))>0
             thisRaster = fillmissing(thisRaster,'linear',2,'EndValues','nearest');
         end
+        thisRasterL = reshape(thisRaster',1,numel(thisRaster));
+        [dblZetaP(ii),sZETA(ii)] = zetatstest(vecTime',thisRasterL',matEventTimes,45);%,intResampNum,intPlot,boolDirectQuantile,dblJitterSize);
         p(ii,ni) = anova1(thisRaster,group,'nodisplay');
 %         pG(ii,ni) = anova1(thisRasterG,group,'nodisplay');
     end
