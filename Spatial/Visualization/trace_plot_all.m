@@ -3,7 +3,7 @@ if ~exist('flag','var')
     flag = [1 1 0 1];
 end
 if ~exist('pd_rec','var')
-    pd_rec = evalin('base','ei{4}');
+    pd_rec = evalin('base','ei{3}');
 end
 pl = 1;
 try
@@ -179,7 +179,7 @@ end
 
 %%
 while 1
-    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.9 2.25],'color','w'); hold on;
+    hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 5.69 2.45],'color','w'); hold on;
     spSigAllN = normalizeSignal(signals,2);
     [maxVal,maxLoc] = max(spSigAllN,[],2);
     [sorted,locs] = sort(maxLoc);
@@ -243,7 +243,7 @@ while 1
     changePosition(ht,[0 12 0]);
     set(ht,'FontSize',6,'FontWeight','Normal');
 %     legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 111 0.1]};
-    legs = {'Light onset','Air onset','Air offset','Speed',[0.5 0.1 numcells+15 0.1]};
+    legs = {'Light onset','Air onset','Air offset','Speed',[2 0.1 numcells+11 0.1]};
     putLegendH(gca,legs,'colors',colors);
     hc = putColorBar(gca,[0.75 0.62 -0.8 -0.6],{'0',sprintf('>%.1f',maxSig)},6,'northoutside',[0.15 0.4 0.045 0.4]);
     colormap_ig

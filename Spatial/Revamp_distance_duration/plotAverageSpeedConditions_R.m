@@ -41,7 +41,7 @@ ra.ranova
 
 [xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Conds_by_TI','hsd'},[1 1 1]);
 colors = [mData.colors(1);mData.colors(1);mData.colors(2);mData.colors(2);mData.colors(3);mData.colors(3)];
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
+hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.65 1],'color','w');
 hold on;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
     'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
@@ -49,14 +49,20 @@ hold on;
 
 maxY = maxY + 8;
 set(gca,'xlim',[0.25 8.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-xticks = xdata; xticklabels = {'T','I'};
+xticks = [1.5 4.5 7.5]; xticklabels = {'C3','C4','C5'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 make_bars_hollow(hbs(2:2:end))
-xtickangle(45);
-changePosition(gca,[0.11 0.05 -0.15 -0.1]);
-put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Speed','(cm/sec)'},[0 0 0]});
+% xtickangle(45);
+changePosition(gca,[0.01 0.05 0 -0.1]);
+put_axes_labels(gca,{[],[0 0 0]},{{'cm/s'},[0 0 0]});
+maxY = maxY - 2;
+set_axes_top_text_no_line(gcf,gca,'Average Speed',[0.07 -0.03 0 0]);
+rectangle(gca,'Position',[0.75 maxY-4 1 3],'edgecolor','k','facecolor','k');
+text(1.95,maxY-2,'Air','FontSize',5);
+rectangle(gca,'Position',[4.5 maxY-4 1 3],'edgecolor','k');
+text(5.7,maxY-2,'No-Air','FontSize',5);
 format_axes(gca);
-legs = {'C3','C4','C5',[0.5 0.75 43 1]}; 
-putLegendH(gca,legs,mData.colors(1:3),'sigR',{[],'anova',[],6});
+% legs = {'C3','C4','C5',[0.5 0.75 43 1]}; 
+% putLegendH(gca,legs,mData.colors(1:3),'sigR',{[],'anova',[],6});
 save_pdf(hf,mData.pdf_folder,'AverageSpeedConditions_C',600);
 

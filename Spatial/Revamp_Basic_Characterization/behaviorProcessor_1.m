@@ -16,7 +16,7 @@ for rr = 1:size(ei1,1)
     end
 end
 mData = evalin('base','mData');
-colors = mData.colors;
+colors = mData.dcolors;
 
 selRows = [1:5]; selCols = [1:4];
 % for ii = 1:length(selRows)
@@ -225,19 +225,21 @@ data = [this_moas this_moasi];
 data1 = data(:,[1 5 2 6 3 7 4 8]);
 [within,dvn,xlabels] = make_within_table({'Day','TI'},[4 2]);
 dataT = make_between_table({data1},dvn);
-ra = RMA(dataT,within,{'tukey-kramer','hsd'});
+ra = RMA(dataT,within,{'bonferroni','hsd'});
 ra.ranova
 raO = repeatedMeasuresAnova(dataT,within);
 
-[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day_by_TI','hsd'},[1 1 1]);
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day_by_TI','bonferroni'},[1 1 1]);
 % 
 % mVar = ra.est_marginal_means.Mean;
 % semVar = ra.est_marginal_means.Formula_StdErr;
 % combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < 0.05;
 % xdata = [1 2 4 5 7 8 10 11]; maxY = 50;
 %%
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
 hold on;
+[xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day_by_TI','bonferroni'},[1 1 1]);
+
 tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{4};colors{4}};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',6,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
@@ -249,14 +251,14 @@ set(gca,'xlim',[0.25 11.75],'ylim',[0 maxY+7]);
 xticks = [1.5 4.5 7.5 10.5]; xticklabels = {'Day1','Day2','Day3','T'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 xtickangle(30);
-changePosition(gca,[0.1 0.02 -0.07 -0.011])
-put_axes_labels(gca,{[],[0 0 0]},{'Speed (cm/sec)',[0 0 0]});
+changePosition(gca,[0.1 -0.04 -0.07 -0.011])
+put_axes_labels(gca,{[],[0 0 0]},{'cm/s',[0 0 0]});
 rectangle(gca,'Position',[0.75 maxY+3 1 3],'edgecolor','k','facecolor','k');
-text(1.95,maxY+5,'Trial','FontSize',5);
+text(1.95,maxY+5,'Air','FontSize',5);
 rectangle(gca,'Position',[4.5 maxY+3 1 3],'edgecolor','k');
-text(5.7,maxY+5,'Intertrial','FontSize',5);
+text(5.7,maxY+5,'No-Air','FontSize',5);
+set_axes_top_text_no_line(gcf,gca,'Average Speed',[0.07 -0.03 0 0]);
 format_axes(gca);
-
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova.pdf',600);
 return;
 end

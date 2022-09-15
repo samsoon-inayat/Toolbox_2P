@@ -7,6 +7,7 @@ MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
 stp = 0.35*magfac; widths = (ones(1,18)*0.77)*magfac; gap = 0.32*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 shift_axes(ff,[4 5 6;4 5 6],0.2,gap);
+pos = get(ff.h_axes(1,1),'Position');
 pos_msig = [0 pos(4)+0.05 0 -0.15];
 cbar_t_shift = [0.1 0.2 0.09 0.2];
 %  time
@@ -45,6 +46,7 @@ for cc = 1:6
     if cc > 1
             set(gca,'ytick',[]);
     else
+        set(gca,'ytick',[1 5 10]);
         ylabel('Trial #');
     end
     xlabel('Time (s)'); 
@@ -80,9 +82,9 @@ for cc = 1:6
     format_axes(gca);
     textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
     if cc < 4
-      textstr = sprintf('C%d - Trial',configN(cc));
+      textstr = sprintf('C%d - Air',configN(cc));
     else
-      textstr = sprintf('C%d - Inter-Trial',configN(cc));
+      textstr = sprintf('C%d - No-Air',configN(cc));
     end
     ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 -0.09 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
     if cc == 1
@@ -125,6 +127,7 @@ for cc = 1:6
     if cc > 1
             set(gca,'ytick',[]);
     else
+        set(gca,'ytick',[1 5 10]);
         ylabel('Trial #');
     end
     xlabel('Distance (cm)'); 
@@ -179,6 +182,7 @@ MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
 stp = 0.35*magfac; widths = (ones(1,18)*0.77)*magfac; gap = 0.32*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 shift_axes(ff,[4 5 6;4 5 6],0.2,gap);
+pos = get(ff.h_axes(1,1),'Position');
 pos_msig = [0 pos(4)+0.05 0 -0.15];
 cbar_t_shift = [0.1 0.2 0.09 0.2];
 %  time
@@ -198,7 +202,7 @@ sel_pop_CD = cell_list_op(props_CD,pop_var_name);
 an = 4; Rs = Rs_C(an,:);
 sel_pop = sel_pop_C(an,5); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
 sel_popD = sel_pop_CD(an,5); sel_pop_orD = cell_list_op(sel_popD,[],'or',1); sel_pop_orD = sel_pop_orD{1};
-cellN = find(sel_pop_orD); ci = 19; % 12 17;
+cellN = find(sel_pop_orD); ci = 28;%19; % 12 17;
 cbar_p_shift = [0.01 0.09 -0.05 -0.2];
 for cc = 1:6
     c = cellN(ci);
@@ -222,6 +226,7 @@ for cc = 1:6
     if cc > 1
             set(gca,'ytick',[]);
     else
+      set(gca,'ytick',[1 5 10]);
         ylabel('Trial #');
     end
     xlabel('Time (s)'); 
@@ -304,6 +309,7 @@ for cc = 1:6
     if cc > 1
             set(gca,'ytick',[]);
     else
+      set(gca,'ytick',[1 5 10]);
         ylabel('Trial #');
     end
     xlabel('Distance (cm)'); 
