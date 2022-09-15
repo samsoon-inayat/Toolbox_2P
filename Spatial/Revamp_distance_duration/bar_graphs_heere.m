@@ -1,4 +1,5 @@
 %% Resp. two graphs, all and cond
+magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[10 5 2.25 1.25],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
 switch varT
     case 1 % responsive cells 
@@ -210,7 +211,6 @@ save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 
 
 
-
 %% TI_CT_Cond
 while 1
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_CT_Cond','hsd'},[1.5 1 1]);
@@ -319,7 +319,7 @@ break;
 end
  %% TI
  while 1
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'DT','bonferroni'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','bonferroni'},[1.5 1 1]);
     xdata = make_xdata([2],[1 1.5]);
     hf = get_figure(5,[8 7 1.5 1]);
     tcolors = mData.dcolors(7:end);
