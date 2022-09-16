@@ -125,7 +125,7 @@ end
 %% responsivity
     % for one RF
     cni = 1:3;
-    rfi = 3;
+    rfi = 2;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
 %     rfi = 2;
 %     resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
@@ -152,10 +152,15 @@ end
     ra.ranova
     
     alpha = 0.05/6;
-    dataT_T_C1 = dataT(:,(withinD{:,1} == 1) & (withinD{:,3} == 1));
-    [within,dvn,xlabels] = make_within_table({'CT'},[3]);
-    ra = RMA(dataT_T_C1,within,{alpha,{'bonferroni'}});
-    ra.ranova
+    for tii = 1:2
+      for cii = 1:3
+        dataT_T_C1 = dataT(:,(withinD{:,1} == tii) & (withinD{:,3} == cii));
+        [within,dvn,xlabels] = make_within_table({'CT'},[3]);
+        ra = RMA(dataT_T_C1,within,{});
+    %     ra = RMA(dataT_T_C1,within,{alpha,{'bonferroni'}});
+        p_v(tii,cii) = ra.ranova{3,9};
+      end
+    end
     
     alpha = 0.05/3;
     dataT_C = dataT(:,(withinD{:,3} == 3));
@@ -191,10 +196,11 @@ while 1
     %%
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
-%     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
+    FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
+    FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 3
+    for rfi = 2
         TD = FD_Prop;
         cell_resp = FD_Dur_comp{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];

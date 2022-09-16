@@ -18,6 +18,7 @@ dzMI.resp_D_g_T_and_good_FR = cell_list_op(dzMI.resp_D_g_T,props.good_FR,'and');
 dzMI.resp_T_g_D_and_good_FR  = cell_list_op(dzMI.resp_T_g_D,props.good_FR,'and');
 dzMI.resp_complex_and_good_FR = cell_list_op(dzMI.resp_complex,props.good_FR,'and');
 dzMI.rs = prop_op_G(propsD,propsT,'rs');
+dzMI.RF = prop_op_G(propsD,propsT,'N_Resp_Trials');
 dzMI.HaFD = prop_op_G(propsD,propsT,'HaFD');
 dzMI.HiFD = prop_op_G(propsD,propsT,'HiFD');
 dzMI.mDiff = mDiff;
