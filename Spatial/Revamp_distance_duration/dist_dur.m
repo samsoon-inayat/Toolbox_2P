@@ -29,6 +29,91 @@ dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 
+%% finding dzMIs for trials and intertrials
+RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
+RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
+[dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
+
+%% for different values of RF threshold, we calculate the time, distance, and indistinct encoding cells
+%%this we do for both trials and intertrials
+
+respfids = {[10 50],[50 100],[0 100],[60 100]};
+
+raster_types = {'RsTt','RsDt','RsTi','RsDi'};
+% raster_types = {'RsTt','RsTi'};
+
+clear props
+for ii = 1:length(respfids)
+    trialsR = respfids{ii};
+    for jj = 1:length(raster_types)
+        cmdTxt = sprintf('props{ii,jj} = get_props_Rs(%s,trialsR);',raster_types{jj});
+        eval(cmdTxt);
+    end
+end
+% find dis, dur, and mix cells
+
+clear FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj
+for ii = 1:length(respfids)
+    FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
+    FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
+
+    cellP1 = FD_Dis; cellP2 = FD_Dur;
+    FD_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
+    FD_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
+    FD_conj{ii} = cell_list_op(cellP1,cellP2,'and');
+
+    cellP1 = FT_Dis; cellP2 = FT_Dur;
+    FT_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
+    FT_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
+    FT_conj{ii} = cell_list_op(cellP1,cellP2,'and');
+%         an = 4; cn = 3; respC = FT_Dur_comp{2}; tempCL = respC{an,cn};
+end
+%%
+dzmith = 0; dzmith1 = 0;
+rfi = 4;
+for ani = 1:5
+    for cni = 1:3
+%         dzmith = exec_fun_on_cell_mat(dzMI_FD.diff_D_T(ani,cni),'nanmean',FD_Dis_comp{rfi}(ani,cni));
+        thisan = {dzMI_FD.diff_D_T{ani,cni} > dzmith};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FD.diff_D_T{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FD_Dis_comp{rfi}(ani,cni),thisan1,'and');
+        dis_cells_T(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        
+        thisan = {dzMI_FD.diff_T_D{ani,cni} > dzmith};
+        thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FD.diff_T_D{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FD_Dur_comp{rfi}(ani,cni),thisan1,'and');
+        dur_cells_T(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        
+%         dzmith = exec_fun_on_cell_mat(dzMI_FT.diff_T_D(ani,cni),'nanmean',FT_Dur_comp{rfi}(ani,cni));
+        thisan = {dzMI_FT.diff_T_D{ani,cni} > dzmith};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FT.diff_T_D{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FT_Dur_comp{rfi}(ani,cni),thisan1,'and');
+        dur_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        
+        thisan = {dzMI_FT.diff_D_T{ani,cni} > dzmith};
+        thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
+        thisan1 = {dzMI_FT.diff_D_T{ani,cni} > dzmith1};
+        thisan1 = cell_list_op(FT_Dis_comp{rfi}(ani,cni),thisan1,'and');
+        dis_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
+    end
+end
+
+dis_cells_TC = cell_list_op(dis_cells_T,[],'or',1);
+dur_cells_TC = cell_list_op(dur_cells_T,[],'or',1);
+dis_cells_IC = cell_list_op(dis_cells_I,[],'or',1);
+dur_cells_IC = cell_list_op(dur_cells_I,[],'or',1);
+
+dis_cells_TA = cell_list_op(dis_cells_T,[],'and',1);
+dur_cells_TA = cell_list_op(dur_cells_T,[],'and',1);
+dis_cells_IA = cell_list_op(dis_cells_I,[],'and',1);
+dur_cells_IA = cell_list_op(dur_cells_I,[],'and',1);
+
+dur_dis_T = cell_list_op(dur_cells_T,dis_cells_T,'or');
+dur_dis_I = cell_list_op(dur_cells_I,dis_cells_I,'or');
+
 %% running RMANOVA on all neurons in one animal (animal wise)
 an = 4;
 pop_var_name = {'all'};
@@ -45,10 +130,7 @@ dataT = make_between_table({var_CM},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 
-%% finding dzMIs for trials and intertrials
-RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
-RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
-[dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
+
 
 %%
 var_C1 = [dzMI_FD.diff_T_D dzMI_FT.diff_T_D];
@@ -86,46 +168,11 @@ ra.ranova
 
 
 
-%%
-while 1
-    respfids = {[10 50],[50 100],[0 100],[60 100]};
-
-    raster_types = {'RsTt','RsDt','RsTi','RsDi'};
-    % raster_types = {'RsTt','RsTi'};
-
-    clear props
-    for ii = 1:length(respfids)
-        trialsR = respfids{ii};
-        for jj = 1:length(raster_types)
-            cmdTxt = sprintf('props{ii,jj} = get_props_Rs(%s,trialsR);',raster_types{jj});
-            eval(cmdTxt);
-        end
-    end
-    % find dis, dur, and mix cells
-
-    clear FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj
-    for ii = 1:length(respfids)
-        FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
-        FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
-        
-        cellP1 = FD_Dis; cellP2 = FD_Dur;
-        FD_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
-        FD_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
-        FD_conj{ii} = cell_list_op(cellP1,cellP2,'and');
-        
-        cellP1 = FT_Dis; cellP2 = FT_Dur;
-        FT_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
-        FT_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
-        FT_conj{ii} = cell_list_op(cellP1,cellP2,'and');
-%         an = 4; cn = 3; respC = FT_Dur_comp{2}; tempCL = respC{an,cn};
-    end
-break;
-end
 
 %% responsivity
     % for one RF
     cni = 1:3;
-    rfi = 2;
+    rfi = 4;
     resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
 %     rfi = 2;
 %     resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
@@ -146,7 +193,7 @@ end
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     %% subsequent ANOVAs to figure out clarity about what is happening
     alpha = 0.05/2;
-    dataT_T = dataT(:,(withinD{:,1} == 2));
+    dataT_T = dataT(:,(withinD{:,1} == 1));
     [within,dvn,xlabels] = make_within_table({'CT','Cond'},[3,3]);
     ra = RMA(dataT_T,within,{alpha,{'bonferroni'}});
     ra.ranova
@@ -197,10 +244,10 @@ while 1
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
-    FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
+%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 2
+    for rfi = 4
         TD = FD_Prop;
         cell_resp = FD_Dur_comp{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];

@@ -450,7 +450,7 @@ ht = set_axes_top_text_no_line(gcf,gca,'Response Fidelity',[-0.05 -0.01 0.2 0]);
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
  %% TI cond
 while 1
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT','bonferroni'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_Cond','bonferroni'},[1.5 1 1]);
     xdata = make_xdata([2 2],[1 1.5]);
     hf = get_figure(5,[8 7 1.5 1]);
     tcolors = repmat(mData.colors(1:2),1,3);
