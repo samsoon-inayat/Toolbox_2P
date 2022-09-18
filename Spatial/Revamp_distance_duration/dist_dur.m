@@ -37,7 +37,87 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 %% for different values of RF threshold, we calculate the time, distance, and indistinct encoding cells
 %%this we do for both trials and intertrials
 
-respfids = {[10 50],[50 100],[0 100],[60 100]};
+respfids = {[10 50],[60 100],[0 100],[50 100]};
+% respfids = {[10 20],[30 40],[50,60],[70 80],[90 100],[60 100],[0 100],[50 100]};
+
+raster_types = {'RsTt','RsDt','RsTi','RsDi'};
+% raster_types = {'RsTt','RsTi'};
+
+clear props
+for ii = 1:length(respfids)
+    trialsR = respfids{ii};
+    for jj = 1:length(raster_types)
+        cmdTxt = sprintf('props{ii,jj} = get_props_Rs(%s,trialsR);',raster_types{jj});
+        eval(cmdTxt);
+    end
+end
+% find dis, dur, and mix cells
+
+clear FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj
+for ii = 1:length(respfids)
+    FD_Dur = props{ii,1}.vals;%cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); 
+    FD_Dis = props{ii,2}.vals;%cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
+    FT_Dur = props{ii,3}.vals;%cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); 
+    FT_Dis = props{ii,4}.vals;%cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
+
+    cellP1 = FD_Dis; cellP2 = FD_Dur;
+    FD_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
+    FD_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
+    FD_conj{ii} = cell_list_op(cellP1,cellP2,'and');
+
+    cellP1 = FT_Dis; cellP2 = FT_Dur;
+    FT_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
+    FT_Dur_comp{ii} = cell_list_op(cell_list_op(cellP1,[],'not'),cellP2,'and');
+    FT_conj{ii} = cell_list_op(cellP1,cellP2,'and');
+%         an = 4; cn = 3; respC = FT_Dur_comp{2}; tempCL = respC{an,cn};
+end
+%%
+cell_list = [];
+for rfi = 1:2
+  cell_list = [cell_list [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}]];
+end
+
+varC = find_percent(cell_list);
+[within,dvn,xlabels,awithinD] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
+dataT = make_between_table({varC},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
+
+    %%
+    mean_dzMI = [];
+    FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
+    FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
+%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
+%     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
+%     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
+    for rfi = 1:2
+        TD = FD_Prop;
+        cell_resp = FD_Dur_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FD_Dis_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FD_conj{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+
+        TD = FT_Prop;
+        cell_resp = FT_Dur_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FT_Dis_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FT_conj{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+    end
+    
+    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
+    dataT = make_between_table({mean_dzMI},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+    ra.ranova
+
+%% for different values of RF threshold, we calculate the time, distance, and indistinct encoding cells
+%%this we do for both trials and intertrials
+
+respfids = {[10 50],[60 100],[0 100],[50 100]};
+respfids = {[10 30],[40 60],[70 90],[60 100],[0 100],[50 100]};
 
 raster_types = {'RsTt','RsDt','RsTi','RsDi'};
 % raster_types = {'RsTt','RsTi'};
@@ -68,6 +148,7 @@ for ii = 1:length(respfids)
     FT_conj{ii} = cell_list_op(cellP1,cellP2,'and');
 %         an = 4; cn = 3; respC = FT_Dur_comp{2}; tempCL = respC{an,cn};
 end
+
 %%
 dzmith = 0; dzmith1 = 0;
 rfi = 4;
@@ -240,35 +321,7 @@ ra.ranova
 
 %% check the difference in zMI for Dis and Dur for the different cell types DurC, DisC, and DDM
 while 1
-    %%
-    mean_dzMI = [];
-    FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
-    FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
-%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
-%     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
-%     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 4
-        TD = FD_Prop;
-        cell_resp = FD_Dur_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FD_Dis_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FD_conj{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
 
-        TD = FT_Prop;
-        cell_resp = FT_Dur_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FT_Dis_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FT_conj{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-    end
-    
-    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
-    dataT = make_between_table({mean_dzMI},dvn);
-    ra = RMA(dataT,within,{'bonferroni'});
-    ra.ranova
     %%
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','bonferroni'},[1.5 1 1]);
