@@ -211,16 +211,16 @@
     
 %% population vector and correlation sensory
     magfac = mData.magfac;
-    ff = makeFigureRowsCols(108,[6 3 6.99 2.5],'RowsCols',[3 12],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -85]);
+    ff = makeFigureRowsCols(108,[6 3 6 2.5],'RowsCols',[3 12],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -85]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
-    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.15)*magfac; gap = 0.19*magfac;
+    stp = 0.15*magfac; widths = ([0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]-0.05)*magfac; gap = 0.19*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
     an = 4; o = o; G = 'C';  
 %     an = 4;o = oC; G = 'C';
 %     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-    si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];% 
+    si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];% 
 %     si = [Ar_B_T ArL_B_T Ars_B_T];
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
