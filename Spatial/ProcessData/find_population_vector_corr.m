@@ -1,4 +1,4 @@
-function [CRc,aCRc,mR,seq] = find_population_vector_corr(Rs,mRs,ccs,ordercol,seqi)
+function [CRc,aCRc,mR,seq,msz] = find_population_vector_corr(Rs,mRs,ccs,ordercol,seqi)
 
 
 for rr = 1:size(mRs,1)
@@ -47,8 +47,8 @@ for rr = 1:size(mRs,1)
 end
 
 for cc = 1:size(mRs,2)
-    msz = max(sz_CRc(:,cc));
-    temp = NaN(msz,msz);
+    msz(cc) = max(sz_CRc(:,cc));
+    temp = NaN(msz(cc),msz(cc));
     aCRc{cc} = repmat(temp,1,1,size(mRs,1));
 end
 

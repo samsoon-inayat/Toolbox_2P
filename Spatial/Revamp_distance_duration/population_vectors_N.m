@@ -218,18 +218,21 @@
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     conf = repmat([3 4 5],1,2);
     an = 4; o = o; G = 'C';  
-    tim = 1;
+    tim = 0;
     if tim
       si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];% 
+      good_FR = [dur_cells_T dur_cells_I];
     else
       si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];% 
+      good_FR = [dis_cells_T dis_cells_I];
     end
 
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    good_FR = cell_list_op(props1,{'vals','good_FR'}); 
-    [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
+%     good_FR = cell_list_op(props1,{'Nvals'}); 
+    
+    [CRc,aCRc,mRR,~,mxsz] = find_population_vector_corr(Rs,mR,good_FR,1);
     mRRm = [];
     for ii = 1:size(mRR,2)
         m_mRR_ii(ii) = min(min(mRR{an,ii}));        M_mRR_ii(ii) = max(max(mRR{an,ii}));
@@ -243,21 +246,9 @@
         NCells = size(tR.sp_rasters,3);
         tmRR = mRR{an,ii};
         axes(ff.h_axes(1,ii));
-        if tim
-          if ii > 3
-              xs1 = 7.5; xs2 = 15;
-          else
-              xs = tR.xs;
-              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
-          end
-        else
-          if ii < 4
-              xs1 = 75; xs2 = 150;
-          else
-              xs = tR.xs;
-              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
-          end
-        end
+        binwidth = tR.bin_width;
+        totx = mxsz(ii)*binwidth;
+        xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
         xdata = [0 xs1 xs2];
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_mRR M_mRR]); set(gca,'Ydir','normal');
@@ -287,22 +278,8 @@
                 tmRR = tmRR'; tmRR = fillmissing(tmRR,'linear',2,'EndValues','nearest'); tmRR = tmRR';
             end
         end
-        
-        if tim
-          if ii > 3
-              xs1 = 7.5; xs2 = 15;
-          else
-              xs = tR.xs;
-              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
-          end
-        else
-          if ii < 4
-              xs1 = 75; xs2 = 150;
-          else
-              xs = tR.xs;
-              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
-          end
-        end
+        totx = mxsz(ii)*binwidth;
+        xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
         xdata = [0 xs1 xs2];
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_CRc M_CRc]); set(gca,'Ydir','normal');
@@ -330,15 +307,15 @@
           if ii > 3
               xs1 = 7.5; xs2 = 15;
           else
-              xs = tR.xs;
-              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+              totx = mxsz(ii)*binwidth;
+              xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
           end
         else
           if ii < 4
               xs1 = 75; xs2 = 150;
           else
-              xs = tR.xs;
-              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+              totx = mxsz(ii)*binwidth;
+              xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
           end
         end
         xdata = [0 xs1 xs2];

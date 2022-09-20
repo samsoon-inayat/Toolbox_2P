@@ -26,7 +26,7 @@ end
 varC = mean_var_C;
 [within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Cond'},[2,2,3]);
 dataT = make_between_table({varC},dvn);
-ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
 
 %% finding dzMIs for trials and intertrials
@@ -38,7 +38,7 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 %%this we do for both trials and intertrials
 
 respfids = {[10 50],[60 100],[0 100],[50 100]};
-respfids = {[10 20],[30 40],[50,60],[70 80],[90 100],[60 100],[0 100],[50 100]};
+% respfids = {[10 20],[30 40],[50,60],[70 80],[90 100],[60 100],[0 100],[50 100]};
 
 raster_types = {'RsTt','RsDt','RsTi','RsDi'};
 % raster_types = {'RsTt','RsTi'};
@@ -73,12 +73,12 @@ for ii = 1:length(respfids)
 end
 %%
 cell_list = [];
-for rfi = 1:5
+for rfi = 3
   cell_list = [cell_list [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}]];
 end
 
 varC = find_percent(cell_list);
-[within,dvn,xlabels,awithinD] = make_within_table({'RF','TI','CT','Cond'},[5,2,3,3]);
+[within,dvn,xlabels,awithinD] = make_within_table({'TI','CT','Cond'},[2,3,3]);
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
@@ -87,10 +87,10 @@ ra.ranova
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
 %     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
-%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
+    FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 1:5
+    for rfi = 3
         TD = FD_Prop;
         cell_resp = FD_Dur_comp{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
@@ -108,7 +108,49 @@ ra.ranova
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
     end
     
-    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[5,2,3,3]);
+    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
+    dataT = make_between_table({mean_dzMI},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+    ra.ranova
+
+%%
+cell_list = [];
+for rfi = 1:2
+  cell_list = [cell_list [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}]];
+end
+
+varC = find_percent(cell_list);
+[within,dvn,xlabels,awithinD] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
+dataT = make_between_table({varC},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
+
+    %%
+    mean_dzMI = [];
+    FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
+    FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
+%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
+%     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
+%     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
+    for rfi = 1:2
+        TD = FD_Prop;
+        cell_resp = FD_Dur_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FD_Dis_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FD_conj{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+
+        TD = FT_Prop;
+        cell_resp = FT_Dur_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FT_Dis_comp{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+        cell_resp = FT_conj{rfi};
+        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
+    end
+    
+    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
     dataT = make_between_table({mean_dzMI},dvn);
     ra = RMA(dataT,within,{0.05,{'bonferroni'}});
     ra.ranova
@@ -335,7 +377,7 @@ while 1
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1)-1 maxY+1]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Tr','Dr','TrDr'};
+    xticks = xdata; xticklabels = {'Ti','Di','TrDr'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     changePosition(gca,[0.03 0.01 -0.4 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('dzMI_CT.pdf'),600);
