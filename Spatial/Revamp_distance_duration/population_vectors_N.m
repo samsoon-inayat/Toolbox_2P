@@ -207,29 +207,28 @@
         mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%c.pdf',ntrials,G),600);
+   
 
-    
-%% population vector and correlation sensory
+%% population vector and correlation sensory (Dist - time) change var tim
     magfac = mData.magfac;
-    ff = makeFigureRowsCols(108,[6 3 6.99 2.5],'RowsCols',[3 12],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.11],'widthHeightAdjustment',[10 -85]);
+    ff = makeFigureRowsCols(108,[6 3 3.45 2.15],'RowsCols',[3 6],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.12],'widthHeightAdjustment',[10 -107]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
-    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.15)*magfac; gap = 0.19*magfac;
+    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.07)*magfac; gap = 0.11*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
-    
+    conf = repmat([3 4 5],1,2);
     an = 4; o = o; G = 'C';  
-%     an = 4;o = oC; G = 'C';
-%     si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-    si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];% 
-%     si = [Ar_B_T ArL_B_T Ars_B_T];
+    tim = 1;
+    if tim
+      si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];% 
+    else
+      si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];% 
+    end
+
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-    good_FR = cell_list_op(props1,{'vals'}); 
-%     good_FR = cell_list_op(props1,{'vals'}); 
-%     good_FR = dzMI_FD.resp_T_g_D;
-%     good_FR = cell_list_op(props1,{'vals'});
-%     good_FR = dis_cells_T;
+    good_FR = cell_list_op(props1,{'vals','good_FR'}); 
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
     for ii = 1:size(mRR,2)
@@ -244,11 +243,22 @@
         NCells = size(tR.sp_rasters,3);
         tmRR = mRR{an,ii};
         axes(ff.h_axes(1,ii));
-        if ii < 5
-            xdata = [0 75 150];
+        if tim
+          if ii > 3
+              xs1 = 7.5; xs2 = 15;
+          else
+              xs = tR.xs;
+              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+          end
         else
-            xdata = [0 7.5 15];
+          if ii < 4
+              xs1 = 75; xs2 = 150;
+          else
+              xs = tR.xs;
+              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+          end
         end
+        xdata = [0 xs1 xs2];
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_mRR M_mRR]); set(gca,'Ydir','normal');
         if ii == 1
@@ -258,13 +268,16 @@
 
         ylims = ylim;
         if ii == 1
-            textstr = sprintf('%d/%d',floor(ylims(2)),NCells); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.125 0 0]);
+            textstr = sprintf('C%d  %d/%d',conf(ii),floor(ylims(2)),NCells); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 -0.1 0.05 0]);
         else
-            textstr = sprintf('%d',floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.125 0 0]);
+            textstr = sprintf('C%d    %d',conf(ii),floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 -0.1 0 0]);
         end
-        textstr = sprintf('Config. %d (C%d)',ii+2,ii+2); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.093 0 0]);
+%         textstr = sprintf('C%d',conf(ii)); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.085 0 0]);
         format_axes(gca);
-        mM = min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
+        if ii == 6
+          mM = min(tmRR(:)); MM = max(tmRR(:)); 
+          [hc,hca] = putColorBar(gca,cbar_p_shift,[m_mRR M_mRR],5,'eastoutside',[0.15 0.18 0.12 0.3]);
+        end
         
         axes(ff.h_axes(2,ii));
         tmRR = CRc{an,ii};
@@ -275,17 +288,30 @@
             end
         end
         
-        if ii <= 3
-            xdata = [0 75 150];
+        if tim
+          if ii > 3
+              xs1 = 7.5; xs2 = 15;
+          else
+              xs = tR.xs;
+              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+          end
         else
-          xs = tR.xs;
-            xs1 = round(max(xs),0); xs2 = round(max(xs)/2,0);
-            xdata = [0 xs1 xs2];
+          if ii < 4
+              xs1 = 75; xs2 = 150;
+          else
+              xs = tR.xs;
+              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+          end
         end
+        xdata = [0 xs1 xs2];
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_CRc M_CRc]); set(gca,'Ydir','normal');
         if ii == 1
-            ylabel('Distance (cm)');
+          if tim
+            ylabel('Time (s)');
+          else
+            ylabel('Dist (cm)');
+          end
         end
         set(gca,'YTick',[],'XTick',[]);
 
@@ -293,33 +319,57 @@
         textstr = sprintf('%d',ceil(ylims(2)));
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
         format_axes(gca);
-        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
+        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:));
+        if ii == 6
+          [hc,hca] = putColorBar(gca,cbar_p_shift,[m_CRc M_CRc],5,'eastoutside',[0.13 0.18 0.12 0.3]);
+        end
         
         axes(ff.h_axes(3,ii));
         tmRR = aCRc{ii};
-        if ii < 7
-            xdata = [0 75 150];
+        if tim
+          if ii > 3
+              xs1 = 7.5; xs2 = 15;
+          else
+              xs = tR.xs;
+              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+          end
         else
-            xdata = [0 7.5 15];
+          if ii < 4
+              xs1 = 75; xs2 = 150;
+          else
+              xs = tR.xs;
+              xs1 = round(max(xs)/2,1); xs2 = round(max(xs),0);
+          end
         end
+        xdata = [0 xs1 xs2];
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_aCRc M_aCRc]); set(gca,'Ydir','normal');
         if ii == 1
-            ylabel('Distance (cm)');
+            if tim
+            ylabel('Time (s)');
+          else
+            ylabel('Dist (cm)');
+          end
         end
-        set(gca,'YTick',[]);
-        if ii < 7
-            xlabel('Distance (cm)');
-        else
-            xlabel('Time (sec)');
-        end
+        set(gca,'YTick',[],'XTick',[0 xs2]);
+        if tim
+            xlabel('Time (s)');
+          else
+            xlabel('Dist (cm)');
+          end
+        
         ylims = ylim;
         textstr = sprintf('%d',ceil(ylims(2)));
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
         format_axes(gca);
-        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',[0.09 0.11 0.09 0.16]);
+        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); 
+        if ii == 6
+          [hc,hca] = putColorBar(gca,cbar_p_shift,[m_aCRc M_aCRc],5,'eastoutside',[0.13 0.18 0.12 0.3]);
+        end
     end
     colormap jet
+    ht = set_axes_top_text(gcf,ff.h_axes(1,1:3),'Air',{0.08,[0.2 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,4:6),'No Air',{0.08,[0.17 -0.05 0 0]});set(ht,'FontWeight','Bold');
     save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%c.pdf',ntrials,G),600);
 
     
