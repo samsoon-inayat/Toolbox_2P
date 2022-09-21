@@ -211,14 +211,16 @@
 
 %% population vector and correlation sensory (Dist - time) change var tim
     magfac = mData.magfac;
-    ff = makeFigureRowsCols(108,[6 3 3.45 2.15],'RowsCols',[3 6],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.12],'widthHeightAdjustment',[10 -107]);
+    ff = makeFigureRowsCols(108,[6 3 3.5 2.15],'RowsCols',[3 6],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.12],'widthHeightAdjustment',[10 -140]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
-    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.07)*magfac; gap = 0.11*magfac;
+    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.08)*magfac; gap = 0.115*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
+    shift_axes(ff,[4 5 6;4 5 6;4 5 6],0.1,gap);
+    shift_axes_up(ff,[1 2 3 4 5 6;1 2 3 4 5 6],[0 0.15 0 0]);
     conf = repmat([3 4 5],1,2);
     an = 4; o = o; G = 'C';  
-    tim = 0;
+    tim = 1;
     if tim
       si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];% 
       good_FR = [dur_cells_T dur_cells_I];
@@ -230,9 +232,9 @@
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
-%     good_FR = cell_list_op(props1,{'Nvals'}); 
+%     good_FR = cell_list_op(props1,{'vals'}); 
     
-    [CRc,aCRc,mRR,~,mxsz] = find_population_vector_corr(Rs,mR,good_FR,1);
+    [CRc,aCRc,mRR,~,mxsz] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
     for ii = 1:size(mRR,2)
         m_mRR_ii(ii) = min(min(mRR{an,ii}));        M_mRR_ii(ii) = max(max(mRR{an,ii}));
@@ -278,9 +280,21 @@
                 tmRR = tmRR'; tmRR = fillmissing(tmRR,'linear',2,'EndValues','nearest'); tmRR = tmRR';
             end
         end
-        totx = mxsz(ii)*binwidth;
+        if tim == 0
+          if ii <= 3
+              totx = 150;
+          else
+          totx = max(tR.xs);%mxsz(ii)*binwidth;
+          end
+        else
+          if ii > 3
+              totx = 15;
+          else
+          totx = max(tR.xs);%mxsz(ii)*binwidth;
+          end
+        end
         xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
-        xdata = [0 xs1 xs2];
+        xdata = [0 xs2];
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_CRc M_CRc]); set(gca,'Ydir','normal');
         if ii == 1
@@ -290,7 +304,7 @@
             ylabel('Dist (cm)');
           end
         end
-        set(gca,'YTick',[],'XTick',[]);
+        set(gca,'YTick',[],'XTick',xdata);
 
         ylims = ylim;
         textstr = sprintf('%d',ceil(ylims(2)));

@@ -200,7 +200,33 @@ dur_cells_IA = cell_list_op(dur_cells_I,[],'and',1);
 
 dur_dis_T = cell_list_op(dur_cells_T,dis_cells_T,'or');
 dur_dis_I = cell_list_op(dur_cells_I,dis_cells_I,'or');
+%%
+ntrials = 30; 
+si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
+%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
+props_C = get_props_Rs(Rs_C,ntrials);
+sel_pop_C = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
 
+params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
+varT = 4;%:length(params)
+for pii = varT
+    if pii == 1
+        mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
+    else
+        eval(sprintf('var_C = get_vals(props_C.%s,sel_pop_C);',params{pii})); 
+        if pii == 5 || pii == 6
+            mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
+        else
+            mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean'); 
+        end
+    end
+end
+varC = mean_var_C;
+[within,dvn,xlabels,awithinD] = make_within_table({'TI','CT','Cond'},[2,2,3]);
+dataT = make_between_table({varC},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+ra.ranova
    %%
     resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
     per_resp = find_percent(resp);
