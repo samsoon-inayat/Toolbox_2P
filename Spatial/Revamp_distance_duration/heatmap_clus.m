@@ -16,9 +16,11 @@
     si = [Ars_Off]; props_ON = get_props_Rs(o.Rs(:,si)); resp_OFF_5 = cell_list_op(props_ON.vals,[],'or',1);
     event_type = {'3-T-T','4-T-T','5-T-T','3-T-D','4-T-D','5-T-D','3-I-T','4-I-T','5-I-T','3-I-D','4-I-D','5-I-D'};
 
-    all_cells_list = [sel_pop_C resp_ON_2 resp_OFF_2 resp_ON_7 resp_OFF_7 resp_MOn resp_MOff resp_ON_3 resp_OFF_3 resp_ON_4 resp_OFF_4 resp_ON_5 resp_OFF_5];
-    event_type = [event_type {'2-AOn','2-AOff','7-AOn','7-AOff','MOn','MOff','3-AOn','3-AOff','4-AOn','4-AOff','5-AOn','5-AOff'}];
-%     all_cells_list = all_gV_A;
+%     all_cells_list = [sel_pop_C resp_ON_2 resp_OFF_2 resp_ON_7 resp_OFF_7 resp_MOn resp_MOff resp_ON_3 resp_OFF_3 resp_ON_4 resp_OFF_4 resp_ON_5 resp_OFF_5];
+%     event_type = [event_type {'2-AOn','2-AOff','7-AOn','7-AOff','MOn','MOff','3-AOn','3-AOff','4-AOn','4-AOff','5-AOn','5-AOff'}];
+    all_cells_list = sel_pop_C;% resp_ON_2 resp_OFF_2 resp_ON_7 resp_OFF_7 resp_MOn resp_MOff resp_ON_3 resp_OFF_3 resp_ON_4 resp_OFF_4 resp_ON_5 resp_OFF_5];
+    event_type = event_type;% {'2-AOn','2-AOff','7-AOn','7-AOff','MOn','MOff','3-AOn','3-AOff','4-AOn','4-AOff','5-AOn','5-AOff'}];
+
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);
     txl = circshift(event_type,sh,2);
