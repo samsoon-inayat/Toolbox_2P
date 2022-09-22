@@ -51,27 +51,13 @@ for rr = 1:size(Rs,1)
         o.peak_locations_trials{rr,cc} = R.peak_location_trials';
         if strcmp(R.marker_name,'airT')
           centersT = centers;
-          meanD = nanmean(R.dist);
           for cccc = 1:length(centers)
-             ind = find(R.xs - centersT(cccc)>0,1,'first');
-             if isempty(ind)
-               centers(cccc) = NaN;
-             else
-               centers(cccc) = meanD(ind);
-             end
+            centers(cccc) = centersT(
           end
+          n = 0;
         end
         if strcmp(R.marker_name,'airID')
-          centersT = centers;
-          meanD = nanmean(R.duration);
-          for cccc = 1:length(centers)
-             ind = find(R.xs - centersT(cccc)>0,1,'first');
-             if isempty(ind)
-               centers(cccc) = NaN;
-             else
-               centers(cccc) = meanD(ind);
-             end
-          end
+          n = 0;
         end
         if strcmp(R.marker_name,'airD')
             bins = 0:50:150;

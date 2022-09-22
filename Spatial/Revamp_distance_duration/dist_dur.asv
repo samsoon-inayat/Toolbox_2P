@@ -206,10 +206,10 @@ si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
 props_C = get_props_Rs(Rs_C,ntrials);
-sel_pop_C = resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
-%%
+sel_pop_C = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
+
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
-varT = 4;%:length(params)
+varT = 3;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
@@ -223,7 +223,7 @@ for pii = varT
     end
 end
 varC = mean_var_C;
-[within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Cond'},[2,2,3]);
+[within,dvn,xlabels,awithinD] = make_within_table({'TI','CT','Cond'},[2,2,3]);
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
@@ -231,11 +231,11 @@ ra.ranova
     resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
     per_resp = find_percent(resp);
 
-    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,2,3]);
-    dataT = make_between_table({per_resp},dvn);
-    ra = RMA(dataT,within,{'bonferroni'});
-    ra.ranova
-    print_for_manuscript(ra)
+%     [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,2,3]);
+%     dataT = make_between_table({per_resp},dvn);
+%     ra = RMA(dataT,within,{'bonferroni'});
+%     ra.ranova
+%     print_for_manuscript(ra)
 
     any_cells = cell_list_op(resp,[],'or',1);
     per_active_any = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
@@ -247,11 +247,19 @@ ra.ranova
     
 
     %% TI_CT for responsivity of Dur, Dis, and Ind cells
+switch varT
+  case 1
+    MY = 30; mY = 0; ysp = 3; titletext = 'Responsiveness'; y_label = '% of cells';
+  case 2
+    MY = 100; mY = 0; ysp = 10; titletext = 'Response Fidelity'; y_label = '% of trials';
+  case 4
+    MY = 1.1; mY = 0; ysp = 0.15; titletext = 'Goodness-of-Fit'; y_label = 'r-squared';
+end
 ff = makeFigureRowsCols(107,[10 5 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
-MY = 30; mY = 0; ysp = 3;
 stp = 0.3*magfac; widths = ([0.95 0.55 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = repmat(mData.colors(4:5),1,6);
+
 axes(ff.h_axes(1,1));
 
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','bonferroni'},[1.5 1 1]);
@@ -261,7 +269,7 @@ xdata = make_xdata([2 2],[1 1.5]);
 MmVar = max(mVar);
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.015);
 maxY = maxY + 0;
 ylims = ylim;
 format_axes(gca);
@@ -270,12 +278,46 @@ xticks = xdata; xticklabels = {'Time','Dist'};
 make_bars_hollow(hbs(3:end))
 set(gca,'xtick',xticks,'xticklabels',xticklabels); %xtickangle(45)
 %     changePosition(gca,[0.04 0.01 -0.1 0]); 
-put_axes_labels(gca,{[],[0 0 0]},{'% of Cells',[0 0 0]});
-ht = set_axes_top_text_no_line(gcf,gca,'Responsiveness',[-0.05 -0.01 0.2 0]);set(ht,'FontWeight','Bold');
+put_axes_labels(gca,{[],[0 0 0]},{y_label,[0 0 0]});
+ht = set_axes_top_text_no_line(gcf,gca,titletext,[-0.05 -0.01 0.2 0]);set(ht,'FontWeight','Bold');
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air','No-Air'});
 format_axes(gca);
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+%% TI_CT_Cond
+switch varT
+  case 1
+    MY = 30; mY = 0; ysp = 3; titletext = 'Responsiveness'; y_label = '% of cells';
+  case 2
+    MY = 100; mY = 0; ysp = 10; titletext = 'Response Fidelity'; y_label = '% of trials';
+  end
+  ff = makeFigureRowsCols(107,[10 5 2.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
+  stp = 0.25*magfac; widths = ([2.2 0.55 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+  adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+  tcolors = repmat(mData.colors(4:5),1,6);
     
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_CT_Cond','bonferroni'},[1.5 1 1]);
+    h(h==1) = 0;
+    xdata = make_xdata([3 3 3 3],[1 1.5]);
+%     hf = get_figure(5,[8 7 3.5 1]);
+    tcolors = repmat(mData.colors(1:9),1,2);
+        tcolors = repmat(mData.colors(7:9),5,1);
+
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 0;
+    ylims = ylim;
+    make_bars_hollow(hbs(7:end))
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'C3','C4','C5'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+%     changePosition(gca,[-0.06 0.01 0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{'z-score',[0 0 0]});
+    put_axes_labels(gca,{[],[0 0 0]},{'z-score',[0 0 0]});
+    ht = set_axes_top_text_no_line(gcf,gca,'Mutual Information',[0 0 0 0]);set(ht,'FontWeight','Bold');
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
 %% running RMANOVA on all neurons in one animal (animal wise)
 an = 4;
 pop_var_name = {'all'};
@@ -355,11 +397,17 @@ ra.ranova
     [mrall,semrall] = findMeanAndStandardError(per_active_all);
     %% subsequent ANOVAs to figure out clarity about what is happening
     alpha = 0.05/2;
-    dataT_T = dataT(:,(withinD{:,1} == 1));
-    [within,dvn,xlabels] = make_within_table({'CT','Cond'},[3,3]);
+    dataT_T = dataT(:,(awithinD(:,1) == 2));
+    [within,dvn,xlabels] = make_within_table({'CT','Cond'},[2,3]);
     ra = RMA(dataT_T,within,{alpha,{'bonferroni'}});
     ra.ranova
-    
+    %%
+    alpha = 0.05/2;
+    dataT_T = dataT(:,(awithinD(:,2) == 2));
+    [within,dvn,xlabels] = make_within_table({'TI','Cond'},[2,3]);
+    ra = RMA(dataT_T,within,{alpha,{'bonferroni'}});
+    ra.ranova
+    %%
     alpha = 0.05/6;
     for tii = 1:2
       for cii = 1:3

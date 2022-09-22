@@ -233,6 +233,8 @@
     ntrials = 50;
     props1 = get_props_Rs(Rs,ntrials);
 %     good_FR = cell_list_op(props1,{'vals'}); 
+%     good_FR = cell_list_op(dis_cells_T,dur_cells_I,'and',1);
+%     good_FR = repmat(good_FR,1,6);
     
     [CRc,aCRc,mRR,~,mxsz] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
@@ -361,8 +363,162 @@
     colormap jet
     ht = set_axes_top_text(gcf,ff.h_axes(1,1:3),'Air',{0.08,[0.2 -0.05 0 0]});set(ht,'FontWeight','Bold');
     ht = set_axes_top_text(gcf,ff.h_axes(1,4:6),'No Air',{0.08,[0.17 -0.05 0 0]});set(ht,'FontWeight','Bold');
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%c.pdf',ntrials,G),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%d.pdf',ntrials,tim),600);
 
+%% population vector and correlation sensory (Dist and time) conjunctive
+    magfac = mData.magfac;
+    ff = makeFigureRowsCols(108,[6 3 3.5 2.15],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.12],'widthHeightAdjustment',[10 -140]);
+%     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
+    MY = 8; ysp = 1; mY = 0; % responsive cells
+    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.08)*magfac; gap = 0.115*magfac;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
+%     shift_axes(ff,[4 5 6;4 5 6;4 5 6],0.1,gap);
+%     shift_axes_up(ff,[1 2 3 4 5 6;1 2 3 4 5 6],[0 0.15 0 0]);
+    conf = repmat([3 4 5],1,2);
+    an = 3; o = o; G = 'C';  
+    cni = 1;
+
+    si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];% 
+    si = si([([1 4]+(cni-1)) ([1 4]+(cni-1))+6]);
+    good_FR = [dur_cells_T(:,cni) dur_cells_I(:,cni) dis_cells_T(:,cni) dis_cells_I(:,cni)];
+
+    Rs = o.Rs(:,si);mR = o.mR(:,si);
+    ntrials = 50;
+    props1 = get_props_Rs(Rs,ntrials);
+%     good_FR = cell_list_op(props1,{'vals'}); 
+    good_FR = cell_list_op(dis_cells_T,dis_cells_I,'and',1);
+    good_FR = repmat(good_FR,1,6);
+    
+    [CRc,aCRc,mRR,~,mxsz] = find_population_vector_corr(Rs,mR,good_FR,1);
+    mRRm = [];
+    for ii = 1:size(mRR,2)
+        m_mRR_ii(ii) = min(min(mRR{an,ii}));        M_mRR_ii(ii) = max(max(mRR{an,ii}));
+        m_CRc_ii(ii) = min(min(CRc{an,ii}));        M_CRc_ii(ii) = max(max(CRc{an,ii}));
+        m_aCRc_ii(ii) = min(min(aCRc{ii}));        M_aCRc_ii(ii) = max(max(aCRc{ii}));
+    end
+    m_mRR = min(m_mRR_ii); M_mRR = max(M_mRR_ii); m_CRc = min(m_CRc_ii); M_CRc = max(M_CRc_ii); m_aCRc = min(m_aCRc_ii); M_aCRc = max(M_aCRc_ii);
+    cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
+    for ii = 1:size(ff.h_axes,2)
+        tR = Rs{an,ii};
+        NCells = size(tR.sp_rasters,3);
+        tmRR = mRR{an,ii};
+        axes(ff.h_axes(1,ii));
+        binwidth = tR.bin_width;
+        totx = mxsz(ii)*binwidth;
+        xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
+        xdata = [0 xs1 xs2];
+        ydata = [1 size(tmRR,1)];
+        imagesc(xdata,ydata,tmRR,[m_mRR M_mRR]); set(gca,'Ydir','normal');
+        if ii == 1
+            ylabel('Cell #');
+        end
+        set(gca,'YTick',[],'XTick',[]);
+
+        ylims = ylim;
+        if ii == 1
+            textstr = sprintf('C%d  %d/%d',conf(ii),floor(ylims(2)),NCells); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 -0.1 0.05 0]);
+        else
+            textstr = sprintf('C%d    %d',conf(ii),floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 -0.1 0 0]);
+        end
+%         textstr = sprintf('C%d',conf(ii)); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.085 0 0]);
+        format_axes(gca);
+        if ii == 6
+          mM = min(tmRR(:)); MM = max(tmRR(:)); 
+          [hc,hca] = putColorBar(gca,cbar_p_shift,[m_mRR M_mRR],5,'eastoutside',[0.15 0.18 0.12 0.3]);
+        end
+        
+        axes(ff.h_axes(2,ii));
+        tmRR = CRc{an,ii};
+        if sum(isnan(tmRR(:))) > 0
+            tmRR = fillmissing(tmRR,'linear',2,'EndValues','nearest');
+            if sum(isnan(tmRR(:))) > 0
+                tmRR = tmRR'; tmRR = fillmissing(tmRR,'linear',2,'EndValues','nearest'); tmRR = tmRR';
+            end
+        end
+        if tim == 0
+          if ii <= 3
+              totx = 150;
+          else
+          totx = max(tR.xs);%mxsz(ii)*binwidth;
+          end
+        else
+          if ii > 3
+              totx = 15;
+          else
+          totx = max(tR.xs);%mxsz(ii)*binwidth;
+          end
+        end
+        xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
+        xdata = [0 xs2];
+        ydata = [1 size(tmRR,1)];
+        imagesc(xdata,ydata,tmRR,[m_CRc M_CRc]); set(gca,'Ydir','normal');
+        if ii == 1
+          if tim
+            ylabel('Time (s)');
+          else
+            ylabel('Dist (cm)');
+          end
+        end
+        set(gca,'YTick',[],'XTick',xdata);
+
+        ylims = ylim;
+        textstr = sprintf('%d',ceil(ylims(2)));
+%         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
+        format_axes(gca);
+        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:));
+        if ii == 6
+          [hc,hca] = putColorBar(gca,cbar_p_shift,[m_CRc M_CRc],5,'eastoutside',[0.13 0.18 0.12 0.3]);
+        end
+        
+        axes(ff.h_axes(3,ii));
+        tmRR = aCRc{ii};
+        if tim
+          if ii > 3
+              xs1 = 7.5; xs2 = 15;
+          else
+              totx = mxsz(ii)*binwidth;
+              xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
+          end
+        else
+          if ii < 4
+              xs1 = 75; xs2 = 150;
+          else
+              totx = mxsz(ii)*binwidth;
+              xs2 = round(totx,0); xs1 = round(max(totx)/2,1);
+          end
+        end
+        xdata = [0 xs1 xs2];
+        ydata = [1 size(tmRR,1)];
+        imagesc(xdata,ydata,tmRR,[m_aCRc M_aCRc]); set(gca,'Ydir','normal');
+        if ii == 1
+            if tim
+            ylabel('Time (s)');
+          else
+            ylabel('Dist (cm)');
+          end
+        end
+        set(gca,'YTick',[],'XTick',[0 xs2]);
+        if tim
+            xlabel('Time (s)');
+          else
+            xlabel('Dist (cm)');
+          end
+        
+        ylims = ylim;
+        textstr = sprintf('%d',ceil(ylims(2)));
+%         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
+        format_axes(gca);
+        mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); 
+        if ii == 6
+          [hc,hca] = putColorBar(gca,cbar_p_shift,[m_aCRc M_aCRc],5,'eastoutside',[0.13 0.18 0.12 0.3]);
+        end
+    end
+    colormap jet
+    ht = set_axes_top_text(gcf,ff.h_axes(1,1),'Air',{0.08,[0.03 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,2),'No Air',{0.08,[0.03 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,3),'Air',{0.08,[0.03 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,4),'No Air',{0.08,[0.03 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%c.pdf',ntrials,G),600);
     
 %% population vector and correlation sensory
     magfac = mData.magfac;
