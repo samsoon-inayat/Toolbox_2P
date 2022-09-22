@@ -50,39 +50,31 @@ for rr = 1:size(Rs,1)
         o.peak_locations{rr,cc} = R.peak_location';
         o.peak_locations_trials{rr,cc} = R.peak_location_trials';
         if strcmp(R.marker_name,'airD')
-          centersD = centers';
-          o.centersD = centersD;
-          mTime = R.timeStart+(R.timeEnd-R.timeStart)/2;
-          firstCol = repmat(mTime(:,1),1,size(mTime,2));
-          mTime = mTime - firstCol;
-          mTime = mean(mTime);
+          R.timeStart+(R.timeEnd-R.timeStart)/2
+          centersD = centers;
+          meanD = nanmean(R.dist);
           for cccc = 1:length(centers)
-             ind = find(R.xs - centersD(cccc)>0,1,'first');
+             ind = find(R.xs - centersT(cccc)>0,1,'first');
              if isempty(ind)
                centers(cccc) = NaN;
              else
-               centers(cccc) = mTime(ind);
+               centers(cccc) = meanD(ind);
              end
           end
         end
         if strcmp(R.marker_name,'airID')
-          centersD = centers';
-          o.centersD = centersD;
-          mTime = R.timeStart+(R.timeEnd-R.timeStart)/2;
-          firstCol = repmat(mTime(:,1),1,size(mTime,2));
-          mTime = mTime - firstCol;
-          mTime = mean(mTime);
+          centersT = centers;
+          meanD = nanmean(R.duration);
           for cccc = 1:length(centers)
-             ind = find(R.xs - centersD(cccc)>0,1,'first');
+             ind = find(R.xs - centersT(cccc)>0,1,'first');
              if isempty(ind)
                centers(cccc) = NaN;
              else
-               centers(cccc) = mTime(ind);
+               centers(cccc) = meanD(ind);
              end
           end
         end
         o.centers{rr,cc} = centers';
-        
         if strcmp(R.marker_name,'airD')
             bins = 0:50:150;
             bins = 0:75:150;
