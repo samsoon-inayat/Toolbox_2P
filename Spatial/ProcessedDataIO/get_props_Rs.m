@@ -1,7 +1,7 @@
 function o = get_props_Rs(Rs,ntrials)
 
 if ~exist('ntrials','var')
-    ntrials = 5;
+    ntrials = 50;
 end
 
 % if ~exist('scale','var')

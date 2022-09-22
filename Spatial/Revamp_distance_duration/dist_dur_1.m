@@ -7,7 +7,7 @@ si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_
 Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
 props_C = get_props_Rs(Rs_C,ntrials);
 sel_pop_C = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
-
+%%
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
 varT = 11;%:length(params)
 for pii = varT

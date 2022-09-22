@@ -74,7 +74,7 @@ end
 disp('Done');
 
 %%
-binwidths = [0.25 3];
+% binwidths = [0.25 3];
 ctl = [3 4 5]; sml = {'airOnsets55','airOffsets55'}; owr = [0 0 0];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters_selected_contexts(ei(ii),binwidths,owr,ctl,sml);
