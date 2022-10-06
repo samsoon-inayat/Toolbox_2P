@@ -67,9 +67,9 @@ ra.ranova
 n = 0;
 
 
-    mVar = ra.est_marginal_means.Mean;
-    semVar = ra.est_marginal_means.Formula_StdErr;
-    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < -0.05;
+    mVar = ra.EM.Group_by_Day.Mean;
+    semVar = ra.EM.Group_by_Day.Formula_StdErr;
+%     combs = ra.MC.Group_by_Day.combs; p = ra.MC.Group_by_Day.p; h = ra.MC.Group_by_Day.p < -0.05;
     xdata = 1:8;
     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.9 1],'color','w');
     hold on;
