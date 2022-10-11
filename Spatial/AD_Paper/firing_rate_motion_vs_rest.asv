@@ -9,15 +9,14 @@ function firing_rate_motion_vs_rest
 
 Rs_C = oC.Rs;% get_rasters_data(ei_C,selContexts,rasterNames);
 Rs_A = oA.Rs;% get_rasters_data(ei_A,selContexts,rasterNames);
-% typeP = {'all','vals'
+typeP = 'Population';
 thr = -1;
 %%
 fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
 if 1
-    cellListC = cell_list_op(sel_pop_C,[],'or',1);
-    cellListA = cell_list_op(sel_pop_A,[],'or',1);
-    out_C = get_spike_rate(ei_C,thr,cellListC);
-    out_A = get_spike_rate(ei_A,thr,cellListA);
+    cellList = cell_list_op(sel_pop_C,[],'or',1);
+    out_C = get_spike_rate(ei_C,thr);
+    out_A = get_spike_rate(ei_A,thr);
     save(fileName,'out_C','out_A','thr');
 else
     temp = load(fileName);
@@ -29,8 +28,8 @@ tcolors = {'k','r','k','r'};
 n=0;
 %%
 if 1
-    perc_cells_or_C = out_C.m_sp_animal_level_resp_cells;
-    perc_cells_or_A = out_A.m_sp_animal_level_resp_cells;
+    perc_cells_or_C = out_C.m_sp_animal_level;
+    perc_cells_or_A = out_A.m_sp_animal_level;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
     
     mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(3) std(perc_cells_or_A)/sqrt(5)];
