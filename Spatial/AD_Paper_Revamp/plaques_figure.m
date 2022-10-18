@@ -1,8 +1,8 @@
 function plaques_figure
 
-pf_parea
+% pf_parea
 
-% pf_mm2
+pf_mm2
 
 
 function pf_parea
@@ -47,7 +47,7 @@ xdata = make_xdata([2],[1 1.5]);
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
-    xticklabels = {'Control','APP'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+    xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
     make_bars_hollow(hbs(5:end))
     ylabel('area (%)');
 %     set_axes_top_text_no_line(ff.hf,gca,'Amyloid Plaque',[-0.1 0 0.1 0]);
@@ -95,7 +95,7 @@ xdata = make_xdata([2],[1 1.5]);
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
-    xticklabels = {'Control','APP'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+    xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
     make_bars_hollow(hbs(5:end))
     ylabel('count/mm^2');
     set_axes_top_text_no_line(ff.hf,gca,'Amyloid Plaque',[-0.1 0 0.1 0]);
