@@ -49,11 +49,11 @@ if 1
     end
     % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 0.08],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
-    xticks = xdata(1:end)+0; xticklabels = {'Control','APP'};
+    xticks = xdata(1:end)+0; xticklabels = {'C-TG','A-TG'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     xtickangle(30);
     changePosition(gca,[0.15 0.05 -0.25 -0.1])
-    put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing','Rate (Hz)'},[0 0 0]});
+    put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing','Rate (AU)'},[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_overall'),600);
 return;
@@ -124,6 +124,7 @@ if 1
     end
     hold on;
 %     tcolors ={colors{1};colors{2};colors{1};colors{2};colors{3};colors{4}};
+  h(end) = 0;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',0.005,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.0001);
@@ -133,7 +134,7 @@ if 1
     set(hbs(1),'facecolor',[0.5 0.5 0.5],'edgecolor','k');
     set(hbs(3),'facecolor',[0.5 0.5 0.5],'edgecolor','k');
     set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 0.08],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
-    xticks = [1.5 4.5]; xticklabels = {'Control','APP'};
+    xticks = [1.5 4.5]; xticklabels = {'C-TG','A-TG'};
 %     xtickangle(20)
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     changePosition(gca,[0.17 0.05 -0.08 -0.1]);

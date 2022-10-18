@@ -41,7 +41,7 @@ mData.conj_comp_colors = [mData.dcolors(9);mData.colors([3 5])];
 % display_colors(mData.colors);
 Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
 Uleth_one_drive = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P';
-Uleth_one_drive = 'E:\PostProcessing\AD_paper';
+Uleth_one_drive = 'S:\PostProcessing\AD_paper';
 mData.pdf_folder = [Uleth_one_drive '\PDFs']; 
 mData.pd_folder = [Uleth_one_drive '\PD_Matlab'];
 disp('Done');

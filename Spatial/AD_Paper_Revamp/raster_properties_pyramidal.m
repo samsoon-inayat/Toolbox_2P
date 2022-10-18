@@ -18,13 +18,13 @@ Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si)
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
-pop_var_name = {'all'};
-pop_var_name = {'vals','good_zMI'};
+% pop_var_name = {'all'};
+pop_var_name = {'vals'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 %%
 cell_types = {'C1','C2','C3','C4'};
 bins = [0 50 100 150];% bins = [0 150];
-nbins = length(bins)-1;
+nbins = 1;%length(bins)-1;
 %     sel_pop_C = bin_cells(props_C.peak_locations,bins,sel_pop_C); sel_pop_A = bin_cells(props_A.peak_locations,bins,sel_pop_A);
 if nbins > 1
 %     [sel_pop_C,perc_C] = bin_cells(props_C.peak_locations,bins,sel_pop_C); [sel_pop_A,perc_A] = bin_cells(props_A.peak_locations,bins,sel_pop_A);
@@ -38,10 +38,10 @@ if nbins > 1
     end
 end
 %     
-
+mean_var_C = [];mean_var_A = [];
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 9;%:length(params)
+varT = 3;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); mean_var_A = exec_fun_on_cell_mat(sel_pop_A,'percent');
@@ -130,7 +130,7 @@ set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks =
 xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
 make_bars_hollow(hbs(5:end));
 put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'C-TG','A-TG'});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
 format_axes_b(gca);
 set(ht,'FontWeight','Bold');
@@ -157,7 +157,7 @@ axes(ff.h_axes(1,1));
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','bonferroni'},[1.5 1 1]);
     xdata = make_xdata([4 4],[1 1.5]);   
 %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
-%     h(h==1) = 0;
+    h(h==1) = 0;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);

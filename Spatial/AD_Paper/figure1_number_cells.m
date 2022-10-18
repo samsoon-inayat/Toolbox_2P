@@ -18,7 +18,10 @@ RsC = find_responsive_rasters(RsC,1:10);
 RsA = get_rasters_data(ei_A,selContexts,rasterNames);
 mRsA = calc_mean_rasters(RsA,1:10);
 RsA = find_responsive_rasters(RsA,1:10);
-
+%%
+RsC = oC.Rs;% get_rasters_data(ei_C,selContexts,rasterNames);
+RsA = oA.Rs;% get_rasters_data(ei_A,selContexts,rasterNames);
+% typeP = {'all','vals'
 %%
 if 1
 
@@ -40,7 +43,7 @@ end
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.5,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
     set(gca,'xlim',[0.25 2.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
-    xticks = [1 2]; xticklabels = {'Control','APP'}; 
+    xticks = [1 2]; xticklabels = {'C-TG','A-TG'}; 
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     for ii = 1:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
