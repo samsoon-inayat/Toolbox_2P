@@ -79,7 +79,7 @@ return;
 end
 
 %% 12months probe time
-if 0
+if 1
 [num,strings,raw] = xlsread(filename,7,'A1:B24');
 [h,p,stat] = ttest2(num(1:9,2),num(10:21,2))
 % [hc,pc,statc] = ttest(num(1:9,2),25)

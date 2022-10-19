@@ -19,7 +19,7 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 % pop_var_name = {'all'};
-pop_var_name = {'vals'};
+pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 %%
 cell_types = {'C1','C2','C3','C4'};
@@ -165,7 +165,7 @@ set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks =
 xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
 make_bars_hollow(hbs(5:end));
 [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'C-TG','A-TG'});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
 set(ht,'FontWeight','Bold');
 format_axes_b(gca);

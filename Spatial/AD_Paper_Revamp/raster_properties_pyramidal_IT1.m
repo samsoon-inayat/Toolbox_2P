@@ -19,12 +19,12 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
-pop_var_name = {'vals'};
+pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 %%
 cell_types = {'C1','C2','C3','C4'};
 bins = [0 5 10 15];% bins = [0 150];
-nbins = length(bins)-1;
+nbins = 1;%length(bins)-1;
 %     sel_pop_C = bin_cells(props_C.peak_locations,bins,sel_pop_C); sel_pop_A = bin_cells(props_A.peak_locations,bins,sel_pop_A);
 if nbins > 1
 %     [sel_pop_C,perc_C] = bin_cells(props_C.peak_locations,bins,sel_pop_C); [sel_pop_A,perc_A] = bin_cells(props_A.peak_locations,bins,sel_pop_A);
@@ -89,7 +89,7 @@ tcolors = {'k','r'};%{colors{1};colors{2};colors{3};colors{4};colors{1};colors{2
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
 set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
-xticklabels = {'Control','APP'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
 make_bars_hollow(hbs(1:end));
 put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
 format_axes_b(gca);
@@ -106,7 +106,7 @@ switch varT
     case 4
         MY = 0.7; ysp = 3; mY = 0; titletxt = 'Goodness-of-Fit (1D Gauss)'; ylabeltxt = {'R-squared'};
     case 3
-        MY = 7; ysp = 0.3; mY = 0; titletxt = ''; ylabeltxt = {'Mutual Information','(z-score)'};
+        MY = 0.7; ysp = 0.3; mY = 0; titletxt = 'Mutual Information'; ylabeltxt = {'z-score'};
     case 5
         MY = 60; ysp = 4; mY = 0; titletxt = ''; ylabeltxt = {'Percent of Silent','Neurons'};% for all cells (vals) MY = 70
     case 7
@@ -131,7 +131,7 @@ set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks =
 xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
 make_bars_hollow(hbs(5:end));
 put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'C-TG','A-TG'});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
 format_axes_b(gca);
 set(ht,'FontWeight','Bold');
@@ -142,7 +142,7 @@ save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 ff = makeFigureRowsCols(107,[10 5 2 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
 switch varT
     case 1 % responsive cells 
-        MY = 20; ysp = 2; mY = 0; titletxt = ''; ylabeltxt = {'Percent of Spatially','Tuned Cells'}; % for all cells (vals) MY = 80
+        MY = 80; ysp = 5; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'}; % for all cells (vals) MY = 80
     case 2
         MY = 90; ysp = 4; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'Percent of Trials'};% for all cells (vals) MY = 70
     case 3
@@ -158,7 +158,7 @@ axes(ff.h_axes(1,1));
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','bonferroni'},[1.5 1 1]);
     xdata = make_xdata([4 4],[1 1.5]);   
 %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
-%     h(h==1) = 0;
+    h(h==1) = 0;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
@@ -166,7 +166,7 @@ set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks =
 xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
 make_bars_hollow(hbs(5:end));
 [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Control','APP'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'C-TG','A-TG'});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);
 set(ht,'FontWeight','Bold');
 format_axes_b(gca);
@@ -378,7 +378,7 @@ put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]); set(ht,'FontWeight','Bold');
 %     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4','C1','C2','C3','C4'},{[-0.01 0.02]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Control','APP'},{[-0.12 0]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'C-TG','A-TG'},{[-0.12 0]});
 
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Bin','bonferroni'},[1.5 1 1]);
 xdata = make_xdata([3],[1 1.5]);   
@@ -453,7 +453,7 @@ put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]); set(ht,'FontWeight','Bold');
 %     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4','C1','C2','C3','C4'},{[-0.01 0.02]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Control','APP'},{[-0.12 0]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'C-TG','A-TG'},{[-0.12 0]});
 
 set(ff.h_axes(1,2),'Visible','Off');
 
@@ -562,7 +562,7 @@ for ii = 4:6
 end
 xtickangle(30);
 put_axes_labels(gca,{[],[0 0 0]},{typeCorr{ci},[0 0 0]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Control','APP'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C-TG','A-TG'});
 format_axes_b(gca);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_correlation',FF{ci}),600);
 %%
@@ -592,7 +592,7 @@ for ii = 4:6
 end
 xtickangle(30);
 put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Control','APP'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C-TG','A-TG'});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 0 0 0]); set(ht,'FontWeight','Bold');
 format_axes_b(gca);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_correlation',FF{ci}),600);

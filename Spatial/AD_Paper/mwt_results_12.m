@@ -84,13 +84,13 @@ n = 0;
 %     xtickangle(30);
     changePosition(gca,[0.08 0.13 -0.01 -0.1])
     put_axes_labels(gca,{'Days',[0 0 0]},{{'Average','Latency (s)'},[0 0 0]});
-    putLegend(gca,{'Control','APP',[5 1 4 50]});
+    putLegend(gca,{'C-TG','A-TG',[5 1 4 50]});
     save_pdf(hf,mData.pdf_folder,'Figure_1_mwt_anova_latency.pdf',600);
 return;
 end
 
 %% 12months probe time
-if 0
+if 1
 [num,strings,raw] = xlsread(filename,3,'A1:B24');
 [h,p,stat] = ttest2(num(1:11,2),num(12:23,2))
 % [hc,pc,statc] = ttest(num(1:11,2),25)
@@ -109,7 +109,7 @@ n = 0;
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
     plot([0 3],[25 25],':','color','k')
     set(gca,'xlim',[0.25 2.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
-    xticks = [1 2]; xticklabels = {'Control','APP'}; 
+    xticks = [1 2]; xticklabels = {'C-TG','A-TG'}; 
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     for ii = 1:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
@@ -144,7 +144,7 @@ n = 0;
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.001);
     plot([0 3],[25 25],':','color','k')
     set(gca,'xlim',[0.25 2.75],'ylim',[0 maxY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
-    xticks = [1 2]; xticklabels = {'Control','APP'}; 
+    xticks = [1 2]; xticklabels = {'C-TG','A-TG'}; 
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     for ii = 1:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});

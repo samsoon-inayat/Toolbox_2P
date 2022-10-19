@@ -98,5 +98,5 @@ xdata = make_xdata([2],[1 1.5]);
     xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
     make_bars_hollow(hbs(5:end))
     ylabel('count/mm^2');
-    set_axes_top_text_no_line(ff.hf,gca,'Amyloid Plaque',[-0.1 0 0.1 0]);
+%     set_axes_top_text_no_line(ff.hf,gca,'Amyloid Beta Plaques',[-0.1 0 0.3 0]);
     save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
