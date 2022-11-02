@@ -4,7 +4,8 @@ while 1
     figdim = 3;
     hf = get_figure(5,[9 2 figdim figdim]);
             
-    all_cells_list = sel_pop_C; event_type = cell_types;
+%     all_cells_list = sel_pop_C; event_type = cell_types;
+    all_cells_list = all_exc_inh; %event_type = cell_types;
 %     all_cells_list = all_gV_A;
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);

@@ -87,18 +87,18 @@ end
 toc
 %%
 clc
+binwidths = [0.11 3];
 tic
 for ii = 1:length(ei)
     ei(ii) = make_and_load_rasters(ei(ii),binwidths,[0 0 0]);
 end
-toc
-%%
-tic
+
 for ii = 1:length(ei)
     ei(ii) = get_motion_onset_response(ei(ii),[0 0 0 0 0]);
 end
 toc
 disp('Done');
+send_email('samsoon.inayat@gmail.com','Done');
 %%
 tic
 for ii = 1:length(ei)

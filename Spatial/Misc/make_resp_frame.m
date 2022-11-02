@@ -1,0 +1,28 @@
+function mainMask = make_resp_frame(ei,pl,allresp)
+[ops,astat,arecells] = get_ops(ei,pl);
+FS = 8;
+micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;
+mimg = ops.meanImgE;
+maskZ = zeros(size(mimg));
+mainMask = maskZ;
+for jj = 1:size(allresp,2)
+  selCells = allresp{1,jj};
+  allmask = maskZ;
+  iii = 0;
+  for ii = 1:length(astat)
+%     [jj ii]
+    if ~logical(arecells(ii,1))
+      continue;
+    end
+    iii = iii + 1;
+    if ~selCells(iii)
+      continue;
+    end
+    stat = astat(ii);
+    mask = maskZ;
+    mask(stat{1}.ipix) = 1;
+    mask = mask';
+    allmask(mask==1) = 1;
+  end
+  mainMask = mainMask + allmask;
+end

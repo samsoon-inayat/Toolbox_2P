@@ -3,7 +3,7 @@ function send_email(email,message)
 setpref ('Internet','E_mail','omnibot317@gmail.com');
 setpref ('Internet','SMTP_Server','smtp.gmail.com') ;
 setpref('Internet','SMTP_Username','omnibot317'); 
-setpref('Internet','SMTP_Password','un1verse') ;
+setpref('Internet','SMTP_Password','llkralqdvppxgknk') ;
 props = java.lang.System.getProperties;
 props.setProperty('mail.smtp.auth','true');
 props.setProperty('mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFactory');

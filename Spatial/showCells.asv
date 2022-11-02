@@ -43,13 +43,8 @@ for ii = 1:length(astat)
 %   cellY = double(stat{1}.ypix);% + double(min(yrange));
 %   plot(cellX,cellY);
 end
-img3 = cat(3,mimg,mimg,mimg);
-ch = 2;
-rch = img3(:,:,ch);
-rch = rch + max(rch(:))*(perc(1)*allmask);
-img3(:,:,ch) = rch;
-img2 = img3(:,:,setdiff([1 2 3],ch));
-imagesc(img3,[min(img2(:)) 	perc(2)*max(img2(:))]);
+mmimg = mimg + (max(mimg(:)*)
+imagesc(allmask);
 % mx = min(cellX);
 % my = max(cellY);
 % text(mx-10,my+20,num2str(217),'color','c','fontsize',FS,'FontWeight','Bold');  

@@ -1,8 +1,4 @@
-function showCells(ha,ei,pl,selCells,perc)
-if isempty(ha)
-    figure(1000);clf;
-    ha = axes;
-end
+function make_resp_frame(ei,pl,selCells)
 [ops,astat,arecells] = get_ops(ei,pl);
 % astat = astat(logical(arecells(:,1)));
 FS = 8;
