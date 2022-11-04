@@ -850,10 +850,81 @@ end
 an = 4; pl = 1;
 
 maskFrame = make_resp_frame(ei{an},pl,all_resp_T(an,:));
-figure(1000);clf;
-imagesc(maskFrame,[0 200]);colorbar;
-colormap jet
+%%
+%%
+  ntrials = 50; %
+    an = 4; pl = 1;
+
+    sic = {[Lb Lbs];[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc]};
+    sic = {[Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Ar_Offc ArL_Offc Ars_Offc]};
+    sic = {[Ab_On Abs_On];[Ar_On ArL_On Ars_On]};
+%     sic = {[Lb Lbs];[Ab_On Abs_On];[Ar_On ArL_On Ars_On];};
+    clear all_gFR all_exc all_inh all_gV 
+    prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
+    cell_sel = {'good_FR','vals','exc','inh'};
+    varName = {'all_gFR','all_gV','all_exc','all_inh'};
+    for cii = 1:length(cell_sel);
+        cmdTxt = sprintf('clear %s',varName{cii});eval(cmdTxt);
+    end
+    pni = 7;
+    all_exc_inh = [];
+    for ii = 1:length(sic)
+        sit = sic{ii};
+        tRs = o.Rs(:,sit);
+        props1 = get_props_Rs(tRs,ntrials);
+        for cii = 1:length(cell_sel)
+            cmdTxt = sprintf('gFR = props1.%s;',cell_sel{cii});eval(cmdTxt);
+            if pni == 1
+                rf = find_percent(gFR);
+                cmdTxt = sprintf('%s(:,ii) = mean(rf,2);',varName{cii}); eval(cmdTxt)
+            else
+                if pni == 7
+                    cmdTxt = sprintf('%s(:,ii) = cell_list_op(gFR,[],''or'',1);',varName{cii});eval(cmdTxt);
+                else
+                    if pni == 3 || pni == 4
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{3}); eval(cmdtxt);
+                        if pni == 3
+                            cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''nanmean'',gFR),2);',varName{cii});eval(cmdTxt);
+                        else
+                            for rrr = 1:size(rf,1)
+                                for ccc = 1:size(rf,2)
+                                    temp = isnan(rf{rrr,ccc});
+                                    rf1(rrr,ccc) = 100*sum(temp(gFR{rrr,ccc}))/size(rf{rrr,ccc},1);
+                                end
+                            end
+                            cmdTxt = sprintf('%s(:,ii) = mean(rf1,2);',varName{cii}); eval(cmdTxt)
+                        end
+                    else
+                        cmdtxt = sprintf('rf = props1.%s;',prop_names{pni}); eval(cmdtxt);
+                        cmdTxt = sprintf('%s(:,ii) = mean(exec_fun_on_cell_mat(rf,''mean'',gFR),2);',varName{cii});eval(cmdTxt);
+                    end
+                end
+            end
+        end
+        all_exc_inh = [all_exc_inh all_exc(:,ii) all_inh(:,ii)];
+    end
+
+% maskFrame = make_resp_frame(ei{an},pl,all_gFR(an,:));
+all_gFRs = all_gFR(an,1:2);
+% maskFrame = make_resp_frame(ei{an},pl,all_gFRs);
+maskFrame = com_resp_frame(ei{an},pl,all_gFRs);
+
+
+
+%%
+ff = makeFigureRowsCols(107,[10 3 2.5 2.5],'RowsCols',[1 1],'spaceRowsCols',[0.2 0.2],'rightUpShifts',[0.15 0.13],'widthHeightAdjustment',[-10 -300]);
+    set(gcf,'color','w');     ylims = [0 1];
+    stp = 0.3; widths = [2 2 2 2 0.4 0.4]-0.2; gap = 1.75; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    gap1 = 0.4; widths1 = 0.75;
+imagesc(maskFrame,[0 max(maskFrame(:))]);
 axis equal
+axis off
+box off
+[hc,hca] = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',0),sprintf('%d',max(maskFrame(:)))},6,'eastoutside',[0.07 0.05 0.07 0.05]);
+  colormap jet
+
+  save_pdf(ff.hf,mData.pdf_folder,sprintf('topography.pdf'),600);
+
 %% Reviewer 1 last comment related
 
 filename = fullfile(mData.pdf_folder,sprintf('movie'));

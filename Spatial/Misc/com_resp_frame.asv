@@ -1,4 +1,4 @@
-function mainMask = make_resp_frame(ei,pl,allresp)
+function mainMask = com_resp_frame(ei,pl,allresp)
 [ops,astat,arecells] = get_ops(ei,pl);
 FS = 8;
 micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;

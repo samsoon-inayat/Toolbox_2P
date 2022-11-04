@@ -1,12 +1,16 @@
-function showCells(ha,ei,pl,selCells,perc)
-if isempty(ha)
-    figure(1000);clf;
-    ha = axes;
-end
-[ops,astat,arecells] = get_ops(ei,pl);
+function showCells(ha,tei,pl,selCells,perc)
+%%
+% if isempty(ha)
+%     tei = evalin('base','tei(4)');
+%     pl = 1;
+% end
+tei = ei{4};
+[ops,astat,arecells] = get_ops(tei,pl);
+perc = [0.3 0.3];
+selCells = logical(arecells(:,1));
 % astat = astat(logical(arecells(:,1)));
 FS = 8;
-micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;
+micronsPerPixel = tei.thorExp.widthUM/tei.thorExp.pixelX;
 xrange = ops.xrange;
 yrange = ops.yrange;
 mimg = ops.meanImgE;
@@ -15,6 +19,8 @@ if isempty(ha)
     figure(102);clf;plot(0,0);
     ha = gca;
 end
+figure(1000);clf;
+    ha = axes;
 axes(ha);
 imagesc(mimg,[min(mimg(:)) max(mimg(:))]);
 hold on;
@@ -25,7 +31,7 @@ axis off;
 hold on;
 allmask = maskZ;
 iii = 0;
-for ii = 1:length(astat)
+for ii = 58%:length(astat)
   if ~logical(arecells(ii,1))
     continue;
   end
@@ -58,7 +64,7 @@ return;
 
 
 if ~iscell(selCells)
-    ccs = (selCells);%ei.plane{pl}.tP.areCells(logical(selCells));
+    ccs = (selCells);%tei.plane{pl}.tP.areCells(logical(selCells));
     for cc = 1:length(ccs)
         if ~ccs(cc)
           continue;
@@ -131,7 +137,7 @@ plot([scaleBarS,scaleBarE],[scaleBarY,scaleBarY],'c','linewidth',3);
 if iscell(selCells)
 %     title(tcColors');
 else
-%     title(ei.recordingFolder)
+%     title(tei.recordingFolder)
 end
 xlim(xrange); ylim(yrange);
 disp(tcColors);
