@@ -558,7 +558,7 @@ switch ci
     case 2
         MY = 0.25; ysp = 0.05; mY = 0; titletxt = 'PV Corr.'; ylabeltxt = {'A.U.'};
     case 3
-        MY = 0.95; ysp = 0.001; mY = 0.8; titletxt = 'Rate Remap (ns)'; ylabeltxt = {'A.U.'};
+        MY = 0.95; ysp = 0.001; mY = 0.8; titletxt = 'Rate Remap ('; ylabeltxt = {'A.U.'};
 end
 
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Cond','hsd'},[1.5 1 1]);

@@ -29,6 +29,7 @@ for rr = 1:size(RsC,1)
     numset1(rr) = length(RsC{rr,1}.iscell);
     numset2(rr) = length(RsA{rr,1}.iscell);
 end
+numset1(1) = (sum(RsC{1,1}.cns(:,2) == 1) + sum(RsC{1,1}.cns(:,2) == 2))/2;
 [h,p,ci,stat] = ttest2(numset1,numset2)
 [mC,semC] = findMeanAndStandardError(numset1);
 [mA,semA] = findMeanAndStandardError(numset2);
