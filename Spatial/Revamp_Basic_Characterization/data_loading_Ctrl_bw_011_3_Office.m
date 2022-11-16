@@ -66,12 +66,13 @@ for ii = 1:length(ei)
     ei(ii) = get_control_air_onsets_C(ei(ii));
     ei(ii) = get_control_air_offsets(ei(ii));
 end
+send_email('samsoon.inayat@gmail.com','Done');
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
     ei(ii) = make_and_load_motion_correction(ei(ii),binwidths,[0 0 0]);
 end
-
+send_email('samsoon.inayat@gmail.com','Done');
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)
