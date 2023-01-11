@@ -2,9 +2,9 @@ function raster_plots
 
 
 %%
-an = 4; cn = 2;
+an = 1; cn = 2;
 
-asi = [Ab_On Abs_Off Ar_On Ar_Off Ar_D Ar_T];
+asi = [Ab_On Abs_Off Ar_On Ar_Off];
     si = asi(cn);
 %     si = [Lb];
     Rs = o.RsMC(:,asi);

@@ -33,6 +33,7 @@ while 1
 %     Ab_Onp = 32; Ar_Onp = 33; ArL_Onp = 34; Ars_Onp = 35; Abs_Onp = 36;
     break
 end
+magfac = mData.magfac;
 n = 0;
 
 %% after loading data go to other files for graphs and statistical testing for general graphs code go to brake_vs_no_brake_general (e.g., for making VENN diagrams)
