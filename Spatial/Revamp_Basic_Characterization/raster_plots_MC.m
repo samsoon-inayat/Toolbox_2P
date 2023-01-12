@@ -2,7 +2,7 @@ function raster_plots
 
 
 %%
-an = 1; cn = 2;
+an = 1; cn = 1;
 
 asi = [Ab_On Abs_Off Ar_On Ar_Off];
     si = asi(cn);
