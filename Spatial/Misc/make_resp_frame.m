@@ -1,4 +1,4 @@
-function mainMask = make_resp_frame(ei,pl,allresp)
+function [mainMask,all_masks] = make_resp_frame(ei,pl,allresp)
 [ops,astat,arecells] = get_ops(ei,pl);
 FS = 8;
 micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;
@@ -11,11 +11,11 @@ for jj = 1:size(allresp,2)
   iii = 0;
   for ii = 1:length(astat)
 %     [jj ii]
-    if ~logical(arecells(ii,1))
+    if ~logical(arecells(ii,1)) % check if it is a cell
       continue;
     end
     iii = iii + 1;
-    if ~selCells(iii)
+    if ~selCells(iii) % check if cell is responsive
       continue;
     end
     stat = astat(ii);
@@ -24,5 +24,6 @@ for jj = 1:size(allresp,2)
     mask = mask';
     allmask(mask==1) = 1;
   end
+  all_masks(:,:,jj) = allmask;
   mainMask = mainMask + jj*allmask;
 end

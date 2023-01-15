@@ -847,17 +847,18 @@ for ttt = 1:10
 end
 
 %% Reviewer 1 last comment related
-an = 4; pl = 1;
+an = 1; pl = 1;
 
 maskFrame = make_resp_frame(ei{an},pl,all_resp_T(an,:));
 %%
 %%
   ntrials = 50; %
-    an = 4; pl = 1;
+    an = 5; pl = 1;
 
     sic = {[Lb Lbs];[Ab_On Abs_On];[Ab_Off Abs_Off];[Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On];[Ar_Off ArL_Off Ars_Off];[Ar_Offc ArL_Offc Ars_Offc]};
-    sic = {[Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Ar_Offc ArL_Offc Ars_Offc]};
-    sic = {[Ab_On Abs_On];[Ar_On ArL_On Ars_On]};
+    sic = {[Lb];[Ab_On];[Ab_Off];[Ab_Offc];[Ar_On];[Ar_Off];[Ar_Offc]};
+%     sic = {[Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ab_Offc Abs_Offc];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Ar_Offc ArL_Offc Ars_Offc]};
+%     sic = {[Ab_On Abs_On];[Ar_On ArL_On Ars_On]};
 %     sic = {[Lb Lbs];[Ab_On Abs_On];[Ar_On ArL_On Ars_On];};
     clear all_gFR all_exc all_inh all_gV 
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
@@ -905,26 +906,48 @@ maskFrame = make_resp_frame(ei{an},pl,all_resp_T(an,:));
     end
 
 % maskFrame = make_resp_frame(ei{an},pl,all_gFR(an,:));
-all_gFRs = all_gFR(an,1:2);
+% all_gFRs = all_gFR(an,1:2);
 % maskFrame = make_resp_frame(ei{an},pl,all_gFRs);
-maskFrame = com_resp_frame(ei{an},pl,all_gFRs);
+% maskFrame = com_resp_frame(ei{an},pl,all_gFRs);
+[maskFrame,all_masks] = make_resp_frame(ei{an},pl,all_gV);
+% save_mean_img(ei);
 
 
+maskFrame(maskFrame==0) = NaN;
 
-%%
+
 ff = makeFigureRowsCols(107,[10 3 2.5 2.5],'RowsCols',[1 1],'spaceRowsCols',[0.2 0.2],'rightUpShifts',[0.15 0.13],'widthHeightAdjustment',[-10 -300]);
     set(gcf,'color','w');     ylims = [0 1];
     stp = 0.3; widths = [2 2 2 2 0.4 0.4]-0.2; gap = 1.75; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     gap1 = 0.4; widths1 = 0.75;
-imagesc(maskFrame,[0 max(maskFrame(:))]);
+mm = 1; 
+MM = 7; %MM = max(maskFrame(:));
+imagesc(maskFrame,[mm MM]);
 axis equal
 axis off
 box off
-[hc,hca] = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',0),sprintf('%d',max(maskFrame(:)))},6,'eastoutside',[0.07 0.05 0.07 0.05]);
+[hc,hca] = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%d',mm),sprintf('%d',MM)},6,'eastoutside',[0.07 0.05 0.07 0.05]);
   colormap jet
 
   save_pdf(ff.hf,mData.pdf_folder,sprintf('topography.pdf'),600);
 
+  %% quantification of salt and pepper distribution
+  % the idea is draw a circle around each cell and then see what is the id
+  % of the responsiveness from other sensorimotor events
+  
+  frame_of_choice = 1;
+  
+  
+%%
+files = dir('*.npy');
+for ii = 1:length(files)
+    if files(ii).isdir
+        continue;
+    else
+        mi_cp{ii} = readNPY(files(ii).name);
+    end
+end
+  
 %% Reviewer 1 last comment related
 
 filename = fullfile(mData.pdf_folder,sprintf('movie'));
@@ -934,7 +957,7 @@ an = 4; pl = 1;
 hf = figure(1000);clf;
 ha = axes;
 for ii = 1:200
-  showCells(ha,ei{an},pl,all_resp_T{an,ii},[0.3 0.3]);
+  ha = showCells(ha,ei{an},pl,all_resp_T{an,ii},[0.3 0.3]);
   Fr = getframe(ha);
   writeVideo(v,Fr);
   writeVideo(v,Fr);

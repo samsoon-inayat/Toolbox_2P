@@ -1,10 +1,10 @@
-function showCells(ha,tei,pl,selCells,perc)
+function ha = showCells(ha,tei,pl,selCells,perc)
 %%
 % if isempty(ha)
 %     tei = evalin('base','tei(4)');
 %     pl = 1;
 % end
-tei = ei{4};
+% tei = ei{4};
 [ops,astat,arecells] = get_ops(tei,pl);
 perc = [0.3 0.3];
 selCells = logical(arecells(:,1));
