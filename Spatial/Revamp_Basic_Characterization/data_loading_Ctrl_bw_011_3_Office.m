@@ -100,6 +100,30 @@ end
 toc
 disp('Done');
 send_email('samsoon.inayat@gmail.com','Done');
+%% cell_pose total cells
+
+files = dir(sprintf('%s/*.mat',mData.pd_folder));
+for ii = 1:length(files)
+    tname = files(ii).name;
+    anN = str2num(tname(9)); plN = str2num(tname(11));
+    mi_cp{ii} = load(fullfile(files(ii).folder,files(ii).name));
+    ei{anN}.plane{plN}.total_cells = length(unique(mi_cp{ii}.mask))-1;
+end
+
+% for ii = 1:length(files)
+%     maskii = mi_cp{ii}.mask;
+%     totC = length(unique(maskii))-1;
+% %     if ii == 1
+% %         ei{1}.plane{1}.totalCells = 
+% %     end
+% %     if ii == 2
+% %         ei{1}.plane{2}.totalCells = length(unique(maskii))-1;
+% %     end
+% %     rois = regionprops(maskii);
+% %     figure(10000);clf;imagesc(maskii);axis equal;colorbar
+% %     totalcells(ii) = length(unique(maskii))-1;
+% end
+
 %%
 tic
 for ii = 1:length(ei)

@@ -938,16 +938,7 @@ box off
   frame_of_choice = 1;
   
   
-%%
-files = dir('*.npy');
-for ii = 1:length(files)
-    if files(ii).isdir
-        continue;
-    else
-        mi_cp{ii} = readNPY(files(ii).name);
-    end
-end
-  
+
 %% Reviewer 1 last comment related
 
 filename = fullfile(mData.pdf_folder,sprintf('movie'));

@@ -910,6 +910,8 @@ maskFrame = make_resp_frame(ei{an},pl,all_resp_T(an,:));
 % maskFrame = make_resp_frame(ei{an},pl,all_gFRs);
 % maskFrame = com_resp_frame(ei{an},pl,all_gFRs);
 [maskFrame,all_masks] = make_resp_frame(ei{an},pl,all_gV);
+% save_mean_img(ei);
+
 
 maskFrame(maskFrame==0) = NaN;
 
@@ -933,8 +935,14 @@ box off
   % the idea is draw a circle around each cell and then see what is the id
   % of the responsiveness from other sensorimotor events
   
+  frame_of_choice = 1;
   
   
+%%
+files = dir(sprintf('%s/*.mat',mData.pd_folder));
+for ii = 1:length(files)
+    mi_cp{ii} = load(files(ii).name);
+end
   
 %% Reviewer 1 last comment related
 

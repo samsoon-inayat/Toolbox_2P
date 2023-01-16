@@ -7,18 +7,18 @@ add_to_path
 clear all
 % clc
 %%
-
+mainDrive = 'E:\';
 % data_folder1 = '\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
 % data_folder2 = '\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
 % processed_data_folder{1} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
 % processed_data_folder{2} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabRe';
 % processed_data_folder{3} = '\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\MatlabReD';
 
-data_folder1 = 'S:\Data';%'\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
-data_folder2 = 'S:\Data';%'\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
-processed_data_folder{1} = 'S:\PData\Processed_Data_15';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
-processed_data_folder{2} = 'S:\PData\Processed_Data_15\MatlabRe';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
-processed_data_folder{3} = 'S:\PData\Processed_Data_15\MatlabReD';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
+data_folder1 = fullfile(mainDrive,'Data');%'\\mohajerani-nas.uleth.ca\storage\homes\samsoon.inayat\Data';
+data_folder2 = 'E:\Data';%'\\mohajerani-nas.uleth.ca\storage2\homes\samsoon.inayat\Data';
+processed_data_folder{1} = 'E:\PData\Processed_Data_15';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15';
+processed_data_folder{2} = 'E:\PData\Processed_Data_15\MatlabRe';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab';
+processed_data_folder{3} = 'E:\PData\Processed_Data_15\MatlabReD';%'\\mohajerani-nas.uleth.ca\storage\homes\brendan.mcallister\2P\Processed_Data_15\Matlab_bw3';
 
 animal_list_control = {'183633';'183761';'183745';'183628';'183762'};
 date_list_control = {'2019-06-04';'2019-06-06';'2019-06-07';'2019-06-11';'2019-06-11'};
@@ -36,10 +36,10 @@ mData.shades = generate_shades(3);
 mData.conj_comp_colors = [mData.dcolors(9);mData.colors([3 5])];
 % display_colors(mData.colors);
 % Uleth_one_drive = 'Z:\homes\brendan.mcallister\2P';
-Uleth_one_drive = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\PDFs';
+Uleth_one_drive = fullfile(mainDrive,'PostProcessing\Revamp_Dist_Dur_Paper');
 % Uleth_one_drive = 'D:\OneDrive - University of Lethbridge\PDFs';
-mData.pdf_folder = [Uleth_one_drive '\PDFs15']; 
-mData.pd_folder = [Uleth_one_drive '\PDFs15\ProcessedDataMatlab'];
+mData.pdf_folder = [Uleth_one_drive '\PDFs']; 
+mData.pd_folder = [Uleth_one_drive '\PD'];
 mData.magfac = 1;
 disp('Done');
 %%
