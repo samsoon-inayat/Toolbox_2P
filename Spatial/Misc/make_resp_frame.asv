@@ -3,11 +3,9 @@ function [mainMask,all_masks,mimgg] = make_resp_frame(ei,pl,allresp)
 FS = 8;
 micronsPerPixel = ei.thorExp.widthUM/ei.thorExp.pixelX;
 mimg = ops.meanImgE;
-mimgg = ops.meanImg - min(ops.meanImg(:));
-mimgg = mimgg/max(mimgg(:));
+mimgg = o
 maskZ = zeros(size(mimg));
 mainMask = maskZ;
-orcells = cell_list_op(allresp,[],'or',1);
 for jj = 1:size(allresp,2)
   selCells = allresp{1,jj};
   allmask = maskZ;
@@ -31,5 +29,3 @@ for jj = 1:size(allresp,2)
   all_masks(:,:,jj) = allmask;
   mainMask = mainMask + jj*allmask;
 end
-
-mainMask(mainMask>size(allresp,2)) = 0;
