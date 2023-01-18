@@ -29,7 +29,6 @@ offsets = b.air_puff_f;
 light_onsets = b.stim_r;
 mData = evalin('base','mData');
 signals = get_calcium_data(pd_rec,pl);
-signals = get_calcium_data_raw(pd_rec,pl);
 % [xoff,yoff] = get_ca_motion_correction_data(pd_rec,pl);
 % r = sqrt(xoff.^2 + yoff.^2);
 % figure(33);
@@ -253,8 +252,10 @@ while 0
     break;
 end
 %% raw calcium traces and deconvolved spikes
-hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.97 0.5],'color','w'); hold on;
-plot(traceTime,signals(1,:)')
+hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.97 2.31],'color','w'); hold on;
+selectedCells = 1:10;
+for ii = 1:length(selectedCells)
+    plot(traceTime,signals(1:10,:)')
+end
 changePosition(gca,[-0.075 -0.005 0.16 -0.07]);
 xlim([0 traceTime(end)]);
-save_pdf(hf,mData.pdf_folder,sprintf('overall_pop.pdf'),600);

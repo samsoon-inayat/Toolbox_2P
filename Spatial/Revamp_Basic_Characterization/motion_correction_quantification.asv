@@ -130,7 +130,9 @@ while 1
         pValsMC(cn,:) = ra.ranova.pValue([3 5 7])';
     end
     %%
-    
+    ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 13],'spaceRowsCols',[0.1 0.016],'rightUpShifts',[0.035 0.18],'widthHeightAdjustment',[-18 -305]);
+    plot(1,1);
+    display_p_table(ha,
     %% speed
      ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 13],'spaceRowsCols',[0.1 0.016],'rightUpShifts',[0.035 0.18],'widthHeightAdjustment',[-18 -305]);
     set(gcf,'color','w'); set(gcf,'Position',[5 5 6.9 0.75]);
