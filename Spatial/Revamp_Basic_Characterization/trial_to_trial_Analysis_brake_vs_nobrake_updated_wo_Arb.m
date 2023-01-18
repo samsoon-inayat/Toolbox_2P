@@ -909,7 +909,7 @@ maskFrame = make_resp_frame(ei{an},pl,all_resp_T(an,:));
 % all_gFRs = all_gFR(an,1:2);
 % maskFrame = make_resp_frame(ei{an},pl,all_gFRs);
 % maskFrame = com_resp_frame(ei{an},pl,all_gFRs);
-[maskFrame,all_masks,mimg] = make_resp_frame(ei{an},pl,all_gV(an,:));
+[maskFrame,all_masks,mimg] = make_resp_frame(ei{an},pl,all_inh(an,:));
 % save_mean_img(ei);
 
 
@@ -1020,7 +1020,7 @@ for  an = 1:5
     % all_gFRs = all_gFR(an,1:2);
     % maskFrame = make_resp_frame(ei{an},pl,all_gFRs);
     % maskFrame = com_resp_frame(ei{an},pl,all_gFRs);
-    [maskFrame,all_masks,mimg] = make_resp_frame(ei{an},pl,all_gV(an,:));
+    [maskFrame,all_masks,mimg] = make_resp_frame(ei{an},pl,all_inh(an,:));
     for bb = 1:length(all_nbins)
         nbins = all_nbins(bb); sz = size(maskFrame,1); bsize = size(maskFrame,1)/nbins;
         sbin = 1:bsize:sz; ebin = bsize:bsize:sz;
