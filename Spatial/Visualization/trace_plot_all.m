@@ -5,6 +5,7 @@ end
 if ~exist('pd_rec','var')
     pd_rec = evalin('base','ei{4}');
 end
+an = 4;
 pl = 1;
 try
     signalsS = pd_rec.deconv';
@@ -34,6 +35,10 @@ signals = get_calcium_data_raw(pd_rec,pl);
 % r = sqrt(xoff.^2 + yoff.^2);
 % figure(33);
 % plot(traceTime,r);
+
+for ii = 1:5
+    pixelSize(ii) = ei{ii}.thorExp.widthUM/ei{ii}.thorExp.pixelX;
+end
 n = 0;
 %%
 while 0
@@ -253,8 +258,58 @@ while 0
     break;
 end
 %% raw calcium traces and deconvolved spikes
-hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.97 0.5],'color','w'); hold on;
-plot(traceTime,signals(1,:)')
-changePosition(gca,[-0.075 -0.005 0.16 -0.07]);
-xlim([0 traceTime(end)]);
-save_pdf(hf,mData.pdf_folder,sprintf('overall_pop.pdf'),600);
+% hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.97 5.5],'color','w'); hold on;
+ff = makeFigureRowsCols(100,[10 4 6.97 5],'RowsCols',[7 1],'spaceRowsCols',[0.04 0.02],'rightUpShifts',[0.07 0.08],'widthHeightAdjustment',[-140 -50]);
+selcells = [11 66  3  205   233   11];
+for ii = 1:6
+    axes(ff.h_axes(ii,1));
+    yyaxis left
+    plot(traceTime,signals(selcells(ii),:)','b');hold on;
+    yyaxis right
+    plot(traceTime,signalsS(selcells(ii),:)','r');
+    ylims = ylim; ylim([0 ylims(2)]);
+    yyaxis left
+    ylims = ylim;
+%     for ii = 1:length(onsets)
+%        tt = b.ts(onsets(ii));
+%        plot([tt tt],[ylims(1) ylims(2)],'color',colors{2},'linewidth',lwdth,'marker','none');
+%        tt = b.ts(offsets(ii));
+%        plot([tt tt],[ylims(1) ylims(2)],'color',colors{3},'linewidth',lwdth,'marker','none');
+%    end
+    % changePosition(gca,[-0.075 -0.005 0.16 -0.07]);
+    xlim([0 traceTime(end)]);
+    xlim([1.35 4.05]);
+    box off
+    if ii >2
+        ha = gca;
+%         ha.XAxis.Visible = 'off';
+    end
+    format_axes(gca);
+    ylabel('DF/F (%)');
+    yyaxis right;
+    ylabel('FR (A.U.)');
+end
+[xoff,yoff] = get_ca_motion_correction_data(pd_rec,pl);
+spSigAll = sqrt(xoff.^2 + yoff.^2) * pixelSize(an);
+
+axes(ff.h_axes(ii+1,1));
+plot(traceTime,spSigAll','m');hold on;
+xlim([1.35 4.05]);
+format_axes(gca);
+ylabel('MC Dist (\mum)');
+xlabel('Time (min)');
+
+axes(ff.h_axes(1,1));ylims = ylim;
+[TLx TLy] = ds2nfu(b.ts(onsets(1)),ylims(2)-0);
+axes(ff.h_axes(7,1));ylims = ylim;
+[BLx BLy] = ds2nfu(b.ts(onsets(1)),ylims(1));
+aH = (TLy - BLy);
+% for ii = 1:length(onsets)
+for ii = 1:10%length(onsets)
+    [BRx BRy] = ds2nfu(b.ts(offsets(ii)),ylims(1));
+    [BLx BLy] = ds2nfu(b.ts(onsets(ii)),ylims(1));
+    aW = (BRx-BLx);
+    annotation('rectangle',[BLx BLy aW aH],'facealpha',0.2,'linestyle','none','facecolor','k');
+end
+
+save_pdf(ff.hf,mData.pdf_folder,sprintf('overall_pop.pdf'),600);

@@ -1193,8 +1193,8 @@ while 1
     rac = RMA(dataT,within);
     rac.ranova
      %% run one grand test for Reviewer 3
-     red_aVar = aVar(:,[10:18 19:27 28:36 37:45 55:63 64:72]);
-    [within,dvn,xlabels] = make_within_table({'BNB','Event','TrialsP'},[2,3,9]);
+     red_aVar = aVar(:,[10:19 20:]);
+    [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[20,9]);
     dataT = make_between_table({red_aVar},dvn);
     racr = RMA(dataT,within);
     racr.ranova
@@ -1243,13 +1243,6 @@ while 1
     dataT = make_between_table({aVar},dvn);
     rac1 = RMA(dataT,within);
     rac1.ranova
-    %% run one grand test for Reviewer 3
-     red_aVar = aVar(:,[10:18 19:27 28:36 37:45 55:63 64:72]);
-    [within,dvn,xlabels] = make_within_table({'BNB','Event','TrialsP'},[2,3,9]);
-    dataT = make_between_table({red_aVar},dvn);
-    rac1r = RMA(dataT,within);
-    rac1r.ranova
-    print_for_manuscript(rac1r)
      %% run 20 individual tests for each condition separately
     sts = 1:9:180; ses = 9:9:180;
     [within,dvn,xlabels] = make_within_table({'TrialsP'},[9]);
@@ -1293,13 +1286,6 @@ while 1
     dataT = make_between_table({aVar},dvn);
     rac2 = RMA(dataT,within);
     rac2.ranova
-    %% run one grand test for Reviewer 3
-     red_aVar = aVar(:,[10:18 19:27 28:36 37:45 55:63 64:72]);
-    [within,dvn,xlabels] = make_within_table({'BNB','Event','TrialsP'},[2,3,9]);
-    dataT = make_between_table({red_aVar},dvn);
-    rac2r = RMA(dataT,within);
-    rac2r.ranova
-    print_for_manuscript(rac2r)
      %% run 20 individual tests for each condition separately
     sts = 1:9:180; ses = 9:9:180;
     [within,dvn,xlabels] = make_within_table({'TrialsP'},[9]);
@@ -1311,11 +1297,11 @@ while 1
         print_for_manuscript(raC2{cni})
     end
     %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2r,{'BNB','hsd'},[1.5 1 1]);
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'cond','hsd'},[1.5 1 1]);
 %     h(h==1) = 0;
-	xdata = make_xdata([2],[1 1.5]);
+	xdata = make_xdata([20],[1 1.5]);
     hf = get_figure(5,[8 7 3 1]);
-    hf = get_figure(5,[8 7 1.5 1.25]);
+    hf = get_figure(5,[8 7 3.5 1.25]);
     % s = generate_shades(length(bins)-1);
     tcolors = mData.dcolors;
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -1328,8 +1314,8 @@ while 1
 %     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
     xticks = xdata; 
-    set(gca,'xtick',xticks,'xticklabels',{'B','NB'},'ytick',[10 20 ]); xtickangle(45)
-    changePosition(gca,[0.15 0.01 -0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Estimated','Marginal Means'},[0 0 0]});
+    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[10 20 ]); xtickangle(45)
+    changePosition(gca,[0.01 0.01 0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Estimated','Marginal Means'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('comp2_conds.pdf'),600);
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'TrialsP','hsd'},[1.5 1 1]);
