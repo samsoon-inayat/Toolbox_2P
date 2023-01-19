@@ -10,9 +10,9 @@ end
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     
     an = 1;G = 'C';
-    si = [Ab_On Ar_On]; headstr = {'Brake (B)','No-Brake (NB)'}; headstrpos = [0 -0.14 0 0]; xlimss = [-2 2];
-    si = [Lb ArL_L]; headstr = {'Brake (B)','No-Brake (NB)'}; headstrpos = [0 -0.14 0 0]; xlimss = [-2 2];
-    si = [M_On M_Off]; headstr = {'Motion Onset (MOn)','Motion Offset (MOff)'}; headstrpos = [0 -0.14 0.05 0]; xlimss = [-1.5 1.5];
+    si = [Ab_On Ar_On]; headstr = {'Brake (B)','No-Brake (NB)'}; headstrpos = [0 -0.14 0 0];
+    si = [Lb ArL_L]; headstr = {'Brake (B)','No-Brake (NB)'}; headstrpos = [0 -0.14 0 0];
+    si = [M_On M_Off]; headstr = {'Motion Onset (MOn)','Motion Offset (MOff)'}; headstrpos = [0 -0.14 0.05 0]; xlimss = [-
     Rs = o.Rs(:,si);mR = o.mR(:,si);
     Rs_MC = o.RsMC(:,si);
     ntrials = 50;
@@ -38,12 +38,10 @@ end
 %         mean_speed_over_trials = nanmean(Rs{an,ii}.speed)*pixelSize(ii);
 %         semspeed_over_trials = std(Rs{an,ii}.speed)/sqrt(10);
         xsMC = linspace(-2,2,size(mean_speed_over_trials,2));
-        xsMC = linspace(-1.5,1.5,size(mean_speed_over_trials,2));
         plot(xsMC,mean_speed_over_trials);
         shadedErrorBar(xsMC,mean_speed_over_trials,semspeed_over_trials);
         set(gca,'XTick',[],'YTick',[0 8]);
-        ylim([0 8]);
-        xlim(xlimss);
+        ylim([0 8]);xlim([-2 2]);
         if ii == 1
           ylabel('MC \mum');
         end
@@ -59,12 +57,10 @@ end
         mean_speed_over_trials = nanmean(spud);
         semspeed_over_trials = std(spud)/sqrt(10);
         xsMC = linspace(-2,2,size(mean_speed_over_trials,2));
-        xsMC = linspace(-1.5,1.5,size(mean_speed_over_trials,2));
         plot(xsMC,mean_speed_over_trials);
         shadedErrorBar(xsMC,mean_speed_over_trials,semspeed_over_trials);
         set(gca,'XTick',[],'YTick',[0 30]);
         ylim([0 30]);
-        xlim(xlimss);
         if ii == 1
         ylabel('Sp cm/s');
         end
@@ -85,7 +81,6 @@ end
             xdata = [0 75 150];
         else
             xdata = [-2 0 2];
-            xdata = [-1.5 0 1.5];
         end
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_mRR M_mRR]); set(gca,'Ydir','normal');
@@ -116,7 +111,6 @@ end
         end
         
             xdata = [-2 0 2];
-            xdata = [-1.5 0 1.5];
 
         ydata = [1 size(tmRR,1)];
         imagesc(xdata,ydata,tmRR,[m_CRc M_CRc]); set(gca,'Ydir','normal');

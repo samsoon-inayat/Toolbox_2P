@@ -2,6 +2,8 @@ function trial_to_trial_Analysis_brake_vs_nobrake_updated_wo_Arb
 
 %% find spatial trial to trial correlation
 while 1
+    cpCells = evalin('base','cellposeCells');
+    cpCells = cpCells';
     trialNums = [1:10];
    si = [Lb Lbs Ab_On Abs_On Ab_Off Abs_Off Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off ArL_L Ar_L Ars_L];
    si = [Lb Ab_On Ab_Off Ar_On Ar_Off ArL_On ArL_Off Ars_On Ars_Off Lbs Abs_On Abs_Off ArL_L Ar_L Ars_L];
@@ -156,6 +158,8 @@ while 1
     [mparOR,semparOR] = findMeanAndStandardError(pallrespOR);
     
     disp('Done');
+    %% for Reviewer 3
+    allrespORp = find_percent(allrespOR,cpCells);
     %%
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
 %     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_resp_T,0.5,0.05);
@@ -1187,6 +1191,7 @@ while 1
         tvar(10:10:199) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
+    aVar_conj = aVar;
     %%
     [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[20,9]);
     dataT = make_between_table({aVar},dvn);
@@ -1238,6 +1243,7 @@ while 1
         tvar(10:10:199) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
+    aVar_comp1 = aVar;
     %%
     [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[20,9]);
     dataT = make_between_table({aVar},dvn);
@@ -1250,6 +1256,30 @@ while 1
     rac1r = RMA(dataT,within);
     rac1r.ranova
     print_for_manuscript(rac1r)
+    %%
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac1r,{'BNB_by_Event','hsd'},[1.5 1 1]);
+%     h(h==1) = 0;
+	xdata = make_xdata([3 3],[1 1.5]);
+    hf = get_figure(5,[8 7 3 1]);
+    hf = get_figure(5,[8 7 2.5 1.25]);
+    % s = generate_shades(length(bins)-1);
+    tcolors = mData.dcolors;
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+%     set(hbs(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(hbs(3),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    maxY = maxY + 1;
+    ylims = ylim;
+    format_axes(gca);
+%     htxt = text(0,maxY+6,sprintf('Any Condition (%d\x00B1%d%%),   All Conditions (%d%%)',round(mra),round(semra),round(mrall)),'FontSize',6);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
+    xticks = xdata; 
+    set(gca,'xtick',xticks,'xticklabels',{'AOn','AOff','Arb'},'ytick',[10 20 ]); xtickangle(45)
+    set_bar_graph_sub_xtick_text(hf,gca,hbs,3,{'B','NB'});
+    set_axes_top_text_no_line(hf,gca,'Complementary 1',[0.2 0.1 0 0]);
+    changePosition(gca,[0.1 0.01 -0.07 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Percentage','of Cells'},[0 0 0]});
+    save_pdf(hf,mData.pdf_folder,sprintf('comp1_conds.pdf'),600);
+    
      %% run 20 individual tests for each condition separately
     sts = 1:9:180; ses = 9:9:180;
     [within,dvn,xlabels] = make_within_table({'TrialsP'},[9]);
@@ -1288,6 +1318,7 @@ while 1
         tvar(10:10:199) = NaN; tvar(isnan(tvar)) = []; 
         aVar(an,:) = tvar;
     end
+    aVar_comp2 = aVar;
     %%
     [within,dvn,xlabels] = make_within_table({'cond','TrialsP'},[20,9]);
     dataT = make_between_table({aVar},dvn);
@@ -1329,7 +1360,8 @@ while 1
     set_axes_limits(gca,[0.35 xdata(end)+.65],[0 maxY]); format_axes(gca);
     xticks = xdata; 
     set(gca,'xtick',xticks,'xticklabels',{'B','NB'},'ytick',[10 20 ]); xtickangle(45)
-    changePosition(gca,[0.15 0.01 -0.05 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Estimated','Marginal Means'},[0 0 0]});
+    changePosition(gca,[0.15 0.01 -0.07 0]); put_axes_labels(gca,{[],[0 0 0]},{{'Percentage','of Cells'},[0 0 0]});
+    set_axes_top_text_no_line(hf,gca,'Complementary 2',[0.2 0.1 0 0]);
     save_pdf(hf,mData.pdf_folder,sprintf('comp2_conds.pdf'),600);
     %%
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,rac2,{'TrialsP','hsd'},[1.5 1 1]);
@@ -1356,95 +1388,128 @@ while 1
     break;
 end
 
+
+%% plot reviewer 3 point 3
+eN = [2 5];
+sss = 1:9:180; eee = 9:9:180;
+aVar = [aVar_conj(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))]) aVar_comp1(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))]) aVar_comp2(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))])];
+
+[within,dvn,xlabels] = make_within_table({'BNB','CT','TrialsP'},[2,3,9]);
+dataT = make_between_table({aVar},dvn);
+raccc = RMA(dataT,within);
+raccc.ranova
+print_for_manuscript(raccc)
 %%
-while 1
-    %%
-    txl = event_type;
-    oM = ones(size(mCIm));
-    mask1 = (triu(oM,0) & tril(oM,0)); mOI(mask1==1) = NaN; semOI(mask1 == 1) = NaN;
-    
-   ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.25],'widthHeightAdjustment',[10 -450]);
-    set(gcf,'color','w');    set(gcf,'Position',[10 3 6.95 1.25]);
-    stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.1; gap = 0.13; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
-%     stp = 0.25; widths = [2.1 2.1 2 0.4 0.4 0.4]+0.1; gap = 0.21; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
-    %
-    mOI1 = mCIm;
-%     mOI1 = mUni1;
-    mOI1(mask1==1) = NaN; 
-    Di = pdist(mOI1,@naneucdist);
-    tree = linkage(Di,'average');
-    [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
-    leafOrder = optimalleaforder(tree,Di);
-    hf = figure(100000000);
-%     leafOrder1 = leafOrder([1:3 10:12 4:9]);
-%     leafOrder1 = circshift(leafOrder,3);
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th,'Reorder',leafOrder);ylims = ylim; xlims = xlim;
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',0.5*max(tree(:,3)),'Reorder',leafOrder);ylims = ylim; xlims = xlim;
-    set(gca,'xtick',[],'ytick',[]);
-    set(gcf,'units','inches'); set(gcf,'Position',[5 2 0.9 0.5])
-    %
-    close(hf);
-%     
-    
-    axes(ff.h_axes(1,1));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
-    set(H,'linewidth',0.5);
-    set(gca,'xticklabels',txl(TC));xtickangle(45);
-    format_axes(gca);
-    hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
-%     xlim([xlims(1)+0.5 xlims(2)-0.5]);
-    changePosition(gca,[0.0 0.0 0.07 0.05]);
-    text(0.5,ylims(2)+0.3,sprintf('CC = %.2f',c),'FontSize',6);
-%     set_axes_top_text(ff.hf,ff.h_axes(1),sprintf('Cophenetic Correlation = %.2f',c));
+magfac = mData.magfac;
+ff = makeFigureRowsCols(108,[5 5 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.01 0.25],'widthHeightAdjustment',[10 -320]);
+ff = makeFigureRowsCols(108,[5 5 2.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.01 0.25],'widthHeightAdjustment',[10 -320]);
+MY = 20; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
 
-%     mOI1 = mCI;
-    mOI1 = mUni1m;
-    mOI1(mask1==1) = NaN; 
-    Di = pdist(mOI1,@naneucdist);
-    tree = linkage(Di,'average');
-    [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
-    leafOrder = optimalleaforder(tree,Di);
-    hf = figure(100000000);
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th,'Reorder',leafOrder);ylims = ylim; xlims = xlim;
-    close(hf);
-%     
-    
-    axes(ff.h_axes(1,2));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
-    set(H,'linewidth',0.5);
-    set(gca,'xticklabels',txl(TC));xtickangle(45);
-    format_axes(gca);
-%     xlim([xlims(1)+0.5 xlims(2)-0.5]);
-    changePosition(gca,[0.0 0.0 0.07 0.05]);
-    text(0.5,ylims(2)+1,sprintf('CC = %.2f',c),'FontSize',6);
+stp = 0.3;magfac; widths = ([0.75 ])*magfac; gap = 0.01*magfac;
+stp = 0.3;magfac; widths = ([1.75 ])*magfac; gap = 0.01*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 
-    
-%     mOI1 = mCI;
-    mOI1 = mUni2m;
-    mOI1(mask1==1) = NaN; 
-    Di = pdist(mOI1,@naneucdist);
-    tree = linkage(Di,'average');
-    [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');
-    leafOrder = optimalleaforder(tree,Di);
-    hf = figure(100000000);
-    figure(hf);clf
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th,'Reorder',leafOrder);ylims = ylim; xlims = xlim;
-    close(hf);
-%     
-    
-    axes(ff.h_axes(1,3));
-    [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th);
-    set(H,'linewidth',0.5);
-    set(gca,'xticklabels',txl(TC));xtickangle(45);
-    format_axes(gca);
-%     xlim([xlims(1)+0.5 xlims(2)-0.5]);
-    changePosition(gca,[0.0 0.0 0.07 0.05]);
-    text(0.5,ylims(2)+1,sprintf('CC = %.2f',c),'FontSize',6);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
-    
-    %%
-    break;
-end
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raccc,{'TrialsP','hsd'},[1.5 1 1]);
+xdata = make_xdata([2],[1 1.5]);   
+xdata = make_xdata([3],[1 1.5]);   
+xdata = make_xdata([9],[1 1.5]); 
+%     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
+% tcolors = [temp_tcolors temp_tcolors];
+%     combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.00005;
+%     xdata = [1:(length(mVar)/2) ((length(mVar)/2)+1+(1:(length(mVar)/2)))];
+tcolors = mData.dcolors(4:end);
+%     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+axes(ff.h_axes(1,1))
+[hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',4,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+% make_bars_hollow(hbs(13:end));
+set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes(gca); xticks = xdata; 
+set(gca,'xtick',xticks,'xticklabels',{'B','NB'});xtickangle(45)
+set(gca,'xtick',xticks,'xticklabels',{'Conj','Comp1','Comp2'});xtickangle(35)
+set(gca,'xtick',xticks,'xticklabels',{'T12','T23','T34','T45','T56','T67','T78','T89','T9T'});xtickangle(45)
+put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
+ht = set_axes_top_text_no_line(gcf,gca,'',[0 -0.051 0 0]);
+save_pdf(ff.hf,mData.pdf_folder,sprintf('conjcompcomp.pdf'),600);
+%     changePosition(gca,[-0.03 0.03 0.11 -0.01]);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'C1','C2','C3','C4','C1','C2','C3','C4'},{[-0.01 0.02]});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,12,{'Control','APP'},{[-0.12 0]});
+
+%%
+eN = [3 7];
+sss = 1:9:180; eee = 9:9:180;
+aVar = [aVar_conj(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))]) aVar_comp1(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))]) aVar_comp2(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))])];
+
+[within,dvn,xlabels] = make_within_table({'BNB','CT','TrialsP'},[2,3,9]);
+dataT = make_between_table({aVar},dvn);
+raccc = RMA(dataT,within);
+raccc.ranova
+print_for_manuscript(raccc)
+%%
+magfac = mData.magfac;
+ff = makeFigureRowsCols(108,[5 5 2.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.01 0.35],'widthHeightAdjustment',[10 -420]);
+MY = 35; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+
+stp = 0.3;magfac; widths = ([1.75])*magfac; gap = 0.01*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raccc,{'BNB_by_CT','hsd'},[1.5 1 1]);
+xdata = make_xdata([3 3],[1 1.5]);   
+
+%     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
+% tcolors = [temp_tcolors temp_tcolors];
+%     combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.00005;
+%     xdata = [1:(length(mVar)/2) ((length(mVar)/2)+1+(1:(length(mVar)/2)))];
+tcolors = [mData.dcolors(1:3) mData.dcolors(1:3)];
+%     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+axes(ff.h_axes(1,1))
+[hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',4,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+% make_bars_hollow(hbs(13:end));
+set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes(gca); xticks = xdata; 
+set(gca,'xtick',xticks,'xticklabels',{'B','NB'});xtickangle(45)
+set(gca,'xtick',xticks,'xticklabels',{'Conj','Comp1','Comp2'});xtickangle(30)
+put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
+ht = set_axes_top_text_no_line(gcf,gca,'',[0 -0.051 0 0]);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Brake','No-Brake'},{[0.01 0.02]});
+save_pdf(ff.hf,mData.pdf_folder,sprintf('conjcompcomp.pdf'),600);
+%%
+eN = [4 8];
+sss = 1:9:180; eee = 9:9:180;
+aVar = [aVar_conj(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))]) aVar_comp1(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))]) aVar_comp2(:,[sss(eN(1)):eee(eN(1)) sss(eN(2)):eee(eN(2))])];
+
+[within,dvn,xlabels] = make_within_table({'BNB','CT','TrialsP'},[2,3,9]);
+dataT = make_between_table({aVar},dvn);
+raccc = RMA(dataT,within);
+raccc.ranova
+print_for_manuscript(raccc)
+%%
+magfac = mData.magfac;
+ff = makeFigureRowsCols(108,[5 5 2.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.01 0.35],'widthHeightAdjustment',[10 -420]);
+MY = 30; ysp = 3; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'Percent of Cells'};
+
+stp = 0.3;magfac; widths = ([1.75])*magfac; gap = 0.01*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raccc,{'BNB_by_CT','hsd'},[1.5 1 1]);
+xdata = make_xdata([3 3],[1 1.5]);   
+
+%     mVar = ra.est_marginal_means.Mean; semVar = ra.est_marginal_means.Formula_StdErr;
+% tcolors = [temp_tcolors temp_tcolors];
+%     combs = ra.mcs.combs; p = ra.mcs.p; h = p<0.00005;
+%     xdata = [1:(length(mVar)/2) ((length(mVar)/2)+1+(1:(length(mVar)/2)))];
+tcolors = [mData.dcolors(1:3) mData.dcolors(1:3)];
+%     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 6.9 2],'color','w');
+axes(ff.h_axes(1,1))
+[hbs,maxY]  = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',4,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+% make_bars_hollow(hbs(13:end));
+set_axes_limits(gca,[0.25 xdata(end)+.75],[mY MY]); format_axes(gca); xticks = xdata; 
+set(gca,'xtick',xticks,'xticklabels',{'B','NB'});xtickangle(45)
+set(gca,'xtick',xticks,'xticklabels',{'Conj','Comp1','Comp2'});xtickangle(30)
+put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
+ht = set_axes_top_text_no_line(gcf,gca,'',[0 -0.051 0 0]);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Brake','No-Brake'},{[0.01 0.02]});
+save_pdf(ff.hf,mData.pdf_folder,sprintf('conjcompcomp.pdf'),600);

@@ -1,4 +1,4 @@
-function caSig = get_calcium_data(ei,pp)
+function [caSig,caSigR]  = get_calcium_data(ei,pp)
 if ~exist('ei','var')
     ei = evalin('base','ei{3}')
 end
@@ -16,6 +16,7 @@ tcs = matF.tcs;
 baselines = repmat(tcs.baseline,size(tcs.raw,1),1);
 % caSig = (((tcs.raw-(0.7*tcs.neuropil))-baselines)./baselines)';
 caSig = (((tcs.raw-(0*tcs.neuropil))-baselines)./baselines)';
+caSigR = tcs.raw';
 
 
 % fileName = fullfile(ei.plane{pp}.s2p_folder,'timecourses.mat');

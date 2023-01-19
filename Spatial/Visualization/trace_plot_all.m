@@ -30,7 +30,7 @@ offsets = b.air_puff_f;
 light_onsets = b.stim_r;
 mData = evalin('base','mData');
 signals = get_calcium_data(pd_rec,pl);
-signals = get_calcium_data_raw(pd_rec,pl);
+[signals,signalsR] = get_calcium_data_raw(pd_rec,pl);
 % [xoff,yoff] = get_ca_motion_correction_data(pd_rec,pl);
 % r = sqrt(xoff.^2 + yoff.^2);
 % figure(33);
@@ -260,11 +260,12 @@ end
 %% raw calcium traces and deconvolved spikes
 % hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.97 5.5],'color','w'); hold on;
 ff = makeFigureRowsCols(100,[10 4 6.97 5],'RowsCols',[7 1],'spaceRowsCols',[0.04 0.02],'rightUpShifts',[0.07 0.08],'widthHeightAdjustment',[-140 -50]);
-selcells = [11 66  3  205   233   11];
+selcells = [11 66  3  205   255   196];
+% selcells = [11 66  3  205   233   75];
 for ii = 1:6
     axes(ff.h_axes(ii,1));
     yyaxis left
-    plot(traceTime,signals(selcells(ii),:)','b');hold on;
+    plot(traceTime,signalsR(selcells(ii),:)','b');hold on;
     yyaxis right
     plot(traceTime,signalsS(selcells(ii),:)','r');
     ylims = ylim; ylim([0 ylims(2)]);
@@ -277,8 +278,8 @@ for ii = 1:6
 %        plot([tt tt],[ylims(1) ylims(2)],'color',colors{3},'linewidth',lwdth,'marker','none');
 %    end
     % changePosition(gca,[-0.075 -0.005 0.16 -0.07]);
-    xlim([0 traceTime(end)]);
     xlim([1.35 4.05]);
+    xlim([0 traceTime(end)]);
     box off
     if ii >2
         ha = gca;
@@ -286,6 +287,7 @@ for ii = 1:6
     end
     format_axes(gca);
     ylabel('DF/F (%)');
+    ylabel('Raw Ca Sig');
     yyaxis right;
     ylabel('FR (A.U.)');
 end
@@ -295,6 +297,7 @@ spSigAll = sqrt(xoff.^2 + yoff.^2) * pixelSize(an);
 axes(ff.h_axes(ii+1,1));
 plot(traceTime,spSigAll','m');hold on;
 xlim([1.35 4.05]);
+xlim([0 traceTime(end)]);
 format_axes(gca);
 ylabel('MC Dist (\mum)');
 xlabel('Time (min)');
@@ -305,7 +308,7 @@ axes(ff.h_axes(7,1));ylims = ylim;
 [BLx BLy] = ds2nfu(b.ts(onsets(1)),ylims(1));
 aH = (TLy - BLy);
 % for ii = 1:length(onsets)
-for ii = 1:10%length(onsets)
+for ii = [1:10 41:50]%length(onsets)
     [BRx BRy] = ds2nfu(b.ts(offsets(ii)),ylims(1));
     [BLx BLy] = ds2nfu(b.ts(onsets(ii)),ylims(1));
     aW = (BRx-BLx);
