@@ -160,6 +160,7 @@ while 1
     disp('Done');
     %% for Reviewer 3
     allrespORp = find_percent(allrespOR,cpCells);
+    [mCs,semCs] = findMeanAndStandardError(allrespORp);
     %%
     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
 %     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_resp_T,0.5,0.05);
