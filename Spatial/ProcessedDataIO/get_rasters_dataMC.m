@@ -23,9 +23,9 @@ nplanes = length(ei.plane);
 for ii = 1:length(selContexts)
     pp = 1;
     if strcmp(rasterNames{ii},'motionOnsets')
-        tempR = ei.plane{pp}.motionOnset_rasters;
+        tempR = ei.plane{pp}.motionOnset_rastersMC;
     else
-        tempR = ei.plane{pp}.motionOffset_rasters;
+        tempR = ei.plane{pp}.motionOffset_rastersMC;
     end
     iscell1 = ei.plane{pp}.tP.iscell(:,1);
     if nplanes == 1
@@ -34,9 +34,9 @@ for ii = 1:length(selContexts)
     else
         pp = 2;
         if strcmp(rasterNames{ii},'motionOnsets')
-            tempR1 = ei.plane{pp}.motionOnset_rasters;
+            tempR1 = ei.plane{pp}.motionOnset_rastersMC;
         else
-            tempR1 = ei.plane{pp}.motionOffset_rasters;
+            tempR1 = ei.plane{pp}.motionOffset_rastersMC;
         end
         rasters{ii,1} = combine_planes_data(tempR,tempR1);
         iscell2 = ei.plane{pp}.tP.iscell(:,1);

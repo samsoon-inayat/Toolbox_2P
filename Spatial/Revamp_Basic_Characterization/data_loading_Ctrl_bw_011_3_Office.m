@@ -67,6 +67,12 @@ for ii = 1:length(ei)
     ei(ii) = get_control_air_offsets(ei(ii));
 end
 send_email('samsoon.inayat@gmail.com','Done');
+%% get control light onsets
+for ii = 1:length(ei)
+    ei(ii) = get_control_air_Monsets(ei(ii));
+    ei(ii) = get_control_air_Moffsets(ei(ii));
+end
+send_email('samsoon.inayat@gmail.com','Done');
 %%
 binwidths = [0.11 3];
 for ii = 1:length(ei)

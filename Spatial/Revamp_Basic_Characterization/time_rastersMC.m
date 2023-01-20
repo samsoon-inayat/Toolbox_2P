@@ -1,26 +1,25 @@
-an = 1;
-si = Ab_On ;
-Rs = o.Rs(:,si);
-props1 = get_props_Rs(Rs,ntrials);
-R = Rs{an};
-%%
-sel_pop = cell_list_op(props1,{'vals'});
-plotRasters_simplest(R,find(sel_pop{an}))
+an = 4;
+si = [Lb Ab_On Ab_Off Ar_On Ar_Off Lbs Abs_On Abs_Off];
+Rs = o.RsMC(:,si);
+% props1 = get_props_Rs(Rs,ntrials);
+allR = Rs(an,:);
+event_types = rasterNamesTxt(si)
 
 %% Time rasters
 
     magfac = mData.magfac;
-    ff = makeFigureRowsCols(108,[10 3 1.9 1.3],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.02 0.20],'widthHeightAdjustment',[10 -580]);
+    ff = makeFigureRowsCols(108,[10 3 6.9 1.3],'RowsCols',[1 8],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.02 0.20],'widthHeightAdjustment',[10 -580]);
     MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
-    stp = 0.27*magfac; widths = ([1.3 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.71)*magfac; gap = 0.24*magfac;
+    stp = 0.27*magfac; widths = ([ones(1,12)*1]-0.41)*magfac; gap = 0.24*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 
-    cellN = [66 110 45 8]; %21 51
+    cellN = [1]; %21 51
 %     an = 2; cn = 3;R = Rs_A{an,cn};cellN = [15 191 72 155 95 64 ];
     cbar_p_shift = [0.01 0.09 -0.05 -0.3];
-    for cc = 1:2
-        c = cellN(cc);
-        thisRaster = R.sp_rasters(:,:,c);
+    for cc = 1:length(si)
+        c = 1;
+        R = allR{cc};
+        thisRaster = R.sp_rasters(:,:,c)*pixelSize(an);
 
         ax = ff.h_axes(1,cc);
         axes(ax); xlabel(ax,'Time (s)');
@@ -56,19 +55,19 @@ plotRasters_simplest(R,find(sel_pop{an}))
 %         plot(xs,fitplot,'linewidth',0.5,'color','m');
         box off;
         ylim([0 round(max(mSig)+(max(mSig)/10),1)])
-        set(ha,'xtick',[],'ytick',round(max(mSig),1));
+        ylim([0 8]);
+        set(ha,'xtick',[],'ytick',[0 8]);
         format_axes(gca);
         ylims = ylim;
         plot([0 0],ylims,'m');
-        textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
-        textstr = sprintf('Cell %d (%.1f)',c,R.info_metrics.ShannonMI_Zsh(c));
-%         textstr = sprintf('Cell %d',c); ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Normal');
+        textstr = sprintf('%s',event_types{cc}); 
+        ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 -0.01 0 0]); set(ht,'Fontsize',6,'FontWeight','Normal');
         if cc == 1
-            ylabel('FR (AU)');
-            textstr = sprintf('Excited (Exc)'); ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Normal');
+            ylabel('(\mum)');
+%             textstr = sprintf('Excited (Exc)'); ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Normal');
 %             textstr = sprintf('Response to Air Onset (Brake Configuration'); ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 0.01 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
         else
-          textstr = sprintf('Inhibited (Inh)'); ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Normal');
+%           textstr = sprintf('Inhibited (Inh)'); ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[-0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Normal');
         end
     end
 
