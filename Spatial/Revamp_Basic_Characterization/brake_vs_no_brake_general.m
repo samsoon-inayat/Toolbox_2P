@@ -4,7 +4,8 @@ while 1
     % for different VENN Diagrams change good_FRV = all_exc(:,[1 3]) or
     % all_exc(:,[2 4]) or all_exc(:,[5 6]) same thing for all_inh
 %     good_FRV = [cell_list_op(all_gV(:,[1:3 7]),[],'or',1) cell_list_op(all_gV(:,[4:6 8 9]),[],'or',1)]; 
-    good_FRV = [cell_list_op(all_gV(:,[1:3]),[],'or',1) cell_list_op(all_gV(:,[4:6]),[],'or',1)]; 
+%     good_FRV = [cell_list_op(all_gV(:,[1:3]),[],'or',1) cell_list_op(all_gV(:,[4:6]),[],'or',1)]; 
+    good_FRV = all_gV;%[cell_list_op(all_gV(:,[1:3]),[],'or',1) cell_list_op(all_gV(:,[4:6]),[],'or',1)]; 
     cell_any = descriptiveStatistics(find_percent(cell_list_op(good_FRV,[],'or',1)));
     tcolors = mData.colors;
     hf = get_figure(6,[10 7 1.5 1]);
@@ -41,7 +42,7 @@ while 1
     axis equal; axis off;
     changePosition(gca,[0.0 -0.0 -0.05 -0.05]); %put_axes_labels(gca,{[],[0 0 0]},{'Unique Cells (%)',[0 -5 0]});
     pmchar=char(177);
-    set(HVenn(1),'FaceColor',tcolors{1},'FaceAlpha',0.75); set(HVenn(2),'FaceColor',tcolors{2},'FaceAlpha',0.75);
+    set(HVenn(1),'FaceColor',tcolors{3},'FaceAlpha',0.75); set(HVenn(2),'FaceColor',tcolors{4},'FaceAlpha',0.75);
     ylims = ylim;
     btxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(1,1),pmchar,sem_p_gFR_C(1,1)));
     nbtxt = (sprintf('%0.1f%c%0.1f%%',m_p_gFR_C(2,2),pmchar,sem_p_gFR_C(2,2)));
@@ -138,7 +139,7 @@ while 1
     hf = get_figure(5,[9 2 figdim figdim]);
             
     all_cells_list = all_exc_inh;
-%     all_cells_list = all_gV_A;
+    all_cells_list = all_gV;
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);
     txl = circshift(event_type,sh,2);

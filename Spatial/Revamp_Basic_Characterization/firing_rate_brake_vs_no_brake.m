@@ -3,7 +3,7 @@ while 1
     mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
     ei_C = evalin('base','ei'); 
     for ii = 1:length(ei_C)
-        [sig_B{ii},sig_NB{ii}] = get_spike_rate_max(ei_C{ii});
+        [sig_B{ii},sig_NB{ii}] = get_spike_rate(ei_C{ii},0);
     end
     break
 end
@@ -18,7 +18,7 @@ ra = RMA(dataT,within);
 ra.ranova
 
 %%
-function [sig_B,sig_NB] = get_spike_rate(ei)
+function [sig_B,sig_NB] = get_spike_rate(ei,bs)
 b = ei.b;
 
 brakeOn1 = b.stim_r(1);
@@ -43,14 +43,29 @@ for pp = 1:length(ei.plane)
     indsB2 = bp.frames_f > brakeOn2 & bp.frames_f < brakeOff2;
     cellSigB = mean([mean(tspSigAll(:,indsB1),2) mean(tspSigAll(:,indsB2),2)],2);
     sig_B = [sig_B;cellSigB];
-    
+    % going to change the following code to incorporate boot strapping as
+    % suggested by Reviewer 3
+    if bs == 0
     indsB1 = bp.frames_f > nbrakeOn & bp.frames_f < nbrakeOff;
     cellSig_nB = mean(tspSigAll(:,indsB1),2);
     sig_NB = [sig_NB;cellSig_nB];
+    else
+    numpoints = sum(indsB1);
+    indsB1 = bp.frames_f > nbrakeOn & bp.frames_f < nbrakeOff;
+    indsB1v = (find(indsB1))';
+    cellSig_nBbb = [];
+    for bb = 1:500
+        indices = randperm(length(indsB1v));
+        indices = indices(1:numpoints);
+        cellSig_nBbb(:,bb) = mean(tspSigAll(:,indsB1v(indices)),2);
+    end
+    cellSig_nB = mean(cellSig_nBbb,2);
+    sig_NB = [sig_NB;cellSig_nB];
+    end
 end
   
 %%
-function [sig_B,sig_NB] = get_spike_rate_max(ei)
+function [sig_B,sig_NB] = get_spike_rate_max(ei,bs)
 b = ei.b;
 
 brakeOn1 = b.stim_r(1);
@@ -75,9 +90,22 @@ for pp = 1:length(ei.plane)
     indsB2 = bp.frames_f > brakeOn2 & bp.frames_f < brakeOff2;
     cellSigB = max([max(tspSigAll(:,indsB1),[],2) max(tspSigAll(:,indsB2),[],2)],[],2);
     sig_B = [sig_B;cellSigB];
-    
+    if bs == 0
     indsB1 = bp.frames_f > nbrakeOn & bp.frames_f < nbrakeOff;
     cellSig_nB = max(tspSigAll(:,indsB1),[],2);
     sig_NB = [sig_NB;cellSig_nB];
+    else
+    numpoints = sum(indsB1);
+    indsB1 = bp.frames_f > nbrakeOn & bp.frames_f < nbrakeOff;
+    indsB1v = (find(indsB1))';
+    cellSig_nBbb = [];
+    for bb = 1:500
+        indices = randperm(length(indsB1v));
+        indices = indices(1:numpoints);
+        cellSig_nBbb(:,bb) = max(tspSigAll(:,indsB1v(indices)),[],2);
+    end
+    cellSig_nB = max(cellSig_nBbb,[],2);
+    sig_NB = [sig_NB;cellSig_nB];
+    end
 end
   

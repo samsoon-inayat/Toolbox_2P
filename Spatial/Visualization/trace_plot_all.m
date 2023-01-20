@@ -153,6 +153,7 @@ while 1
     end
     if flag(4)
     plot(b.ts,b.fSpeed*0.25,'color',colors{4},'linewidth',lwdth);
+    plot([traceTime(end) traceTime(end)],[0 0.25*30],'color',[0 0 1],'linewidth',lwdth+1.5);
     end
     numcells = 100;
     ylim([0 numcells+1]); xlim([0 traceTime(end)]);
