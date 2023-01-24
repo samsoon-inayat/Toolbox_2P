@@ -126,10 +126,11 @@ while 1
     ff = makeFigureRowsCols(107,[1 0.5 4 0.5],'RowsCols',[1 4],'spaceRowsCols',[0.1 0.07],'rightUpShifts',[0.08 0.3],'widthHeightAdjustment',[-80 -400]);
     set(gcf,'color','w'); set(gcf,'Position',[5 5 4 1]);
     vars = {'sao','saof','sao_L','saof_c'};
-    for ii = 1:4
+    for ii = 1
     clear distD
     for an = 1:5
         cmdTxt = sprintf('distD{an,1} = %s(:,an);',vars{ii}); eval(cmdTxt);
+        avgDist(an) = 100*(sum(distD{an,1}>0)/30);
     end
     
     [distDo,allVals] = getAveragesAndAllValues(distD);

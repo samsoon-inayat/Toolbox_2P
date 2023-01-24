@@ -27,6 +27,7 @@ varC = mean_var_C;
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
+print_for_manuscript(ra)
    %%
     resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
     per_resp = find_percent(resp);

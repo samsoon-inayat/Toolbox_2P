@@ -35,13 +35,14 @@ varC = mean_var_C(:,1:6);
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
+print_for_manuscript(ra)
 %%
 varC = mean_var_C(:,7:12);
 [within,dvn,xlabels,awithinD] = make_within_table({'CT','Cond'},[2,3]);
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
-
+print_for_manuscript(ra)
 %% CT zMI
 ff = makeFigureRowsCols(107,[10 5 1.255 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
   MY = 120; mY = 0; ys = 15;

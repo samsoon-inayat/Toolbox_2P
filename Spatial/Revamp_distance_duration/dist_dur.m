@@ -28,7 +28,7 @@ varC = mean_var_C;
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
-
+print_for_manuscript(ra)
 %% finding dzMIs for trials and intertrials
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
 RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
@@ -82,7 +82,7 @@ varC = find_percent(cell_list);
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
-
+print_for_manuscript(ra)
     %%
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
@@ -112,7 +112,7 @@ ra.ranova
     dataT = make_between_table({mean_dzMI},dvn);
     ra = RMA(dataT,within,{0.05,{'bonferroni'}});
     ra.ranova
-
+    print_for_manuscript(ra)
 %%
 cell_list = [];
 for rfi = 1:2
@@ -157,7 +157,7 @@ ra.ranova
 
 %%
 dzmith = 0; dzmith1 = 0;
-rfi = 3;
+rfi = 4;
 for ani = 1:5
     for cni = 1:3
 %         dzmith = exec_fun_on_cell_mat(dzMI_FD.diff_D_T(ani,cni),'nanmean',FD_Dis_comp{rfi}(ani,cni));

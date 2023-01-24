@@ -28,7 +28,7 @@ varC = mean_var_C;
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
-
+print_for_manuscript(ra)
 %% finding dzMIs for trials and intertrials
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
 RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
@@ -37,7 +37,7 @@ RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]
 %% for different values of RF threshold, we calculate the time, distance, and indistinct encoding cells
 %%this we do for both trials and intertrials
 
-respfids = {[10 50],[60 100],[0 100],[50 100]};
+respfids = {[10 50],[60 100],[0 100],[50 100],[30 100]};
 % respfids = {[10 20],[30 40],[50,60],[70 80],[90 100],[60 100],[0 100],[50 100]};
 
 raster_types = {'RsTt','RsDt','RsTi','RsDi'};
@@ -82,7 +82,7 @@ varC = find_percent(cell_list);
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
-
+print_for_manuscript(ra)
     %%
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
@@ -112,7 +112,7 @@ ra.ranova
     dataT = make_between_table({mean_dzMI},dvn);
     ra = RMA(dataT,within,{0.05,{'bonferroni'}});
     ra.ranova
-
+    print_for_manuscript(ra)
 %%
 cell_list = [];
 for rfi = 1:2
@@ -312,12 +312,13 @@ switch varT
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
     xticks = xdata; xticklabels = {'C3','C4','C5'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); %xtickangle(45)
 %     changePosition(gca,[-0.06 0.01 0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{'z-score',[0 0 0]});
     put_axes_labels(gca,{[],[0 0 0]},{'z-score',[0 0 0]});
     ht = set_axes_top_text_no_line(gcf,gca,'Mutual Information',[0 0 0 0]);set(ht,'FontWeight','Bold');
-    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'});
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('perc_cells_all.pdf'),600);
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Time','Dist','Time','Dist'},{[0,0.03]});
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 00]});
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graph.pdf'),600);
 %% running RMANOVA on all neurons in one animal (animal wise)
 an = 4;
 pop_var_name = {'all'};

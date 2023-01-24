@@ -4,7 +4,8 @@ function dist_dur
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 while 1
     ntrials = 50; 
-    si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+%     si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
     Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
     props_C = get_props_Rs(Rs_C,ntrials);
@@ -29,8 +30,9 @@ while 1
     varC = mean_var_C;
     [within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Cond'},[2,2,3]);
     dataT = make_between_table({varC},dvn);
-    ra = RMA(dataT,within,{0.05,{'hsd'}});
+    ra = RMA(dataT,within,{0.05,{'hsd','bonferroni'}});
     ra.ranova
+    print_for_manuscript(ra);
 break;
 end
 %% separate populations based on dist and time
@@ -136,12 +138,12 @@ while 1
 
     clear FD_Dis_comp FD_Dur_comp FD_conj FT_Dis_comp FT_Dur_comp FT_conj
     for ii = 1:length(respfids)
-        FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
-        FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
+%         FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_FR,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_FR,'and');
+%         FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_FR,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_FR,'and');
 %         FD_Dur = cell_list_op(props{ii,1}.vals,props{ii,1}.good_zMI,'and'); FD_Dis = cell_list_op(props{ii,2}.vals,props{ii,2}.good_zMI,'and');
 %         FT_Dur = cell_list_op(props{ii,3}.vals,props{ii,3}.good_zMI,'and'); FT_Dis = cell_list_op(props{ii,4}.vals,props{ii,4}.good_zMI,'and');
-%         FD_Dur = props{ii,1}.vals; FD_Dis = props{ii,2}.vals;
-%         FT_Dur = props{ii,3}.vals; FT_Dis = props{ii,4}.vals;
+        FD_Dur = props{ii,1}.vals; FD_Dis = props{ii,2}.vals;
+        FT_Dur = props{ii,3}.vals; FT_Dis = props{ii,4}.vals;
         
         cellP1 = FD_Dis; cellP2 = FD_Dur;
         FD_Dis_comp{ii} = cell_list_op(cellP1,cell_list_op(cellP2,[],'not'),'and');
