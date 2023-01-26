@@ -7,6 +7,7 @@ Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
 props_C = get_props_Rs(Rs_C,ntrials);
 pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'vals'};
+% pop_var_name = {'good_FR'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); 
 %%
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
@@ -73,7 +74,7 @@ for ii = 1:length(respfids)
 end
 %%
 cell_list = [];
-for rfi = 4
+for rfi = 3
   cell_list = [cell_list [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}]];
 end
 
@@ -87,10 +88,10 @@ print_for_manuscript(ra)
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
-%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
+    FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 4
+    for rfi = 3
         TD = FD_Prop;
         cell_resp = FD_Dur_comp{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
@@ -114,50 +115,21 @@ print_for_manuscript(ra)
     ra.ranova
     print_for_manuscript(ra)
 %%
-cell_list = [];
-for rfi = 1:2
-  cell_list = [cell_list [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}]];
-end
+% cell_list = [];
+% for rfi = 1:2
+%   cell_list = [cell_list [FD_Dur_comp{rfi} FD_Dis_comp{rfi} FD_conj{rfi} FT_Dur_comp{rfi} FT_Dis_comp{rfi} FT_conj{rfi}]];
+% end
+% 
+% varC = find_percent(cell_list);
+% [within,dvn,xlabels,awithinD] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
+% dataT = make_between_table({varC},dvn);
+% ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+% ra.ranova
 
-varC = find_percent(cell_list);
-[within,dvn,xlabels,awithinD] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
-dataT = make_between_table({varC},dvn);
-ra = RMA(dataT,within,{0.05,{'bonferroni'}});
-ra.ranova
-
-    %%
-    mean_dzMI = [];
-    FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
-    FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
-%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
-%     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
-%     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 1:2
-        TD = FD_Prop;
-        cell_resp = FD_Dur_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FD_Dis_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FD_conj{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-
-        TD = FT_Prop;
-        cell_resp = FT_Dur_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FT_Dis_comp{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-        cell_resp = FT_conj{rfi};
-        mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
-    end
-    
-    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
-    dataT = make_between_table({mean_dzMI},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
-    ra.ranova
 
 %%
 dzmith = 0; dzmith1 = 0;
-rfi = 4;
+rfi = 5;
 for ani = 1:5
     for cni = 1:3
 %         dzmith = exec_fun_on_cell_mat(dzMI_FD.diff_D_T(ani,cni),'nanmean',FD_Dis_comp{rfi}(ani,cni));
@@ -166,12 +138,15 @@ for ani = 1:5
         thisan1 = {dzMI_FD.diff_D_T{ani,cni} > dzmith1};
         thisan1 = cell_list_op(FD_Dis_comp{rfi}(ani,cni),thisan1,'and');
         dis_cells_T(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        dis_cells_T(ani,cni) = cell_list_op(dis_cells_T(ani,cni),{dzMI_FD.zMI_D{ani,cni}>0},'and');
+        
         
         thisan = {dzMI_FD.diff_T_D{ani,cni} > dzmith};
         thisan = cell_list_op(FD_conj{rfi}(ani,cni),thisan,'and');
         thisan1 = {dzMI_FD.diff_T_D{ani,cni} > dzmith1};
         thisan1 = cell_list_op(FD_Dur_comp{rfi}(ani,cni),thisan1,'and');
         dur_cells_T(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        dur_cells_T(ani,cni) = cell_list_op(dur_cells_T(ani,cni),{dzMI_FD.zMI_T{ani,cni}>0},'and');
         
 %         dzmith = exec_fun_on_cell_mat(dzMI_FT.diff_T_D(ani,cni),'nanmean',FT_Dur_comp{rfi}(ani,cni));
         thisan = {dzMI_FT.diff_T_D{ani,cni} > dzmith};
@@ -179,12 +154,14 @@ for ani = 1:5
         thisan1 = {dzMI_FT.diff_T_D{ani,cni} > dzmith1};
         thisan1 = cell_list_op(FT_Dur_comp{rfi}(ani,cni),thisan1,'and');
         dur_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        dur_cells_I(ani,cni) = cell_list_op(dur_cells_I(ani,cni),{dzMI_FD.zMI_T{ani,cni}>0},'and');
         
         thisan = {dzMI_FT.diff_D_T{ani,cni} > dzmith};
         thisan = cell_list_op(FT_conj{rfi}(ani,cni),thisan,'and');
         thisan1 = {dzMI_FT.diff_D_T{ani,cni} > dzmith1};
         thisan1 = cell_list_op(FT_Dis_comp{rfi}(ani,cni),thisan1,'and');
         dis_cells_I(ani,cni) = cell_list_op(thisan1,thisan,'or');
+        dis_cells_I(ani,cni) = cell_list_op(dis_cells_I(ani,cni),{dzMI_FD.zMI_D{ani,cni}>0},'and');
     end
 end
 
@@ -200,125 +177,7 @@ dur_cells_IA = cell_list_op(dur_cells_I,[],'and',1);
 
 dur_dis_T = cell_list_op(dur_cells_T,dis_cells_T,'or');
 dur_dis_I = cell_list_op(dur_cells_I,dis_cells_I,'or');
-%%
-ntrials = 30; 
-si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
-%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
-Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
-props_C = get_props_Rs(Rs_C,ntrials);
-sel_pop_C = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
 
-params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
-varT = 3;%:length(params)
-for pii = varT
-    if pii == 1
-        mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
-    else
-        eval(sprintf('var_C = get_vals(props_C.%s,sel_pop_C);',params{pii})); 
-        if pii == 5 || pii == 6
-            mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
-        else
-            mean_var_C = exec_fun_on_cell_mat(var_C,'nanmean'); 
-        end
-    end
-end
-varC = mean_var_C;
-[within,dvn,xlabels,awithinD] = make_within_table({'TI','CT','Cond'},[2,2,3]);
-dataT = make_between_table({varC},dvn);
-ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
-ra.ranova
-   %%
-    resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
-    per_resp = find_percent(resp);
-
-%     [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,2,3]);
-%     dataT = make_between_table({per_resp},dvn);
-%     ra = RMA(dataT,within,{'bonferroni'});
-%     ra.ranova
-%     print_for_manuscript(ra)
-
-    any_cells = cell_list_op(resp,[],'or',1);
-    per_active_any = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
-    any_cells = cell_list_op(resp,[],'and',1);
-    per_active_all = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
-
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-    
-
-    %% TI_CT for responsivity of Dur, Dis, and Ind cells
-switch varT
-  case 1
-    MY = 30; mY = 0; ysp = 3; titletext = 'Responsiveness'; y_label = '% of cells';
-  case 2
-    MY = 100; mY = 0; ysp = 10; titletext = 'Response Fidelity'; y_label = '% of trials';
-  case 4
-    MY = 1.1; mY = 0; ysp = 0.15; titletext = 'Goodness-of-Fit'; y_label = 'r-squared';
-end
-ff = makeFigureRowsCols(107,[10 5 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
-stp = 0.3*magfac; widths = ([0.95 0.55 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
-adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-tcolors = repmat(mData.colors(4:5),1,6);
-
-axes(ff.h_axes(1,1));
-
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','bonferroni'},[1.5 1 1]);
-xdata = make_xdata([2 2],[1 1.5]);
-%     hf = get_figure(5,[8 7 1.5 1]);
-% tcolors = repmat(mData.colors(1:3),1,2);
-MmVar = max(mVar);
-[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.015);
-maxY = maxY + 0;
-ylims = ylim;
-format_axes(gca);
-set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);
-xticks = xdata; xticklabels = {'Time','Dist'};
-make_bars_hollow(hbs(3:end))
-set(gca,'xtick',xticks,'xticklabels',xticklabels); %xtickangle(45)
-%     changePosition(gca,[0.04 0.01 -0.1 0]); 
-put_axes_labels(gca,{[],[0 0 0]},{y_label,[0 0 0]});
-ht = set_axes_top_text_no_line(gcf,gca,titletext,[-0.05 -0.01 0.2 0]);set(ht,'FontWeight','Bold');
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air','No-Air'});
-format_axes(gca);
-save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
-
-%% TI_CT_Cond
-switch varT
-  case 1
-    MY = 30; mY = 0; ysp = 3; titletext = 'Responsiveness'; y_label = '% of cells';
-  case 2
-    MY = 100; mY = 0; ysp = 10; titletext = 'Response Fidelity'; y_label = '% of trials';
-  end
-  ff = makeFigureRowsCols(107,[10 5 2.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
-  stp = 0.25*magfac; widths = ([2.2 0.55 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
-  adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-  tcolors = repmat(mData.colors(4:5),1,6);
-    
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_CT_Cond','bonferroni'},[1.5 1 1]);
-    h(h==1) = 0;
-    xdata = make_xdata([3 3 3 3],[1 1.5]);
-%     hf = get_figure(5,[8 7 3.5 1]);
-    tcolors = repmat(mData.colors(1:9),1,2);
-        tcolors = repmat(mData.colors(7:9),5,1);
-
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',2,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY + 0;
-    ylims = ylim;
-    make_bars_hollow(hbs(7:end))
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'C3','C4','C5'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); %xtickangle(45)
-%     changePosition(gca,[-0.06 0.01 0.1 -0.1]); put_axes_labels(gca,{[],[0 0 0]},{'z-score',[0 0 0]});
-    put_axes_labels(gca,{[],[0 0 0]},{'z-score',[0 0 0]});
-    ht = set_axes_top_text_no_line(gcf,gca,'Mutual Information',[0 0 0 0]);set(ht,'FontWeight','Bold');
-    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Time','Dist','Time','Dist'},{[0,0.03]});
-    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 00]});
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graph.pdf'),600);
 %% running RMANOVA on all neurons in one animal (animal wise)
 an = 4;
 pop_var_name = {'all'};
@@ -427,68 +286,7 @@ ra.ranova
     ra.ranova
     
     %% not using
-    cni = 1:3;
-    rfi = 1;
-    resp = [FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-    rfi = 2;
-    resp = [resp FD_Dur_comp{rfi}(:,cni) FD_Dis_comp{rfi}(:,cni) FD_conj{rfi}(:,cni) FT_Dur_comp{rfi}(:,cni) FT_Dis_comp{rfi}(:,cni) FT_conj{rfi}(:,cni)];
-
-    per_resp = 100*exec_fun_on_cell_mat(resp,'sum')./exec_fun_on_cell_mat(resp,'length');
-
-    [within,dvn,xlabels] = make_within_table({'RF','TI','CT','Cond'},[2,2,3,3]);
-    dataT = make_between_table({per_resp},dvn);
-    ra = RMA(dataT,within,{'hsd'});
-    ra.ranova
-
-    any_cells = cell_list_op(resp,[],'or',1);
-    per_active_any = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
-    any_cells = cell_list_op(resp,[],'and',1);
-    per_active_all = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
-
-    [mra,semra] = findMeanAndStandardError(per_active_any);
-    [mrall,semrall] = findMeanAndStandardError(per_active_all);
-
-
-%% check the difference in zMI for Dis and Dur for the different cell types DurC, DisC, and DDM
-while 1
-
-    %%
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'CT','bonferroni'},[1.5 1 1]);
-    xdata = make_xdata([3],[1 1.5]);
-    hf = get_figure(5,[8 7 1.5 1]);
-    tcolors = mData.dcolors(7:end);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.75,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
-    maxY = maxY;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1)-1 maxY+1]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Ti','Di','TrDr'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
-    changePosition(gca,[0.03 0.01 -0.4 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
-    save_pdf(hf,mData.pdf_folder,sprintf('dzMI_CT.pdf'),600);
-    %%
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','hsd'},[1.5 1 1]);
-    xdata = make_xdata([2],[1 1.5]);
-    hf = get_figure(5,[8 7 1.5 1]);
-    tcolors = mData.dcolors(10:end);
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.04,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.025);
-    maxY = maxY;
-    ylims = ylim;
-    format_axes(gca);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'T','I'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[0 10 20]); xtickangle(45)
-    changePosition(gca,[0.03 0.01 -0.5 0]); put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]})
-    %%
-    break;
-end
-
-
+    
 %% for only one condition e.g., 3 check the difference in zMI for Dis and Dur for the different cell types DurC, DisC, and DDM
 while 1
     %%

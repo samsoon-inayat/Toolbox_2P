@@ -3,8 +3,6 @@ function dist_dur_2
 %% overall population comparisons
 ntrials = 30; 
 si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_T ArL_i_T Ars_i_T ];
-si = [Ar_t_D ArL_t_D Ars_t_D Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_T ArL_i_T Ars_i_T ];
-% si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
 Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
 props_C = get_props_Rs(Rs_C,ntrials);
 sel_pop_C = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
@@ -45,7 +43,8 @@ ra.ranova
 print_for_manuscript(ra)
 %% CT zMI
 ff = makeFigureRowsCols(107,[10 5 1.255 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
-  MY = 120; mY = 0; ys = 15;
+  MY = 15; mY = 0; ys = 3;
+  MY = 120; mY = 0; ys = 13;
   stp = 0.27*magfac; widths = ([0.55 0.55 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
   adjust_axes(ff,[mY MY],stp,widths,gap,{''});
   tcolors = repmat(mData.colors(4:5),1,6);
@@ -62,7 +61,7 @@ ff = makeFigureRowsCols(107,[10 5 1.255 1],'RowsCols',[1 1],'spaceRowsCols',[0.0
     xticks = xdata; xticklabels = {'Time','Dist'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);% xtickangle(45)
 put_axes_labels(gca,{[],[0 0 0]},{'cm',[0 0 0]});
-ht = set_axes_top_text_no_line(gcf,gca,'Field Center',[-0.05 -0.01 0.2 0]);set(ht,'FontWeight','Bold');
+ht = set_axes_top_text_no_line(gcf,gca,'Peak Location',[-0.05 -0.01 0.2 0]);set(ht,'FontWeight','Bold');
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'No-Air'});
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air'});
 format_axes(gca);

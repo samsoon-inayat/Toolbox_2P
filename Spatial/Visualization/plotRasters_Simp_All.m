@@ -1,4 +1,4 @@
-function plotRasters_simplest(R,ccs)
+function plotRasters_simplest(R,ccs,sz)
 rasters = R.sp_rasters1;
 if ~exist('ccs','var')
     ccs = find(R.resp.vals);% & R.resp.FR_based);
@@ -21,8 +21,8 @@ end
 %     return;
 % end
 
-numberOfRows = 4;
-numberOfCols = 4;
+numberOfRows = 2;
+numberOfCols = 2;
 graphsOnOneFigure = numberOfRows * numberOfCols;
 numberOfData = length(ccs);
 numberOfGroups = ceil(numberOfData/graphsOnOneFigure);
@@ -77,7 +77,15 @@ while 1
 %             colormap_ig;
             colormap jet;
             colorbar;hold on;
-%             plot([50 50],ylim,'w');
+            for sss = 1:length(sz)
+                if sss == 1
+                    plot([sz(sss) sz(sss)],ylim,'w');
+                    ssm = sz(sss);
+                else
+                    plot([sz(sss)+ssm sz(sss)+ssm],ylim,'w');
+                    ssm = sz(sss)+ssm;
+                end
+            end
 %             plot(xlim,[11 11],'w');
 %             plot(xlim,[21 21],'w');
 %             plot(size(thisRaster,1)*mSig/max(mSig),'linewidth',0.5,'color','w');
@@ -94,9 +102,9 @@ while 1
             if isfield(R,'resp')
             if isfield(R.resp,'cis')
                 cis = R.resp.cis;
-                plot([cis(2,1) cis(2,1)],[0 size(thisRaster,1)+1],'linewidth',1.5,'color','r');
+%                 plot([cis(2,1) cis(2,1)],[0 size(thisRaster,1)+1],'linewidth',1.5,'color','r');
                 if ~strfind(R.marker_name,'motion')
-                    plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','g');
+%                     plot([cis(1,3) cis(1,3)],[0 11],'linewidth',1.5,'color','g');
                 end
             end
             end
@@ -105,7 +113,7 @@ while 1
             if isfield(R,'context_info')
 %             if (~isempty(strfind(R.context_info,'air')) | ~isempty(strfind(R.context_info,'belt'))) & ~isempty(strfind(R.context_info,'D'))
                 fitplot = gauss_fit(xs,A.gauss_fit_on_mean.coefficients_Rs_mean(cn,1:3),A.gauss_fit_on_mean.gauss1Formula);
-                plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.5,'color','m');
+%                 plot(size(thisRaster,1)*fitplot/max(fitplot),'linewidth',0.5,'color','m');
                 
 %             end
             end

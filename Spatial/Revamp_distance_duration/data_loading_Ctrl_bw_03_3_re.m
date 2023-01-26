@@ -46,6 +46,14 @@ disp('Done');
 sel_rec = [1 3 5];
 sel_rec = 1:5;
 ei = getData_py_2(T_C1(sel_rec,:));
+%% delete second plane data
+for ii = 1:5
+    disp(length(ei{ii}.plane))
+%     if length(ei{ii}.plane) > 1
+%         ei{ii}.plane(2) = [];
+%     end
+end
+
 %%
 if 0
     ii = 1;

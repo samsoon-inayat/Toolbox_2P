@@ -6,6 +6,7 @@ prop2 = prop2i.zMI;
 for rr = 1:size(prop1,1)
     for cc = 1:size(prop1,2)
         zMI_D = prop1{rr,cc}; zMI_T = prop2{rr,cc};
+        allzMI_D{rr,cc} = zMI_D; allzMI_T{rr,cc} = zMI_T;
         if isempty(zMI_D)
             zMI_D = NaN(size(zMI_T));
         end
@@ -15,7 +16,7 @@ for rr = 1:size(prop1,1)
             diff_T_D{rr,cc} = zMI_T(tresp) - zMI_D(tresp); 
         else
             diff_D_T{rr,cc} = zMI_D - zMI_T; 
-            diff_T_D{rr,cc} = zMI_T - zMI_D; 
+            diff_T_D{rr,cc} = zMI_T - zMI_D;
         end
         if thi < 0
             th = nanmean(diff_D_T{rr,cc}) + 1*nanstd(diff_D_T{rr,cc});
@@ -36,3 +37,6 @@ o.resp_D_g_T_perc = per_resp_d_D_g_T;
 o.resp_T_g_D_perc = per_resp_d_T_g_D;
 o.diff_D_T = diff_D_T;
 o.diff_T_D = diff_T_D;
+o.zMI_D = allzMI_D;
+o.zMI_T = allzMI_T;
+

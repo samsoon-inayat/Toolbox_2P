@@ -278,10 +278,10 @@ end
 ntrials = 50; 
 si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];
 Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
-props_C = get_props_Rs(Rs_C,ntrials);
-pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
-pop_var_name = {'vals','good_zMI'};
-sel_pop_C = cell_list_op(props_C,pop_var_name); 
+% props_C = get_props_Rs(Rs_C,ntrials);
+% pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
+% pop_var_name = {'vals','good_zMI'};
+% sel_pop_C = cell_list_op(props_C,pop_var_name); 
 
 Rs = Rs_C(an,:);
 % sel_pop = sel_pop_C(an,:); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
@@ -356,83 +356,204 @@ end
 
 save_pdf(ff.hf,mData.pdf_folder,'rasters.pdf',600);
 
+%% to check representative dur and dis cells
+magfac = mData.magfac;
+ff = makeFigureRowsCols(108,[10 3 6.98 2],'RowsCols',[2 6],'spaceRowsCols',[0.3 0.02],'rightUpShifts',[0.02 0.15],'widthHeightAdjustment',[10 -325]);
+MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
+stp = 0.35*magfac; widths = (ones(1,18)*0.77)*magfac; gap = 0.32*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+shift_axes(ff,[4 5 6;4 5 6],0.2,gap);
+pos = get(ff.h_axes(1,1),'Position');
+pos_msig = [0 pos(4)+0.05 0 -0.15];
+cbar_t_shift = [0.1 0.2 0.09 0.2];
+%  time
+ntrials = 50; 
+si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];
+Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
+props_C = get_props_Rs(Rs_C,ntrials);
+% pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
+% pop_var_name = {'vals','good_zMI'};
+% sel_pop_C = cell_list_op(props_C,pop_var_name); 
+sel_pop_C = [dur_cells_T dur_cells_I];
 
 
-%%
-%%
-an = 4; cn = 2;
-% respC = cell_list_op(FD_conj{2},dzMI_FD.resp_complex,'and'); %all_responsive_cells{an,cn}
-respC = FD_Dis_comp{3};  respC = FD_conj{3};
-% respC = repmat(cell_list_op(dis_cells_TC,dur_cells_IC,'and'),1,3);
-% respC = repmat(dis_cells_I(:,cn),1,3);
-p_respC = find_percent(respC);
+siD = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];
+Rs_CD = o.Rs(:,siD);mRs_CD = o.mR(:,siD);
+props_CD = get_props_Rs(Rs_CD,ntrials);
+% sel_pop_CD = cell_list_op(props_CD,pop_var_name); 
+sel_pop_CD = [dis_cells_T dis_cells_I];
 
-figure(1000);clf;subplot 141;imagesc(RsTt{an,cn}.speed); set(gca,'Ydir','normal'); subplot 142;imagesc(RsDt{an,cn}.speed);set(gca,'Ydir','normal'); subplot 143;imagesc(RsTi{an,cn}.speed); set(gca,'Ydir','normal'); subplot 144;imagesc(RsDi{an,cn}.speed);set(gca,'Ydir','normal');
-cNs = find(respC{an,cn});
-% cNs = find(speedResp{an,cn});
-% cNs = [278 118 188 97 35 329 115 85 21 209 132 238 251 149];
-% cNs = [278 97 329 209 132 251 149];
-tprops = get_props_Rs(RsTi(an,cn),50);
-tprops = get_props_Rs(RsDt(an,cn),50);
-centers = tprops.centers{1}(cNs,1); [ic,vc] = sort(centers);
-cNs = cNs(vc);
-cNs = find(respC{an,cn});
-% cNs = cNs(find(mean_dzMI{1,10}'==0))'
-plotRasters_dis_dur({RsTt{an,cn},RsDt{an,cn},RsTi{an,cn},RsDi{an,cn}},cNs);
 
-%%
-an = 4; cn = 2;
-tRsTt = RsTt{an,cn};tRsTi = RsTi{an,cn};
-tRsDt = RsDt{an,cn};tRsDi = RsDi{an,cn};
-all_cellN = [207 123 148 329 335 108 264];
-all_cellN = [278 97 329 209 132 251 149];
-all_cellN = [21 32 145];
-all_cellN = [6 36 303 140];
-% all_cellN = 161;
-for ii = 1:length(all_cellN)
-    cellN = all_cellN(ii);
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-        'spaceRowsCols',[0.15 0.05],'rightUpShifts',[0.05 0.25],'widthHeightAdjustment',...
-        [-70 -800]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 7 6.9 1.15]); sh34 = 0.06;
-    ax = ff.h_axes(1,3); changePosition(ax,[sh34 0 0 0]); ax = ff.h_axes(1,4); changePosition(ax,[sh34 0 0 0]);
-    
-    ax = ff.h_axes(1,1); [hra,hca] = plot_raster(tRsTt,cellN,ax); xlabel(ax,'Time (s)'); 
-    th = ylabel(ax,'FR (A.U.)'); changePosition(th,[-0.5,0,0]);
-    th = ylabel(hra,'Trial #'); changePosition(th,[-2.25,0,0]);
-    ax = ff.h_axes(1,2); [hra,hca] = plot_raster(tRsDt,cellN,ax); xlabel(ax,'Distance (cm)');
-    ax = ff.h_axes(1,3); [hra,hca] = plot_raster(tRsTi,cellN,ax); xlabel(ax,'Time (s)');
-    ax = ff.h_axes(1,4); [hra,hca] = plot_raster(tRsDi,cellN,ax); xlabel(ax,'Distance (cm)');
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rasters_%d',cellN),600);
+an = 4; Rs = Rs_C(an,:);
+sel_pop = sel_pop_C(an,4); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
+sel_popD = sel_pop_CD(an,1); sel_pop_orD = cell_list_op(sel_popD,[],'or',1); sel_pop_orD = sel_pop_orD{1};
+cellN = find(sel_pop_orD); ci = 12;%19; % 12 17;
+cbar_p_shift = [0.01 0.09 -0.05 -0.2];
+for cc = 1:6
+    c = cellN(ci);
+    R = Rs{cc};
+    thisRaster = R.sp_rasters(:,:,c);
+    ax = ff.h_axes(1,cc);
+    axes(ax); xlabel(ax,'Time (s)');
+    m = min(thisRaster(:));
+    M = max(thisRaster(:));
+    sz = size(thisRaster,2);
+    all_sz(cc) = sz;
+    bw = R.bin_width;
+    xdata = [0 round(sz*bw/2) sz*bw]; ydata = [1 10];
+    try
+    imagesc(xdata,ydata,thisRaster,[m M]);
+    catch
+      continue;
+    end
+    hold on;
+    set(gca,'Ydir','normal');
+    if cc > 1
+            set(gca,'ytick',[]);
+    else
+      set(gca,'ytick',[1 5 10]);
+        ylabel('Trial #');
+    end
+    xlabel('Time (s)'); 
+    format_axes(gca)
+    colormap parula;
+    box off;
+
+    %****** color bar
+    mM = round(min(thisRaster(:)),1); MM = round(max(thisRaster(:)),1);
+    try
+    [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',cbar_t_shift);
+    catch
+      continue;
+    end
+
+    %******* make new axes and plot mean and gaussian fitting
+    pos = get(ax,'Position'); ha = axes; set(ha,'units','inches');set(ha,'Position',pos);
+    changePosition(ha,pos_msig);
+
+    xs = linspace(0,sz*bw,sz);
+    mSig = nanmean(thisRaster);
+    plot(xs,mSig,'b');hold on;
+
+    fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(c,1:3),R.gauss_fit_on_mean.gauss1Formula);
+    plot(xs,fitplot,'linewidth',0.5,'color','m');
+    box off;
+    YM = round(max(mSig)+(max(mSig)/10),1);
+    if YM == 0
+      YM = round(max(mSig)+(max(mSig)/10),2);
+    end
+    ylim([0 YM]);
+%     set(ha,'xtick',[],'ytick',round(max(mSig),1));
+    set(ha,'xtick',[],'ytick',YM);
+    format_axes(gca);
+    textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
+    if cc == 1
+      textstr = sprintf(' %.1f   A%d-C%d',R.info_metrics.ShannonMI_Zsh(c),an,c);
+      ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 -0.09 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
+    else
+      textstr = sprintf('%.1f',R.info_metrics.ShannonMI_Zsh(c));
+      ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 -0.09 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
+    end
+    if cc == 1
+        ylabel('FR (AU)');
+    end
 end
 
-%%
-for ii = 1:length(all_cellN)
-    cellN = all_cellN(ii);
-    ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 4],...
-        'spaceRowsCols',[0.15 0.05],'rightUpShifts',[0.05 0.25],'widthHeightAdjustment',...
-        [-70 -800]);
-    set(gcf,'color','w'); set(gcf,'Position',[10 7 6.9 1.15]); sh34 = 0.06;
-    ax = ff.h_axes(1,3); changePosition(ax,[sh34 0 0 0]); ax = ff.h_axes(1,4); changePosition(ax,[sh34 0 0 0]);
-    
-    ax = ff.h_axes(1,1); [hra,hca] = plot_raster(tRsTt,cellN,ax,1); xlabel(ax,'Time (s)'); 
-    th = ylabel(ax,'(cm/sec)'); changePosition(th,[-0.5,0,0]);
-    th = ylabel(hra,'Trial #'); changePosition(th,[-2.25,0,0]);
-    ax = ff.h_axes(1,2); [hra,hca] = plot_raster(tRsDt,cellN,ax,1); xlabel(ax,'Distance (cm)');
-    ax = ff.h_axes(1,3); [hra,hca] = plot_raster(tRsTi,cellN,ax,1); xlabel(ax,'Time (s)');
-    ax = ff.h_axes(1,4); [hra,hca] = plot_raster(tRsDi,cellN,ax,1); xlabel(ax,'Distance (cm)');
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('speed_%d',1),600);
+% dist
+ntrials = 50; 
+si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];
+Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
+% props_C = get_props_Rs(Rs_C,ntrials);
+% pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
+% pop_var_name = {'vals','good_zMI'};
+% sel_pop_C = cell_list_op(props_C,pop_var_name); 
+
+Rs = Rs_C(an,:);
+% sel_pop = sel_pop_C(an,:); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
+% cellN = find(sel_pop_or);
+% cbar_p_shift = [0.01 0.09 -0.05 -0.3];
+for cc = 1:6
+    c = cellN(ci);
+    R = Rs{cc};
+    thisRaster = R.sp_rasters(:,:,c);
+    ax = ff.h_axes(2,cc);
+    axes(ax); xlabel(ax,'Distance (cm)');
+    m = min(thisRaster(:));
+    M = max(thisRaster(:));
+    sz = size(thisRaster,2);
+    all_sz(cc) = sz;
+    bw = R.bin_width;
+    xdata = [0 round(sz*bw/2) sz*bw]; ydata = [1 10];
+    try
+      imagesc(xdata,ydata,thisRaster,[m M]);
+    catch
+      continue;
+    end
+    hold on;
+    set(gca,'Ydir','normal');
+    if cc > 1
+            set(gca,'ytick',[]);
+    else
+      set(gca,'ytick',[1 5 10]);
+        ylabel('Trial #');
+    end
+    xlabel('Distance (cm)'); 
+    format_axes(gca)
+    colormap parula;
+    box off;
+
+    %****** color bar
+    mM = round(min(thisRaster(:)),1); MM = round(max(thisRaster(:)),1);
+    try
+    [hc,hca] = putColorBar(gca,cbar_p_shift,[mM MM],5,'eastoutside',cbar_t_shift);
+    catch
+      continue;
+    end
+
+    %******* make new axes and plot mean and gaussian fitting
+    pos = get(ax,'Position'); ha = axes; set(ha,'units','inches');set(ha,'Position',pos);
+    changePosition(ha,pos_msig);
+
+    xs = linspace(0,sz*bw,sz);
+    mSig = nanmean(thisRaster);
+    plot(xs,mSig,'b');hold on;
+    fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(c,1:3),R.gauss_fit_on_mean.gauss1Formula);
+    plot(xs,fitplot,'linewidth',0.5,'color','m');
+    box off;
+    YM = round(max(mSig)+(max(mSig)/10),1);
+    if YM == 0
+      YM = 0.1;
+    end
+    ylim([0 YM])
+    set(ha,'xtick',[],'ytick',round(max(mSig),1));
+    format_axes(gca);
+%     textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
+    textstr = sprintf('%.1f',R.info_metrics.ShannonMI_Zsh(c));
+    ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
+    if cc == 1
+        ylabel('FR (AU)');
+    end
 end
-%%
-axes(ff.h_axes(1,1));ylabel('Trial #');
 
-Rs = {RsDt{an,cn},RsDi{an,cn}};
-ff = makeFigureRowsCols(2021,[0.5 0.5 4 1],'RowsCols',[1 2],...
-    'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.09 0.25],'widthHeightAdjustment',...
-    [-100 -475]);
-set(gcf,'color','w'); set(gcf,'Position',[10 7 3 1]);
-ff = sample_rasters(Rs,cellN,ff);
-axes(ff.h_axes(1,1));ylabel('Trial #');
-save_pdf(ff.hf,mData.pdf_folder,sprintf('air_rastersD'),600);
+% save_pdf(ff.hf,mData.pdf_folder,'rasters.pdf',600);
 
 
+
+save_pdf(ff.hf,mData.pdf_folder,'rasters.pdf',600);
+
+winopen(fullfile(mData.pdf_folder,'rasters.pdf'));
+
+%% playing with how rasters are made and why is there a difference in response fidelity between distance and time rasters
+
+eei = ei(4);
+pp = 1;
+onsets = eei{1}.plane{pp}.contexts(5).markers.airI_onsets;
+offsets = eei{1}.plane{pp}.contexts(5).markers.airI_offsets;
+rasterType = 'time'; binwidths = evalin('base','binwidths');
+rastersTS =  make_rasters_quick(eei{1},pp,onsets,offsets,rasterType,binwidths);
+rasterType = 'dist'; 
+rastersTD =  make_rasters_quick(eei{1},pp,onsets,offsets,rasterType,binwidths);
+% conclusion --> there are NaNs in the distance raster for the particular
+% case I had been looking (Configuration 5 and Cell 57) ... NaNs are
+% because the animal didn't move. It stopped in bin 8 trial 2 that I looked
+% at

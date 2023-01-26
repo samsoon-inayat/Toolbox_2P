@@ -622,10 +622,37 @@ RsDC = combine_rasters_conditions(RsDt);
 
 RsTC = combine_rasters_conditions(RsTi);
 % plotRasters_simplest(RsTC{1,1},[])
+
+RsAbC = combine_rasters_conditions(RsAb);
+RsAaC = combine_rasters_conditions(RsAa);
 %% combine the distance and time rasters horizontally and see individual cell rasters
+an = 4;
 RsDTC = combine_rasters_horizontally([RsDC,RsTC]);
-% ccs = cell_list_op(respDT.inh(1,:),[],'or',1);
-% plotRasters_simplest(RsDTC{an,1},find(ccs{an}));
+ccs = cell_list_op(sel_pop_C(an,4),sel_pop_C(an,7),'or',1);
+plotRasters_simplest(RsDTC{an,1},find(ccs{1}));
+
+%% combine the distance and time rasters horizontally and see individual cell rasters
+ntrials = 50; 
+RsCo = o.Rs(:,[Lb_T Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Lbs_T Abs_t_T Abs_i_T]);
+RsCo = o.Rs(:,[Lb_T Ab_t_T Ab_i_T Ar_t_D Ar_i_T]);
+props_C = get_props_Rs(RsCo,ntrials);
+for ii = 1:size(RsCo,2)
+    tR = RsCo{1,ii};
+    sz(ii) = size(tR.sp_rasters1,2);
+end
+RsCo = combine_rasters_horizontally(RsCo);
+[mRCo,~,mR1Co] = calc_mean_rasters(RsCo,[]); 
+
+an = 4;
+pop_var_name = {'all'};
+sel_pop_C = cell_list_op(props_C,pop_var_name); 
+
+ccs = cell_list_op(sel_pop_C,[],'or',1);
+resp = find(ccs{an});
+[CRcC,aCRcC,mRRC] = find_population_vector_corr(RsCo,mRCo,ccs,0);
+%%
+plotRasters_Simp_All(RsCo{an,1},find(ccs{an}),sz);
+
 %%
 plotRasters_simplest(RsDTC{an,1},find(respA));
 %% find mean over the 30 trials from conditions 3 4 5 and see population vector

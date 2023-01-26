@@ -4,7 +4,7 @@ if ~exist('cbf','var')
     cbf = 1;
 end
 
-cp = 1;
+cp = 0;
 
 if ~isempty(allP)
     FS = mData.axes_font_size;
@@ -214,6 +214,6 @@ if isempty(allP)
 end
 
 
-cm = colormap(gray);
-cm = flipud(cm(1:size(cm,1),:));
+cm = colormap(jet);
+% cm = flipud(cm(1:size(cm,1),:));
 colormap(cm);

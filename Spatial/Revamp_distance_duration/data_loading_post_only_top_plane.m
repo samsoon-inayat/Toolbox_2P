@@ -5,6 +5,15 @@ tic
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei'); 
 
+% delete second plane data
+for ii = 1:5
+    if length(ei{ii}.plane) > 1
+        ei{ii}.plane(2) = [];
+    end
+    disp(length(ei{ii}.plane))
+end
+
+
 selContexts = [1 4 6 2 7 3 3 4 4 5 5 3 3 4 4 5 5 0 0 2 2 7 7 2 7 2 7 3 4 5 3 4 5 3 4 5 3 4 5];
 rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airID','airD','airID','airD','airID','airT','airIT','airT','airIT','airT','airIT','motionOnsets','motionOffsets','airRT','airIRT','airRT','airIRT',...
     'airOnsets22T','airOnsets22T','airOffsets22T',...
@@ -36,8 +45,32 @@ M = [18 19];
 %     dzMI = prop_op(o.props.zMI(:,[Ar_t_D Ar_i_D]),o.props.zMI(:,[Ar_t_T Ar_i_T]),0.1);
 
 toc
+%
+for rr = 1:size(o.Rs,1)
+    for cc = 1:size(o.Rs,2)
+        t_resp = o.Rs{rr,cc}.resp;
+        if length(t_resp.trial_scores) < length(t_resp.vals)
+            num_cells = length(t_resp.trial_scores);
+%         if isfield(t_resp,'trial_scores')
+%             disp(length(t_resp.trial_scores));
+            fields = fieldnames(t_resp);
+            for ii = 1:length(fields)
+                cmdTxt = sprintf('sz = (size(t_resp.%s));',fields{ii}); 
+                eval(cmdTxt);
+                if sum(sz>num_cells) > 0
+                    if sz(1) > num_cells
+                        cmdTxt = sprintf('t_resp.%s = t_resp.%s(1:num_cells,:);',fields{ii},fields{ii}); 
+                    else
+                        cmdTxt = sprintf('t_resp.%s = t_resp.%s(:,1:num_cells);',fields{ii},fields{ii}); 
+                    end
+                    eval(cmdTxt);
+                end
+            end
+            o.Rs{rr,cc}.resp = t_resp;
+        end
+    end
+end
 n = 0;
-
 %%
 % %% Load Data
 % tic
