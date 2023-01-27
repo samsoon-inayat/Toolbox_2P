@@ -577,20 +577,8 @@ var4 = tRsT.space;
 for cni = 1:size(var1,3)
     frvar = var1(:,:,cni);
     MIsD(cni) = calculate_MI(frvar,var2,4);
-    MIsT(cni) = calculate_MI(frvar,[],4);
-    MIsV(cni) = calculate_MI(frvar,var3,4);
-    MIsS(cni) = calculate_MI(frvar,var4,4);
+    MIse(cni) = calculate_MI(frvar,[],4);
+    MI
 end
 
-% MIsD = tRsD.info_metrics.ShannonMI;
-%%
-figure(1000);clf;
-% plot(MIsT,'r');hold on;
-plot(MIsD,'b');
-% plot(MIsV,'m');
-plot(MIsS,'c');
-
-%% figu
-figure(1000);clf;
-imagesc(var3);
-
+MIsD = tRsD.info_metrics.ShannonMI;

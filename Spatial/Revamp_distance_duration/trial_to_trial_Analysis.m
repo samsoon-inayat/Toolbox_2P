@@ -279,12 +279,15 @@ clear respRV conjV comp1V comp2V
     save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
 %%
     hf = get_figure(6,[8 3 3.25 3.25]);
-    [mOI,semOI] = heatmap_conj_comp(gca,allresp,3,{si,rasterNamesTxt});
+    allresp_sp = [allresp resp_speed(:,4)];
+    [mOI,semOI] = heatmap_conj_comp(gca,allresp_sp,1,{si,rasterNamesTxt});
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_mean_tu_spatial.pdf'),600);
     
     figdim = 1;
     hf = get_figure(7,[5 2 figdim+0.1 figdim]);
     minI = min(semOI(:)); maxI = max(semOI(:));
+    imAlpha=ones(size(mOI));    %imAlpha(isnan(mask))=0.25; 
+    imAlpha(mask1 == 1) = 0;
     im1 = imagesc(semOI,[minI,maxI]);    im1.AlphaData = imAlpha;
     set(gca,'color',0.5*[1 1 1]);    colormap parula;    %axis equal
     format_axes(gca);

@@ -1,4 +1,4 @@
-function rasters = get_rasters_data(ei,selContexts,rasterNames)
+function [rasters,ei] = get_rasters_data(ei,selContexts,rasterNames)
 if ~exist('ei','var')
     ei = evalin('base','d15_2');
     selContexts = [1 2 3 3 4 4 5 5 6 7];
@@ -10,8 +10,9 @@ for ii = 1:length(ei)
     if sum(selContexts)==0
         rasters(ii,:) = get_data_motion(ei{ii},selContexts,rasterNames);
     else
-        rasters(ii,:) = get_data(ei{ii},selContexts,rasterNames);
+        [rasters(ii,:),tei] = get_data(ei{ii},selContexts,rasterNames);
     end
+    ei{ii} = tei;
 end
 
 function rasters = get_data_motion(ei,selContexts,rasterNames)
@@ -50,7 +51,7 @@ for ii = 1:length(selContexts)
     rasters{ii,1}.peak_location_trials = squeeze(valsTi) * rasters{ii,1}.bin_width;
 end
 
-function rasters = get_data(ei,selContexts,rasterNames)
+function [rasters,ei] = get_data(ei,selContexts,rasterNames)
 
 nplanes = length(ei.plane);
 for ii = 1:length(selContexts)
@@ -94,7 +95,10 @@ for ii = 1:length(selContexts)
             end
             tempR = findRasterProperties_1(thispFolderD,contextNumber,thisStimMarker,tempR,thisRasterType,trials,[0 0 0]);
         end
-        
+        if nargout == 2
+            cmdTxt = sprintf('thisContext.rasters.%s = tempR;',rasterNames{ii}); eval(cmdTxt);
+            ei.plane{pp}.contexts(selContexts(ii)) = thisContext;
+        end
     end
     iscell1 = ei.plane{pp}.tP.iscell(:,1);
     if nplanes == 1
@@ -135,6 +139,10 @@ for ii = 1:length(selContexts)
                     thispFolderD = ei.plane{pp}.folder;
                 end
                 tempR1 = findRasterProperties_1(thispFolderD,contextNumber,thisStimMarker,tempR1,thisRasterType,trials,[0 0 0]);
+            end
+            if nargout == 2
+                cmdTxt = sprintf('thisContext.rasters.%s = tempR1;',rasterNames{ii}); eval(cmdTxt);
+                ei.plane{pp}.contexts(selContexts(ii)) = thisContext;
             end
         end
         rasters{ii,1} = combine_planes_data(tempR,tempR1);
