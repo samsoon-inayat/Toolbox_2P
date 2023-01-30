@@ -584,7 +584,7 @@ end
 
 % MIsD = tRsD.info_metrics.ShannonMI;
 %%
-figure(1000);clf;
+figure(1000);clf;hold on;
 % plot(MIsT,'r');hold on;
 plot(MIsD,'b');
 % plot(MIsV,'m');

@@ -1,4 +1,18 @@
 function [rasterF,mdl,rs] = do_gauss_fit(xs,raster,statsetfitnlm,orderdc)
+
+if isempty(statsetfitnlm)
+    statsetfitnlm = statset('fitnlm');
+    statsetfitnlm.MaxIter = 1000;
+    statsetfitnlm.TolFun = 1e-10;
+    % statsetfitnlm.Display = 'iter';
+    statsetfitnlm.TolX = statsetfitnlm.TolFun;
+    statsetfitnlm.UseParallel = 1;
+end
+
+if isempty(orderdc)
+    orderdc = [1 0];
+end
+
 order = orderdc(1);
 dc = orderdc(2);
 rasterF = NaN(size(raster));
