@@ -3,40 +3,42 @@ function trial_by_trial_pop_vec
 
 %% population vector and correlation sensory
 while 1
-    an = 4; cnseq = 6; 
-    cn = 6;
+    an = 1; cnseq = 6; 
     tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
     
 %     respT = FD_conj{1}(an,1);
 %     respT = FT_Dur_comp{1}(an,1);
-    cn = 7;
+    cn = 1;
 %     respT = cell_list_op(respG(an,cn),respG(an,cn+3),'or');
-%     respT = respG(an,cn);
-    respC = dis_cells_T;%cell_list_op(dis_cells_T,dur_cells_I,'and');
-    respC = dur_cells_I;
-    respT = respC(an,3);
-    [~,~,seq] = findPopulationVectorPlot(mRsG{an,9},respT{1});
+    respT = respG(an,cn);
+    respT = allresp_OR(an,cn);
+%     respC = dis_cells_T;%cell_list_op(dis_cells_T,dur_cells_I,'and');
+%     respC = dur_cells_I;
+%     respT = respC(an,3);
+%     respT = allresp_OR;
+    [~,~,seq] = findPopulationVectorPlot(mRsG{an,1},respT{1});
+%     [~,~,seq] = findPopulationVectorPlot(allmRsT{cn}{an,1},respT{1});
     
-    cn = 6;
-    tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
-    [ff] = plot_pop_vec_trials(100,[0.5 3 7 1.5],tRs,tmR,respT,seq)
+    cn = 1;
+    tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [allmRsT{cn}(an,:) mRsG(an,cn)];
+    [ff] = plot_pop_vec_trials(100,[0.5 3 19 5.5],tRs,tmR,respT,seq);
     
-    tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [mRsG(an,cn+3) allmRsT{cn+3}(an,:)];
-    ff = plot_pop_vec_trials(101,[8 3 7 1.5],tRs,tmR,respT,seq)
+%     tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [allmRsT{cn+3}(an,:) mRsG(an,cn+3)];
+%     ff = plot_pop_vec_trials(101,[10 3 9 4.5],tRs,tmR,respT,seq)
     
-    cn = 5;
-    tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
-    [ff] = plot_pop_vec_trials(102,[0.5 5 7 1.5],tRs,tmR,respT,seq)
-    
-    tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [mRsG(an,cn+3) allmRsT{cn+3}(an,:)];
-    ff = plot_pop_vec_trials(103,[8 5 7 1.5],tRs,tmR,respT,seq)
-    
-    cn = 4;
-    tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
-    [ff] = plot_pop_vec_trials(104,[0.5 7 7 1.5],tRs,tmR,respT,seq)
-    
-    tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [mRsG(an,cn+3) allmRsT{cn+3}(an,:)];
-    ff = plot_pop_vec_trials(105,[8 7 7 1.5],tRs,tmR,respT,seq)
+%     cn = 2;
+%     tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
+%     [ff] = plot_pop_vec_trials(102,[0.5 5 7 1.5],tRs,tmR,respT,seq)
+%     
+%     tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [mRsG(an,cn+3) allmRsT{cn+3}(an,:)];
+%     ff = plot_pop_vec_trials(103,[8 5 7 1.5],tRs,tmR,respT,seq)
+%     
+%     cn = 3;
+%     tRs = [RsG(an,cn) allRsC{cn}(an,:)]; tmR = [mRsG(an,cn) allmRsT{cn}(an,:)];
+%     [ff] = plot_pop_vec_trials(104,[0.5 7 7 1.5],tRs,tmR,respT,seq)
+%     
+%     tRs = [RsG(an,cn+3) allRsC{cn+3}(an,:)]; tmR = [mRsG(an,cn+3) allmRsT{cn+3}(an,:)];
+%     ff = plot_pop_vec_trials(105,[8 7 7 1.5],tRs,tmR,respT,seq)
     
 
     %%

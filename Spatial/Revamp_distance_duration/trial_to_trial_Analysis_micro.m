@@ -4,6 +4,10 @@ function trial_to_trial_Analysis
 
 ntrials = 40;
 si = [Lb_T Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Lbs_T Abs_t_T Abs_i_T];
+si = [Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Abs_t_T Abs_i_T];
+% si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T];
+% si = [Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
+% si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T];
 siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = propsG.all;
 mRsG = calc_mean_rasters(RsG,1:10);
 trials = mat2cell([1:10]',ones(size([1:10]')));
@@ -12,21 +16,27 @@ lnsi = length(si);
 %     respDT = combine_distance_time_rasters(o.Rs(:,si(1:3)),o.Rs(:,si(4:6)),ntrials);
 disp('Done');
 
-%% Overlap Indices ImageSC all
+% Overlap Indices ImageSC all
 avgProps = get_props_Rs(RsG,[50,100]); 
 respG = avgProps.vals;
 an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0; only_global = 0;
 allresp = []; ind = 1;
-all_peakL = [];
+all_peakL = []; allresp_trials = []; allpeakL_trials = [];
 for cn = 1:length(si)
     mRsCT = allmRsT{cn};
     resp = []; peak_locations = [];
     for rr = 1:size(mRsCT,1)
+        respTrials = []; pLsTrials = [];
         for cc = 1:size(mRsCT,2)
             this_mat = mRsCT{rr,cc};
             [~,peakL] = max(this_mat,[],2);
 %                 size_tmat(rr,cc) = size(this_mat,2);
             resp{rr,cc} = sum(this_mat,2) > 0;
+            if cc == 1
+                respTrials = resp{rr,cc};
+            else
+                respTrials = [respTrials resp{rr,cc}];
+            end
             if intersect_with_global
                 resp{rr,cc} = resp{rr,cc} & respG{rr,cn};
             end
@@ -52,11 +62,18 @@ for cn = 1:length(si)
             end
             peakL(~resp{rr,cc}) = NaN;
             peak_locations{rr,cc} = peakL;
+            if cc == 1
+                pLsTrials = peakL;
+            else
+                pLsTrials = [pLsTrials peakL];
+            end
             if rr == 1
                 txl{ind} = sprintf('C%dT%d',cn,cc);
                 ind = ind + 1;
             end
         end
+        allresp_trials{rr,cn} = respTrials;
+        allpeakL_trials{rr,cn} = pLsTrials;
 %             oc(rr,cn) = find_cells_based_on_cluster(cell2mat(resp(rr,:)));
     end
     allresp = [allresp resp]; all_peakL = [all_peakL peak_locations];
@@ -283,6 +300,111 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     presp = find_percent(allresp);
     varC = presp;
     [within,dvn,xlabels,awithinD] = make_within_table({'Cond','TI','Tr'},[2,2,10]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    %% Heatmap of active cells
+    st = 1:10:(length(si)*10);
+    et = 10:10:(length(si)*10);
+    for ii = 1:length(si)
+        t_resp = allresp(:,st(ii):et(ii));
+        allresp_OR(:,ii) = cell_list_op(t_resp,[],'or',1);
+    end
+%     si = [
+    hf = get_figure(6,[8 3 3.25 3.25]);
+    [mOI,semOI] = heatmap_conj_comp(gca,allresp_OR,1,{si,rasterNamesTxt,1});
+    %% for all active cells in a trial, I want to see the peak locations and average shift of peak locations for animals
+    an = 1; cn = 1;
+    mshifts = []; mshifts = [];mshiftsB = []; mshiftsF = []; fshiftB = []; fshiftF = []; fshiftZ = [];
+    for an = 1:5
+        for cn = 1:length(si)
+            pLs = allpeakL_trials{an,cn};
+            resp = allresp_trials{an,cn};
+            resp = sum(resp,2)>2;
+            pLs = pLs(resp,:);
+            [~,inds] = sort(pLs(:,1));
+        %     figure(1000);clf;imagesc(pLs(inds,:));colorbar;
+%             figure(1000);clf;imagesc(pLs);colorbar;
+            100*sum(~isnan(pLs))/size(pLs,1)
+            prob_participation = [];
+            mshift = []; 
+            for ii = 1:size(pLs,1)
+                tcell = pLs(ii,:);
+                prob_participation(ii,1) = sum(~isnan(tcell))/length(tcell);
+                ntcell = tcell(~isnan(tcell));
+                mshift(ii,1) = mean(diff(ntcell));
+            end
+            mshifts(an,cn) = mean(mshift);
+            mshiftsB(an,cn) = mean(mshift(mshift<0));
+            mshiftsF(an,cn) = mean(mshift(mshift>0));
+            fshiftB(an,cn) = sum(mshift<0)/length(mshift);
+            fshiftF(an,cn) = sum(mshift>0)/length(mshift);
+            fshiftZ(an,cn) = sum(mshift==0)/length(mshift);
+        end
+    end
+    
+    %% run stats on average shifts of peak locations
+    inds = [3 4 5 6 7 8];
+    inds = [1 2 3 4];
+%     inds = 1:6;
+    varC = mshiftsF(:,inds);
+    [within,dvn,xlabels,awithinD] = make_within_table({'Cnds','TI'},[2,2]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    
+    %%
+    inds = [1 2 3 4]; inds = [1 2 3 4];
+    varC = [mshiftsF(:,inds) abs(mshiftsB(:,inds))];
+%     varC = [fshiftF(:,inds) fshiftB(:,inds)];
+    [within,dvn,xlabels,awithinD] = make_within_table({'Po','Cnds','TI'},[2,2,2]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    
+    %% for all active cells in a trial, I want to see the peak locations and average shift of peak locations for animals
+   
+    fshiftsall = [];
+    respDT = cell_list_op(dur_cells_T,[],'or',1); out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    fshiftsall = [fshiftsall out.fshiftsF out.fshiftsB fshiftsZ];
+    respDT = cell_list_op(dur_cells_I,[],'or',1); out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    fshiftsall = [fshiftsall out.fshiftsF out.fshiftsB fshiftsZ];
+    respDT = cell_list_op(dis_cells_T,[],'or',1); out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    fshiftsall = [fshiftsall out.fshiftsF out.fshiftsB fshiftsZ];
+    respDT = cell_list_op(dis_cells_I,[],'or',1); out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    fshiftsall = [fshiftsall out.fshiftsF out.fshiftsB fshiftsZ];
+    %%
+    all_var = [];
+    respDT = [dur_cells_T(:,1) dur_cells_I(:,1) dur_cells_T(:,2) dur_cells_I(:,2) dur_cells_T(:,3) dur_cells_I(:,3)];
+    out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    all_var = [all_var out.mshiftsF];% out.fshiftsB fshiftsZ];
+    respDT = [dis_cells_T(:,1) dis_cells_I(:,1) dis_cells_T(:,2) dis_cells_I(:,2) dis_cells_T(:,3) dis_cells_I(:,3)];
+    out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    all_var = [all_var out.mshiftsF];% out.fshiftsB fshiftsZ];
+    %
+    % run stats on average shifts of peak locations
+    varC = all_var;
+    [within,dvn,xlabels,awithinD] = make_within_table({'DT','Cnds','TI'},[2,3,2]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    
+    %%
+    all_var = [];
+    respDT = [dur_cells_T(:,1) dur_cells_I(:,1) dur_cells_T(:,2) dur_cells_I(:,2) dur_cells_T(:,3) dur_cells_I(:,3)];
+    out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    all_var = [all_var out.fshiftsZ];% out.fshiftsB fshiftsZ];
+    respDT = [dis_cells_T(:,1) dis_cells_I(:,1) dis_cells_T(:,2) dis_cells_I(:,2) dis_cells_T(:,3) dis_cells_I(:,3)];
+    out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    all_var = [all_var out.fshiftsZ];% out.fshiftsB fshiftsZ];
+    %
+    % run stats on average shifts of peak locations
+    varC = all_var;
+    [within,dvn,xlabels,awithinD] = make_within_table({'DT','Cnds','TI'},[2,3,2]);
     dataT = make_between_table({varC},dvn);
     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
     ra.ranova

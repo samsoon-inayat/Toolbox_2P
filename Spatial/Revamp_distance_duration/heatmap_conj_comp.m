@@ -2,6 +2,12 @@ function [mOI,semOI] = heatmap_conj_comp(ha,allresp,type,options)
 mData = evalin('base','mData');
 siG = options{1};
 rasterNamesTxt = options{2};
+try
+    dis = options{3};
+catch
+    dis = 0;
+end
+    
 % G = options{3};
 [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
     if ~strcmp(get(ha,'type'),'figure')
@@ -39,10 +45,11 @@ rasterNamesTxt = options{2};
     %
 %     axes(ff.h_axes(1));
     im1 = imagesc(mOI,[minI,maxI]);    im1.AlphaData = imAlpha;
-    
+    if ~dis
     for ii = 1:18
         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 180.5],'w','linewidth',0.1); 
         plot([0 180.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
+    end
     end
 %     for ii = [2 6 9 12]   
 %         plot([(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],[0 80.5],'k','linewidth',1); 
@@ -52,7 +59,11 @@ rasterNamesTxt = options{2};
     format_axes(gca);
     set_axes_limits(gca,[0.5 sz+0.5],[0.5 sz+0.5]);
     ttxl = rasterNamesTxt(siG);
-    xtickvals = 5:10:size(mOI,2);%[5 15 25 60 100 115 125];
+    if dis
+        xtickvals = 1:size(mOI,2);%[5 15 25 60 100 115 125];
+    else
+        xtickvals = 5:10:size(mOI,2);%[5 15 25 60 100 115 125];
+    end
     xticklabels = rasterNamesTxt(siG);
 
     set(gca,'xtick',xtickvals,'ytick',xtickvals,'xticklabels',xticklabels,'yticklabels',xticklabels,'Ydir','normal'); xtickangle(45);%ytickangle(45);
