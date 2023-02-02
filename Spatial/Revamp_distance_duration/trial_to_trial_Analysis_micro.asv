@@ -5,8 +5,8 @@ function trial_to_trial_Analysis
 ntrials = 40;
 si = [Lb_T Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Lbs_T Abs_t_T Abs_i_T];
 si = [Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Abs_t_T Abs_i_T];
-si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T];
-% si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D];
+% si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T];
+% si = [Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
 % si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T];
 siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = propsG.all;
 mRsG = calc_mean_rasters(RsG,1:10);
@@ -317,6 +317,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     %% for all active cells in a trial, I want to see the peak locations and average shift of peak locations for animals
     an = 1; cn = 1;
     mshifts = []; mshifts = [];mshiftsB = []; mshiftsF = []; fshiftB = []; fshiftF = []; fshiftZ = [];
+    all_shifts = [];
     for an = 1:5
         for cn = 1:length(si)
             pLs = allpeakL_trials{an,cn};
@@ -335,6 +336,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
                 ntcell = tcell(~isnan(tcell));
                 mshift(ii,1) = mean(diff(ntcell));
             end
+            all_shifts{an,cn} = mshift;
             mshifts(an,cn) = mean(mshift);
             mshiftsB(an,cn) = mean(mshift(mshift<0));
             mshiftsF(an,cn) = mean(mshift(mshift>0));
@@ -346,8 +348,9 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     
     %% run stats on average shifts of peak locations
     inds = [3 4 5 6 7 8];
-    inds = [1 2 9 10];
-    varC = mshiftsB(:,inds);
+    inds = [1 2 3 4];
+%     inds = 1:6;
+    varC = mshiftsF(:,inds);
     [within,dvn,xlabels,awithinD] = make_within_table({'Cnds','TI'},[2,2]);
     dataT = make_between_table({varC},dvn);
     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
@@ -379,10 +382,10 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     all_var = [];
     respDT = [dur_cells_T(:,1) dur_cells_I(:,1) dur_cells_T(:,2) dur_cells_I(:,2) dur_cells_T(:,3) dur_cells_I(:,3)];
     out = find_shifts(allresp_trials,allpeakL_trials,respDT);
-    all_var = [all_var out.mshiftsB];% out.fshiftsB fshiftsZ];
+    all_var = [all_var out.mshiftsF];% out.fshiftsB fshiftsZ];
     respDT = [dis_cells_T(:,1) dis_cells_I(:,1) dis_cells_T(:,2) dis_cells_I(:,2) dis_cells_T(:,3) dis_cells_I(:,3)];
     out = find_shifts(allresp_trials,allpeakL_trials,respDT);
-    all_var = [all_var out.mshiftsB];% out.fshiftsB fshiftsZ];
+    all_var = [all_var out.mshiftsF];% out.fshiftsB fshiftsZ];
     %
     % run stats on average shifts of peak locations
     varC = all_var;
@@ -391,3 +394,38 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
     ra.ranova
     print_for_manuscript(ra)
+    
+    %%
+    all_var = [];
+    respDT = [dur_cells_T(:,1) dur_cells_I(:,1) dur_cells_T(:,2) dur_cells_I(:,2) dur_cells_T(:,3) dur_cells_I(:,3)];
+    out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    all_var = [all_var out.fshiftsZ];% out.fshiftsB fshiftsZ];
+    respDT = [dis_cells_T(:,1) dis_cells_I(:,1) dis_cells_T(:,2) dis_cells_I(:,2) dis_cells_T(:,3) dis_cells_I(:,3)];
+    out = find_shifts(allresp_trials,allpeakL_trials,respDT);
+    all_var = [all_var out.fshiftsZ];% out.fshiftsB fshiftsZ];
+    %
+    % run stats on average shifts of peak locations
+    varC = all_var;
+    [within,dvn,xlabels,awithinD] = make_within_table({'DT','Cnds','TI'},[2,3,2]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    %%
+    
+    for rr = 1:size(allresp_trials,1)
+        for cc = [3 5 7]
+            resp1 = allresp_trials{rr,cc};
+            resp = {sum(resp1,2)>2};
+            r_dur_cells_T = get_vals(dur_cells_T,repmat(resp,1,3));
+        end
+        for cc = [4 6 8]
+            resp = allresp_trials{rr,cc};
+            resp = sum(resp,2)>2;
+        end
+    end
+    
+    all_shifts345_T = all_shifts(:,[3 5 7]);
+    all_shifts345_I = all_shifts(:,[4 6 8]);
+    
+    com_shift_dur_T = cell_list_op(all_shifts345_T,dur_cells_T,'and');

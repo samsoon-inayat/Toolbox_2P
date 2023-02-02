@@ -317,6 +317,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     %% for all active cells in a trial, I want to see the peak locations and average shift of peak locations for animals
     an = 1; cn = 1;
     mshifts = []; mshifts = [];mshiftsB = []; mshiftsF = []; fshiftB = []; fshiftF = []; fshiftZ = [];
+    all_shifts = [];
     for an = 1:5
         for cn = 1:length(si)
             pLs = allpeakL_trials{an,cn};
@@ -335,6 +336,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
                 ntcell = tcell(~isnan(tcell));
                 mshift(ii,1) = mean(diff(ntcell));
             end
+            all_shifts{an,cn} = mshift;
             mshifts(an,cn) = mean(mshift);
             mshiftsB(an,cn) = mean(mshift(mshift<0));
             mshiftsF(an,cn) = mean(mshift(mshift>0));
@@ -409,3 +411,11 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
     ra.ranova
     print_for_manuscript(ra)
+    %%
+    r_dur_cells_T = get_vals(dur_cells_T,allresp_trials(:,[3 5 7]));
+    
+   
+    all_shifts345_T = all_shifts(:,[3 5 7]);
+    all_shifts345_I = all_shifts(:,[4 6 8]);
+    
+    com_shift_dur_T = cell_list_op(all_shifts345_T,dur_cells_T,'and');
