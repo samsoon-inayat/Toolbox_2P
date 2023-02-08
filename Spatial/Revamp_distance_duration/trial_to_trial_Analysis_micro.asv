@@ -314,6 +314,42 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
 %     si = [
     hf = get_figure(6,[8 3 3.25 3.25]);
     [mOI,semOI] = heatmap_conj_comp(gca,allresp_OR,1,{si,rasterNamesTxt,1});
+    
+    %%
+    all_pos_seq = [];
+    for an = 1:5
+        for cn = 1:length(si)
+            pLs = allpeakL_trials{an,cn};
+            resp = allresp_trials{an,cn};
+            resp = sum(resp,2)>2;
+            pLs = pLs(resp,:);
+            tr_seq = [];
+            for trn = 1:10
+                [~,inds] = sort(pLs(:,trn));
+                [~,inds1] = sort(inds);
+                nan_temp = double(isnan(pLs(:,trn)));
+                nan_temp(nan_temp) = NaN;
+                tr_seq(:,trn) = inds1 .* (isnan(pLs(:,trn))*NaN);
+            end
+            all_pos_seq{an,cn} = tr_seq;
+            seq_shift = diff(tr_seq)/size(tr_seq,1);
+            m_seq_shift = mean(seq_shift,2); % this is mean over trials;
+            f_seq_shift_trials_LZ = sum(seq_shift<0,2)/10;
+            mm_seq_shift(an,cn) = mean(m_seq_shift); % this is mean over cells
+            f_seq_shift_LZ(an,cn) = sum(m_seq_shift<-0.1)/size(tr_seq,1);
+        end
+    end
+    
+    %% run stats on average shifts of peak locations
+    inds = [3 4 5 6 7 8];
+    inds = [1 2 3 4]; inds = [1 2 5 6]; inds = [1 2 9 10];
+%     inds = [1 2 9 10];
+    varC = f_seq_shift_LZ(:,inds);
+    [within,dvn,xlabels,awithinD] = make_within_table({'Cnds','TI'},[length(inds)/2,2]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
     %% for all active cells in a trial, I want to see the peak locations and average shift of peak locations for animals
     an = 1; cn = 1;
     mshifts = []; mshifts = [];mshiftsB = []; mshiftsF = []; fshiftB = []; fshiftF = []; fshiftZ = [];
@@ -412,19 +448,9 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     ra.ranova
     print_for_manuscript(ra)
     %%
+    r_dur_cells_T = get_vals(dur_cells_T,allresp_trials(:,[3 5 7]));
     
-    for rr = 1:size(allresp_trials,1)
-        for cc = [3 5 7]
-            resp1 = allresp_trials{rr,cc};
-            resp = {sum(resp1,2)>2};
-            r_dur_cells_T = get_vals(dur_cells_T,repmat(resp,1,3));
-        end
-        for cc = [4 6 8]
-            resp = allresp_trials{rr,cc};
-            resp = sum(resp,2)>2;
-        end
-    end
-    
+   
     all_shifts345_T = all_shifts(:,[3 5 7]);
     all_shifts345_I = all_shifts(:,[4 6 8]);
     
