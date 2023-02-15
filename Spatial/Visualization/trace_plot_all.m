@@ -30,6 +30,7 @@ offsets = b.air_puff_f;
 light_onsets = b.stim_r;
 mData = evalin('base','mData');
 signals = get_calcium_data(pd_rec,pl);
+signals = signalsS;
 % [signals,signalsR] = get_calcium_data_raw(pd_rec,pl);
 % [xoff,yoff] = get_ca_motion_correction_data(pd_rec,pl);
 % r = sqrt(xoff.^2 + yoff.^2);
@@ -112,6 +113,23 @@ while 0
 end
 
 %%
+%%
+    CRc = corr(spSigAllN);
+    figure(1000);clf;
+    subplot(2,1,1);imagesc(spSigAllN);colorbar;set(gca,'Ydir','Normal');
+    subplot(2,1,2);imagesc(CRc);colorbar;set(gca,'Ydir','Normal');
+    
+    figure(1003);clf;
+    imagesc(CRc);colorbar;set(gca,'Ydir','Normal');
+    %%
+    CRc1 = corr(spSigAllN');
+    oM = ones(size(CRc1));
+    mask1 = (triu(oM,0) & tril(oM,0)); CRc1(mask1==1) = NaN;
+    
+    figure(1001);clf;
+    subplot(2,1,1);imagesc(spSigAllN');colorbar;set(gca,'Ydir','Normal');
+    subplot(2,1,2);imagesc(CRc1);colorbar;set(gca,'Ydir','Normal');
+   
 %%
 while 1
     hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.97 2.4],'color','w'); hold on;

@@ -222,6 +222,7 @@ end
 %% get the cells in Lb/Lbs, Ar_L/Ars_L, and ArL_L
 while 1
     ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    event_type = {'B-L','NB-A','NB-AL'};
     sic = {[Lb Lbs];[Ar_L Ars_L];[ArL_L]};
     clear all_gFR all_exc all_inh all_gV 
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
@@ -591,16 +592,17 @@ end
 
 %% for heat map and clustering
 while 1
-    ntrials = 50; %si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
+    ntrials = 50; 
+%     si = [Lb_T ArL_L_T Lbs_T Ab_t_T Ab_i_T Abs_t_T Abs_i_T Ar_t_D ArL_t_D Ars_t_D Ar_t_T ArL_t_T Ars_t_T Ar_i_D ArL_i_D Ars_i_D Ar_i_T ArL_i_T Ars_i_T];
     event_type = {'1-L','2-AOn','2-AOff','2-Arb','3-AOn','3-A','3-AOff','3-Arb','4-AOn','4-AL','4-AOff','4-Arb','5-AOn','5-A','5-AOff','5-Arb','6-L','7-AOn','7-AOff','7-Arb'};
     sic = {Lb;Ab_On;Ab_Off;Ab_Offc;Ar_On;Ar_L;Ar_Off;Ar_Offc;ArL_On;ArL_L;ArL_Off;ArL_Offc;Ars_On;Ars_L;Ars_Off;Ars_Offc;Lbs;Abs_On;Abs_Off;Abs_Offc};
     
 %     event_type = {'1-L','2-AOn','2-AOff','3-AOn','3-A','3-AOff','4-AOn','4-AL','4-AOff','5-AOn','5-A','5-AOff','6-L','7-AOn','7-AOff'};
 %     sic = {Lb;Ab_On;Ab_Off;Ar_On;Ar_L;Ar_Off;ArL_On;ArL_L;ArL_Off;Ars_On;Ars_L;Ars_Off;Lbs;Abs_On;Abs_Off};
     
-    event_type = {'1-L','2-AOn','2-AOff','3-AOn','3-AOff','4-AOn','4-AOff','5-AOn','5-AOff','6-L','7-AOn','7-AOff'};
-    sic = {Lb;Ab_On;Ab_Off;Ar_On;Ar_Off;ArL_On;ArL_Off;Ars_On;Ars_Off;Lbs;Abs_On;Abs_Off};
-    
+%     event_type = {'1-L','2-AOn','2-AOff','3-AOn','3-AOff','4-AOn','4-AOff','5-AOn','5-AOff','6-L','7-AOn','7-AOff'};
+%     sic = {Lb;Ab_On;Ab_Off;Ar_On;Ar_Off;ArL_On;ArL_Off;Ars_On;Ars_Off;Lbs;Abs_On;Abs_Off};
+%     
     clear all_gFR all_exc all_inh all_gV 
     prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
     cell_sel = {'good_FR','vals','exc','inh'};

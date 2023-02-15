@@ -41,7 +41,7 @@ for ii = 1:length(resp_vals)
 %             end
         end
     end
-    all_OI{ii} = OI;
+    all_OI{ii} = 1-OI;
     all_OI_mat(:,:,ii) = OI;
     all_CI{ii} = CI;
     all_CI_mat(:,:,ii) = CI;
