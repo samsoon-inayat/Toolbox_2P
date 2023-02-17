@@ -519,7 +519,6 @@ end
 while 1
     all_resp = [];
     ntrials = 50;
-    event_type = {'B','NB','M'};
     sic = {[Ab_On Abs_On Ab_Off Abs_Off Ab_Offc Abs_Offc Lb Lbs];[Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Ar_Offc ArL_Offc Ars_Offc ArL_L Ar_L Ars_L];[M_On M_Off]}; % for heat map after light sitmulus
     clear all_gFR
     for ii = 1:length(sic)

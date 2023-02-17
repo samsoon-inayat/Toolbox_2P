@@ -162,7 +162,7 @@ while 1
     allrespORp = find_percent(allrespOR,cpCells);
     [mCs,semCs] = findMeanAndStandardError(allrespORp);
     %%
-    [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
+    [OIo,mOIo,semOIo,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);
 %     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_resp_T,0.5,0.05);
      disp('Done');
     %%
@@ -173,6 +173,7 @@ while 1
     mOI = mCI; semOI = semCI;
     mSel = mCI;
 %     mSel = mUni;
+    mSel = mOIo; semOI = semOIo;
     mOI = mSel;
     sz = size(mOI,1);
 %     mOI = OI_mat(:,:,4);

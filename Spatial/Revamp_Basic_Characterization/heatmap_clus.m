@@ -3,7 +3,7 @@
 %     hf = get_figure(5,[9 2 figdim figdim]);
             
     all_cells_list = all_exc_inh;
-%     all_cells_list = all_gV_A;
+    all_cells_list = all_gV;
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);
     txl = circshift(event_type,sh,2);
@@ -18,9 +18,9 @@
 %     figure(1000);clf;subplot 131;imagesc(mUni,[mmUni MmUni]);set(gca,'YDir','normal');subplot 132;imagesc(mUni1,[mmUni MmUni]);set(gca,'YDir','normal');subplot 133;imagesc(mUni2,[mmUni MmUni]);set(gca,'YDir','normal');
     
     
-   ff = makeFigureRowsCols(107,[5 3 6.9 2.5],'RowsCols',[1 2],'spaceRowsCols',[0.2 0.2],'rightUpShifts',[0.12 0.19],'widthHeightAdjustment',[-10 -300]);
+   ff = makeFigureRowsCols(107,[5 3 6.9 2.7],'RowsCols',[1 2],'spaceRowsCols',[0.2 0.2],'rightUpShifts',[0.071 0.15],'widthHeightAdjustment',[-10 -260]);
     set(gcf,'color','w');     ylims = [0 1];
-    stp = 0.57; widths = 0.5*([2 2 2 2 0.4 0.4]+1.5); gap = 0.99*1.75; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.35; widths = 0.5*([2 2 2 2 0.4 0.4]+2.0); gap = 0.99*1.5; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     gap1 = 0.32; widths1 = 1*0.75; height1 = widths1 - 0.05;
     
     mats = {mCI,mUni}; semmats = {semCI,semUni};
@@ -52,10 +52,10 @@
     %     plot([0 150.5],[(10.5+((ii-1)*10)) (10.5+((ii-1)*10))],'w','linewidth',0.1); 
         set(gca,'Ydir','normal');ytickangle(15);        box on
         format_axes(gca);
-        [hc,hca] = putColorBar(gca,[0.09 0.07 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.07 0.05 0.07 0.05]);
+        [hc,hca] = putColorBar(gca,[0.05 0.06 -0.11 -0.15],{sprintf('%.1f',minI),sprintf('%.1f',maxI)},6,'eastoutside',[0.07 0.05 0.07 0.05]);
         colormap jet
         htit = title('Mean'); changePosition(htit,[0 0.05 0]); set(htit,'FontSize',5,'FontWeight','Normal');
-        ht = set_axes_top_text_no_line(gcf,gca,titles{ii},[0 -0.01 0 0]);set(ht,'FontSize',6,'FontWeight','Bold')
+        ht = set_axes_top_text_no_line(gcf,gca,titles{ii},[0 -0.03 0 0]);set(ht,'FontSize',6,'FontWeight','Bold')
 
 %         save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_%d_mean_%d.pdf',ntrials,sh),600);
         hai = ff.h_axes(1,ii);

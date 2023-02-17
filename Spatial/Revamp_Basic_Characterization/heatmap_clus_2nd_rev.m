@@ -77,12 +77,12 @@
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_%d_%d.pdf',ntrials,sh),600);
     %% distribution of JD
-    all_bvs = [];
+    all_bvs = []; all_jdvals = [];
     for an = 1:5
         jdvals = squareform(OIo{an},'tovector');
         all_minjdv(an) = min(jdvals);
         all_jdvals(an,:) = jdvals;
-        bins = 0.7:0.05:1;
+        bins = 0.2:0.05:1;
         [bvs,xs] = hist(jdvals,bins); bvs = bvs/sum(bvs);
         all_bvs(an,:) = bvs;
     end
@@ -92,13 +92,14 @@
     shadedErrorBar(xs,mbvs,sembvs);
     ylabel('Fraction');xlabel('Jaccard Distance');
     format_axes(gca); set(gca,'xlim',[min(bins) max(bins)]);
-    save_pdf(ff.hf,mData.pdf_folder,sprintf('JD_%d.pdf',sh),600);
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('JD.pdf'),600);
    %% for clustering
    ff = makeFigureRowsCols(107,[5 3 6.9 2.5],'RowsCols',[2 3],'spaceRowsCols',[0.3 -0.02],'rightUpShifts',[1 0.18],'widthHeightAdjustment',[-10 -300]);
     set(gcf,'color','w');     ylims = [0 1];
     stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.75; gap = 0.18; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     stp = 0.35; widths = 0.5*([2 2 2 0.4 0.4 0.4]+1.95); gap = 0.2; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     %
+    mCI = 1-mOIo;
     hms = {mCI,mUni1,mUni2};
     ahc_col_th = 0.7;
     
@@ -420,7 +421,7 @@
 %     figdim = 3;
 %     hf = get_figure(5,[9 2 figdim figdim]);
 %     event_type = {'AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh','AOn-Exc','AOn-Inh','AOff-Exc','AOff-Inh','Arb-Exc','Arb-Inh'};
-    all_cells_list = all_exc_inh;
+%     all_cells_list = all_exc_inh;
     all_cells_list = all_gV;
     sh = 0;
     good_FR = circshift(all_cells_list,sh,2);
@@ -442,7 +443,7 @@
     gap1 = 0.2; widths1 = 1*0.45; height1 = widths1 - 0.05;
     
     mats = {mCI,mUni,mOIo}; semmats = {semCI,semUni,semOIo};
-    titles = {'Conjuction','Complementation1','Jaccard Distance'};
+    titles = {'Conjuction','Complementation','Jaccard Distance'};
     for ii = 1:length(mats)
         mOI = mats{ii}; semOI = semmats{ii};
 %         if ii == 4
@@ -502,3 +503,32 @@
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_%d_%d.pdf',ntrials,sh),600);
   
+    %%
+    for ii = 1:5
+        jd(ii,:) = squareform(OIo{ii},'tovector');
+    end
+    
+    avar = jd;
+    [within,dvn,xlabels,withinD] = make_within_table({'pop'},[3]); withinD3 = withinD;
+    dataT = make_between_table({avar},dvn);
+    ra = RMA(dataT,within,{0.05,{'lsd','hsd','bonferroni'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels,extras] = get_vals_for_bar_graph_RMA(mData,ra,{'pop','bonferroni'},[1 1 1]);
+    xdata = make_xdata([size(good_FR,2)],[1]);
+%     h(h==1) = 0;
+    ff = makeFigureRowsCols(107,[1 0.5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+    set(gcf,'color','w');    set(gcf,'Position',[10 3 1.6 1.25]);
+    MY = 1.1; ysp = 0.09; mY = 0; % responsive cells
+    stp = 0.43; widths = [0.4 0.4 0.4 0.4 0.4 0.4]+0.1; gap = 0.09;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{'Jaccard Distance'});
+    % s = generate_shades(length(bins)-1);
+    tcolors = [mData.colors(1:2);mData.dcolors(8)];
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',6,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);xticks = xdata; xticklabels = {'B-NB','B-M','NB-M'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+%     set_axes_top_text(ff.hf,ff.h_axes(1),'Complementary',[-0.04 0 0 0]);
+    
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs_3_factors.pdf',ntrials),600);
