@@ -407,7 +407,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     ra.ranova
     print_for_manuscript(ra)
     %%
-    an = 5;
+    an = 1;
     big_mR = [];
     for ii = 1:size(mRsG,2)
         big_mR = [big_mR mRsG{an,ii}];
