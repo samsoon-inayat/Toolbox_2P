@@ -5,7 +5,7 @@ function trial_to_trial_Analysis
 ntrials = 40;
 si = [Lb_T Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Lbs_T Abs_t_T Abs_i_T];
 si = [Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Abs_t_T Abs_i_T];
-% si = [Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Abs_t_T Abs_i_T];
+si = [Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Abs_t_T Abs_i_T];
 % si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T];
 % si = [Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
 % si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T];
@@ -26,7 +26,15 @@ an  = 1:5; eic = 1; sp = 0; intersect_with_global = 0; only_global = 0;
 allresp = []; ind = 1;
 all_peakL = []; allresp_trials = []; allpeakL_trials = [];
 for cn = 1:length(si)
-    mRsCT = allmRsT{cn};
+    mRsCTi = allmRsT{cn};
+    for rrm = 1:size(mRsCTi,1)
+        for ccm = 1:size(mRsCTi,2)
+            mtemp = mRsCTi{rrm,ccm};
+            mRsCT{rrm,ccm} = mtemp(:,1:15);
+        end
+    end
+    mRsCT = mRsCTi;
+    size_raster_2(cn) = size(mRsCT{1,1},2);
     resp = []; peak_locations = [];
     for rr = 1:size(mRsCT,1)
         respTrials = []; pLsTrials = [];
@@ -159,9 +167,9 @@ plot(xlim,[nanmean(mconjAct(:)) nanmean(mconjAct(:))],'color','m');hold on;
 iii=1;
 theinds = find(isnan(mrespActL));
 for ii = find(isnan(mrespActL))
-    plot([ii ii],[4 21],'b-');
+    plot([ii ii],[4 29],'b-');
     if iii <= (size(respRV,2)/10)
-        text(ii+2,21,sprintf('%s',xticklabels{iii}),'FontSize',6);
+        text(ii+2,29,sprintf('%s',xticklabels{iii}),'FontSize',6);
         indsS = (theinds(iii)+1):(theinds(iii+1)-1);
 %             shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{'color',rlcolor},0.5);
         plot(indsS(1:9),mconjAct(iii,:),'m');
@@ -173,10 +181,10 @@ for ii = find(isnan(mrespActL))
         iii=iii+1;
     end
 end
-xlim([0 length(mrespActL)+1]); ylim([3 27]);
+xlim([0 length(mrespActL)+1]); ylim([3 33]);
 xlabel('Trial-Pairs');ylabel('Cells (%)');box off;
 set(gca,'xtick',xticks,'xticklabel',xtickL);
-legs = {'Conjunctive Cells      ','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 25 0.2]}; 
+legs = {'Conjunctive Cells      ','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 33 0.2]}; 
 putLegendH(gca,legs,{'m','c','k'},'sigR',{[],'anova',[],6});
 format_axes(gca);
 changePosition(gca,[-0.08 0.1 0.17 -0.1]);
@@ -355,53 +363,65 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     ra.ranova
     print_for_manuscript(ra)
     %% for all active cells in a trial, I want to see the peak locations and average shift of peak locations for animals
+    binwidths = evalin('base','binwidths');
     an = 1; cn = 1;
-    mshifts = []; mshifts = [];mshiftsB = []; mshiftsF = []; fshiftB = []; fshiftF = []; fshiftZ = [];
+    mshifts = [];mshiftsB = []; mshiftsF = []; fshiftB = []; fshiftF = []; fshiftZ = [];
     all_shifts = [];
     for an = 1:5
         for cn = 1:length(si)
             pLs = allpeakL_trials{an,cn};
             resp = allresp_trials{an,cn};
-            resp = sum(resp,2)>2;
+            perc_resp{an,cn} = 100*sum(resp,1)/size(resp,1); m_pLs_shifts = [];
+            for trN = 1:9
+                t_resp = resp(:,trN) & resp(:,trN+1);
+                pLs_shifts = (pLs(t_resp,trN+1) - pLs(t_resp,trN))/size_raster_2(cn);
+                m_pLs_shifts(trN) = mean(pLs_shifts); % mean over cells
+            end
+            all_m_pLs_shifts(an,cn) = mean(m_pLs_shifts); % mean over trial pairs
+            all_m_pLs_shiftsT{an,cn} = m_pLs_shifts; % mean over trial pairs
+            resp = sum(resp,2)>2; % to find cells that replied in at least 3 trials
             pLs = pLs(resp,:);
             [~,inds] = sort(pLs(:,1));
         %     figure(1000);clf;imagesc(pLs(inds,:));colorbar;
 %             figure(1000);clf;imagesc(pLs);colorbar;
-            100*sum(~isnan(pLs))/size(pLs,1)
+            100*sum(~isnan(pLs))/size(pLs,1);
             prob_participation = [];
             mshift = []; 
             for ii = 1:size(pLs,1)
                 tcell = pLs(ii,:);
                 prob_participation(ii,1) = sum(~isnan(tcell))/length(tcell);
                 ntcell = tcell(~isnan(tcell));
-                mshift(ii,1) = mean(diff(ntcell));
+                mshift(ii,1) = mean(diff(ntcell)/size_raster_2(cn));
             end
             all_shifts{an,cn} = mshift;
-            mshifts(an,cn) = mean(mshift);
-            mshiftsB(an,cn) = mean(mshift(mshift<0));
-            mshiftsF(an,cn) = mean(mshift(mshift>0));
-            fshiftB(an,cn) = sum(mshift<0)/length(mshift);
-            fshiftF(an,cn) = sum(mshift>0)/length(mshift);
-            fshiftZ(an,cn) = sum(mshift==0)/length(mshift);
+            mshifts(an,cn) = mean(mshift); % average over cells
+            mshiftsB(an,cn) = mean(mshift(mshift<0)); % average backward shift
+            mshiftsF(an,cn) = mean(mshift(mshift>0)); % average forward shift
+            fshiftB(an,cn) = sum(mshift<0)/length(mshift); % fraction of cells that had backward mean shift
+            fshiftF(an,cn) = sum(mshift>0)/length(mshift); % fraction of cells that had forward mean shift
+            fshiftZ(an,cn) = sum(mshift==0)/length(mshift); % fraction of cells that had zero shift
         end
     end
     
     %% run stats on average shifts of peak locations
     inds = [3 4 5 6 7 8];
-%     inds = [1 2 3 4];
+    inds = [1 2 3 4];
 %     inds = 1:6;
-    varC = mshiftsB(:,inds);
+    varC = [abs(mshiftsB(:,inds)) mshiftsF(:,inds)];
+    varC = all_m_pLs_shifts(:,inds);
     [within,dvn,xlabels,awithinD] = make_within_table({'Cnds','TI'},[length(inds)/2,2]);
     dataT = make_between_table({varC},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
     ra.ranova
     print_for_manuscript(ra)
     
     %%
-    inds = [1 2 3 4]; inds = [1 2 3 4];
-    varC = [mshiftsF(:,inds) abs(mshiftsB(:,inds))];
-%     varC = [fshiftF(:,inds) fshiftB(:,inds)];
-    [within,dvn,xlabels,awithinD] = make_within_table({'Po','Cnds','TI'},[2,2,2]);
+    inds = [1 2 3 4]; inds = [1 2 9 10];
+    inds = [3 4 5 6 7 8];
+%     varC = [mshiftsF(:,inds) abs(mshiftsB(:,inds))];
+    varC = [fshiftF(:,inds) fshiftB(:,inds) fshiftZ(:,inds)];
+    varC = [fshiftF(:,inds) fshiftB(:,inds)];
+    [within,dvn,xlabels,awithinD] = make_within_table({'Po','Cnds','TI'},[2,3,2]);
     dataT = make_between_table({varC},dvn);
     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
     ra.ranova
@@ -417,4 +437,102 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     figure(1000);clf;
     subplot(2,1,1);imagesc(big_mR);colorbar;set(gca,'Ydir','Normal');
     subplot(2,1,2);imagesc(CRc);colorbar;set(gca,'Ydir','Normal');
-   
+   %% plot average distributions of the peak locations themselves
+    an = 5; cn = 10;
+    all_mVals = []; all_semVals = []; pL_vals_trials_all_C = []; pL_vals_trials_all_CLin = [];
+    for cn = 1:length(si)
+        all_dist_vals = [];
+        pL_vals_trials_all = [];
+        pL_vals_trials_allLin = [];
+        for an = 1:5
+            pLs = allpeakL_trials{an,cn};
+            resp = allresp_trials{an,cn};
+            perc_resp{an,cn} = 100*sum(resp,1)/size(resp,1);
+            pL_vals_all = [];
+            minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
+            pL_vals_trials = [];
+            pL_vals_trialsLin = [];
+            for trN = 1:10
+                pL_vals = pLs(:,trN);
+                pL_vals = pL_vals(resp(:,trN))/size_raster_2(cn);
+                pL_vals_all{trN,1} = pL_vals;
+                [bar1,binEs] = histcounts(pL_vals,binEs,'Normalization','probability');
+                pL_vals_trials = [pL_vals_trials;bar1];
+                pL_vals_trialsLin = [pL_vals_trialsLin bar1];
+            end
+            pL_vals_trials_all(:,:,an) = pL_vals_trials;
+            pL_vals_trials_allLin(an,:) = pL_vals_trialsLin;
+%             dist_vals = pL_vals_all;
+%             [distDo,allVals] = getAveragesAndAllValues(dist_vals);
+%             minBin = 0;%min(allVals);
+%             maxBin = 1;%max(allVals);
+%             incr = 0.1;
+%             tcolors = mData.colors;
+%             hf = get_figure(8,[5 7 2.25 1.5]);hold on;
+%             [ha,hb,~,bins,mVals,semVals] = plotAverageDistributions(dist_vals,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','pdf');
+%             all_dist_vals = [all_dist_vals;mVals];
+        end
+        pL_vals_trials_all_C{cn} = pL_vals_trials_all;
+        m_pL_vals_trials_all{cn} = mean(pL_vals_trials_all,3);
+        sem_pL_vals_trials_all{cn} = std(pL_vals_trials_all,[],3)/sqrt(5);
+        pL_vals_trials_all_CLin = [pL_vals_trials_all_CLin pL_vals_trials_allLin];
+%         [mVals,semVals] = findMeanAndStandardError(all_dist_vals);
+%         hf = get_figure(8,[5 7 2.25 1.5]);hold on;
+%         plot(bins,mVals);
+%         shadedErrorBar(bins,mVals,semVals);
+%         all_mVals = [all_mVals;mVals];
+%         all_semVals = [all_semVals;semVals];
+    end
+    %%
+    hf = get_figure(8,[5 5 2.25 5]);hold on;
+    xs = bins;
+    cn = 1; ys = all_mVals(cn,:); eys = all_semVals(cn,:); 
+    for cn = 1:length(si)
+        if cn > 1
+            ys = max(ys) + all_mVals(cn,:); eys = all_semVals(cn,:);
+        end
+        plot(xs,ys);
+        shadedErrorBar(xs,ys,eys);
+    end
+    hf = get_figure(8,[5 5 2.25 5]);hold on;
+    plot(xs,all_mVals');
+    
+    %%
+    for cn = 1:length(si)
+        hf = get_figure(8,[5 5 5 5]);hold on;
+        imagesc(binCs,1:10,m_pL_vals_trials_all{cn},[0 0.5]);colorbar;
+        pause(0.1);
+    end
+    
+    %%
+    inds = [3 4 5 6 7 8];
+    varC = pL_vals_trials_all_CLin(:,101:400);
+    [within,dvn,xlabels,awithinD] = make_within_table({'Co','Ph','Tr','Sp'},[3,2,10,5]);
+    dataT = make_between_table({varC},dvn);
+%     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra = RMA(dataT,within,{0.05,''});
+    ra.ranova
+    print_for_manuscript(ra)
+    %%
+    redF = [1,2]; redV = {[1,2],1};
+    [dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+    raR = RMA(dataTR,withinR,{0.025,{'hsd'}});
+    raR.ranova
+    print_for_manuscript(raR)
+    
+    %%
+    for cn = 1:length(si)
+    varC = cell2mat(all_m_pLs_shiftsT(:,cn));
+    [within,dvn,xlabels,awithinD] = make_within_table({'T'},[9]);
+    dataT = make_between_table({varC},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+    ra.ranova
+    print_for_manuscript(ra)
+    
+    [mVals,semVals] = findMeanAndStandardError(varC);
+    hf = get_figure(8,[5 7 2.25 1.5]);hold on;
+    plot(1:9,mVals);
+    shadedErrorBar(1:9,mVals,semVals);
+    set(gca,'Ylim',[-0.5 0.5]);
+    pause(0.3);
+    end

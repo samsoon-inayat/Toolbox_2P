@@ -55,7 +55,7 @@ for ii = 1:5
 end
 
 %%
-if 0
+if 1
     ii = 1;
     edit_define_contexts_file(ei{ii});
 end

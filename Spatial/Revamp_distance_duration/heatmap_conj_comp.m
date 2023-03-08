@@ -21,6 +21,9 @@ end
 %     mSel = mCI;
 %     mOI = mSel;
     switch type
+        case 0
+            n = 0;
+%             mOI = mOI; semOI = semOI;
         case 1
             mOI = mCI; semOI = semCI;
         case 2
