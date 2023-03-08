@@ -64,7 +64,7 @@ while 1
     colormap parula
 %     save_pdf(ff.hf,mData.pdf_folder,sprintf('PV_trials_%s.pdf',selected_property),600);
     %%
-    an = 1; cn = 5;%cns(3);
+    an = 4; cn = 3;%cns(3);
     tn = 5;
 %     si = [Lb Ab_On Ab_Off ArL_L Ar_On ArL_On Ars_On Ar_Off ArL_Off Ars_Off Lbs];
 %     props1 = get_props_Rs(o.Rs(:,si),50);
@@ -72,7 +72,7 @@ while 1
     resp = props1.good_FR;
     Rs = [RsG(an,cn) allRsC{cn}(an,:)];mR = [mRsG(an,cn) allmRsT{cn}(an,:)];%mR = [o.mR(an,si(cn)) allmRsT{cn}(an,:)];
     respPV = allresp_trials{an,cn}; for tni = 1:10 respPVC(tni) = {respPV(:,tni)}; end
-    respT = repmat({respPV(:,tn)},1,size(mR,2));%respT = repmat(respG(an,cn),1,size(mR,2));
+%     respT = repmat({respPV(:,tn)},1,size(mR,2));%respT = repmat(respG(an,cn),1,size(mR,2));
     respT = [respG(an,cn),respPVC];
     for cc = 1:size(mR,2)
         this_mat = mR{1,cc};
