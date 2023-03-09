@@ -19,7 +19,7 @@ pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); 
 
-an = 3; Rs = Rs_C(an,:);
+an = 4; Rs = Rs_C(an,:);
 sel_pop = sel_pop_C(an,5); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
 cellN = find(sel_pop_or); ci = 12;
 cbar_p_shift = [0.01 0.09 -0.05 -0.2];
