@@ -11,7 +11,7 @@ si = [Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Abs_t_T Abs_i_
 % si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T];
 si_names = rasterNamesTxt(si);
 
-siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); respG = propsG.all;
+siG = si; RsG = o.Rs(:,si); propsG = get_props_Rs(RsG,ntrials); resp_All = propsG.all;
 mRsG = calc_mean_rasters(RsG,1:10);
 trials = mat2cell([1:10]',ones(size([1:10]')));
 [allRsC,allmRsT] = get_trial_Rs(o,si,1:10);
@@ -84,6 +84,7 @@ for cn = 1:length(si)
             end
         end
         allresp_trials{rr,cn} = respTrials;
+        allresp_trialsC{rr,cn} = mat2cell(respTrials,[size(respTrials,1)],[ones(1,size(respTrials,2))]);
         allpeakL_trials{rr,cn} = pLsTrials;
 %             oc(rr,cn) = find_cells_based_on_cluster(cell2mat(resp(rr,:)));
     end
