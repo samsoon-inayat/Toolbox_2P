@@ -10,6 +10,7 @@ function firing_rate_motion_vs_rest
 Rs_C = oC.Rs;% get_rasters_data(ei_C,selContexts,rasterNames);
 Rs_A = oA.Rs;% get_rasters_data(ei_A,selContexts,rasterNames);
 % typeP = {'all','vals'
+typeP  = 'all';
 thr = -1;
 %%
 fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
@@ -52,7 +53,7 @@ if 1
     xticks = xdata(1:end)+0; xticklabels = {'C-TG','A-TG'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     xtickangle(30);
-    changePosition(gca,[0.15 0.05 -0.35 -0.1])
+    changePosition(gca,[0.25 0.05 -0.35 -0.1])
     put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing','Rate (AU)'},[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_overall'),600);
@@ -83,7 +84,7 @@ if 1
     xticks = xdata(1:end)+0; xticklabels = {'C-TG','A-TG'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     xtickangle(30);
-    changePosition(gca,[0.15 0.05 -0.25 -0.1])
+    changePosition(gca,[0.25 0.05 -0.25 -0.1])
     put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing','Rate (AU)'},[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_overall'),600);
