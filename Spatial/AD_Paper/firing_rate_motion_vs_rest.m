@@ -185,7 +185,7 @@ if 1
    minBin = min(allVals);
    maxBin = max(allVals);
    [h,p,ks2stat] = kstest2(allValsG{1},allValsG{2});
-   [h,p,cd,ks2stat] = ttest2(allValsG{1},allValsG{2});
+%    [h,p,cd,ks2stat] = ttest2(allValsG{1},allValsG{2});
    %%
    incr = 0.001; %maxBin =
    hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');

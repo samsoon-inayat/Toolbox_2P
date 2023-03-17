@@ -20,13 +20,13 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
 pop_var_name = {'vals'};
-pop_var_name = {'vals','good_zMI'};
+% pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 % pop_var_name = {'Nvals'};
 % sel_pop_CNR = cell_list_op(props_C,pop_var_name); sel_pop_ANR = cell_list_op(props_A,pop_var_name);
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 3;%:length(params)
+varT = 9;%:length(params)
 [~,~,pop_C] = plotDistributions(sel_pop_C);  [~,~,pop_A] = plotDistributions(sel_pop_A);
 eval(sprintf('var_CT = props_C.%s;',params{varT}));  eval(sprintf('var_AT = props_A.%s;',params{varT}));
 [~,~,var_C] = plotDistributions(var_CT);  [~,~,var_A] = plotDistributions(var_AT);
@@ -37,16 +37,30 @@ var_Cv = get_vals(var_C,pop_C); var_Av = get_vals(var_A,pop_A);
 for ci = 1:4
     [h(ci),p(ci),ks2stat(ci)] = kstest2(var_Cv{ci},var_Av{ci});
 end
+
 [h',p',ks2stat']
+% pop_CA = cell_list_op(sel_pop_C,[],'or',1);  pop_AA = cell_list_op(sel_pop_A,[],'or',1); 
+% [~,~,var_CA] = plotDistributions(var_CT');  [~,~,var_AA] = plotDistributions(var_AT');
+% 
+% var_Cvp = find_percent(var_Cv);
+%%
 
-var_Cvp = get_vals(var_CT,sel_pop_C); var_Avp = get_vals(var_AT,sel_pop_A);
-mean_var_C = exec_fun_on_cell_mat(var_Cvp,'nanmean'); mean_var_A = exec_fun_on_cell_mat(var_Avp,'nanmean'); 
-
-for ci = 1:4
-    [ht(ci),pt(ci),~] = ttest2(mean_var_C(:,ci),mean_var_A(:,ci));
+if nbins == 1
+    varC = mean_var_C;
+    varA = mean_var_A;
+    [within,dvn,xlabels] = make_within_table({'Cond'},[4]);
+    dataT = make_between_table({varC;varA},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+    ra.ranova
+else
+    varC = mean_var_C;
+    varA = mean_var_A;
+    [within,dvn,xlabels] = make_within_table({'Cond','Bin'},[4,nbins]);
+    dataT = make_between_table({varC;varA},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+    ra.ranova
 end
-[ht',pt']
-
+print_for_manuscript(ra)
 %% one graph main effect
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[10 3 1.25 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);

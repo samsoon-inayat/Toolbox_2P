@@ -2,7 +2,7 @@ function valso = get_vals(vals,resp)
 if size(vals,2) == size(resp,2)
     for rr = 1:size(vals,1)
         for cc = 1:size(vals,2)
-            valso{rr,cc} = vals{rr,cc}(resp{rr,cc},:);
+            valso{rr,cc} = vals{rr,cc}(logical(resp{rr,cc}),:);
         end
     end
 else
