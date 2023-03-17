@@ -51,7 +51,7 @@ for rr = 1:size(Rs,1)
         o.peak_locations_trials{rr,cc} = R.peak_location_trials';
         if strcmp(R.marker_name,'airD')
           centersD = centers';
-          o.centersD = centersD;
+          o.centersD{rr,cc} = centersD;
           mTime = R.timeStart+(R.timeEnd-R.timeStart)/2;
           firstCol = repmat(mTime(:,1),1,size(mTime,2));
           mTime = mTime - firstCol;
@@ -67,7 +67,7 @@ for rr = 1:size(Rs,1)
         end
         if strcmp(R.marker_name,'airID')
           centersD = centers';
-          o.centersD = centersD;
+          o.centersD{rr,cc} = centersD;
           mTime = R.timeStart+(R.timeEnd-R.timeStart)/2;
           firstCol = repmat(mTime(:,1),1,size(mTime,2));
           mTime = mTime - firstCol;

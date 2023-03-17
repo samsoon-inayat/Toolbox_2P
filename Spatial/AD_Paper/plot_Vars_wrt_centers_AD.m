@@ -26,7 +26,7 @@ ntrials = 50;
 props_C = get_props_Rs(RsC,ntrials); props_A = get_props_Rs(RsA,ntrials);
 pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
-pop_var_name = {'vals','good_zMI'};
+pop_var_name = {'good_zMI'};
 sel_pop_CA = cell_list_op(props_C,pop_var_name); sel_pop_AA = cell_list_op(props_A,pop_var_name);
 colors = mData.colors;
 n = 0;
@@ -35,7 +35,7 @@ n = 0;
 all_variables = {'all_zMIs','all_fFR','all_fwidths','all_frs','P'};
 % ylabels = {{'Mutual Information','(z-score)'},'Firing Rate (AU)','Field Widths (cm)','R-Squared',{'Spatially Tuned', 'Cells (%)'}};
 
-vn = 1;
+vn = 3;
 
 number_of_bins = 3;
 [all_valsC,all_vals_NC] = get_values(RsC,number_of_bins,all_variables{vn},sel_pop_CA);
