@@ -193,7 +193,8 @@ if 1
 %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
-   changePosition(gca,[0.09 0.13 -0.05 -0.13]);
+   changePosition(gca,[0.129 0.15 -0.09 -0.13]);
+   ylim([0 100]);
     put_axes_labels(gca,{'Average Firing Rate (AU)',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
    %%

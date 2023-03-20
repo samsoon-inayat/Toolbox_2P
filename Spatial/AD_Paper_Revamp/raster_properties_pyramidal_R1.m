@@ -1,6 +1,6 @@
 function raster_properties
 
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+mData = evalin('base','mData'); tcolors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 
 prop_names = {'resp','N_Resp_Trials','zMI','zMINaN','HaFD','HiFD','cells_pooled'};
 event_type = {'1-D','2-D','3-D','4-D','1-T','2-T','3-T','4-T'};
@@ -20,24 +20,22 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
 pop_var_name = {'vals'};
-pop_var_name = {'vals','good_zMI'};
+pop_var_name = {'vals'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 % pop_var_name = {'Nvals'};
 % sel_pop_CNR = cell_list_op(props_C,pop_var_name); sel_pop_ANR = cell_list_op(props_A,pop_var_name);
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 3;%:length(params)
+varT = 2;%:length(params)
 [~,~,pop_C] = plotDistributions(sel_pop_C);  [~,~,pop_A] = plotDistributions(sel_pop_A);
 eval(sprintf('var_CT = props_C.%s;',params{varT}));  eval(sprintf('var_AT = props_A.%s;',params{varT}));
 [~,~,var_C] = plotDistributions(var_CT);  [~,~,var_A] = plotDistributions(var_AT);
 var_Cv = get_vals(var_C,pop_C); var_Av = get_vals(var_A,pop_A);
 
-[~,~,var_CP] = plotDistributions(var_Cv');  [~,~,var_AP] = plotDistributions(var_Av');
-
 for ci = 1:4
-    [h(ci),p(ci),ks2stat(ci)] = kstest2(var_Cv{ci},var_Av{ci});
+    [hall(ci),pa(ci),ks2stata(ci)] = kstest2(var_Cv{ci},var_Av{ci});
 end
-[h',p',ks2stat']
+[hall',pa',ks2stata']
 
 var_Cvp = get_vals(var_CT,sel_pop_C); var_Avp = get_vals(var_AT,sel_pop_A);
 mean_var_C = exec_fun_on_cell_mat(var_Cvp,'nanmean'); mean_var_A = exec_fun_on_cell_mat(var_Avp,'nanmean'); 
@@ -47,6 +45,45 @@ for ci = 1:4
 end
 [ht',pt']
 
+
+%% 
+    xlabels = {NaN,'Resp Fidelity','zMI'};
+    incrs = [NaN 10];
+    magfac = mData.magfac;
+    ff = makeFigureRowsCols(108,[6 3 6.9 1],'RowsCols',[1 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.15],'widthHeightAdjustment',[10 -285]);
+    MY = 8; ysp = 1; mY = 0; 
+    stp = 0.25*magfac; widths = ([0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]+0.21)*magfac; gap = 0.69*magfac;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
+    var_CvD = get_vals(var_CT,sel_pop_C); var_AvD = get_vals(var_AT,sel_pop_A); 
+    for ci = 1:4
+        distD = [var_CvD(:,ci) var_AvD(:,ci)];
+        [~,~,var_Ctt] = plotDistributions(var_CvD(:,ci)); [~,~,var_Att] = plotDistributions(var_AvD(:,ci));
+        [h,p,ks2stat] = kstest2(var_Ctt{1},var_Att{1});
+        tcolors = {'k','r'};
+        [distDo,allVals,allValsG] = plotDistributions(distD);
+        minBin = min(allVals);
+        maxBin = max(allVals);
+        incr = incrs(varT); %maxBin =
+%         hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');
+        axes(ff.h_axes(1,ci)); hold on;
+    %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
+        [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
+        set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+        changePosition(gca,[0.129 0.15 -0.09 -0.13]);
+        ylim([0 100]);
+        if ci == 1
+            put_axes_labels(gca,{xlabels{varT},[0 0 0]},{{'Neurons (%)'},[0 0 0]});
+        else
+            put_axes_labels(gca,{xlabels{varT},[0 0 0]},{{''},[0 0 0]});
+        end
+        if ci == 4
+        pos = get(ff.h_axes(1,ci),'Position'); ha = axes; set(ha,'units','inches');set(ha,'Position',pos);
+        changePosition(ha,[pos(1)+0.3 0 -0.5 0]);
+        box off;
+        end
+%         [h,p,ks2stat] = kstest2(allValsG{1},allValsG{2})
+    end
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
 %% one graph main effect
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[10 3 1.25 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
