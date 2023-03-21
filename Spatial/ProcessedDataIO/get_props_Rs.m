@@ -110,6 +110,7 @@ for rr = 1:size(Rs,1)
 %         if ~isempty(strfind(R.marker_name,'D'))
 %             p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers >= xs(1)  & centers <= xs(end) & MFR < 10000;
             p = rs > 0.3 & PWs > 1 & PWs < 150 & centers >= 1  & centers <= 150;
+            p = PWs < 500;% & centers >= 1  & centers <= 150;
 %         end
 %         if ~isempty(strfind(R.marker_name,'T'))
 %             p = (ones(size(o.zMI{rr,cc})))';
