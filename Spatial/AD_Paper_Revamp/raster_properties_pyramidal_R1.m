@@ -13,7 +13,7 @@ pni = 7;
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 ntrials = 50;
 si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-% si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
@@ -21,6 +21,7 @@ pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
 pop_var_name = {'vals'};
 pop_var_name = {'vals','good_zMI'};
+pop_var_name = {'vals','good_zMI','good_Gauss'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 % pop_var_name = {'Nvals'};
 % sel_pop_CNR = cell_list_op(props_C,pop_var_name); sel_pop_ANR = cell_list_op(props_A,pop_var_name);
@@ -35,10 +36,10 @@ out_C = get_vals(var_CT,sel_pop_C); out_A = get_vals(var_AT,sel_pop_A);
 
 xlabels = {NaN,{'RF (%)'},'zMI','R-Sq','FW (cm)','Cen (cm)','PL (cm)'};
 ylabels = {NaN,{'RF (%)'},'zMI','R-Sq','FW (cm)','Cen (cm)','PL (cm)'};
-incrs = [NaN,10,0.1,0.01,3,15,1]; 
+incrs = [NaN,10,0.1,0.01,1,15,1];
 mYs = [NaN,0,-0.5,0,0,0,0];
-MYs = [NaN,90,7.5,1,20,20,20];
-ysps = [NaN,10,0.5,0.01,3,3,3];
+MYs = [NaN,90,5.0125,0.75,2,20,20];
+ysps = [NaN,10,0.25,0.2,0.15,0.15,3];
 
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[4 5 6.9 1.45],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
@@ -76,11 +77,17 @@ for ci = 1:4
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.061 -0.01 0 0]);set(ht,'FontSize',9);
     titletxt = sprintf('C%d',ci);
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
-     if varT == 2
+    if varT == 2 
         titletxt = sprintf('n = %d,',length(allValsG{1}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.005 -0.1 0 0]);set(ht,'FontSize',7,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.055 -0.1 0 0]);set(ht,'FontSize',7,'Color','r');
+    end
+    if varT == 5 
+        titletxt = sprintf('n = %d,',length(allValsG{1}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.005 -0.41 0 0]);set(ht,'FontSize',7,'Color','k');
+        titletxt = sprintf('%d',length(allValsG{2}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.055 -0.41 0 0]);set(ht,'FontSize',7,'Color','r');
     end
 end
 for ci = 1:4

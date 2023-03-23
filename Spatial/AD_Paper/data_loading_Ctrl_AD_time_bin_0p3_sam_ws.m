@@ -69,7 +69,7 @@ end
 for ii = 1:length(ei10_A)
     ei10_A(ii) = make_and_load_rasters(ei10_A(ii),binwidths,nowr);
 end
-
+send_email('samsoon.inayat@gmail.com','Done');
 %% Load Training Data
 % ei10_C = loadContextsResponses_ctrl_old(ei10_C,[1 1],[0 0 0]);
 % ei10_A = loadContextsResponses_ctrl_old(ei10_A,[1 1],[0 0 0]);
