@@ -13,22 +13,22 @@ pni = 7;
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 ntrials = 50;
 si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+% si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
 pop_var_name = {'vals'};
-pop_var_name = {'vals','good_zMI'};
-pop_var_name = {'vals','good_zMI','good_Gauss'};
+% pop_var_name = {'vals','good_zMI'};
+% pop_var_name = {'vals','good_zMI','good_Gauss'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 % pop_var_name = {'Nvals'};
 % sel_pop_CNR = cell_list_op(props_C,pop_var_name); sel_pop_ANR = cell_list_op(props_A,pop_var_name);
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
 params = {'perc','N_Resp_Trials','zMI','rs','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 5;%:length(params)
+varT = 4;%:length(params)
 [~,~,pop_C] = plotDistributions(sel_pop_C);  [~,~,pop_A] = plotDistributions(sel_pop_A);
 eval(sprintf('var_CT = props_C.%s;',params{varT}));  eval(sprintf('var_AT = props_A.%s;',params{varT}));
 % [~,~,var_C] = plotDistributions(var_CT);  [~,~,var_A] = plotDistributions(var_AT);
