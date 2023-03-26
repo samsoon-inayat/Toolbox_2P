@@ -640,7 +640,7 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_vari
 tic
 ntrials = 50;
 si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+    si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si); mRs_C1 = oC.mR1(:,si); mRs_A1 = oA.mR1(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 pop_var_name = {'vals','good_zMI'};
@@ -655,6 +655,8 @@ toc
 selC = remap_C; selA = remap_A;
 typeCorr = {'Spatial Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
 FF = {'SP','PV','RR'};
+typeCorr = {'Temporal Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
+FF = {'TP','PV','RR'};
 ci = 1;
 [within,dvn,xlabels] = make_within_table({'Cond'},3);
 switch ci
@@ -662,6 +664,7 @@ switch ci
         out_C = selC.adj_SP_corr_diag; out_A = selA.adj_SP_corr_diag;
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_SP_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_SP_corr_diag);
         MY = 0.35; ysp = 0.04; mY = 0; titletxt = 'Spatial Corr.'; ylabeltxt = {'A.U.'};
+        MY = 0.35; ysp = 0.04; mY = 0; titletxt = 'Temp. Corr.'; ylabeltxt = {'A.U.'};
     case 2
         out_C = selC.adj_PV_corr_diag; out_A = selA.adj_PV_corr_diag;
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_PV_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_PV_corr_diag);
@@ -678,6 +681,12 @@ incrs = [0.01,0.01,0.01];
 mYs = [0,0,0];
 MYs = [0.25,0.2,1.2];
 ysps = [0.04,0.04,0.1];
+
+incrs = [0.01,0.01,0.01];
+mYs = [0,0,0];
+MYs = [0.2,0.2,1.2];
+ysps = [0.02,0.04,0.1];
+
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[4 5 6.9 1.45],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
 % MY = 8; ysp = 1; mY = 0; 
@@ -750,6 +759,7 @@ for ci = 1:3
 end
 delete(ff.h_axes(1,[4 8]))
 save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
+
 
 %%
 %%%%% Correlations across conditions
