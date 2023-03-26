@@ -9,14 +9,17 @@ marker_styles = {'s','d','^','s','d','^','^','*'};
 line_styles = {'-',':','-.','-',':','-.'};
 mSize = 5;
 tcolors = {'k','r'};
+n=0;
 %% 12months speed
 if 1
 [num12,strings12,raw12] = xlsread(filename,1,'A1:I24');
 [num18,strings18,raw18] = xlsread(filename,5,'A1:I24');
 [within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
-dataT = make_between_table({[num12(num12(:,1)==1,2:end) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,2)==1,2:end)]},dvn);
+num121 = num12(num12(:,1)==1,2:end);
+dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
+print_for_manuscript(ra)
 n = 0;
 
 
@@ -43,16 +46,14 @@ end
 
 %% 12months latency
 if 0
-[num,strings,raw] = xlsread(filename,6,'A1:I24');
-data = array2table(num);
-data.Properties.VariableNames = strings;
-data.Group = categorical(data.Group);
-within = [1:8]';
-within = array2table(within);
-within.Properties.VariableNames = {'Day'};
-within.Day = categorical(within.Day);
-ra = repeatedMeasuresAnova(data,within,0.05);
-n = 0;
+[num12,strings12,raw12] = xlsread(filename,2,'A1:I24');
+[num18,strings18,raw18] = xlsread(filename,6,'A1:I24');
+[within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
+num121 = num12(num12(:,1)==1,2:end);
+dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
+print_for_manuscript(ra)
 
 
     mVar = ra.est_marginal_means.Mean;
@@ -80,11 +81,15 @@ end
 
 %% 12months probe time
 if 1
-[num,strings,raw] = xlsread(filename,7,'A1:B24');
-[h,p,stat] = ttest2(num(1:9,2),num(10:21,2))
-% [hc,pc,statc] = ttest(num(1:9,2),25)
-% [ha,pa,stata] = ttest(num(10:21,2),25)
-n = 0;
+[num12,strings12,raw12] = xlsread(filename,3,'A1:B24');
+[num18,strings18,raw18] = xlsread(filename,7,'A1:B24');
+[within,dvn,xlabels] = make_within_table({'Age'},[2]);
+num121 = num12(num12(:,1)==1,2:end);
+dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+print_for_manuscript(ra)
+
+
 [mC,semC] = findMeanAndStandardError(num(1:9,2));
 [mA,semA] = findMeanAndStandardError(num(10:21,2));
     mVar = [mC mA];
@@ -117,9 +122,15 @@ end
 
 %% 12months platform proximity
 if 1
-[num,strings,raw] = xlsread(filename,8,'A1:B24');
-[h,p,stat] = ttest2(num(1:9,2),num(10:21,2))
-n = 0;
+    
+[num12,strings12,raw12] = xlsread(filename,4,'A1:B24');
+[num18,strings18,raw18] = xlsread(filename,8,'A1:B24');
+[within,dvn,xlabels] = make_within_table({'Age'},[2]);
+num121 = num12(num12(:,1)==1,2:end);
+dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+print_for_manuscript(ra)
+    
 [mC,semC] = findMeanAndStandardError(num(1:9,2));
 [mA,semA] = findMeanAndStandardError(num(10:21,2));
     mVar = [mC mA];
