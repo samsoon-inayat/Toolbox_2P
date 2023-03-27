@@ -48,6 +48,13 @@ end
 if 0
 [num12,strings12,raw12] = xlsread(filename,2,'A1:I24');
 [num18,strings18,raw18] = xlsread(filename,6,'A1:I24');
+
+adata12 = make_text_file_for_nlme_R(num12,'tempMWT.txt');
+adata18 = make_text_file_for_nlme_R(num18,'tempMWT.txt');
+adata = [[adata12 ones(size(adata12,1),1)];[adata18 2*ones(size(adata18,1),1)]];
+
+% writematrix(adata,'MWT_12_18.txt');
+
 [within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
 num121 = num12(num12(:,1)==1,2:end);
 dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);

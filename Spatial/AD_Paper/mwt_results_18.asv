@@ -47,6 +47,8 @@ end
 %% 12months latency
 if 1
 [num,strings,raw] = xlsread(filename,6,'A1:I24');
+txt_filename = fullfile('E:\PostProcessing\AD_paper','MWT_18.txt'); make_text_file_for_nlme_R(num,txt_filename);
+
 data = array2table(num);
 data.Properties.VariableNames = strings;
 data.Group = categorical(data.Group);

@@ -11,7 +11,7 @@ mSize = 5;
 tcolors = {'k','r'};
 n=0;
 %% 12months speed
-if 1
+if 0
 [num,strings,raw] = xlsread(filename,1,'A1:I24');
 % data = array2table(num);
 % data.Properties.VariableNames = strings;
@@ -55,6 +55,8 @@ end
 %% 12months latency
 if 1
 [num,strings,raw] = xlsread(filename,2,'A1:I24');
+txt_filename = fullfile('E:\PostProcessing\AD_paper','MWT.txt');
+make_text_file_for_nlme_R(num,txt_filename);
 % data = array2table(num);
 % data.Properties.VariableNames = strings;
 % data.Group = categorical(data.Group);
