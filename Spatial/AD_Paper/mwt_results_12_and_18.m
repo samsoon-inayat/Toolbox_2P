@@ -16,7 +16,7 @@ if 1
 [num18,strings18,raw18] = xlsread(filename,5,'A1:I24');
 [within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
 num121 = num12(num12(:,1)==1,2:end);
-dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 print_for_manuscript(ra)
@@ -57,7 +57,7 @@ adata = [[adata12 ones(size(adata12,1),1)];[adata18 2*ones(size(adata18,1),1)]];
 
 [within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
 num121 = num12(num12(:,1)==1,2:end);
-dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 print_for_manuscript(ra)
@@ -92,7 +92,7 @@ if 1
 [num18,strings18,raw18] = xlsread(filename,7,'A1:B24');
 [within,dvn,xlabels] = make_within_table({'Age'},[2]);
 num121 = num12(num12(:,1)==1,2:end);
-dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 print_for_manuscript(ra)
 
@@ -134,7 +134,7 @@ if 1
 [num18,strings18,raw18] = xlsread(filename,8,'A1:B24');
 [within,dvn,xlabels] = make_within_table({'Age'},[2]);
 num121 = num12(num12(:,1)==1,2:end);
-dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 print_for_manuscript(ra)
     
