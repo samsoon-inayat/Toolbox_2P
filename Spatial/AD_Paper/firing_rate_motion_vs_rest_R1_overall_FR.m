@@ -34,7 +34,7 @@ if 1
     perc_cells_or_A = out_A.m_sp_animal_level_resp_cells;
     [h,p,ci,stats] = ttest2(perc_cells_or_C,perc_cells_or_A)
     
-    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(3) std(perc_cells_or_A)/sqrt(5)];
+    mVar = [mean(perc_cells_or_C) mean(perc_cells_or_A)]; semVar = [std(perc_cells_or_C)/sqrt(5) std(perc_cells_or_A)/sqrt(5)];
     combs = [1 2]; %p = ra.mcs.p; h = ra.mcs.p < 0.05;
     xdata = [1:2];
 %     xdata = [1 2 3 4];
@@ -43,8 +43,9 @@ if 1
     hold on;
 %     tcolors ={colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.03,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',0.1);
+        'ySpacing',0.02,'sigTestName','','sigLineWidth',0.25,'BaseValue',0,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.051,...
+        'raw_data',[perc_cells_or_C' perc_cells_or_A'],'dots','o','dot_size',1);
     for ii = 1:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
@@ -54,7 +55,7 @@ if 1
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
 %     xtickangle(30);
     changePosition(gca,[0.25 0.05 -0.35 -0.1])
-    put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing','Rate (AU)'},[0 0 0]});
+    put_axes_labels(gca,{[],[0 0 0]},{{'Avg. Firing','Rate (A.U.)'},[0 0 0]});
     
     save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_overall'),600);
 return;
@@ -169,8 +170,8 @@ if 1
     xticks = [1.5 4.5]; xticklabels = {'C-TG','A-TG'};
 %     xtickangle(20)
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
-    changePosition(gca,[0.17 0.05 -0.08 -0.1]);
-    put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing', 'Rate (Hz)'},[0 0 0]});
+    changePosition(gca,[0.17 0.05 -0.2 -0.1]);
+    put_axes_labels(gca,{[],[0 0 0]},{{'Average Firing', 'Rate (A.U.)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Firing_Rate_Motion_vs_Rest'),600);
 return;
 end
@@ -188,14 +189,14 @@ if 1
 %    [h,p,cd,ks2stat] = ttest2(allValsG{1},allValsG{2});
    %%
    incr = 0.001; %maxBin =
-   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.5 1],'color','w');
    hold on;
 %    [ha,hb,hca] = plotDistributions(distD,'colors',tcolors,'maxY',maxBin,'cumPos',[0.5 0.26 0.25 0.5],'min',minBin,'incr',incr,'max',maxBin);
    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
    changePosition(gca,[0.129 0.15 -0.09 -0.13]);
-   ylim([0 100]);
-    put_axes_labels(gca,{'Average Firing Rate (AU)',[0 0 0]},{{'Percentage','of Neurons'},[0 0 0]});
+   ylim([0 100]); xlim([minBin maxBin]);
+    put_axes_labels(gca,{'Avg. Firing Rate (A.U.)',[0 0 0]},{{'Cells (%)'},[0 0 0]});
     save_pdf(hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
    %%
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
