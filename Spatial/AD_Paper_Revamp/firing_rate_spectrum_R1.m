@@ -5,6 +5,9 @@ caSig_C = evalin('base','caSig_C'); caSig_A = evalin('base','caSig_A');
 ei_C = evalin('base','ei10_C'); ei_A = evalin('base','ei10_A');
 n = 0;
 %%
+ppm_C = find_transients_per_minute(ei_C);
+ppm_A = find_transients_per_minute(ei_A);
+%%
 bnd = [0.5 200];
 for ani = 1:length(caSig_C)
     tcas = caSig_C{ani};

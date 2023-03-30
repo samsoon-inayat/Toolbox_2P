@@ -30,7 +30,7 @@ n=0;
 %%
 varC = exec_fun_on_cell_mat(out_C,'mean');
 varA = exec_fun_on_cell_mat(out_A,'mean');
-[within,dvn,xlabels] = make_within_table({'Ph','Cond'},[2,4]);
+[within,dvn,xlabels] = make_within_table({'Cond'},[4]);
 dataT = make_between_table({varC;varA},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
@@ -114,14 +114,6 @@ out_AT = get_spike_rate_ext_transients(ei_A,thr,sel_pop_A);
 tcolors = {'k','r','k','r'};
 disp('Done');
 n=0;
-%%
-varC = exec_fun_on_cell_mat(out_CT,'mean');
-varA = exec_fun_on_cell_mat(out_AT,'mean');
-[within,dvn,xlabels] = make_within_table({'Ph','Cond'},[2,4]);
-dataT = make_between_table({varC;varA},dvn);
-ra = RMA(dataT,within,{0.05,{'bonferroni'}});
-ra.ranova
-print_for_manuscript(ra)
 %% transients graphs trials
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[4 5 6.9 1.45],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);

@@ -19,7 +19,7 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
-pop_var_name = {'vals'};
+% pop_var_name = {'vals'};
 % pop_var_name = {'vals','good_zMI'};
 % pop_var_name = {'vals','good_zMI','good_Gauss'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
@@ -59,7 +59,7 @@ for ci = 1:4
     incr = incrs(varT);
 %         hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');
     axes(ff.h_axes(1,ci)); hold on;
-    [ha,hb,hca] = plotDistributions(allValsG,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');
+    [ha,hb,hca] = plotDistributions(allValsG,'colors',tcolors,'maxY',0.5,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');
 %     [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','Yes');
     set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
 %     changePosition(gca,[0.129 0.15 -0.09 -0.13]);
