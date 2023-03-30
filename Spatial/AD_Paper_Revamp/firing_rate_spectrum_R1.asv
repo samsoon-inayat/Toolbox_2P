@@ -1,0 +1,14 @@
+function raster_properties
+
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+caSig_C = evalin('base','caSig_C');
+caSig_A = evalin('base','caSig_A');
+
+n = 0;
+%%
+for ani = 1:length(caSig_C)
+    tcas = caSig_C{ani};
+    for cni = 1:size(tcas,1)
+        cas = tcas(
+    end
+end

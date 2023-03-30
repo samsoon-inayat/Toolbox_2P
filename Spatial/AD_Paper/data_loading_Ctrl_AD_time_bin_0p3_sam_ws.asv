@@ -85,9 +85,8 @@ end
 for ii = 1:length(ei10_A)
     caSig_A{ii,pl} = get_calcium_data_raw(ei10_A{ii},pl);
 end
-%% load calcium signals pl 2
-tempcs = get_calcium_data_raw(ei10_C{1},2);
-caSig_C{1} = [caSig_C{1};tempcs];
+
+
 %% OLD Code below
 % this is just to load behavior
 

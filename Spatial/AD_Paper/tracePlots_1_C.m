@@ -1,6 +1,6 @@
 function tracePlots_1_A (ei)
 %%
-ei = evalin('base','ei10_C2');
+ei = evalin('base','ei10_C');
 
 selContexts = [1 2 3 4];
 rasterNames = {'airD','airD','airD','airD'};
@@ -375,7 +375,7 @@ end
 runthis = 1;
 if runthis
 spSigAll = tei.plane{pl}.tP.deconv.spSigAll;
-T_C2 = evalin('base','T_C2');
+T_C2 = evalin('base','T_C');
 temp = get_cluster_timecourses(cell2mat(T_C2{selAnimals,7}))
 caSigAll = temp.ratio';
 n = 0;

@@ -9,6 +9,7 @@ ei = evalin('base','ei10_C');
 mData = evalin('base','mData');
 selAnimals = 3; pl = 1;
 tei = ei{selAnimals};
+caSig = get_calcium_data_raw(tei,pl);
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
 conditionNumber = 1;
@@ -376,8 +377,8 @@ ff = makeFigureRowsCols(100,[1 5 5.4 1.5],'RowsCols',[(length(ccsi))+1 1],'space
 set(gcf,'Position',[10 8 4.8 1]);
 set(gcf,'color','w');
 spSigAll = tei.plane{pl}.tP.deconv.spSigAll;
-caSigAll = tei.plane{pl}.tP.deconv.caSigAll;
-signals = tei.plane{pl}.tP.signals;
+caSigAll = caSig;%tei.plane{pl}.tP.deconv.caSigAll;
+signals = spSigAll;%tei.plane{pl}.tP.signals;
 ccs = find(tei.plane{pl}.tP.iscell(:,1));
 lengthSigs = size(signals,2);
 b = tei.b;
