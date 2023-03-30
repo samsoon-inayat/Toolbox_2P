@@ -13,5 +13,7 @@ for ani = 1:length(caSig_C)
     for cni = 1:size(tcas,1)
         cas = tcas(cni,:);
         [pL,fL,tL] = pspectrum(cas,FR,'spectrogram','FrequencyLimits',bnd,'TimeResolution',200);
+        figure(2002);imagesc(tL,fL,pow2db(pL));set(gca,'Ydir','normal');colorbar
+        pause(0.2);
     end
 end
