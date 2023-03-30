@@ -11,7 +11,7 @@ mSize = 5;
 tcolors = {'k','r'};
 n=0;
 %% 12months speed
-if 1
+if 0
 [num,strings,raw] = xlsread(filename,1,'A1:I24');
 % data = array2table(num);
 % data.Properties.VariableNames = strings;
@@ -55,6 +55,17 @@ end
 %% 12months latency
 if 1
 [num,strings,raw] = xlsread(filename,2,'A1:I24');
+txt_filename = fullfile('E:\PostProcessing\AD_paper','MWT.txt');
+adata = make_text_file_for_nlme_R(num,txt_filename);
+X = adata(:,2); y = adata(:,3); group = adata(:,4);
+% yfit = modelfun([60 0.1],,VFUN)
+model = @(PHI,d)PHI(1).*exp(PHI(2)*d);
+beta0 = [60 0.1]; fegd(:,:,1) = beta0; fegd(:,:,2) = beta0;
+options = statset('nlmefit');
+clc
+options = statset(options,'MaxIter',350,'TolX',1e-8,'Display','final');
+[beta,PSI,stats,B] = nlmefit(X,y,group,[],model,beta0,'Options',options,'RefineBeta0','On');
+%%
 % data = array2table(num);
 % data.Properties.VariableNames = strings;
 % data.Group = categorical(data.Group);

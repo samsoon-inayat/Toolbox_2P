@@ -16,7 +16,7 @@ if 1
 [num18,strings18,raw18] = xlsread(filename,5,'A1:I24');
 [within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
 num121 = num12(num12(:,1)==1,2:end);
-dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 print_for_manuscript(ra)
@@ -48,9 +48,16 @@ end
 if 0
 [num12,strings12,raw12] = xlsread(filename,2,'A1:I24');
 [num18,strings18,raw18] = xlsread(filename,6,'A1:I24');
+
+adata12 = make_text_file_for_nlme_R(num12,'tempMWT.txt');
+adata18 = make_text_file_for_nlme_R(num18,'tempMWT.txt');
+adata = [[adata12 ones(size(adata12,1),1)];[adata18 2*ones(size(adata18,1),1)]];
+
+% writematrix(adata,'MWT_12_18.txt');
+
 [within,dvn,xlabels] = make_within_table({'Age','Day'},[2,8]);
 num121 = num12(num12(:,1)==1,2:end);
-dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 print_for_manuscript(ra)
@@ -85,7 +92,7 @@ if 1
 [num18,strings18,raw18] = xlsread(filename,7,'A1:B24');
 [within,dvn,xlabels] = make_within_table({'Age'},[2]);
 num121 = num12(num12(:,1)==1,2:end);
-dataT = make_between_table({[num121(1:9,:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 print_for_manuscript(ra)
 
@@ -122,7 +129,14 @@ end
 
 %% 12months platform proximity
 if 1
-
+    
+[num12,strings12,raw12] = xlsread(filename,4,'A1:B24');
+[num18,strings18,raw18] = xlsread(filename,8,'A1:B24');
+[within,dvn,xlabels] = make_within_table({'Age'},[2]);
+num121 = num12(num12(:,1)==1,2:end);
+dataT = make_between_table({[num121([1:6 8:10],:) num18(num18(:,1)==1,2:end)];[num12(num12(:,1)==2,2:end) num18(num18(:,1)==2,2:end)]},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+print_for_manuscript(ra)
     
 [mC,semC] = findMeanAndStandardError(num(1:9,2));
 [mA,semA] = findMeanAndStandardError(num(10:21,2));
