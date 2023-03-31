@@ -220,7 +220,6 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 shift_axes(ff,5:8,0.35,gap);
 var_CvD = out_CT(:,1:4); var_AvD = out_AT(:,1:4); var_CvDFR = out_C(:,1:4); var_AvDFR = out_A(:,1:4);
 % var_CvD = out_CT(:,5:8); var_AvD = out_AT(:,5:8); var_CvDFR = out_C(:,5:8); var_AvDFR = out_A(:,5:8);
-modelfun = @(b,x)b(1) + b(2)*x(:,1); beta0 = [1 1];
 for ci = 1:4
     distD = [var_CvD(:,ci) var_AvD(:,ci)]; distDFR = [var_CvDFR(:,ci) var_AvDFR(:,ci)];
     [distDo,allVals,allValsG] = plotDistributions(distD);  [distDoFR,allValsFR,allValsGFR] = plotDistributions(distDFR);
@@ -229,11 +228,17 @@ for ci = 1:4
     axes(ff.h_axes(1,ci)); hold on;
     ha = gca;
     sc = scatter(trCFR,trC,1,'.','k');% sc.MarkerEdgeAlpha = 0.5; sc.MarkerFaceAlpha = 0.5
+    sc = scatter(trAFR,trA,1,'.','r');% sc.MarkerEdgeAlpha = 0.5; sc.MarkerFaceAlpha = 0.5
+    
     opts = statset('Display','iter','TolFun',1e-10);
     mdl = fitnlm(trCFR,trC,modelfun,beta0,'Options',opts); mdl_C{ci} = mdl;
+    mdlT = table([trCFR;trAFR],[trC;trA],[ones(size(trCFR));(2*ones(size(trAFR)))]);
+    mdlT.Properties.VariableNames = {'FR','TR','GR'};
+    mdlT.GR = categorical(mdlT.GR);
+    fit = fitlm(mdlT,'TR~FR*GR');
+    
     trCp = predict(mdl,trCFR);
     plot(trCFR,trCp,'k');
-    sc = scatter(trAFR,trA,1,'.','r');% sc.MarkerEdgeAlpha = 0.5; sc.MarkerFaceAlpha = 0.5
     mdl = fitnlm(trAFR,trA,modelfun,beta0,'Options',opts); mdl_A{ci} = mdl;
     trCp = predict(mdl,trCFR);
     plot(trCFR,trCp,'r');
