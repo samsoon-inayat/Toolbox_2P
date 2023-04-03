@@ -36,7 +36,7 @@ for ii = 1:length(ei_C)
         [~,ind_frames_motion{pp},~] = intersect(frames_f,inds_motion);
         [~,ind_frames_rest{pp},~] = intersect(frames_f,inds_rest);
     end
-    tm_sp_animal_motion = []; tm_sp_animal_rest =[]; a_ppmR = []; a_ppmM = [];
+    tm_sp_animal_motion = []; tm_sp_animal_rest =[]; a_ppm = [];
     for pp = 1:length(ei.plane)
         tspSigAll = spSigAll{pp};
         temp_frames = ind_frames_motion{pp}; temp_frames = temp_frames(temp_frames <= size(tspSigAll,2));
@@ -46,26 +46,18 @@ for ii = 1:length(ei_C)
         
         ppm = NaN(size(sig_rest,1),1);maxTime = size(sig_rest,2)/Fso;
         parfor cni = 1:size(sig_rest,1)
-            X = sig_rest(cni,:);
+            X = all_spSigAll(cni,:);
             [pks,locs,w,p] = findpeaks(X,Fso);
             ppm(cni) = length(pks)/(maxTime/60);
         end
-        a_ppmR = [a_ppmR;ppm];
+        a_ppm = [a_ppm;ppm];
         
-        ppm = NaN(size(sig_motion,1),1);maxTime = size(sig_motion,2)/Fso;
-        parfor cni = 1:size(sig_motion,1)
-            X = sig_motion(cni,:);
-            [pks,locs,w,p] = findpeaks(X,Fso);
-            ppm(cni) = length(pks)/(maxTime/60);
-        end
-        a_ppmM = [a_ppmM;ppm];
+        err
     end
     m_sp_animal{ii} = nanmean(all_spSigAll,2);
     m_sp_animal_resp_cells{ii} = nanmean(all_spSigAll(cellList{ii},:),2);
     m_sp_animal_motion{ii} = tm_sp_animal_motion;
     m_sp_animal_rest{ii} = tm_sp_animal_rest ;
-    m_tr_animal_rest{ii} = a_ppmR;
-    m_tr_animal_motion{ii} = a_ppmM;
 
     allVals = [allVals;m_sp_animal{ii}];
     allVals_an{ii} = all_spSigAll;
@@ -94,8 +86,6 @@ out.allVals_rest = allVals_rest;
 out.m_sp_animal_level_rest = m_sp_animal_level_rest;
 out.percent_motion = percent_motion;
 out.allVals_an = allVals_an;
-out.m_tr_animal_rest = m_tr_animal_rest;
-out.m_tr_animal_motion = m_tr_animal_motion;
 
 % out.m_sp_animal_th = m_sp_animal_th;
 % out.m_sp_animal_level_th = m_sp_animal_level_th;

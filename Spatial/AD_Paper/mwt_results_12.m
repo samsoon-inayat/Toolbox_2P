@@ -57,13 +57,23 @@ if 1
 [num,strings,raw] = xlsread(filename,2,'A1:I24');
 txt_filename = fullfile('E:\PostProcessing\AD_paper','MWT.txt');
 adata = make_text_file_for_nlme_R(num,txt_filename);
+group = categorical(adata(:,4));
+dv = dummyvar(group);
+X = [adata(:,2) dv]; y = adata(:,3);
+modelfun = @(b,x)X(:,2).*(b(1).*2.^b(2)*X(:,1)) + X(:,3).*(b(3).*2.^b(4)*X(:,1));
+beta0 = [60 0.2 60 0.2];
+
+mdl = fitnlm(X,y,modelfun,beta0);
+
+
 X = adata(:,2); y = adata(:,3); group = adata(:,4);
 % yfit = modelfun([60 0.1],,VFUN)
 model = @(PHI,d)PHI(1).*exp(PHI(2)*d);
 beta0 = [60 0.1]; fegd(:,:,1) = beta0; fegd(:,:,2) = beta0;
 options = statset('nlmefit');
 clc
-options = statset(options,'MaxIter',350,'TolX',1e-8,'Display','final');
+group = categorical(group);
+options = statset(options,MaxIter',350,'TolX',1e-8,'Display','final');
 [beta,PSI,stats,B] = nlmefit(X,y,group,[],model,beta0,'Options',options,'RefineBeta0','On');
 %%
 % data = array2table(num);

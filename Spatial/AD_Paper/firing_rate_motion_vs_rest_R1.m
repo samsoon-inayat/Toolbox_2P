@@ -206,7 +206,7 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
 %% clustering of transients
 ci = 3;
 var_CvD = out_CT(:,1:4); var_AvD = out_AT(:,1:4); var_CvDFR = out_C(:,1:4); var_AvDFR = out_A(:,1:4);
-var_CvD = out_CT(:,5:8); var_AvD = out_AT(:,5:8); var_CvDFR = out_C(:,5:8); var_AvDFR = out_A(:,5:8);
+% var_CvD = out_CT(:,5:8); var_AvD = out_AT(:,5:8); var_CvDFR = out_C(:,5:8); var_AvDFR = out_A(:,5:8);
 distD = [var_CvD(:,ci) var_AvD(:,ci)]; distDFR = [var_CvDFR(:,ci) var_AvDFR(:,ci)];
 [distDo,allVals,allValsG] = plotDistributions(distD);  [distDoFR,allValsFR,allValsGFR] = plotDistributions(distDFR);
 trC = allValsG{1}; trA = allValsG{2};  trCFR = allValsGFR{1}; trAFR = allValsGFR{2};
@@ -231,18 +231,21 @@ for ci = 1:4
     sc = scatter(trAFR,trA,1,'.','r');% sc.MarkerEdgeAlpha = 0.5; sc.MarkerFaceAlpha = 0.5
     
     opts = statset('Display','iter','TolFun',1e-10);
-    mdl = fitnlm(trCFR,trC,modelfun,beta0,'Options',opts); mdl_C{ci} = mdl;
+%     mdl = fitnlm(trCFR,trC,modelfun,beta0,'Options',opts); mdl_C{ci} = mdl;
+    grps = [ones(size(trCFR));(2*ones(size(trAFR)))];
     mdlT = table([trCFR;trAFR],[trC;trA],[ones(size(trCFR));(2*ones(size(trAFR)))]);
     mdlT.Properties.VariableNames = {'FR','TR','GR'};
     mdlT.GR = categorical(mdlT.GR);
     fit = fitlm(mdlT,'TR~FR*GR');
-    
-    trCp = predict(mdl,trCFR);
-    plot(trCFR,trCp,'k');
-    mdl = fitnlm(trAFR,trA,modelfun,beta0,'Options',opts); mdl_A{ci} = mdl;
-    trCp = predict(mdl,trCFR);
-    plot(trCFR,trCp,'r');
-    ylim([0 200]);
+    minFR = min(mdlT{:,1}); maxFR = max(mdlT{:,1});
+    xFR = [minFR:0.001:maxFR]'; gFR = ones(size(xFR)); 
+    xFR = [xFR;xFR]; gFR = [gFR;(2*gFR)];
+    xdT = table(xFR,gFR); xdT.Properties.VariableNames = mdlT.Properties.VariableNames([1 3]); xdT.GR = categorical(xdT.GR);
+    trCp = predict(fit,xdT);
+    plot(xFR(gFR == 1),trCp(gFR == 1),'k');
+    plot(xFR(gFR == 2),trCp(gFR == 2),'r');
+%     plot(trAFR,trCp(gFR == 2),'r');
+    ylim([0 max(mdlT{:,2})]);
     set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     if ci == 1
         put_axes_labels(ha,{{'Avg. FR(A.U.)'},[0 0 0]},{{'Avg. # of Trans./min'},[0 0 0]});
