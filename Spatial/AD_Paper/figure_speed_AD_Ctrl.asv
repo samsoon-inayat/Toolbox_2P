@@ -34,7 +34,7 @@ var_A = reshape(rmspeed_A,40,5)';
 [within,dvn,xlabels] = make_within_table({'Cond','Trials'},[4,10]);
 dataT = make_between_table({var_C;var_A},dvn);
 ra = RMA(dataT,within,{0.05,{}});
-% ra = RMA(dataT,within,{0.05,{'hsd'}});
+ra = RMA(dataT,within,{0.05,{'hsd'}});
 ra.ranova
 
 print_for_manuscript(ra)

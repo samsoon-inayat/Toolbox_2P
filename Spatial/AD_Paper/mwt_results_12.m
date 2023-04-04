@@ -163,6 +163,13 @@ if 1
 [num,strings,raw] = xlsread(filename,4,'A1:B24');
 [h,p,stat] = ttest2(num(1:11,2),num(12:23,2))
 n = 0;
+
+dataT = make_between_table({num(1:11,2);num(12:23,2)},dvn);
+% ra = RMA(dataT,within,{0.05,{''}});
+% ra.ranova
+% print_for_manuscript(ra)
+ra = anova1(dataT{:,2},dataT{:,1})
+
 [mC,semC] = findMeanAndStandardError(num(1:11,2));
 [mA,semA] = findMeanAndStandardError(num(12:23,2));
     mVar = [mC mA];

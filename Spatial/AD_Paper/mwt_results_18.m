@@ -11,7 +11,7 @@ mSize = 5;
 tcolors = {'k','r'};
 n =0
 %% 12months speed
-if 1
+if 0
 [num,strings,raw] = xlsread(filename,5,'A1:I24');
 data = array2table(num);
 data.Properties.VariableNames = strings;

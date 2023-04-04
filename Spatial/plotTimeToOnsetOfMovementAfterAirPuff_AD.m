@@ -8,7 +8,7 @@ mData = evalin('base','mData');
 
 dt_C = get_duration_and_time(ei_C);
 dt_A = get_duration_and_time(ei_A);
-
+n = 0;
 %%
 if 1
 moas = dt_C.duration;
