@@ -20,11 +20,16 @@ temp = fullfile(interDir,'Matlab','Statistical_Package');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','npy-matlab');addpath(temp);
 temp = fullfile(mainDir,'Downloaded');addpath(temp);
 temp = fullfile(mainDir,'Downloaded','CNMF_E');p = genpath(temp);addpath(p);
-
 temp = fullfile(mainDir,'Downloaded','Suite2P');p = genpath(temp);addpath(p);
 
-temp = pwd; p = genpath(temp);addpath(p);
-remove_from_path
+% temp = pwd; p = genpath(temp);addpath(p);
+% remove_from_path
 
+folders_to_add = {'Misc'};
+
+for ii = 1:length(folders_to_add)
+    p = genpath(fullfile(pwd,folders_to_add{ii}));
+    addpath(p);
+end
 
 
