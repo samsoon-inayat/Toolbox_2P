@@ -211,52 +211,7 @@ distD = [var_CvD(:,ci) var_AvD(:,ci)]; distDFR = [var_CvDFR(:,ci) var_AvDFR(:,ci
 [distDo,allVals,allValsG] = plotDistributions(distD);  [distDoFR,allValsFR,allValsGFR] = plotDistributions(distDFR);
 trC = allValsG{1}; trA = allValsG{2};  trCFR = allValsGFR{1}; trAFR = allValsGFR{2};
 
-%% transients graphs trials
-magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[4 5 3 1],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
-MY = 10; ysp = 1; mY = 0; 
-stp = 0.4*magfac; widths = ([0.5 0.5 0.5 0.5 0.25 0.25 0.25 0.25]+0.0015)*magfac; gap = 0.175*magfac;
-adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-shift_axes(ff,5:8,0.35,gap);
-var_CvD = out_CT(:,1:4); var_AvD = out_AT(:,1:4); var_CvDFR = out_C(:,1:4); var_AvDFR = out_A(:,1:4);
-% var_CvD = out_CT(:,5:8); var_AvD = out_AT(:,5:8); var_CvDFR = out_C(:,5:8); var_AvDFR = out_A(:,5:8);
-for ci = 1:4
-    distD = [var_CvD(:,ci) var_AvD(:,ci)]; distDFR = [var_CvDFR(:,ci) var_AvDFR(:,ci)];
-    [distDo,allVals,allValsG] = plotDistributions(distD);  [distDoFR,allValsFR,allValsGFR] = plotDistributions(distDFR);
-    trC = allValsG{1}; trA = allValsG{2};  trCFR = allValsGFR{1}; trAFR = allValsGFR{2};
-    minBin = min(allVals);
-    axes(ff.h_axes(1,ci)); hold on;
-    ha = gca;
-    sc = scatter(trCFR,trC,1,'.','k');% sc.MarkerEdgeAlpha = 0.5; sc.MarkerFaceAlpha = 0.5
-    sc = scatter(trAFR,trA,1,'.','r');% sc.MarkerEdgeAlpha = 0.5; sc.MarkerFaceAlpha = 0.5
-    
-    opts = statset('Display','iter','TolFun',1e-10);
-%     mdl = fitnlm(trCFR,trC,modelfun,beta0,'Options',opts); mdl_C{ci} = mdl;
-    grps = [ones(size(trCFR));(2*ones(size(trAFR)))];
-    mdlT = table([trCFR;trAFR],[trC;trA],[ones(size(trCFR));(2*ones(size(trAFR)))]);
-    mdlT.Properties.VariableNames = {'FR','TR','GR'};
-    mdlT.GR = categorical(mdlT.GR);
-    fit = fitlm(mdlT,'TR~FR*GR');
-    minFR = min(mdlT{:,1}); maxFR = max(mdlT{:,1});
-    xFR = [minFR:0.001:maxFR]'; gFR = ones(size(xFR)); 
-    xFR = [xFR;xFR]; gFR = [gFR;(2*gFR)];
-    xdT = table(xFR,gFR); xdT.Properties.VariableNames = mdlT.Properties.VariableNames([1 3]); xdT.GR = categorical(xdT.GR);
-    trCp = predict(fit,xdT);
-    plot(xFR(gFR == 1),trCp(gFR == 1),'k');
-    plot(xFR(gFR == 2),trCp(gFR == 2),'r');
-%     plot(trAFR,trCp(gFR == 2),'r');
-    ylim([0 max(mdlT{:,2})]);
-    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
-    if ci == 1
-        put_axes_labels(ha,{{'Avg. FR(A.U.)'},[0 0 0]},{{'Avg. # of Trans./min'},[0 0 0]});
-    else
-        put_axes_labels(ha,{{'Avg. FR(A.U.)'},[0 0 0]},{{''},[0 0 0]});
-    end
-    titletxt = sprintf('C%d',ci);
-    ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
-    format_axes_b(gca);
-end
-save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
+
 %%
 varC = exec_fun_on_cell_mat(out_CT,'mean');
 varA = exec_fun_on_cell_mat(out_AT,'mean');
@@ -271,6 +226,7 @@ ff = makeFigureRowsCols(108,[10 3 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 
 MY = 15; ysp = 0.005; mY = 0; titletxt = ''; ylabeltxt = {'Avg. # of Trans.','per min'};
 stp = 0.5*magfac; widths = ([4 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-1.75)*magfac; gap = 0.16*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+colors = mData.colors;
 tcolors = repmat({colors{1};colors{2};colors{3};colors{4}},4);
 
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Ph_Cond','bonferroni'},[1.5 1 1]);

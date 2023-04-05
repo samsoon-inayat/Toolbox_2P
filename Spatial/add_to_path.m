@@ -25,7 +25,7 @@ temp = fullfile(mainDir,'Downloaded','Suite2P');p = genpath(temp);addpath(p);
 % temp = pwd; p = genpath(temp);addpath(p);
 % remove_from_path
 
-folders_to_add = {'Misc'};
+folders_to_add = {'Misc','ProcessData','ProcessedDataIO','Thor2P','PreProcessing','contextsDefineAndProcess'};
 
 for ii = 1:length(folders_to_add)
     p = genpath(fullfile(pwd,folders_to_add{ii}));

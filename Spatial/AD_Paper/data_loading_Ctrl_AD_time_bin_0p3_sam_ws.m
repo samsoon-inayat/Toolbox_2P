@@ -61,6 +61,16 @@ ei10_A = getData_py_2(T_A);
 % Load secondary processed data (raster plots and MI etc.,)
 dcfilename = 'define_contexts.m';
 %%
+%%
+binwidths = [0.3 3];
+for ii = 1:length(ei10_C)
+    ei10_C(ii) = load_context_info(ei10_C(ii),binwidths,[0 0 0],dcfilename);
+end
+for ii = 1:length(ei10_A)
+    ei10_A(ii) = load_context_info(ei10_A(ii),binwidths,[0 0 0],dcfilename);
+end
+disp('Done');
+%%
 nowr = [0 0 0];
 owr = [1 1 1];
 binwidths = [0.3 3];
