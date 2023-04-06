@@ -10,7 +10,7 @@ pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 
 % Define cell population
 pop_var_name = {'all'}; % all cells
-pop_var_name = {'vals'}; % responsive cells
+% pop_var_name = {'vals'}; % responsive cells
 % pop_var_name = {'vals','good_zMI'}; % highly tuned cells
 
 % get cell ids logical vectors for cell lists
@@ -41,8 +41,8 @@ for piii = 1:length(varT)
 end
 
 %% get firing rates and trasients
-% filename = fullfile(mData.pd_folder,'FR_Transients_All.mat');
-filename = fullfile(mData.pd_folder,'FR_Transients_Responsive.mat');
+filename = fullfile(mData.pd_folder,'FR_Transients_All.mat');
+% filename = fullfile(mData.pd_folder,'FR_Transients_Responsive.mat');
 % filename = fullfile(mData.pd_folder,'FR_Transients_Resp_Highly_tuned.mat');
 
 load(filename); % this should output two variables out_C and out_CT ... same for AD group
@@ -95,6 +95,8 @@ for ci = 1:4
     titletxt = sprintf('%s',getNumberOfAsterisks(pvals(ci))); ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 -0.031 0 0]);set(ht,'FontSize',8);
     format_axes_b(gca);
 end
+axes(ff.h_axes(1,1));
+ht = set_axes_top_text(gcf,ff.h_axes,'Air-ON',[0.051 0.1 0.5 0]);set(ht,'FontSize',8);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
 %% make scatter and linear regression plots between FR and zMI
 % Select Air ON or Air OFF phases
