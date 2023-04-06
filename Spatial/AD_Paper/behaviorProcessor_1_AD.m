@@ -122,66 +122,7 @@ end
 %%
 runthis = 1;
 if runthis
-% tempTxt = {'Trials'}; TrialsInterTrials = repmat(tempTxt,size(moas,1),1);
-% tempTxt = {'InterTrials'}; TrialsInterTrials = [TrialsInterTrials;repmat(tempTxt,size(moas,1),1)];
-% for ii = 1:size(moas,2)
-%     varNames{ii} = sprintf('Day%d',ii);
-% end
-% data = [moas;moasi];
-% 
-% between = table(TrialsInterTrials,data(:,1),data(:,2),data(:,3));
-% between.Properties.VariableNames = {'TI','Day1','Day2','Day3'};
-% within = table(varNames');
-% within.Properties.VariableNames = {'Day'};
-% 
-% % writetable(between,'Training_Data.xls');
-% 
-% rm = fitrm(between,'Day1-Day3 ~ TI','WithinDesign',within,'WithinModel','Day');
-% rtable = ranova(rm,'WithinModel',rm.WithinModel);
-% mauchlytbl = mauchly(rm);
-% mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
-% mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
 
-for ii = 1:size(moas,2)
-    varNames{ii} = sprintf('Trials_Day%d',ii);
-end
-for ii = 1:size(moasi,2)
-    varNamesI{ii} = sprintf('InterTrials_Day%d',ii);
-end
-data = [moas moasi];
-dataT = table(data(:,1),data(:,4),data(:,2),data(:,5),data(:,3),data(:,6));
-dataT.Properties.VariableNames = {varNames{1} varNamesI{1} varNames{2} varNamesI{2} varNames{3} varNamesI{3}};
-within = table([varNames';varNamesI']);
-columnText = cell(size(within,1),1);columnText(1:2:end)= varNames';columnText(2:2:end)= varNamesI';
-within = table([varNames';varNamesI'],columnText);
-within = table([1 1 2 2 3 3]',[1 2 1 2 1 2]');
-within.Properties.VariableNames = {'Day','TI'};
-within.TI = categorical(within.TI);
-within.Day = categorical(within.Day);
-
-% writetable(between,'Training_Data.xls');
-rm = fitrm(dataT,'Trials_Day1,InterTrials_Day1,Trials_Day2,InterTrials_Day2,Trials_Day3,InterTrials_Day3 ~ 1','WithinDesign',within,'WithinModel','Day*TI');
-rtable = ranova(rm,'WithinModel',rm.WithinModel);
-mauchlytbl = mauchly(rm);
-% multcompare(rm,'Day','ComparisonType','bonferroni')
-mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
-mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
-
-[mVarT,semVarT] = findMeanAndStandardError(moas);
-[mVarIT,semVarIT] = findMeanAndStandardError(moasi);
-mVar = NaN(1,length(mVarT)+length(mVarIT));
-semVar = mVar;
-mVar(1:2:length(mVar)) = mVarT;semVar(1:2:length(mVar)) = semVarT;
-mVar(2:2:length(mVar)) = mVarIT;semVar(2:2:length(mVar)) = semVarIT;
-combs = nchoosek(1:6,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
-row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{1,6}; h(ii) = 1; 
-row = [1 2]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
-row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
-row = [1 5]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{2,6}; h(ii) = 1; 
-row = [1 3]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{1,6}; h(ii) = 1; 
-% row = [2 6]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{3,6}; h(ii) = 1; 
-
-xdata = [1 2 4 5 7 8]; maxY = 50;
 
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
 hold on;

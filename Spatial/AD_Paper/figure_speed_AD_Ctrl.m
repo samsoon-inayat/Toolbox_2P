@@ -1,15 +1,39 @@
 function figure_speed_AD_Ctrl(fn,allRs,ccs)
 
-protocol_C = '10_C';
-protocol_A = '10_A';
 ei_C = evalin('base','ei10_C');
 ei_A = evalin('base','ei10_A');
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
 
+selContexts1 = [1 2 3 4 1 2 3 4 ];
+rasterNames1 = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT'};
+[~,ei_C] = get_rasters_data(ei_C,selContexts1,rasterNames1); 
+[~,ei_A] = get_rasters_data(ei_A,selContexts1,rasterNames1); 
 
 out_C = get_speeds(ei_C);
 out_A = get_speeds(ei_A);
 n = 0;
+%% R1 (during revision)
+ms_C = []; ms_A = [];
+for an = 1:5
+    mspeed = out_C.mspeed(:,:,an);
+    mspeed = reshape(mspeed,1,40);
+    ms_C = [ms_C;mspeed];
+    
+    mspeed = out_A.mspeed(:,:,an);
+    mspeed = reshape(mspeed,1,40);
+    ms_A = [ms_A;mspeed];
+end
+
+var_C = ms_C;
+var_A = ms_A;
+[within,dvn,xlabels] = make_within_table({'Cond','Trials'},[4,10]);
+dataT = make_between_table({var_C;var_A},dvn);
+ra1 = RMA(dataT,within,{0.05,{}});
+% ra = RMA(dataT,within,{0.05,{'hsd'}});
+ra1.ranova
+
+print_for_manuscript(ra1) % same result as below ... confirmation with a different variable
+
 
 %%
 tic

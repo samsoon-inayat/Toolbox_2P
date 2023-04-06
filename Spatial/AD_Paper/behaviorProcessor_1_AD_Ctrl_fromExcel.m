@@ -1,86 +1,92 @@
 function behaviorProcessor_1_AD_Ctrl
 mData = evalin('base','mData');
 colors = mData.colors;
-% data_C = get_training_data_C;
-% data_A = get_training_data_A;
-xl_fileName = 'Training_data_C_A.xlsx';
-[numbers, strings, raw] = xlsread(xl_fileName);
+data_C = get_training_data_C;
+data_A = get_training_data_A;
 n = 0;
-%%
-data = array2table(numbers);
-data.Properties.VariableNames = strings;
-data.Group = categorical(data.Group);
-within = [[1 1 2 2 3 3]' [1 2 1 2 1 2]'];
-within = array2table(within);
-within.Properties.VariableNames = {'Day','Trial'};
-within.Day = categorical(within.Day); within.Trial = categorical(within.Trial);
-ra = RMA(data,within,{0.05,{'bonferroni'}});
-print_for_manuscript(ra)
-n = 0;
-%%
-if 1
-    mVar = ra.est_marginal_means.Mean;
-    semVar = ra.est_marginal_means.Formula_StdErr;
-    combs = ra.mcs.combs; p = ra.mcs.p; h = ra.mcs.p < -0.05;
-    xdata = [1 2 3 4 5 6 [1 2 3 4 5 6]+8]; 
+% %%
+% xl_fileName = 'Training_data_C_A.xlsx';
+% [numbers, strings, raw] = xlsread(xl_fileName);
+% [within,dvn,xlabels] = make_within_table({'Day','Trials'},[3,2]);
+% dataT = make_between_table({var_C;var_A},dvn);
+% ra = RMA(dataT,within,{0.05,{'hsd'}});
+% ra.ranova
+% print_for_manuscript(ra)
+% n = 0;
 
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.9 1],'color','w');
-    hold on;
+%%
+moas = data_C.moas;
+moasi = data_C.moasi;
+moas_A = data_A.moas;
+moasi_A = data_A.moasi;
+var_C = [moas(:,1) moasi(:,1) moas(:,2) moasi(:,2) moas(:,3) moasi(:,3)]; 
+var_A = [moas_A(:,1) moasi_A(:,1) moas_A(:,2) moasi_A(:,2) moas_A(:,3) moasi_A(:,3)];
+
+
+var_C = [moas(:,1) moasi(:,1) moas(:,2) moasi(:,2) moas(:,3) moasi(:,3)]; var_A = [moas_A(:,1) moasi_A(:,1) moas_A(:,2) moasi_A(:,2) moas_A(:,3) moasi_A(:,3)];
+[within,dvn,xlabels] = make_within_table({'Day','Trials'},[3,2]);
+dataT = make_between_table({var_C;var_A},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni','hsd','lsd'}});
+ra.ranova
+print_for_manuscript(ra)
+
+%
+redF = [2]; redV = {2};
+[dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+raR = RMA(dataTR,withinR,{0.05,{'hsd'}});
+raR.ranova
+print_for_manuscript(raR)
+n = 0;
+%%
+    magfac = mData.magfac;
+    ff = makeFigureRowsCols(108,[10 3 3.5 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[10 -410]);
+    MY = 47; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Average','Speed (cm/s)'};
+    stp = 0.36*magfac; widths = ([1.9 1 1.3 1.3 1.3 0.5 0.5 0.5])*magfac; gap = 0.16*magfac;
+    adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+
+   [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Day_Trials','hsd'},[1.5 1 1]);
+    xdata = make_xdata([2 2 2 2 2 2],[1 1.5]);   
+    axes(ff.h_axes(1,1));    hold on;
     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
     tcolors = repmat(tcolors,2,1)';
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 
-    set(gca,'xlim',[0.25 14.75],'ylim',[0 46.1434],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+    set(gca,'xlim',[0.25 14.75],'ylim',[0 MY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     xticks = [1.5 3.5 5.5 9.5 11.5 13.5]; xticklabels = {'Day1','Day2','Day3'}; xticklabels = repmat(xticklabels,2,1)';
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
     for ii = 2:2:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
+    put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'C-TG','A-TG'});
 %     rectangle(gca,'Position',[0.75 30.5 1 3.5],'edgecolor','k','facecolor','k');
 %     text(1.85,30.5,'Trials','FontSize',5);
 %     rectangle(gca,'Position',[6 30.5 1 3.5],'edgecolor','k');
 %     text(7.2,30.5,'Inter-Trials','FontSize',5);
-    changePosition(gca,[0.07 0.02 -0.01 -0.011])
-    put_axes_labels(gca,{[],[0 0 0]},{{'Average','Speed (cm/s)'},[0 0 0]});
-
-    save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_speed.pdf',600);
-return;
-end
-
-%%
-if 1
-    mVar = ra.est_marginal_means_wf.Mean;
-    semVar = ra.est_marginal_means_wf.Formula_StdErr;
-    combs = ra.mcs_lsd_wf.combs; p = ra.mcs_lsd_wf.p*2; h = p < 0.05;
-    xdata = [1 2 4 5 7 8]; 
-
-    hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1 1],'color','w');
+% For pooled
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Day_by_Trials','lsd'},[1.5 1 1]);
+    xdata = make_xdata([2 2 2],[1 1.5]);   
+    axes(ff.h_axes(1,2));
     hold on;
+    colors = mData.colors;
     tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
     tcolors = repmat(tcolors,2,1)';
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.7,'sigLinesStartYFactor',0.01);
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.01);
 
-    set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 maxY-1],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+    set(gca,'xlim',[0.25 max(xdata)+0.75],'ylim',[0 MY],'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
     xticks = [1.5 4.5 7.5]; xticklabels = {'Day1','Day2','Day3'}; 
     set(gca,'xtick',xticks,'xticklabels',xticklabels);
     xtickangle(30);
     for ii = 2:2:length(hbs)
         set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
     end
-    changePosition(gca,[0.17 0.02 -0.1 -0.011])
-%     put_axes_labels(gca,{[],[0 0 0]},{{'Average','Speed (cm/s)'},[0 0 0]});
-
-    save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova_speed_pooled.pdf',600);
-    get(gca, 'FontName')
-return;
-end
-
-
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Pooled'});
+    save_pdf(ff.hf,mData.pdf_folder,'Figure_1_behavior_anova_speed.pdf',600);
 %%
 runthis =0;
 if runthis

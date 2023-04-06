@@ -62,12 +62,13 @@ ra.ranova
 print_for_manuscript(ra)
 %%
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.31 0.40],'widthHeightAdjustment',[10 -450]);
-MY = 0.1; ysp = 0.005; mY = 0; titletxt = ''; ylabeltxt = {'Average Firing','Rate (A.U.)'};
-stp = 0.5*magfac; widths = ([4 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-1.75)*magfac; gap = 0.16*magfac;
+ff = makeFigureRowsCols(108,[10 3 3.6 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.31 0.40],'widthHeightAdjustment',[10 -450]);
+MY = 0.1; ysp = 0.02; mY = 0; titletxt = ''; ylabeltxt = {'Average Firing','Rate (A.U.)'};
+stp = 0.45*magfac; widths = ([2.25 0.4 0.4 1.3 1.3 0.5 0.5 0.5])*magfac; gap = 0.051*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+colors = mData.colors;
 tcolors = repmat({colors{1};colors{2};colors{3};colors{4}},4);
-
+axes(ff.h_axes(1,1));
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Ph_Cond','bonferroni'},[1.5 1 1]);
 xdata = make_xdata([4 4 4 4],[1 1.5]); 
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
@@ -83,50 +84,35 @@ for ii = 1:length(ht)
   set(ht(ii),'FontWeight','Bold');
 end
 format_axes_b(gca);
-save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
-%%
-magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.31 0.40],'widthHeightAdjustment',[10 -450]);
-MY = 0.1; ysp = 0.025; mY = 0; titletxt = ''; ylabeltxt = {''};
 
-stp = 0.2*magfac; widths = ([1 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.61)*magfac; gap = 0.16*magfac;
-adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = {'k','r'};%{colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
-
+axes(ff.h_axes(1,2));
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group','bonferroni'},[1.5 1 1]);
     xdata = make_xdata([2],[1 2]);   
 %         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.45,'sigLinesStartYFactor',0.05);
 set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
-xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels,'ytick',[]); xtickangle(30);
+xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
 make_bars_hollow(hbs(1:end));
-put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
+ht = set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[-0.05 -0]}); 
 format_axes_b(gca);
-save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
-%% one graph main effect
-magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.21 0.40],'widthHeightAdjustment',[10 -450]);
 
-        MY = 0.1; ysp = 0.025; mY = 0; titletxt = ''; ylabeltxt = {''};
-
-stp = 0.2*magfac; widths = ([1 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.61)*magfac; gap = 0.16*magfac;
-adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = {mData.colors{7};mData.colors{6}};
+axes(ff.h_axes(1,3));
 
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Ph','bonferroni'},[1.5 1 1]);
     xdata = make_xdata([2],[1 2]);   
 %         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.45,'sigLinesStartYFactor',0.05);
 set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
 xticklabels = {'Air-On','Air-Off'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
-% make_bars_hollow(hbs(1:end));
-put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
 format_axes_b(gca);
-set(gca,'ytick',[]);
+% set(gca,'ytick',[]);
+ht = set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[-0.04 -0]}); 
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 
 %% spike rate graphs - Distributions - go into supplemental information
@@ -220,6 +206,62 @@ dataT = make_between_table({varC;varA},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 print_for_manuscript(ra)
+%%
+magfac = mData.magfac;
+ff = makeFigureRowsCols(108,[10 3 3.6 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.31 0.40],'widthHeightAdjustment',[10 -450]);
+MY = 15; ysp = 3; mY = 0; titletxt = ''; ylabeltxt = {'Avg. # of Trans.','per min'};
+stp = 0.45*magfac; widths = ([2.25 0.4 0.4 1.3 1.3 0.5 0.5 0.5])*magfac; gap = 0.051*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+colors = mData.colors;
+tcolors = repmat({colors{1};colors{2};colors{3};colors{4}},4);
+axes(ff.h_axes(1,1));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Ph_Cond','bonferroni'},[1.5 1 1]);
+xdata = make_xdata([4 4 4 4],[1 1.5]); 
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
+'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'C1','C2','C3','C4'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
+make_bars_hollow(hbs(9:end));
+put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Air-On','Air-Off','Air-On','Air-Off'},{[-0.01 0.03]});
+ht = set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,8,{'C-TG','A-TG'},{[-0.14 -0]}); 
+for ii = 1:length(ht) 
+  set(ht(ii),'FontWeight','Bold');
+end
+format_axes_b(gca);
+
+tcolors = {'k','r'};%{colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+axes(ff.h_axes(1,2));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group','bonferroni'},[1.5 1 1]);
+    xdata = make_xdata([2],[1 2]);   
+%         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.45,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+make_bars_hollow(hbs(1:end));
+ht = set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[-0.05 -0]}); 
+format_axes_b(gca);
+
+tcolors = {mData.colors{7};mData.colors{6}};
+axes(ff.h_axes(1,3));
+
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Ph','bonferroni'},[1.5 1 1]);
+    xdata = make_xdata([2],[1 2]);   
+%         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.45,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'Air-On','Air-Off'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+format_axes_b(gca);
+% set(gca,'ytick',[]);
+ht = set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[-0.04 -0]}); 
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+
 %%
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[10 3 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.31 0.40],'widthHeightAdjustment',[10 -450]);

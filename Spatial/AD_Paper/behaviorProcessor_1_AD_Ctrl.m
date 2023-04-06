@@ -85,28 +85,6 @@ return;
 end
 
 %%
-runthis = 1;
-if runthis
-% tempTxt = {'Trials'}; TrialsInterTrials = repmat(tempTxt,size(moas,1),1);
-% tempTxt = {'InterTrials'}; TrialsInterTrials = [TrialsInterTrials;repmat(tempTxt,size(moas,1),1)];
-% for ii = 1:size(moas,2)
-%     varNames{ii} = sprintf('Day%d',ii);
-% end
-% data = [moas;moasi];
-% 
-% between = table(TrialsInterTrials,data(:,1),data(:,2),data(:,3));
-% between.Properties.VariableNames = {'TI','Day1','Day2','Day3'};
-% within = table(varNames');
-% within.Properties.VariableNames = {'Day'};
-% 
-% % writetable(between,'Training_Data.xls');
-% 
-% rm = fitrm(between,'Day1-Day3 ~ TI','WithinDesign',within,'WithinModel','Day');
-% rtable = ranova(rm,'WithinModel',rm.WithinModel);
-% mauchlytbl = mauchly(rm);
-% mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
-% mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
-n = 0;
 moas = data_C.moas;
 moasi = data_C.moasi;
 moas_A = data_A.moas;
@@ -114,10 +92,10 @@ moasi_A = data_A.moasi;
 
 % ********************************
 % new RMA based start
-var_C = [moas moasi]; var_A = [moas_A moasi_A];
-[within,dvn,xlabels] = make_within_table({'Trials','Day'},[2,3]);
+var_C = [moas(:,1) moasi(:,1) moas(:,2) moasi(:,2) moas(:,3) moasi(:,3)]; var_A = [moas_A(:,1) moasi_A(:,1) moas_A(:,2) moasi_A(:,2) moas_A(:,3) moasi_A(:,3)];
+[within,dvn,xlabels] = make_within_table({'Day','Trials'},[3,2]);
 dataT = make_between_table({var_C;var_A},dvn);
-ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra = RMA(dataT,within,{0.05,{'hsd'}});
 ra.ranova
 print_for_manuscript(ra)
 
@@ -131,67 +109,23 @@ print_for_manuscript(raR)
 
 % new RMA based end
 % ********************************
-
-for ii = 1:size(moas,2)
-    varNames{ii} = sprintf('Trials_Day%d',ii);
-end
-for ii = 1:size(moasi,2)
-    varNamesI{ii} = sprintf('InterTrials_Day%d',ii);
-end
-data_C = [moas moasi];
-data_A = [moas_A moasi_A];
-group = categorical([ones(size(data_C,1),1);(2*ones(size(data_A,1),1))]);
-data = [data_C;data_A];
-dataT = table(group,data(:,1),data(:,4),data(:,2),data(:,5),data(:,3),data(:,6));
-dataT.Properties.VariableNames = {'Group' varNames{1} varNamesI{1} varNames{2} varNamesI{2} varNames{3} varNamesI{3}};
-writetable(dataT,'Training_data_C_A.xlsx')
-within = table([varNames';varNamesI']);
-columnText = cell(size(within,1),1);columnText(1:2:end)= varNames';columnText(2:2:end)= varNamesI';
-within = table([varNames';varNamesI'],columnText);
-within = table([1 1 2 2 3 3]',[1 2 1 2 1 2]');
-within.Properties.VariableNames = {'Day','TI'};
-within.TI = categorical(within.TI);
-within.Day = categorical(within.Day);
-
-% writetable(between,'Training_Data.xls');
-rm = fitrm(dataT,'Trials_Day1,InterTrials_Day1,Trials_Day2,InterTrials_Day2,Trials_Day3,InterTrials_Day3 ~ Group','WithinDesign',within,'WithinModel','Day*TI');
-rtable = ranova(rm,'WithinModel',rm.WithinModel);
-mauchlytbl = mauchly(rm);
-% multcompare(rm,'Day','ComparisonType','bonferroni')
-mcGroup = find_sig_mctbl(multcompare(rm,'Group','By','Day','ComparisonType','bonferroni'),6);
-mcTI = find_sig_mctbl(multcompare(rm,'TI','By','Day','ComparisonType','bonferroni'),6);
-mcDays = find_sig_mctbl(multcompare(rm,'Day','By','TI','ComparisonType','bonferroni'),6);
-
-[mVarT,semVarT] = findMeanAndStandardError(moas);
-[mVarIT,semVarIT] = findMeanAndStandardError(moasi);
-
-[mVarT_A,semVarT_A] = findMeanAndStandardError(moas_A);
-[mVarIT_A,semVarIT_A] = findMeanAndStandardError(moasi_A);
-
-mVar = NaN(1,2*(length(mVarT)+length(mVarIT)));
-semVar = mVar;
-mVar(1:2:6) = mVarT;semVar(1:2:6) = semVarT;
-mVar(2:2:6) = mVarIT;semVar(2:2:6) = semVarIT;
-mVar(7:2:12) = mVarT_A;semVar(7:2:12) = semVarT_A;
-mVar(8:2:12) = mVarIT_A;semVar(8:2:12) = semVarIT_A;
-combs = nchoosek(1:14,2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
-% row = [7 8]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{1,6}; h(ii) = 1; 
-% row = [5 6]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{2,6}; h(ii) = 1; 
-% row = [3 4]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{3,6}; h(ii) = 1; 
 %%
-xdata = [1 2 4 5 7 8 [13 14 16 17 19 20]-1]; maxY = 22;
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Day_Trials','hsd'},[1.5 1 1]);
+xdata = make_xdata([2 2 2 2 2 2],[1 1.5]);   
+
+xdata = [1 2 4 5 7 8 [13 14 16 17 19 20]-1]; MY = 40;
 colors = mData.colors;
 hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 2.25 1],'color','w');
 hold on;
 tcolors = {colors{1};colors{1};colors{2};colors{2};colors{3};colors{3};colors{1};colors{1};colors{2};colors{2};colors{3};colors{3}};
-hbs = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+hbs = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
     'maxY',maxY,'ySpacing',1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.7,'sigLinesStartYFactor',-0.1);
 for ii = 2:2:length(hbs)
     set(hbs(ii),'facecolor','none','edgecolor',tcolors{ii});
 end
 % plot([0.5 11],[-0.5 0.5],'linewidth',1.5)
-set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 maxY+1],'FontSize',6,'FontWeight','Bold','TickDir','out');
+set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[0 MY],'FontSize',6,'FontWeight','Bold','TickDir','out');
 xticks = xdata(1:2:end)+0.5; xticklabels = {'D1','D2','D3','D1','D2','D3'};
 set(gca,'xtick',xticks,'xticklabels',xticklabels);
 changePosition(gca,[0.02 0.03 0.02 -0.11]);
@@ -205,8 +139,6 @@ text(18.5,18,'APP','FontSize',7);
 % applyhatch_plusC(gcf
 
 save_pdf(hf,mData.pdf_folder,'Figure_1_behavior_anova.pdf',600);
-return;
-end
 
 
 
