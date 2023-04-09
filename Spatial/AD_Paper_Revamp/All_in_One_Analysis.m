@@ -49,12 +49,12 @@ load(filename); % this should output two variables out_C and out_CT ... same for
 %% make scatter and linear regression plots between FR and Transients
 % Select Air ON or Air OFF phases
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[4 5 3 1],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
+ff = makeFigureRowsCols(108,[4 5 3 1],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -625]);
 MY = 10; ysp = 1; mY = 0; 
 stp = 0.4*magfac; widths = ([0.5 0.5 0.5 0.5 0.25 0.25 0.25 0.25]+0.0015)*magfac; gap = 0.175*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 shift_axes(ff,5:8,0.35,gap);
-confsi = 1:4; confsi = 5:8
+confsi = 1:4; %confsi = 5:8;
 var_CvD = out_CT(:,confsi); var_AvD = out_AT(:,confsi); var_CvDFR = out_C(:,confsi); var_AvDFR = out_A(:,confsi);
 for ci = 1:4
     distD = [var_CvD(:,ci) var_AvD(:,ci)]; distDFR = [var_CvDFR(:,ci) var_AvDFR(:,ci)];
