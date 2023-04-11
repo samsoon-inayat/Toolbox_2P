@@ -19,13 +19,14 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 % pop_var_name = {'all'};
-pop_var_name = {'vals'};
+pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 pop_var_name = {'Nvals'};
 sel_pop_CNR = cell_list_op(props_C,pop_var_name); sel_pop_ANR = cell_list_op(props_A,pop_var_name);
 
 cell_types = {'C1','C2','C3','C4'};
-bins = [0 50 100 150]; bins = [0 150];
+bins = [0 50 100 150]; 
+% bins = [0 150];
 nbins = length(bins)-1;
 %     sel_pop_C = bin_cells(props_C.peak_locations,bins,sel_pop_C); sel_pop_A = bin_cells(props_A.peak_locations,bins,sel_pop_A);
 if nbins > 1
@@ -43,7 +44,7 @@ end
 mean_var_C = [];mean_var_A = [];
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 3;%:length(params)
+varT = 4;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); mean_var_A = exec_fun_on_cell_mat(sel_pop_A,'percent');
@@ -501,6 +502,7 @@ end
 dataT = make_between_table({var_C;var_A},dvn);
 ra = RMA(dataT,within);
 ra.ranova
+print_for_manuscript(ra)
 
 % %%%%% Correlations across conditions
 % selC = remap_C1; selA = remap_A1;
@@ -577,7 +579,7 @@ make_bars_hollow(hbs(4:end));
 xtickangle(30);
 put_axes_labels(gca,{[],[0 0 0]},{ylabeltxt,[0 0 0]});
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'});
-ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]); set(ht,'FontWeight','Bold');
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[-0.05 -0.01 0.1 0]); set(ht,'FontWeight','Bold');
 format_axes_b(gca);
 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_correlation',FF{ci}),600);

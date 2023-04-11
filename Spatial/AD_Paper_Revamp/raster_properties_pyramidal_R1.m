@@ -18,8 +18,8 @@ Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si)
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
-pop_var_name = {'all'};
-% pop_var_name = {'vals'};
+% pop_var_name = {'all'};
+pop_var_name = {'vals'};
 % pop_var_name = {'vals','good_zMI'};
 % pop_var_name = {'vals','good_zMI','good_Gauss'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
@@ -28,7 +28,7 @@ sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
 params = {'perc','N_Resp_Trials','zMI','rs','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 4;%:length(params)
+varT = 3;%:length(params)
 [~,~,pop_C] = plotDistributions(sel_pop_C);  [~,~,pop_A] = plotDistributions(sel_pop_A);
 eval(sprintf('var_CT = props_C.%s;',params{varT}));  eval(sprintf('var_AT = props_A.%s;',params{varT}));
 % [~,~,var_C] = plotDistributions(var_CT);  [~,~,var_A] = plotDistributions(var_AT);
@@ -71,7 +71,8 @@ for ci = 1:4
         put_axes_labels(ha,{xlabels{varT},[0 0 0]},{{''},[0 0 0]});
     end
     format_axes_b(ha);
-    [h,p,ks2stat] = kstest2(allValsG{1},allValsG{2});
+    [ks2.h,ks2.p,ks2.ks2stat] = kstest2(allValsG{1},allValsG{2}); ks2.DF1 = length(allValsG{1}); ks2.DF2 = length(allValsG{2});
+    print_for_manuscript(ks2,'KS2');
     ht = set_axes_top_text_no_line(gcf,ha,'KS-Test',[0.0 -0.01 0 0]);set(ht,'FontSize',7);
     titletxt = sprintf('%s',getNumberOfAsterisks(p));
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.061 -0.01 0 0]);set(ht,'FontSize',9);
@@ -100,7 +101,8 @@ for ci = 1:4
     mY = mYs(varT); MY = MYs(varT); ysp = ysps(varT);%max([mVar+semVar]);
     tcolors = {'k','r'};%{colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
     xdata = make_xdata([2],[1 2]);   combs = [1 2];
-    [h,p,tstat] = ttest2(allValsG{1},allValsG{2});
+    [t2.h,t2.p,t2coi,t2.tstat] = ttest2(allValsG{1},allValsG{2}); t2.cd = computeCohen_d(allValsG{1},allValsG{2});
+    print_for_manuscript(t2,'t2');
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',9,'barWidth',0.5,'sigLinesStartYFactor',0.05);
