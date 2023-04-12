@@ -13,7 +13,7 @@ pni = 7;
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 ntrials = 50;
 si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-% si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
@@ -28,7 +28,7 @@ sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
 params = {'perc','N_Resp_Trials','zMI','rs','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 3;%:length(params)
+varT = 4;%:length(params)
 [~,~,pop_C] = plotDistributions(sel_pop_C);  [~,~,pop_A] = plotDistributions(sel_pop_A);
 eval(sprintf('var_CT = props_C.%s;',params{varT}));  eval(sprintf('var_AT = props_A.%s;',params{varT}));
 % [~,~,var_C] = plotDistributions(var_CT);  [~,~,var_A] = plotDistributions(var_AT);
@@ -38,8 +38,8 @@ xlabels = {NaN,{'RF (%)'},'zMI','R-Sq','FW (cm)','Cen (cm)','PL (cm)'};
 ylabels = {NaN,{'RF (%)'},'zMI','R-Sq','FW (cm)','Cen (cm)','PL (cm)'};
 incrs = [NaN,10,0.1,0.01,1,15,1];
 mYs = [NaN,0,-0.5,0,0,0,0];
-MYs = [NaN,90,5.0125,0.75,2,20,20];
-ysps = [NaN,10,0.25,0.2,0.15,0.15,3];
+MYs = [NaN,90,0.8125,0.75,2,20,20];
+ysps = [NaN,10,0.15,0.2,0.15,0.15,3];
 
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[4 5 6.9 1.45],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
@@ -74,7 +74,7 @@ for ci = 1:4
     [ks2.h,ks2.p,ks2.ks2stat] = kstest2(allValsG{1},allValsG{2}); ks2.DF1 = length(allValsG{1}); ks2.DF2 = length(allValsG{2});
     print_for_manuscript(ks2,'KS2');
     ht = set_axes_top_text_no_line(gcf,ha,'KS-Test',[0.0 -0.01 0 0]);set(ht,'FontSize',7);
-    titletxt = sprintf('%s',getNumberOfAsterisks(p));
+    titletxt = sprintf('%s',getNumberOfAsterisks(ks2.p));
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.061 -0.01 0 0]);set(ht,'FontSize',9);
     titletxt = sprintf('C%d',ci);
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
@@ -103,7 +103,7 @@ for ci = 1:4
     xdata = make_xdata([2],[1 2]);   combs = [1 2];
     [t2.h,t2.p,t2coi,t2.tstat] = ttest2(allValsG{1},allValsG{2}); t2.cd = computeCohen_d(allValsG{1},allValsG{2});
     print_for_manuscript(t2,'t2');
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[t2.h t2.p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',9,'barWidth',0.5,'sigLinesStartYFactor',0.05);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[0 MY]); xticks = xdata; 

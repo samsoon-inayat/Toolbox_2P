@@ -12,16 +12,17 @@ end
 
 maxcolsz = max(cols(:));
 bw = unique(binwidths(:));
-if isfield(Rs{1,1}.resp,'cis')
-    cis = Rs{1,1}.resp.cis;
+if ~isempty(strfind(Rs{1,1}.marker_name,'T'))
+%     cis = Rs{1,1}.resp.cis;
     xs = Rs{1,1}.xs;
-    xs = xs - xs(cis(1,2));
-    xticks = [cis(1,:) maxcolsz];
+%     xs = xs - xs(cis(1,2));
+%     xticks = [cis(1,:) maxcolsz];
     xs = round(xs);
     xso.vals = xs;
     xso.ticks = xticks;
     xso.label = 'Time (secs)';
 else
+    maxcolsz = 49;
     xs = 0:bw:1000;
     xs = xs(1:maxcolsz);
     cols = maxcolsz;
@@ -66,7 +67,7 @@ for rr = 1:size(mRs,1) % for each animal
             RV1 = correctsz(RV1(resp{rr},:),maxcolsz); RV2 = correctsz(RV2(resp{rr},:),maxcolsz); % make sizes equal
             [RV1_ordered,~,cellnums] = findPopulationVectorPlot(RV1,[]); % order RV1 according to peak firing
             [RV2_ordered,~,~] = findPopulationVectorPlot(RV2,[],cellnums); % order RV2 the same as RV1
-            [RV2_ordered_ind,~,cellnums_ind] = findPopulationVectorPlot(RV2,[]); % order RV2 the same as RV1
+            [RV2_ordered_ind,~,cellnums_ind] = findPopulationVectorPlot(RV2,[]); % independently order RV2 the same as RV1
             [this_PV_corr,pPV] = corr(RV1_ordered,RV2_ordered); % find correlation
             [this_PV_corr_ind,pPV] = corr(RV1_ordered,RV2_ordered_ind); % find correlation
             
@@ -244,7 +245,10 @@ if size(RV1,2) < maxcolsz
     diffsz = maxcolsz - size(RV1,2);
     nanmat = NaN(size(RV1,1),diffsz);
     RV1 = [RV1 nanmat];
+else
+    RV1 = RV1(:,1:maxcolsz);
 end
+
 
 function [fd,bw] = findFractalDim(corrV)
 bw = imbinarize(corrV,'adaptive','Sensitivity',0.75);

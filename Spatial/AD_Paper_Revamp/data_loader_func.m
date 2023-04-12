@@ -9,6 +9,9 @@ while 1
     selContexts = [1 2 3 4 1 2 3 4 1 2 1 2 3 4];
     rasterNames = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT','beltD','beltD','airT','airT','airT','airT'};
     rasterNamesTxt = {'1-t-D','2-t-D','3-t-D','4-t-D','1-i-T','2-i-T','3-i-T','4-i-T','1-b-D','2-b-D','1-t-T','2-t-T','3-t-T','4-t-T'};
+    selContexts = [1 2 3 4 1 2 3 4];
+    rasterNames = {'airD','airD','airD','airD','airIT','airIT','airIT','airIT'};
+    rasterNamesTxt = {'1-t-D','2-t-D','3-t-D','4-t-D','1-i-T','2-i-T','3-i-T','4-i-T'};
 %     selContexts = [1 2 3 4 1 2];
 %     rasterNames = {'airD','airD','airD','airD','beltD','beltD'};
 %     rasterNamesTxt = {'1-t-D','2-t-D','3-t-D','4-t-D','1-b-D','2-b-D'};
