@@ -16,7 +16,7 @@ pop_var_name = {'Nvals'};
 sel_pop_CNR = cell_list_op(props_C,pop_var_name); sel_pop_ANR = cell_list_op(props_A,pop_var_name);
 
 
-pop_var_name = {'vals','good_zMI'};
+pop_var_name = {'vals'};
 rsel_pop_C = cell_list_op(props_C,pop_var_name); rsel_pop_A = cell_list_op(props_A,pop_var_name);
 
 cell_types = {'C1','C2','C3','C4'};
@@ -103,13 +103,13 @@ varT = 1;
 xlabels = {titletxt,titletxt,titletxt};
 ylabels = xlabels;
 incrs = [0.01,0.01,0.01];
-mYs = [0,0,0];
+mYs = [-0.1,0,0];
 MYs = [0.25,0.2,1.2];
 ysps = [0.04,0.04,0.1];
 
 incrs = [0.01,0.01,0.01];
-mYs = [0,0,0];
-MYs = [0.1,0.2,1.2];
+mYs = [-1.5,0,0];
+MYs = [2.5,0.2,1.2];
 ysps = [0.03,0.04,0.1];
 
 magfac = mData.magfac;
@@ -186,10 +186,10 @@ for ci = 1:3
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[t2.h t2.p],'colors',tcolors,'sigColor','k',...
         'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',9,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 MY]); xticks = xdata; 
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); xticks = xdata; 
     if ci == 1
         hy = ylabel(ylabels{varT}); changePosition(hy,[-0.5 0 0]);
-        set(gca,'ytick',[mY MY],'yticklabels',{'0',sprintf('%.1f',MY)});
+        set(gca,'ytick',[mY MY],'yticklabels',{sprintf('%.1f',mY),sprintf('%.1f',MY)});
     end
     xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
     make_bars_hollow(hbs(1:end));
