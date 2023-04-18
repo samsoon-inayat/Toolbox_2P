@@ -121,13 +121,7 @@ for rr = 1:size(Rs,1)
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
         o.good_Rs{rr,cc} = o.rs{rr,cc} > 0.3;
         if strcmp(R.marker_name,'airIT')
-            o.good_PWs{rr,cc} = PWs > 0 & PWs < 15;
-            o.good_centers{rr,cc} = centers >=1 & centers <= 15;
-        end
-        if strcmp(R.marker_name,'airD')
-            o.good_PWs{rr,cc} = PWs > 0 & PWs < 150;
-            o.good_centers{rr,cc} = centers >=1 & centers <= 150;
-        end
+            o.good_PWs{rr,cc} = o.PWs{rr,cc} <= 15;
         o.nan_zMI{rr,cc} = isnan(o.zMI{rr,cc});
         o.nan_rs{rr,cc} = isnan(o.rs{rr,cc});
         o.good_zMI_MC{rr,cc} = o.zMI_MC{rr,cc} > 1.65;

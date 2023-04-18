@@ -643,7 +643,7 @@ si = [C1_t_D C2_t_D C3_t_D C4_t_D];
     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si); mRs_C1 = oC.mR1(:,si); mRs_A1 = oA.mR1(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
-pop_var_name = {'vals'};
+pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 r_sel_pop_C = cell_list_op(sel_pop_C,[],'or',1);  r_sel_pop_A = cell_list_op(sel_pop_A,[],'or',1);
 remap_C = find_population_vector_corr_remap(Rs_C,mRs_C,r_sel_pop_C);
@@ -682,10 +682,10 @@ mYs = [0,0,0];
 MYs = [0.25,0.2,1.2];
 ysps = [0.04,0.04,0.1];
 
-incrs = [0.01,0.01,0.01];
-mYs = [0,0,0];
-MYs = [0.1,0.2,1.2];
-ysps = [0.03,0.04,0.1];
+% incrs = [0.01,0.01,0.01];
+% mYs = [0,0,0];
+% MYs = [0.1,0.2,1.2];
+% ysps = [0.03,0.04,0.1];
 
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[4 5 6.9 1.45],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
@@ -732,7 +732,7 @@ for ci = 1:3
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
     if varT == 1 || varT == 2
         titletxt = sprintf('n = %d,',length(allValsG{1}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.04 -0.3 0 0]);set(ht,'FontSize',7,'Color','k');
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.05 -0.3 0 0]);set(ht,'FontSize',7,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.06 -0.4 0 0]);set(ht,'FontSize',7,'Color','r');
     end
