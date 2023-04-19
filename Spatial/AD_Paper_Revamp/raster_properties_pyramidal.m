@@ -77,6 +77,7 @@ print_for_manuscript(ra)
 %% one graph main effect
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[10 3 1.25 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.26],'widthHeightAdjustment',[10 -410]);
+MY = 3; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Firing Rate (A.U.)'};
 switch varT
     case 13
         MY = 3; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Firing Rate (A.U.)'};
@@ -85,7 +86,7 @@ stp = 0.36*magfac; widths = ([1 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0.51)*magfac; gap =
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = {'k','r'};%{colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
 
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group','hsd'},[1.5 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group','bonferroni'},[1.5 1 1]);
     xdata = make_xdata([2],[1 1.5]);   
 %         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -124,7 +125,7 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = {colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
 
 [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Group_by_Cond','bonferroni'},[1.5 1 1]);
-    xdata = make_xdata([4 4],[1 1.5]);   
+    xdata = make_xdata([2 2],[1 1.5]);
 %         combs = [[1:2:12]' [2:2:12]']; p = ra.MC.bonferroni.Group_by_Cond{1:2:12,6}; h = p<0.05;
 %     h(h==1) = 0;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...

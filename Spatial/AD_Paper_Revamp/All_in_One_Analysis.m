@@ -39,7 +39,6 @@ for piii = 1:length(varT)
     eval(sprintf('var_C = get_vals(props_C.%s,sel_pop_C);',params{pii})); eval(sprintf('var_A = get_vals(props_A.%s,sel_pop_A);',params{pii}));
     all_var_C{piii} = var_C; all_var_A{piii} = var_A;
 end
-
 %% get firing rates and trasients
 filename = fullfile(mData.pd_folder,'FR_Transients_All.mat');
 % filename = fullfile(mData.pd_folder,'FR_Transients_Responsive.mat');

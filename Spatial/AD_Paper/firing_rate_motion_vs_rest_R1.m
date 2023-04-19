@@ -20,7 +20,7 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
-pop_var_name = {'vals'};
+% pop_var_name = {'vals'};
 % pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 
@@ -125,7 +125,7 @@ stp = 0.4*magfac; widths = ([0.5 0.5 0.5 0.5 0.25 0.25 0.25 0.25]+0.23)*magfac; 
 adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
 shift_axes(ff,5:8,0.35,gap);
 var_CvD = out_C(:,1:4); var_AvD = out_A(:,1:4);
-% var_CvD = out_C(:,5:8); var_AvD = out_A(:,5:8); 
+var_CvD = out_C(:,5:8); var_AvD = out_A(:,5:8); 
 for ci = 1:4
     distD = [var_CvD(:,ci) var_AvD(:,ci)];
 %     [~,~,var_Ctt] = plotDistributions(var_CvD(:,ci)); [~,~,var_Att] = plotDistributions(var_AvD(:,ci));

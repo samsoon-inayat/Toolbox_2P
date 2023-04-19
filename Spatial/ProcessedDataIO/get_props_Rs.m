@@ -119,7 +119,7 @@ for rr = 1:size(Rs,1)
         o.good_Gauss{rr,cc} = p';
         o.good_Gauss_loose{rr,cc} = rs' > 0.25;
         o.good_zMI{rr,cc} = o.zMI{rr,cc} > 1.65;
-        o.good_Rs{rr,cc} = o.rs{rr,cc} > 0.3;
+        o.good_rs{rr,cc} = o.rs{rr,cc} > 0.3;
         if strcmp(R.marker_name,'airIT')
             o.good_PWs{rr,cc} = PWs > 0 & PWs < 15;
             o.good_centers{rr,cc} = centers >=1 & centers <= 15;

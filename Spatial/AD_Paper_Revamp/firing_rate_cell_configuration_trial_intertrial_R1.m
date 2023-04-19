@@ -13,6 +13,7 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 ntrials = 50;
 si = [C1_t_T C2_t_T C3_t_T C4_t_T C1_i_T C2_i_T C3_i_T C4_i_T];
+si = [C1_t_D C2_t_D C3_t_D C4_t_D C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
@@ -21,8 +22,8 @@ pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 
-bins = [0 50 100 150];% bins = [0 150];
-nbins = 1;%length(bins)-1;
+bins = [0 50 100 150]; bins = [0 150];
+nbins = length(bins)-1;
 %     sel_pop_C = bin_cells(props_C.peak_locations,bins,sel_pop_C); sel_pop_A = bin_cells(props_A.peak_locations,bins,sel_pop_A);
 if nbins > 1
 %     [sel_pop_C,perc_C] = bin_cells(props_C.peak_locations,bins,sel_pop_C); [sel_pop_A,perc_A] = bin_cells(props_A.peak_locations,bins,sel_pop_A);
@@ -62,6 +63,7 @@ print_for_manuscript(raM)
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 ntrials = 50;
 si = [C1_t_T C2_t_T C3_t_T C4_t_T C1_i_T C2_i_T C3_i_T C4_i_T];
+si = [C1_t_D C2_t_D C3_t_D C4_t_D C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};

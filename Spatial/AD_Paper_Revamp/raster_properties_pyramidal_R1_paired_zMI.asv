@@ -52,22 +52,52 @@ for pii = varT
         end
     end
 end
-if nbins == 1
-    varC = mean_var_C;
-    varA = mean_var_A;
-    [within,dvn,xlabels] = make_within_table({'Cond'},[4]);
-    dataT = make_between_table({varC;varA},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
-    ra.ranova
-else
-    varC = mean_var_C;
-    varA = mean_var_A;
-    [within,dvn,xlabels] = make_within_table({'Cond','Bin'},[4,nbins]);
-    dataT = make_between_table({varC;varA},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
-    ra.ranova
+
+all_vars_C = []; all_vars_A = [];
+for ii = 1:4
+    t_all_varsC = []; t_all_varsA = [];
+    for ani = 1:5
+        t_all_varsC = [t_all_varsC;var_C{ani,ii}];
+        t_all_varsA = [t_all_varsA;var_A{ani,ii}];
+    end
+    all_vars_C(:,ii) = t_all_varsC; all_vars_A(:,ii) = t_all_varsA;
 end
+
+% all_vars_C = array2table(all_vars_C); all_vars_A = array2table(all_vars_A);
+% all_vars_C.Properties.VariableNames = {'C1','C2','C3','C4'}; all_vars_A.Properties.VariableNames = {'C1','C2','C3','C4'};
+% all_vars_C(sum(isnan(all_vars_C), 2) == 1, :) = [];
+
+[within,dvn,xlabels] = make_within_table({'Cond'},[4]);
+[dataT,dataTNC] = make_between_table({all_vars_C;all_vars_A},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
 print_for_manuscript(ra)
+%%
+for c1i = 1:4
+    for c2i = 1:4
+        scni = [c1i c2i];
+        [within,dvn,xlabels] = make_within_table({'Cond'},[2]);
+        dataT = make_between_table({all_vars_C(:,scni);all_vars_A(:,scni)},dvn);
+        ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+%         ra.ranova
+%         print_for_manuscript(ra)
+        groupps(c1i,c2i) = ra.ranova{2,ra.selected_pval_col};
+        condps(c1i,c2i) = ra.ranova{4,ra.selected_pval_col};
+        groupcondps(c1i,c2i) = ra.ranova{5,ra.selected_pval_col};
+    end
+end
+
+%% NLME mixed effects modeling I am trying to fit sinusoidal model
+num = table2array(dataTNC);
+adata = make_text_file_for_nlme_R(num,'tempData');
+group = categorical(adata(:,4));
+dv = dummyvar(group);
+X = [adata(:,2) dv]; y = adata(:,3);
+modelfun = @(b,x)X(:,2).*(b(1).*sin(2*pi*b(2)) + X(:,3).*(b(3).*2.^b(4)*X(:,1));
+beta0 = [1 1 1 1 1 1]; % for each parameter, define values for both the groups the first 
+
+mdl = fitnlm(X,y,modelfun,beta0);
+
 
 %%
 combs = {[1 2],[2 3],[3 4]}; dp = [];
@@ -92,3 +122,112 @@ dataT = make_between_table({varC;varA},dvn);
 ra = RMA(dataT,within,{0.05,{'hsd'}});
 ra.ranova
 print_for_manuscript(ra)
+
+%%
+
+typeCorr = {'Spatial Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
+FF = {'SP','PV','RR'};
+typeCorr = {'Temporal Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
+FF = {'TP','PV','RR'};
+varT = 1;
+xlabels = {titletxt,titletxt,titletxt};
+ylabels = xlabels;
+incrs = [0.01,0.01,0.01];
+mYs = [-0.1,0,0];
+MYs = [0.25,0.2,1.2];
+ysps = [0.04,0.04,0.1];
+
+incrs = [0.01,0.01,0.01];
+mYs = [-1.5,0,0];
+MYs = [2.5,0.2,1.2];
+ysps = [0.03,0.04,0.1];
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(108,[4 5 6.9 1.45],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
+% MY = 8; ysp = 1; mY = 0; 
+stp = 0.4*magfac; widths = ([0.5 0.5 0.5 0.5 0.25 0.25 0.25 0.25]+0.23)*magfac; gap = 0.175*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
+
+shift_axes(ff,5:8,0.35,gap);
+var_CvD = dpC; var_AvD = dpA;
+for ci = 1:3
+    distD = [var_CvD(:,ci) var_AvD(:,ci)];
+%     [~,~,var_Ctt] = plotDistributions(var_CvD(:,ci)); [~,~,var_Att] = plotDistributions(var_AvD(:,ci));
+%     [h,p,ks2stat] = kstest2(var_Ctt{1},var_Att{1});
+    tcolors = {'k','r'};
+    [distDo,allVals,allValsG] = plotDistributions(distD);
+    minBin = min(allVals);
+    maxBin = max(allVals);
+    incr = incrs(varT);
+%         hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');
+    axes(ff.h_axes(1,ci)); hold on;
+    [ha,hb,hca] = plotDistributions(allValsG,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');
+%     [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','Yes');
+    set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+%     changePosition(gca,[0.129 0.15 -0.09 -0.13]);
+    ylim([0 100]); xlim([minBin maxBin]);
+    if ci == 1
+        if ~isempty(strfind(xlabels{1},'PV'))
+            put_axes_labels(ha,{xlabels{varT},[0 0 0]},{{'Bins (%)'},[0 0 0]});
+        else
+            put_axes_labels(ha,{xlabels{varT},[0 0 0]},{{'Cells (%)'},[0 0 0]});
+        end
+    else
+%         put_axes_labels(ha,{'Firing Rate (A.U.)',[0 0 0]},{{'Neurons (%)'},[0 0 0]});
+        put_axes_labels(ha,{xlabels{varT},[0 0 0]},{{''},[0 0 0]});
+    end
+    format_axes_b(ha);
+    [ks2.h,ks2.p,ks2.ks2stat] = kstest2(allValsG{1},allValsG{2}); ks2.DF1 = length(allValsG{1}); ks2.DF2 = length(allValsG{2});
+    print_for_manuscript(ks2,'KS2');
+    
+    ht = set_axes_top_text_no_line(gcf,ha,'KS-Test',[0.0 -0.01 0 0]);set(ht,'FontSize',7);
+    titletxt = sprintf('%s',getNumberOfAsterisks(ks2.p));
+    ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.061 -0.01 0 0]);set(ht,'FontSize',9);
+    titletxt = sprintf('C%d%d',ci,ci+1);
+    ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
+    if varT == 1 || varT == 2
+        titletxt = sprintf('n = %d,',length(allValsG{1}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.04 -0.3 0 0]);set(ht,'FontSize',7,'Color','k');
+        titletxt = sprintf('%d',length(allValsG{2}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.06 -0.4 0 0]);set(ht,'FontSize',7,'Color','r');
+    end
+    if varT == 3
+        titletxt = sprintf('n = %d,',length(allValsG{1}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.01 -0.3 0 0]);set(ht,'FontSize',7,'Color','k');
+        titletxt = sprintf('%d',length(allValsG{2}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.03 -0.4 0 0]);set(ht,'FontSize',7,'Color','r');
+    end
+end
+for ci = 1:3
+    distD = [var_CvD(:,ci) var_AvD(:,ci)];
+    tcolors = {'k','r'};
+    [distDo,allVals,allValsG] = plotDistributions(distD);
+    axes(ff.h_axes(1,ci+4)); hold on;
+    mVar = []; semVar = [];
+    mVar(1,1) = nanmean(allValsG{1}); mVar(2,1) = nanmean(allValsG{2});
+    semVar(1,1) = nanstd(allValsG{1})/sqrt(length(allValsG{1})); semVar(2,1) = nanstd(allValsG{2})/sqrt(length(allValsG{2}));
+    mY = mYs(varT); MY = MYs(varT); ysp = ysps(varT);%max([mVar+semVar]);
+    tcolors = {'k','r'};%{colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
+    xdata = make_xdata([2],[1 2]);   combs = [1 2];
+    
+    [t2.h,t2.p,t2.ci,t2.tstat] = ttest2(allValsG{1},allValsG{2}); t2.cd = computeCohen_d(allValsG{1},allValsG{2});
+    print_for_manuscript(t2,'t2');
+    
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[t2.h t2.p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',9,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); xticks = xdata; 
+    if ci == 1
+        hy = ylabel(ylabels{varT}); changePosition(hy,[-0.5 0 0]);
+        set(gca,'ytick',[mY MY],'yticklabels',{sprintf('%.1f',mY),sprintf('%.1f',MY)});
+    end
+    xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
+    make_bars_hollow(hbs(1:end));
+%     put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
+    format_axes_b(gca);
+    titletxt = sprintf('C%d%d',ci,ci+1);
+    ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.021 0.1 0 0]);set(ht,'FontSize',8);
+    ht = set_axes_top_text_no_line(gcf,gca,'t-Test',[0.0 -0.01 0 0]);set(ht,'FontSize',7);
+end
+delete(ff.h_axes(1,[4 8]))
+save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);

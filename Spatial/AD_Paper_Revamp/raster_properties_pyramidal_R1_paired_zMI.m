@@ -52,22 +52,51 @@ for pii = varT
         end
     end
 end
-if nbins == 1
-    varC = mean_var_C;
-    varA = mean_var_A;
-    [within,dvn,xlabels] = make_within_table({'Cond'},[4]);
-    dataT = make_between_table({varC;varA},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
-    ra.ranova
-else
-    varC = mean_var_C;
-    varA = mean_var_A;
-    [within,dvn,xlabels] = make_within_table({'Cond','Bin'},[4,nbins]);
-    dataT = make_between_table({varC;varA},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
-    ra.ranova
+
+all_vars_C = []; all_vars_A = [];
+for ii = 1:4
+    t_all_varsC = []; t_all_varsA = [];
+    for ani = 1:5
+        t_all_varsC = [t_all_varsC;var_C{ani,ii}];
+        t_all_varsA = [t_all_varsA;var_A{ani,ii}];
+    end
+    all_vars_C(:,ii) = t_all_varsC; all_vars_A(:,ii) = t_all_varsA;
 end
+
+% all_vars_C = array2table(all_vars_C); all_vars_A = array2table(all_vars_A);
+% all_vars_C.Properties.VariableNames = {'C1','C2','C3','C4'}; all_vars_A.Properties.VariableNames = {'C1','C2','C3','C4'};
+% all_vars_C(sum(isnan(all_vars_C), 2) == 1, :) = [];
+
+[within,dvn,xlabels] = make_within_table({'Cond'},[4]);
+[dataT,dataTNC] = make_between_table({all_vars_C;all_vars_A},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
 print_for_manuscript(ra)
+%%
+for c1i = 1:4
+    for c2i = 1:4
+        scni = [c1i c2i];
+        [within,dvn,xlabels] = make_within_table({'Cond'},[2]);
+        dataT = make_between_table({all_vars_C(:,scni);all_vars_A(:,scni)},dvn);
+        ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+%         ra.ranova
+%         print_for_manuscript(ra)
+        groupps(c1i,c2i) = ra.ranova{2,ra.selected_pval_col};
+        condps(c1i,c2i) = ra.ranova{4,ra.selected_pval_col};
+        groupcondps(c1i,c2i) = ra.ranova{5,ra.selected_pval_col};
+    end
+end
+
+%% NLME mixed effects modeling I am trying to fit sinusoidal model
+num = table2array(dataTNC);
+adata = make_text_file_for_nlme_R(num,'tempData');
+group = categorical(adata(:,4));
+dv = dummyvar(group);
+X = [adata(:,2) dv]; y = adata(:,3);
+modelfun = @(b,x)X(:,2).*b(1).*sin(2.*pi.*b(2).*X(:,1)) + X(:,3).*b(3).*sin(2.*pi.*b(4).*X(:,1));
+beta0 = [1 1 1 1]; % for each parameter, define values for both the groups 
+mdl = fitnlm(X,y,modelfun,beta0);
+
 
 %%
 combs = {[1 2],[2 3],[3 4]}; dp = [];
