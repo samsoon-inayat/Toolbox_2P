@@ -44,12 +44,19 @@ filename = fullfile(mData.pd_folder,'FR_Transients_Resp_Highly_tuned.mat');
 %% spike rate
 out_C = get_spike_rate_ext(ei_C,thr,sel_pop_C);
 out_A = get_spike_rate_ext(ei_A,thr,sel_pop_A);
+
+out_C_Ca = get_spike_rate_ext_Ca(ei_C,thr,sel_pop_C);
+out_A_Ca = get_spike_rate_ext_Ca(ei_A,thr,sel_pop_A);
+disp('Done');
+
 tcolors = {'k','r','k','r'};
 n=0;
 
 % transients
 out_CT = get_spike_rate_ext_transients(ei_C,thr,sel_pop_C);
 out_AT = get_spike_rate_ext_transients(ei_A,thr,sel_pop_A);
+out_CT_Ca = get_spike_rate_ext_transients_Ca(ei_C,thr,sel_pop_C);
+out_AT_Ca = get_spike_rate_ext_transients_Ca(ei_A,thr,sel_pop_A);
 tcolors = {'k','r','k','r'};
 disp('Done');
 n=0;

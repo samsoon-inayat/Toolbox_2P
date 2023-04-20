@@ -17,6 +17,23 @@ fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
 if 1
     cellListC = cell_list_op(sel_pop_C,[],'or',1);
     cellListA = cell_list_op(sel_pop_A,[],'or',1);
+    out_C_Ca = get_spike_rate_Ca(ei_C,thr,cellListC);
+    out_A_Ca = get_spike_rate_Ca(ei_A,thr,cellListA);
+    save(fileName,'out_C','out_A','thr');
+else
+    temp = load(fileName);
+    out_C = temp.out_C;
+    out_A = temp.out_A;
+    thr = temp.thr;
+end
+tcolors = {'k','r','k','r'};
+n=0;
+
+%%
+fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
+if 1
+    cellListC = cell_list_op(sel_pop_C,[],'or',1);
+    cellListA = cell_list_op(sel_pop_A,[],'or',1);
     out_C = get_spike_rate(ei_C,thr,cellListC);
     out_A = get_spike_rate(ei_A,thr,cellListA);
     save(fileName,'out_C','out_A','thr');
@@ -173,7 +190,7 @@ end
     
     magfac = mData.magfac;
     ff = makeFigureRowsCols(108,[13 5 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.31 0.40],'widthHeightAdjustment',[10 -450]);
-    MY = 17; ysp = 1.5; mY = 0; titletxt = ''; ylabeltxt = {'Avg. # of','Trans./min'};
+    MY = 700; ysp = 100.5; mY = 0; titletxt = ''; ylabeltxt = {'Avg. # of','Trans./min'};
     stp = 0.45*magfac; widths = ([1 1.3 1.3 1.3 1.3 0.5 0.5 0.5]-0)*magfac; gap = 0.16*magfac;
     adjust_axes(ff,[mY MY],stp,widths,gap,{''});
     colors = mData.dcolors(7:end);
