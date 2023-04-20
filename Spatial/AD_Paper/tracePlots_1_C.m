@@ -1,6 +1,6 @@
-function tracePlots_1_A (ei)
+function tracePlots_1_C (ei)
 %%
-ei = evalin('base','ei10_C');
+ei = evalin('base','ei10_A');
 
 selContexts = [1 2 3 4];
 rasterNames = {'airD','airD','airD','airD'};
@@ -401,7 +401,7 @@ maxCaSig = max(maxSCaSig);
 %%
 ff = makeFigureRowsCols(100,[1 5 5.4 1.5],'RowsCols',[(length(ccsi))+1 1],'spaceRowsCols',[-0.009 0.0009],...
     'rightUpShifts',[0.04 0.02],'widthHeightAdjustment',[-70 7]);
-set(gcf,'Position',[10 8 4.8 1]);
+set(gcf,'Position',[10 5 4.8 1]);
 set(gcf,'color','w');
 
 % startTimeFrame = b.frames_f(find(traceTime>300,1,'first'));

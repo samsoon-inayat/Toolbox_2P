@@ -30,7 +30,9 @@ for rr = 1:size(RsC,1)
     numset2(rr) = length(RsA{rr,1}.iscell);
 end
 numset1(1) = (sum(RsC{1,1}.cns(:,2) == 1) + sum(RsC{1,1}.cns(:,2) == 2))/2;
-[h,p,ci,stat] = ttest2(numset1,numset2)
+[h,p,ci,stat] = ttest2(numset1,numset2);
+tt.h = h; tt.p = p; tt.ci = ci; tt.tstat = stat; tt.cd = computeCohen_d(numset1,numset2);
+print_for_manuscript(tt,'t2')
 [mC,semC] = findMeanAndStandardError(numset1);
 [mA,semA] = findMeanAndStandardError(numset2);
     mVar = [mC mA];
