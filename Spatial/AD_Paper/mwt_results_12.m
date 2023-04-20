@@ -69,11 +69,11 @@ mdl = fitnlm(X,y,modelfun,beta0);
 X = adata(:,2); y = adata(:,3); group = adata(:,4);
 % yfit = modelfun([60 0.1],,VFUN)
 model = @(PHI,d)PHI(1).*exp(PHI(2)*d);
-beta0 = [60 0.1]; fegd(:,:,1) = beta0; fegd(:,:,2) = beta0;
+beta0 = [60 0.1];% fegd(:,:,1) = beta0; fegd(:,:,2) = beta0;
 options = statset('nlmefit');
 clc
 group = categorical(group);
-options = statset(options,MaxIter',350,'TolX',1e-8,'Display','final');
+options = statset(options,'MaxIter',350,'TolX',1e-8,'Display','final');
 [beta,PSI,stats,B] = nlmefit(X,y,group,[],model,beta0,'Options',options,'RefineBeta0','On');
 %%
 % data = array2table(num);
