@@ -18,7 +18,7 @@ sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
 params = {'perc','N_Resp_Trials','zMI','rs','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 2;%:length(params)
+varT = 3;%:length(params)
 [~,~,pop_C] = plotDistributions(sel_pop_C);  [~,~,pop_A] = plotDistributions(sel_pop_A);
 eval(sprintf('var_CT = props_C.%s;',params{varT}));  eval(sprintf('var_AT = props_A.%s;',params{varT}));
 % [~,~,var_C] = plotDistributions(var_CT);  [~,~,var_A] = plotDistributions(var_AT);
@@ -26,17 +26,17 @@ out_C = get_vals(var_CT,sel_pop_C); out_A = get_vals(var_AT,sel_pop_A);
 
 xlabels = {NaN,{'RF (%)'},'zMI','R-Sq','FW (cm)','Cen (cm)','PL (cm)'};
 ylabels = {NaN,{'RF (%)'},'zMI','R-Sq','FW (cm)','Cen (cm)','PL (cm)'};
-incrs = [NaN,10,0.1,0.01,1,15,1];
+incrs = [NaN,10,0.51,0.01,1,15,1];
 mYs = [NaN,0,-0.5,0,0,0,0];
 MYs = [NaN,90,0.8125,0.75,2,20,20];
 ysps = [NaN,10,0.15,0.2,0.15,0.15,3];
 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[4 5 6.9 1.45],'RowsCols',[1 8],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.3],'widthHeightAdjustment',[10 -585]);
+ff = makeFigureRowsCols(108,[4 5 3.45 1.0],'RowsCols',[1 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.25],'widthHeightAdjustment',[10 -500]);
 MY = 8; ysp = 1; mY = 0; 
-stp = 0.4*magfac; widths = ([0.5 0.5 0.5 0.5 0.25 0.25 0.25 0.25]+0.23)*magfac; gap = 0.175*magfac;
+stp = 0.35*magfac; widths = ([0.5 0.5 0.5 0.5 0.25 0.25 0.25 0.25]+0.12)*magfac; gap = 0.175*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
-shift_axes(ff,5:8,0.35,gap);
+% shift_axes(ff,5:8,0.35,gap);
 var_CvD = out_C(:,1:4); var_AvD = out_A(:,1:4);
 for ci = 1:4
     distD = [var_CvD(:,ci) var_AvD(:,ci)];
@@ -49,10 +49,11 @@ for ci = 1:4
     incr = incrs(varT);
 %         hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');
     axes(ff.h_axes(1,ci)); hold on;
-    [ha,hb,hca] = plotDistributions(allValsG,'colors',tcolors,'maxY',0.5,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');
+    [ha,hb,hca,ylims] = plotDistributions(allValsG,'colors',tcolors,'maxY',0.5,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');
 %     [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','Yes');
     set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
 %     changePosition(gca,[0.129 0.15 -0.09 -0.13]);
+    ylims
     ylim([0 100]); xlim([minBin maxBin]);
     if ci == 1
         put_axes_labels(ha,{xlabels{varT},[0 0 0]},{{'Cells (%)'},[0 0 0]});
@@ -63,50 +64,30 @@ for ci = 1:4
     format_axes_b(ha);
     [ks2.h,ks2.p,ks2.ks2stat] = kstest2(allValsG{1},allValsG{2}); ks2.DF1 = length(allValsG{1}); ks2.DF2 = length(allValsG{2});
     print_for_manuscript(ks2,'KS2');
-    ht = set_axes_top_text_no_line(gcf,ha,'KS-Test',[0.0 -0.01 0 0]);set(ht,'FontSize',7);
-    titletxt = sprintf('%s',getNumberOfAsterisks(ks2.p));
-    ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.061 -0.01 0 0]);set(ht,'FontSize',9);
+    [t2.h,t2.p,t2coi,t2.tstat] = ttest2(allValsG{1},allValsG{2}); t2.cd = computeCohen_d(allValsG{1},allValsG{2});
+    print_for_manuscript(t2,'t2');
+    
+    mVar(1,1) = mean(allValsG{1}); mVar(2,1) = mean(allValsG{2});
+    semVar(1,1) = std(allValsG{1})/sqrt(length(allValsG{1})); semVar(2,1) = std(allValsG{2})/sqrt(length(allValsG{2}));
+    ylims = ylim;
+%     plot([mVar(1) mVar(1)],ylims,'color',tcolors{1});
+%     plot([mVar(2) mVar(2)],ylims,'color',tcolors{2});
+%     ht = set_axes_top_text_no_line(gcf,ha,'KS-Test',[0.0 -0.01 0 0]);set(ht,'FontSize',7);
+    titletxt = sprintf('K, %s (T, %s)',getNumberOfAsterisks(ks2.p),getNumberOfAsterisks(t2.p));
+    ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.0 -0.01 0 0]);set(ht,'FontSize',7);
     titletxt = sprintf('C%d',ci);
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
     if 1%varT == 2 
         titletxt = sprintf('n = %d,',length(allValsG{1}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.005 -0.1 0 0]);set(ht,'FontSize',7,'Color','k');
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.03 -0.5 0 0]);set(ht,'FontSize',6,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.055 -0.1 0 0]);set(ht,'FontSize',7,'Color','r');
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.125 -0.5 0 0]);set(ht,'FontSize',6,'Color','r');
     end
-    if varT == 5 
-        titletxt = sprintf('n = %d,',length(allValsG{1}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.005 -0.41 0 0]);set(ht,'FontSize',7,'Color','k');
-        titletxt = sprintf('%d',length(allValsG{2}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.055 -0.41 0 0]);set(ht,'FontSize',7,'Color','r');
-    end
-end
-for ci = 1:4
-    distD = [var_CvD(:,ci) var_AvD(:,ci)];
-    tcolors = {'k','r'};
-    [distDo,allVals,allValsG] = plotDistributions(distD);
-    axes(ff.h_axes(1,ci+4)); hold on;
-    mVar(1,1) = mean(allValsG{1}); mVar(2,1) = mean(allValsG{2});
-    semVar(1,1) = std(allValsG{1})/sqrt(length(allValsG{1})); semVar(2,1) = std(allValsG{2})/sqrt(length(allValsG{2}));
-    mY = mYs(varT); MY = MYs(varT); ysp = ysps(varT);%max([mVar+semVar]);
-    tcolors = {'k','r'};%{colors{1};colors{2};colors{3};colors{4};colors{1};colors{2};colors{3};colors{4}};
-    xdata = make_xdata([2],[1 2]);   combs = [1 2];
-    [t2.h,t2.p,t2coi,t2.tstat] = ttest2(allValsG{1},allValsG{2}); t2.cd = computeCohen_d(allValsG{1},allValsG{2});
-    print_for_manuscript(t2,'t2');
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[t2.h t2.p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',9,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set_axes_limits(gca,[0.35 xdata(end)+.65],[0 MY]); xticks = xdata; 
-    if ci == 1
-        hy = ylabel(ylabels{varT}); changePosition(hy,[-0.5 0 0]);
-        set(gca,'ytick',[mY MY],'yticklabels',{'0',sprintf('%.1f',MY)});
-    end
-    xticklabels = {'C-TG','A-TG'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45);
-    make_bars_hollow(hbs(1:end));
-%     put_axes_labels(gca,{'',[]},{ylabeltxt,[]});
-    format_axes_b(gca);
-    titletxt = sprintf('C%d',ci);
-    ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.021 0.1 0 0]);set(ht,'FontSize',8);
-    ht = set_axes_top_text_no_line(gcf,gca,'t-Test',[0.0 -0.01 0 0]);set(ht,'FontSize',7);
+%     if varT == 5 
+%         titletxt = sprintf('n = %d,',length(allValsG{1}));
+%         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.005 -0.41 0 0]);set(ht,'FontSize',7,'Color','k');
+%         titletxt = sprintf('%d',length(allValsG{2}));
+%         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.055 -0.41 0 0]);set(ht,'FontSize',7,'Color','r');
+%     end
 end
 save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);
