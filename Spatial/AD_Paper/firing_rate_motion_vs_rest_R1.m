@@ -30,12 +30,12 @@ disp('Done')
 % configurations and air phases.
 
 filename = fullfile(mData.pd_folder,'FR_Transients_Responsive.mat');
-% save(filename,'out_C','out_A','out_CT','out_AT');
+% save(filename,'out_C','out_A','out_CT','out_AT','out_C_Ca','out_A_Ca','out_CT_Ca','out_AT_Ca');
 load(filename);
 disp('done');
 %% All Cells
 filename = fullfile(mData.pd_folder,'FR_Transients_All.mat');
-% save(filename,'out_C','out_A','out_CT','out_AT');
+% save(filename,'out_C','out_A','out_CT','out_AT','out_C_Ca','out_A_Ca','out_CT_Ca','out_AT_Ca');
 
 %% highly tuned Cells
 filename = fullfile(mData.pd_folder,'FR_Transients_Resp_Highly_tuned.mat');

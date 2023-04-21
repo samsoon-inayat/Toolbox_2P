@@ -10,7 +10,7 @@ pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 
 % Define cell population
 pop_var_name = {'all'}; % all cells
-% pop_var_name = {'vals'}; % responsive cells
+pop_var_name = {'vals'}; % responsive cells
 % pop_var_name = {'vals','good_zMI'}; % highly tuned cells
 
 % get cell ids logical vectors for cell lists
