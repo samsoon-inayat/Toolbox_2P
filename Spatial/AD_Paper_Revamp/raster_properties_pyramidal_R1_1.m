@@ -18,7 +18,7 @@ sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A
 
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations','mean_FR','MFR'};
 params = {'perc','N_Resp_Trials','zMI','rs','PWs','centers','peak_locations','mean_FR','MFR'};
-varT = 3;%:length(params)
+varT = 4;%:length(params)
 [~,~,pop_C] = plotDistributions(sel_pop_C);  [~,~,pop_A] = plotDistributions(sel_pop_A);
 eval(sprintf('var_CT = props_C.%s;',params{varT}));  eval(sprintf('var_AT = props_A.%s;',params{varT}));
 % [~,~,var_C] = plotDistributions(var_CT);  [~,~,var_A] = plotDistributions(var_AT);
@@ -77,7 +77,12 @@ for ci = 1:4
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.0 -0.01 0 0]);set(ht,'FontSize',7);
     titletxt = sprintf('C%d',ci);
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
-    if 1%varT == 2 
+    if varT == 4 
+        titletxt = sprintf('n = %d,',length(allValsG{1}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.01 -0.14 0 0]);set(ht,'FontSize',6,'Color','k');
+        titletxt = sprintf('%d',length(allValsG{2}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.1 -0.14 0 0]);set(ht,'FontSize',6,'Color','r');
+    else
         titletxt = sprintf('n = %d,',length(allValsG{1}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.03 -0.5 0 0]);set(ht,'FontSize',6,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
