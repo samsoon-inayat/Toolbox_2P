@@ -10,7 +10,7 @@ props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),
 pop_var_name = {'good_zMI','good_Gauss','good_MFR'};
 pop_var_name = {'all'};
 pop_var_name = {'vals'};
-% pop_var_name = {'vals','good_zMI'};
+pop_var_name = {'vals','good_zMI'};
 % pop_var_name = {'vals','good_zMI','good_Gauss'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 % pop_var_name = {'Nvals'};
@@ -83,16 +83,18 @@ for ci = 1:4
         titletxt = sprintf('%d',length(allValsG{2}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.1 -0.14 0 0]);set(ht,'FontSize',6,'Color','r');
     else
+        if varT == 2 
+        titletxt = sprintf('n = %d,',length(allValsG{1}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.01 -0.15 0 0]);set(ht,'FontSize',6,'Color','k');
+        titletxt = sprintf('%d',length(allValsG{2}));
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.1025 -0.15 0 0]);set(ht,'FontSize',6,'Color','r');
+        else
         titletxt = sprintf('n = %d,',length(allValsG{1}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.03 -0.5 0 0]);set(ht,'FontSize',6,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.125 -0.5 0 0]);set(ht,'FontSize',6,'Color','r');
+        end
     end
-%     if varT == 5 
-%         titletxt = sprintf('n = %d,',length(allValsG{1}));
-%         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.005 -0.41 0 0]);set(ht,'FontSize',7,'Color','k');
-%         titletxt = sprintf('%d',length(allValsG{2}));
-%         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.055 -0.41 0 0]);set(ht,'FontSize',7,'Color','r');
-%     end
+    
 end
 save_pdf(ff.hf,mData.pdf_folder,sprintf('Distribution_firing_rate'),600);

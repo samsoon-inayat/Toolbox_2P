@@ -475,7 +475,7 @@ si = [C1_t_D C2_t_D C3_t_D C4_t_D];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si); mRs_C1 = oC.mR1(:,si); mRs_A1 = oA.mR1(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 pop_var_name = {'vals','good_zMI'};
-pop_var_name = {'vals'};
+% pop_var_name = {'vals'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 r_sel_pop_C = cell_list_op(sel_pop_C,[],'or',1);  r_sel_pop_A = cell_list_op(sel_pop_A,[],'or',1);
 remap_C = find_population_vector_corr_remap(Rs_C,mRs_C,r_sel_pop_C);
