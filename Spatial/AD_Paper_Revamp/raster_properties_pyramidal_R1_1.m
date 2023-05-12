@@ -3,7 +3,7 @@ function raster_properties
 %% general for all properties including responsivity, response fidelity, zMI, Rs
 ntrials = 50;
 si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-% si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 % pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
@@ -83,16 +83,16 @@ for ci = 1:4
         titletxt = sprintf('%d',length(allValsG{2}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.1 -0.14 0 0]);set(ht,'FontSize',6,'Color','r');
     else
-        if varT == 2 
+        if varT == 1 
         titletxt = sprintf('n = %d,',length(allValsG{1}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.01 -0.15 0 0]);set(ht,'FontSize',6,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
         ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.1025 -0.15 0 0]);set(ht,'FontSize',6,'Color','r');
         else
         titletxt = sprintf('n = %d,',length(allValsG{1}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.03 -0.5 0 0]);set(ht,'FontSize',6,'Color','k');
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.05 -0.5 0 0]);set(ht,'FontSize',6,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.125 -0.5 0 0]);set(ht,'FontSize',6,'Color','r');
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.145 -0.5 0 0]);set(ht,'FontSize',6,'Color','r');
         end
     end
     

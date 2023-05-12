@@ -642,10 +642,11 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('%s_distributions_over_belt_%d',all_vari
 tic
 ntrials = 50;
 si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-    si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = oC.Rs(:,si); Rs_A = oA.Rs(:,si); mRs_C = oC.mR(:,si); mRs_A = oA.mR(:,si); mRs_C1 = oC.mR1(:,si); mRs_A1 = oA.mR1(:,si);
 props_C = get_props_Rs(oC.Rs(:,si),ntrials); props_A = get_props_Rs(oA.Rs(:,si),ntrials);
 pop_var_name = {'vals','good_zMI'};
+% pop_var_name = {'vals'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); sel_pop_A = cell_list_op(props_A,pop_var_name);
 r_sel_pop_C = cell_list_op(sel_pop_C,[],'or',1);  r_sel_pop_A = cell_list_op(sel_pop_A,[],'or',1);
 remap_C = find_population_vector_corr_remap(Rs_C,mRs_C,r_sel_pop_C);
@@ -659,14 +660,14 @@ typeCorr = {'Spatial Correlation',{'Population Vector','Correlation'},'\Delta FR
 FF = {'SP','PV','RR'};
 % typeCorr = {'Temporal Correlation',{'Population Vector','Correlation'},'\Delta FR Score'};
 % FF = {'TP','PV','RR'};
-ci = 3;
+ci = 2;
 [within,dvn,xlabels] = make_within_table({'Cond'},3);
 switch ci
     case 1
         out_C = selC.adj_SP_corr_diag; out_A = selA.adj_SP_corr_diag;
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_SP_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_SP_corr_diag);
         MY = 0.35; ysp = 0.04; mY = 0; titletxt = 'Spatial Corr.'; ylabeltxt = {'A.U.'};
-%         MY = 0.35; ysp = 0.04; mY = 0; titletxt = 'Temp. Corr.'; ylabeltxt = {'A.U.'};
+        MY = 0.35; ysp = 0.04; mY = 0; titletxt = 'Temp. Corr.'; ylabeltxt = {'A.U.'};
     case 2
         out_C = selC.adj_PV_corr_diag; out_A = selA.adj_PV_corr_diag;
         var_C = arrayfun(@(x) mean(x{1}),selC.adj_PV_corr_diag);var_A = arrayfun(@(x) mean(x{1}),selA.adj_PV_corr_diag);
@@ -734,9 +735,9 @@ for ci = 1:3
     ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.031 0.1 0 0]);set(ht,'FontSize',8);
     if varT == 1 || varT == 2
         titletxt = sprintf('n = %d,',length(allValsG{1}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.08 -0.3 0 0]);set(ht,'FontSize',6,'Color','k');
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.08 -0.4 0 0]);set(ht,'FontSize',6,'Color','k');
         titletxt = sprintf('%d',length(allValsG{2}));
-        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.15 -0.4 0 0]);set(ht,'FontSize',6,'Color','r');
+        ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.15 -0.5 0 0]);set(ht,'FontSize',6,'Color','r');
     end
     if varT == 3
         titletxt = sprintf('n = %d,',length(allValsG{1}));

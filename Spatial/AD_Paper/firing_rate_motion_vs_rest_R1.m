@@ -69,6 +69,15 @@ dataT = make_between_table({varC;varA},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni'}});
 ra.ranova
 print_for_manuscript(ra)
+
+%%
+varC = exec_fun_on_cell_mat(out_C_Ca,'mean');
+varA = exec_fun_on_cell_mat(out_A_Ca,'mean');
+[within,dvn,xlabels] = make_within_table({'Ph','Cond'},[2,4]);
+dataT = make_between_table({varC;varA},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+ra.ranova
+print_for_manuscript(ra)
 %%
 magfac = mData.magfac;
 ff = makeFigureRowsCols(108,[10 3 3.6 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.31 0.40],'widthHeightAdjustment',[10 -450]);
@@ -132,7 +141,10 @@ stp = 0.4*magfac; widths = ([0.5 0.5 0.5 0.5 0.25 0.25 0.25 0.25]+0.23)*magfac; 
 adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
 shift_axes(ff,5:8,0.35,gap);
 var_CvD = out_C(:,1:4); var_AvD = out_A(:,1:4);
-var_CvD = out_C(:,5:8); var_AvD = out_A(:,5:8); 
+% var_CvD = out_C(:,5:8); var_AvD = out_A(:,5:8);
+
+var_CvD = out_C_Ca(:,1:4); var_AvD = out_A_Ca(:,1:4);
+% var_CvD = out_C_Ca(:,5:8); var_AvD = out_A_Ca(:,5:8);
 for ci = 1:4
     distD = [var_CvD(:,ci) var_AvD(:,ci)];
 %     [~,~,var_Ctt] = plotDistributions(var_CvD(:,ci)); [~,~,var_Att] = plotDistributions(var_AvD(:,ci));
@@ -141,7 +153,7 @@ for ci = 1:4
     [distDo,allVals,allValsG] = plotDistributions(distD);
     minBin = min(allVals);
     maxBin = max(allVals);
-    incr = 0.001;
+    incr = 0.01;
 %         hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.85 1],'color','w');
     axes(ff.h_axes(1,ci)); hold on;
     [ha,hb,hca] = plotDistributions(allValsG,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');

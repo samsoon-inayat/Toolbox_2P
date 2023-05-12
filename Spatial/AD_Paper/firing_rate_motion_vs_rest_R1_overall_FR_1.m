@@ -14,7 +14,7 @@ typeP  = 'all';
 thr = -1;
 %%
 fileName = fullfile(mData.pd_folder,sprintf('%s_%s_AD_new',mfilename,typeP));
-if 1
+if 0
     cellListC = cell_list_op(sel_pop_C,[],'or',1);
     cellListA = cell_list_op(sel_pop_A,[],'or',1);
     out_C_Ca = get_spike_rate_Ca(ei_C,thr,cellListC);
@@ -22,8 +22,8 @@ if 1
     save(fileName,'out_C','out_A','thr');
 else
     temp = load(fileName);
-    out_C = temp.out_C;
-    out_A = temp.out_A;
+    out_C_Ca = temp.out_C;
+    out_A_Ca = temp.out_A;
     thr = temp.thr;
 end
 tcolors = {'k','r','k','r'};
