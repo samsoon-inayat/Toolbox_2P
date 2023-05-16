@@ -55,13 +55,13 @@ for ii = 1:5
 end
 
 %%
-if 1
+if 0
     ii = 1;
     edit_define_contexts_file(ei{ii});
 end
 dcfilename = 'define_contexts.m';
 %%
-if 1
+if 0
 %     make_db(T_C);
     process_abf(T_C,0);
 end
