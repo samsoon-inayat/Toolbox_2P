@@ -27,6 +27,7 @@ varC = mean_var_C;
 dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
+print_for_manuscript(ra)
 %%
 varC = mean_var_C(:,1:6);
 [within,dvn,xlabels,awithinD] = make_within_table({'CT','Cond'},[2,3]);
@@ -44,7 +45,7 @@ print_for_manuscript(ra)
 %% CT zMI
 ff = makeFigureRowsCols(107,[10 5 1.255 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
   MY = 15; mY = 0; ys = 3;
-  MY = 120; mY = 0; ys = 13;
+%   MY = 120; mY = 0; ys = 13;
   stp = 0.27*magfac; widths = ([0.55 0.55 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
   adjust_axes(ff,[mY MY],stp,widths,gap,{''});
   tcolors = repmat(mData.colors(4:5),1,6);

@@ -18,7 +18,7 @@
     good_FR = cell_list_op(props1,{'vals'}); 
 %     good_FR = dzMI_FD.resp_T_g_D;
 %     good_FR = cell_list_op(props1,{'vals'});
-%     good_FR = dis_cells_T;
+    good_FR = dis_cells_T;
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
     for ii = 1:size(mRR,2)
@@ -125,6 +125,7 @@
     props1 = get_props_Rs(Rs,ntrials);
     good_FR = cell_list_op(props1,{'good_zMI','good_Gauss'});
     good_FR = cell_list_op(props1,{'vals','good_FR'});
+    good_FR = dur_cells_I;
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
     for ii = 1:size(mRR,2)
@@ -220,7 +221,7 @@
     shift_axes_up(ff,[1 2 3 4 5 6;1 2 3 4 5 6],[0 0.15 0 0]);
     conf = repmat([3 4 5],1,2);
     an = 4; o = o; G = 'C';  
-    tim = 1;
+    tim = 0;
     if tim
       si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];% 
       good_FR = [dur_cells_T dur_cells_I];

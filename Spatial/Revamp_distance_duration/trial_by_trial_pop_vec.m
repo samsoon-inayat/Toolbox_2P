@@ -1,9 +1,5 @@
 function trial_by_trial_pop_vec
 
-
-
-
-
 %% population vector and correlation sensory
 while 1
     an = 1; cnseq = 6; 
@@ -127,7 +123,7 @@ end
     colormap parula
     %%
     cns = [1 2 9 10];
-    ff = makeFigureRowsCols(108,[1 1 16 9],'RowsCols',[2 length(cns)],...
+    ff = makeFigureRowsCols(108,[1 1 13 7],'RowsCols',[2 length(cns)],...
     'spaceRowsCols',[0.05 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
     [-30 -120]);   
 
@@ -208,7 +204,7 @@ end
     
    
     
-    ff = makeFigureRowsCols(108,[1.5 7 14 2.5],'RowsCols',[2 10],...
+    ff = makeFigureRowsCols(108,[1.5 3 14 2.5],'RowsCols',[2 10],...
         'spaceRowsCols',[0.05 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
         [-30 -150]);  
     for tn = 1:10

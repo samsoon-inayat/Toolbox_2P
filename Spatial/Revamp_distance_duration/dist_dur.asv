@@ -11,7 +11,7 @@ pop_var_name = {'vals'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); 
 %%
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
-varT = 2;%:length(params)
+varT = 1;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 

@@ -355,7 +355,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     %% run stats on average shifts of peak locations
     inds = [3 4 5 6 7 8];
 %     inds = [1 2 3 4];% inds = [1 2 5 6]; inds = [1 2 9 10];
-    inds = [1 2 9 10];
+%     inds = [1 2 9 10];
     varC = f_seq_shift_LZ(:,inds);
     varC = mm_seq_shift(:,inds);
     [within,dvn,xlabels,awithinD] = make_within_table({'Cnds','TI'},[length(inds)/2,2]);
@@ -406,7 +406,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     
     %% run stats on average shifts of peak locations
     inds = [3 4 5 6 7 8];
-    inds = [1 2 3 4];
+%     inds = [1 2 3 4];
 %     inds = 1:6;
     varC = [abs(mshiftsB(:,inds)) mshiftsF(:,inds)];
     varC = all_m_pLs_shifts(:,inds);
@@ -486,7 +486,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     end
     %%
     hf = get_figure(8,[5 5 2.25 5]);hold on;
-    xs = bins;
+    xs = binEs;
     cn = 1; ys = all_mVals(cn,:); eys = all_semVals(cn,:); 
     for cn = 1:length(si)
         if cn > 1
@@ -510,8 +510,8 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     varC = pL_vals_trials_all_CLin(:,101:400);
     [within,dvn,xlabels,awithinD] = make_within_table({'Co','Ph','Tr','Sp'},[3,2,10,5]);
     dataT = make_between_table({varC},dvn);
-%     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
-    ra = RMA(dataT,within,{0.05,''});
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
+%     ra = RMA(dataT,within,{0.05,''});
     ra.ranova
     print_for_manuscript(ra)
     %%
@@ -537,3 +537,23 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     set(gca,'Ylim',[-0.5 0.5]);
     pause(0.3);
     end
+    %%
+    %% TI cond
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Sp_by_Co','hsd'},[1.5 1 1]);
+    xdata = make_xdata([5 5 5],[1 1.5]);
+    hf = get_figure(5,[8 7 6.9 1]);
+    tcolors = repmat(mData.colors(1:5),1,3);
+    MmVar = max(mVar);
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+        'ySpacing',MmVar/3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',8,'barWidth',0.5,'sigLinesStartYFactor',0.15);
+    maxY = maxY + 0;
+    ylims = ylim;
+    format_axes(gca);
+    set_axes_limits(gca,[0.35 xdata(end)+.65],[ylims(1) maxY]); format_axes(gca);
+    xticks = xdata; xticklabels = {'D','T'};
+    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
+    changePosition(gca,[0.06 0.01 -0.05 0]); 
+%     put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
+%     save_pdf(hf,mData.pdf_folder,sprintf('var_TI_by_Cond.pdf'),600);
+

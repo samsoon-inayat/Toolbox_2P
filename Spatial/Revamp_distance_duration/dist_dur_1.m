@@ -32,11 +32,11 @@ print_for_manuscript(ra)
     resp = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
     per_resp = find_percent(resp);
 
-%     [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,2,3]);
-%     dataT = make_between_table({per_resp},dvn);
-%     ra = RMA(dataT,within,{'bonferroni'});
-%     ra.ranova
-%     print_for_manuscript(ra)
+    [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,2,3]);
+    dataT = make_between_table({per_resp},dvn);
+    ra = RMA(dataT,within,{'bonferroni'});
+    ra.ranova
+    print_for_manuscript(ra)
 
     any_cells = cell_list_op(resp,[],'or',1);
     per_active_any = 100*exec_fun_on_cell_mat(any_cells,'sum')./exec_fun_on_cell_mat(any_cells,'length');
