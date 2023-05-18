@@ -472,6 +472,8 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
 %             hf = get_figure(8,[5 7 2.25 1.5]);hold on;
 %             [ha,hb,~,bins,mVals,semVals] = plotAverageDistributions(dist_vals,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','pdf');
 %             all_dist_vals = [all_dist_vals;mVals];
+%             title(sprintf('%s - %d',rasterNamesTxt{si(cn)},an));
+%             pause(0.1);
         end
         pL_vals_trials_all_C{cn} = pL_vals_trials_all;
         m_pL_vals_trials_all{cn} = mean(pL_vals_trials_all,3);
@@ -484,6 +486,111 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
 %         all_mVals = [all_mVals;mVals];
 %         all_semVals = [all_semVals;semVals];
     end
+%%
+ff = makeFigureRowsCols(108,[1 1 6.9 1.5],'RowsCols',[1 10],...
+'spaceRowsCols',[0.05 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
+[-30 -250]);
+[within,dvn,xlabels,awithinD] = make_within_table({'pL'},[5]);
+for gn = 1:10
+    tvals = pL_vals_trials_all_C{gn};
+    mtvals = (squeeze(mean(tvals,1)))';
+%     mtvals = (squeeze(tvals(10,:,:)))';
+    dataT = make_between_table({mtvals},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+%     ra = RMA(dataT,within,{0.05,''});
+%     ra.ranova
+%     print_for_manuscript(ra)
+    pval(gn) = ra.ranova{3,ra.selected_pval_col};
+    pvalph(gn) = ra.MC.hsd.pL{12,5};
+    pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
+    axes(ff.h_axes(1,gn));
+%     imagesc(m_pL_vals_trials_all{gn});
+%     plot(mean(mtvals));
+%     shadedErrorBar(1:5,mean(mtvals),std(mtvals)/sqrt(5));
+%     title(pval);
+    ysp = 0.03;
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'pL','hsd'},[1.5 1 1]);
+    xdata = make_xdata([5],[1 1.5]); 
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    ylim([0 0.5]);
+    title(sprintf('%s',rasterNamesTxt{si(gn)}));
+end
+
+%%
+ff = makeFigureRowsCols(108,[1 1 6.9 1.5],'RowsCols',[1 10],...
+'spaceRowsCols',[0.05 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
+[-30 -250]);
+[within,dvn,xlabels,awithinD] = make_within_table({'pL'},[10]); %these are trials here
+for gn = 1:10
+    tvals = pL_vals_trials_all_C{gn};
+    mtvals = (squeeze(mean(tvals,1)))';
+    mtvals = (squeeze(tvals(:,5,:)))';
+    dataT = make_between_table({mtvals},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+%     ra = RMA(dataT,within,{0.05,''});
+%     ra.ranova
+    print_for_manuscript(ra)
+%     pval(gn) = ra.ranova{3,ra.selected_pval_col};
+%     pvalph(gn) = ra.MC.hsd.pL{12,5};
+%     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
+    axes(ff.h_axes(1,gn));
+%     imagesc(m_pL_vals_trials_all{gn});
+%     plot(mean(mtvals));
+%     shadedErrorBar(1:5,mean(mtvals),std(mtvals)/sqrt(5));
+%     title(pval);
+    ysp = 0.03;
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'pL','hsd'},[1.5 1 1]);
+    xdata = make_xdata([10],[1 1.5]); 
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    ylim([0 0.5]);
+    title(sprintf('%s',rasterNamesTxt{si(gn)}));
+end
+
+%%
+ff = makeFigureRowsCols(108,[1 1 6.9 1.5],'RowsCols',[1 10],...
+'spaceRowsCols',[0.05 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
+[-30 -250]);
+[within,dvn,xlabels,awithinD] = make_within_table({'Tr','pL'},[10,5]); %these are trials here
+for gn = 1:10
+    tvals = pL_vals_trials_all_C{gn};
+    tvalsL = [];
+    for an = 1:5
+        tvalsL = [tvalsL;reshape(tvals(:,:,an)',1,50)];
+    end
+    dataT = make_between_table({tvalsL},dvn);
+    ra = RMA(dataT,within,{0.05,{''}});
+%     ra = RMA(dataT,within,{0.05,''});
+%     ra.ranova
+    print_for_manuscript(ra)
+% %     pval(gn) = ra.ranova{3,ra.selected_pval_col};
+% %     pvalph(gn) = ra.MC.hsd.pL{12,5};
+% %     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
+%     axes(ff.h_axes(1,gn));
+% %     imagesc(m_pL_vals_trials_all{gn});
+% %     plot(mean(mtvals));
+% %     shadedErrorBar(1:5,mean(mtvals),std(mtvals)/sqrt(5));
+% %     title(pval);
+%     ysp = 0.03;
+%     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'pL','hsd'},[1.5 1 1]);
+%     xdata = make_xdata([10],[1 1.5]); 
+%     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+%     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+%     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+%     ylim([0 0.5]);
+%     title(sprintf('%s',rasterNamesTxt{si(gn)}));
+end
+
+%%
+hf = get_figure(8,[5 5 6.9 3]);hold on;
+mean_pL_vals_trials_all_CLin = mean(pL_vals_trials_all_CLin);
+sem_pL_vals_trials_all_CLin = std(pL_vals_trials_all_CLin)/sqrt(5);
+
+plot(1:500,mean_pL_vals_trials_all_CLin);
+shadedErrorBar(1:500,mean_pL_vals_trials_all_CLin,sem_pL_vals_trials_all_CLin);
     %%
     hf = get_figure(8,[5 5 2.25 5]);hold on;
     xs = binEs;
