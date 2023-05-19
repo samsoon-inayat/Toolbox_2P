@@ -72,8 +72,8 @@ for rr = 1:size(o.Rs,1)
 end
 
 for ii = 1:length(ei)
-    centroids{ii} = ei{1}.plane{1}.tP.centroids;
-    dists_centroids{ii} = ei{1}.plane{1}.tP.dists_centroids;
+    centroids{ii} = ei{ii}.plane{1}.tP.centroids;
+    dists_centroids{ii} = ei{ii}.plane{1}.tP.dists_centroids;
 end
 
 n = 0;

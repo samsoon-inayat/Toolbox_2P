@@ -438,7 +438,42 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     figure(1000);clf;
     subplot(2,1,1);imagesc(big_mR);colorbar;set(gca,'Ydir','Normal');
     subplot(2,1,2);imagesc(CRc);colorbar;set(gca,'Ydir','Normal');
-   %% plot average distributions of the peak locations themselves
+%% scrambling of cellular activations
+
+activated_cells_OR = cell_list_op(allresp,[],'or',1);
+
+p_activated_cells_OR = find_percent(activated_cells_OR);
+
+sci = [];
+for sii = 1:length(si)
+    for ani = 1:5
+       tresp_trials = allresp_trials{ani,sii};
+       tdists_centroids = dists_centroids{ani};
+       tcentroids = centroids{ani};
+       tac = activated_cells_OR{ani};
+       for tri = 1:9
+           ttrac1 = tresp_trials(:,tri);
+           ttrac2 = tresp_trials(:,tri+1);
+           conj1 = ttrac1 & tac;
+           thcentroids1 = tcentroids(conj1,:);
+           conj2 = ttrac2 & tac;
+           thcentroids2 = tcentroids(conj2,:);
+           tcombs1 = nchoosek(1:size(thcentroids1),2);
+           tcombs2 = nchoosek(1:size(thcentroids2),2);
+           parfor cmbi = 1:size(tcombs1,1)
+               dist_cent1(cmbi) = sqrt(sum((thcentroids1(tcombs1(cmbi,1),:) - thcentroids1(tcombs1(cmbi,2),:)).^2));
+           end
+           parfor cmbi = 1:size(tcombs2,1)
+               dist_cent2(cmbi) = sqrt(sum((thcentroids2(tcombs2(cmbi,1),:) - thcentroids2(tcombs2(cmbi,2),:)).^2));
+           end
+           [h,p,ks2stat] = kstest2(dist_cent1,dist_cent2);
+           all_p(sii,tri,ani) = p;
+           all_h(sii,tri,ani) = h;
+       end
+    end
+end
+
+    %% plot average distributions of the peak locations themselves
     an = 5; cn = 10;
     all_mVals = []; all_semVals = []; pL_vals_trials_all_C = []; pL_vals_trials_all_CLin = [];
     for cn = 1:length(si)
@@ -477,6 +512,8 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
         end
         pL_vals_trials_all_C{cn} = pL_vals_trials_all;
         m_pL_vals_trials_all{cn} = mean(pL_vals_trials_all,3);
+        max_maps(cn) = max(m_pL_vals_trials_all{cn}(:));
+        min_maps(cn) = min(m_pL_vals_trials_all{cn}(:));
         sem_pL_vals_trials_all{cn} = std(pL_vals_trials_all,[],3)/sqrt(5);
         pL_vals_trials_all_CLin = [pL_vals_trials_all_CLin pL_vals_trials_allLin];
 %         [mVals,semVals] = findMeanAndStandardError(all_dist_vals);
@@ -486,11 +523,12 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
 %         all_mVals = [all_mVals;mVals];
 %         all_semVals = [all_semVals;semVals];
     end
-%%
-ff = makeFigureRowsCols(108,[1 1 6.9 1.5],'RowsCols',[1 10],...
-'spaceRowsCols',[0.05 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
-[-30 -250]);
-[within,dvn,xlabels,awithinD] = make_within_table({'pL'},[5]);
+mM = max(max_maps);
+mm = min(min_maps);
+ff = makeFigureRowsCols(108,[1 1 6.9 3],'RowsCols',[2 10],...
+'spaceRowsCols',[0.09 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
+[-30 -200]);
+[within,dvn,xlabels,awithinD] = make_within_table({'pL'},[length(binCs)]);
 for gn = 1:10
     tvals = pL_vals_trials_all_C{gn};
     mtvals = (squeeze(mean(tvals,1)))';
@@ -504,19 +542,31 @@ for gn = 1:10
     pvalph(gn) = ra.MC.hsd.pL{12,5};
     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
     axes(ff.h_axes(1,gn));
-%     imagesc(m_pL_vals_trials_all{gn});
+    imagesc(1:5,1:10,m_pL_vals_trials_all{gn},[mm mM]);
+    title(sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
 %     plot(mean(mtvals));
 %     shadedErrorBar(1:5,mean(mtvals),std(mtvals)/sqrt(5));
 %     title(pval);
+    axes(ff.h_axes(2,gn));
     ysp = 0.03;
     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'pL','hsd'},[1.5 1 1]);
-    xdata = make_xdata([5],[1 1.5]); 
+    xdata = make_xdata([length(binCs)],[1 1.5]); 
+    tcolors = mData.dcolors;
+    if pval(gn) >= 0.05
+        combs = [];
+    end 
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    ylim([0 0.5]);
-    title(sprintf('%s',rasterNamesTxt{si(gn)}));
+    ylim([0 0.5]); xlim([0.5 5.75]);
+    if gn > 1
+        set(gca,'Yticklabels',[]);
+    end
+    if gn == 10
+        hc = putColorBar(ff.h_axes(1,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+    end
 end
+save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
 
 %%
 ff = makeFigureRowsCols(108,[1 1 6.9 1.5],'RowsCols',[1 10],...

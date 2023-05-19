@@ -66,7 +66,10 @@ if 0
     process_abf(T_C,0);
 end
 disp('Done');
-
+%%
+for ii = 1:length(ei)
+    ei(ii) = cellular_spatial_distances(ei(ii));
+end
 %%
 binwidths = [0.3 3];
 for ii = 1:length(ei)
