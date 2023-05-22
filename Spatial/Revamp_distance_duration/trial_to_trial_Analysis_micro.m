@@ -530,17 +530,18 @@ ff = makeFigureRowsCols(108,[1 1 6.9 3],'RowsCols',[2 10],...
 [-30 -200]);
 [within,dvn,xlabels,awithinD] = make_within_table({'pL'},[length(binCs)]);
 for gn = 1:10
-    tvals = pL_vals_trials_all_C{gn};
-    mtvals = (squeeze(mean(tvals,1)))';
-%     mtvals = (squeeze(tvals(10,:,:)))';
-    dataT = make_between_table({mtvals},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
-%     ra = RMA(dataT,within,{0.05,''});
-%     ra.ranova
-%     print_for_manuscript(ra)
-    pval(gn) = ra.ranova{3,ra.selected_pval_col};
-    pvalph(gn) = ra.MC.hsd.pL{12,5};
-    pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
+% % % %     tvals = pL_vals_trials_all_C{gn};
+% % % %     mtvals = (squeeze(mean(tvals,1)))';
+% % % % %     mtvals = (squeeze(tvals(10,:,:)))';
+% % % %     dataT = make_between_table({mtvals},dvn);
+% % % %     ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+% % % % %     ra = RMA(dataT,within,{0.05,''});
+% % % % %     ra.ranova
+% % % % %     print_for_manuscript(ra)
+    ra = all_ras{gn};
+    pval(gn) = ra.ranova{5,ra.selected_pval_col};
+%     pvalph(gn) = ra.MC.hsd.pL{12,5};
+%     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
     axes(ff.h_axes(1,gn));
     imagesc(1:5,1:10,m_pL_vals_trials_all{gn},[mm mM]);
     title(sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
@@ -612,9 +613,12 @@ for gn = 1:10
         tvalsL = [tvalsL;reshape(tvals(:,:,an)',1,50)];
     end
     dataT = make_between_table({tvalsL},dvn);
-    ra = RMA(dataT,within,{0.05,{''}});
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
+    all_ras{gn} = ra;
 %     ra = RMA(dataT,within,{0.05,''});
 %     ra.ranova
+    all_pvals(:,gn) = ra.ranova{[3 5 7],ra.selected_pval_col};
+    all_pvalsFs(:,gn) = ra.ranova{[3 5 7],4};
     print_for_manuscript(ra)
 % %     pval(gn) = ra.ranova{3,ra.selected_pval_col};
 % %     pvalph(gn) = ra.MC.hsd.pL{12,5};
