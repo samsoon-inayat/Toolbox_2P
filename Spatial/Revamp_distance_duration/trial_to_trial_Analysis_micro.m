@@ -332,6 +332,7 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
     for an = 1:5
         for cn = 1:length(si)
             pLs = allpeakL_trials{an,cn};
+            dpLs = diff(pLs,[],2)/size_raster_2(cn);
             resp = allresp_trials{an,cn};
             resp = sum(resp,2)>2;
             pLs = pLs(resp,:);
@@ -349,6 +350,8 @@ save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_sem.pdf'),600);
             f_seq_shift_trials_LZ = sum(seq_shift<0,2)/10;
             mm_seq_shift(an,cn) = nanmean(m_seq_shift); % this is mean over cells
             f_seq_shift_LZ(an,cn) = sum(m_seq_shift<-0.2)/size(tr_seq,1);
+            
+            mdpLs{an,cn} = nanmean(dpLs,2);
         end
     end
     
@@ -476,17 +479,19 @@ end
     %% plot average distributions of the peak locations themselves
     an = 5; cn = 10;
     all_mVals = []; all_semVals = []; pL_vals_trials_all_C = []; pL_vals_trials_all_CLin = [];
+    pL_vals_trials_all_CD = [];
     for cn = 1:length(si)
         all_dist_vals = [];
-        pL_vals_trials_all = [];
+        pL_vals_trials_all = []; pL_vals_trials_allD = [];
         pL_vals_trials_allLin = [];
         for an = 1:5
-            pLs = allpeakL_trials{an,cn};
+            pLs = allpeakL_trials{an,cn}; dpLs = diff(pLs,[],2)/size_raster_2(cn);
             resp = allresp_trials{an,cn};
             perc_resp{an,cn} = 100*sum(resp,1)/size(resp,1);
             pL_vals_all = [];
             minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
-            pL_vals_trials = [];
+            minBinD = -1;maxBin = 1;BinWidth = 0.5;  binEsD = minBinD:BinWidth:maxBin; binCsD = binEsD(1:(end-1)) + BinWidth/2;
+            pL_vals_trials = []; pL_vals_trialsD = [];
             pL_vals_trialsLin = [];
             for trN = 1:10
                 pL_vals = pLs(:,trN);
@@ -495,8 +500,13 @@ end
                 [bar1,binEs] = histcounts(pL_vals,binEs,'Normalization','probability');
                 pL_vals_trials = [pL_vals_trials;bar1];
                 pL_vals_trialsLin = [pL_vals_trialsLin bar1];
+                if trN < 10
+                    tdpLs = dpLs(resp(:,trN),trN);
+                    [bar1D,binEsD] = histcounts(tdpLs,binEsD,'Normalization','probability');
+                    pL_vals_trialsD = [pL_vals_trialsD;bar1D];
+                end
             end
-            pL_vals_trials_all(:,:,an) = pL_vals_trials;
+            pL_vals_trials_all(:,:,an) = pL_vals_trials;  pL_vals_trials_allD(:,:,an) = pL_vals_trialsD;
             pL_vals_trials_allLin(an,:) = pL_vals_trialsLin;
 %             dist_vals = pL_vals_all;
 %             [distDo,allVals] = getAveragesAndAllValues(dist_vals);
@@ -509,11 +519,13 @@ end
 %             all_dist_vals = [all_dist_vals;mVals];
 %             title(sprintf('%s - %d',rasterNamesTxt{si(cn)},an));
 %             pause(0.1);
+            
         end
-        pL_vals_trials_all_C{cn} = pL_vals_trials_all;
-        m_pL_vals_trials_all{cn} = mean(pL_vals_trials_all,3);
-        max_maps(cn) = max(m_pL_vals_trials_all{cn}(:));
-        min_maps(cn) = min(m_pL_vals_trials_all{cn}(:));
+        pL_vals_trials_all_C{cn} = pL_vals_trials_all;  pL_vals_trials_all_CD{cn} = pL_vals_trials_allD;
+        m_pL_vals_trials_all{cn} = mean(pL_vals_trials_all,3);  m_pL_vals_trials_allD{cn} = mean(pL_vals_trials_allD,3);
+        max_maps(cn) = max(m_pL_vals_trials_all{cn}(:));  max_mapsD(cn) = max(m_pL_vals_trials_allD{cn}(:));
+        min_maps(cn) = min(m_pL_vals_trials_all{cn}(:));  min_mapsD(cn) = min(m_pL_vals_trials_allD{cn}(:));
+        
         sem_pL_vals_trials_all{cn} = std(pL_vals_trials_all,[],3)/sqrt(5);
         pL_vals_trials_all_CLin = [pL_vals_trials_all_CLin pL_vals_trials_allLin];
 %         [mVals,semVals] = findMeanAndStandardError(all_dist_vals);
@@ -523,8 +535,9 @@ end
 %         all_mVals = [all_mVals;mVals];
 %         all_semVals = [all_semVals;semVals];
     end
-mM = max(max_maps);
-mm = min(min_maps);
+mM = max(max_maps);  mMD = max(max_mapsD);
+mm = min(min_maps);  mmD = min(min_mapsD);
+%%
 ff = makeFigureRowsCols(108,[1 1 6.9 3],'RowsCols',[2 10],...
 'spaceRowsCols',[0.09 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
 [-30 -200]);
@@ -568,6 +581,53 @@ for gn = 1:10
     end
 end
 save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
+
+
+%%
+ff = makeFigureRowsCols(108,[1 1 6.9 3],'RowsCols',[2 10],...
+'spaceRowsCols',[0.09 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
+[-30 -200]);
+[within,dvn,xlabels,awithinD] = make_within_table({'pL'},[length(binCsD)]);
+for gn = 1:10
+    tvals = pL_vals_trials_all_CD{gn};
+    mtvals = (squeeze(mean(tvals,1)))';
+%     mtvals = (squeeze(tvals(10,:,:)))';
+    dataT = make_between_table({mtvals},dvn);
+    ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+%     ra = RMA(dataT,within,{0.05,''});
+%     ra.ranova
+%     print_for_manuscript(ra)
+%     ra = all_rasD{gn};
+    pval(gn) = ra.ranova{3,ra.selected_pval_col};
+%     pvalph(gn) = ra.MC.hsd.pL{12,5};
+%     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
+    axes(ff.h_axes(1,gn));
+    imagesc(1:5,1:9,m_pL_vals_trials_allD{gn},[mmD mMD]);
+    title(sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
+%     plot(mean(mtvals));
+%     shadedErrorBar(1:5,mean(mtvals),std(mtvals)/sqrt(5));
+%     title(pval);
+    axes(ff.h_axes(2,gn));
+    ysp = 0.03;
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'pL','hsd'},[1.5 1 1]);
+    xdata = make_xdata([length(binCsD)],[1 1.5]); 
+    tcolors = mData.dcolors;
+    if pval(gn) >= 0.05
+        combs = [];
+    end 
+    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+    ylim([0 0.5]); xlim([0.5 length(binCsD)+0.75]);
+    if gn > 1
+        set(gca,'Yticklabels',[]);
+    end
+    if gn == 10
+        hc = putColorBar(ff.h_axes(1,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+    end
+end
+save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
+
 
 %%
 ff = makeFigureRowsCols(108,[1 1 6.9 1.5],'RowsCols',[1 10],...
@@ -636,6 +696,25 @@ for gn = 1:10
 %     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
 %     ylim([0 0.5]);
 %     title(sprintf('%s',rasterNamesTxt{si(gn)}));
+end
+
+%%
+[within,dvn,xlabels,awithinD] = make_within_table({'Tr','pL'},[9,10]); %these are trials here
+for gn = 1:10
+    tvals = pL_vals_trials_all_CD{gn};
+    tvalsL = [];
+    for an = 1:5
+        tvalsL = [tvalsL;reshape(tvals(:,:,an)',1,90)];
+    end
+    dataT = make_between_table({tvalsL},dvn);
+%     ra = RMA(dataT,within,{0.05,{'hsd'}});
+    ra = RMA(dataT,within,{0.05,{''}});
+    all_rasD{gn} = ra;
+%     ra = RMA(dataT,within,{0.05,''});
+% %     ra.ranova
+    all_pvals(:,gn) = ra.ranova{[3 5 7],ra.selected_pval_col};
+    all_pvalsFs(:,gn) = ra.ranova{[3 5 7],4};
+    print_for_manuscript(ra)
 end
 
 %%
