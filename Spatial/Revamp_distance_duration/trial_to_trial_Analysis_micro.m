@@ -491,7 +491,7 @@ end
             perc_resp{an,cn} = 100*sum(resp,1)/size(resp,1);
             mean_pVs(an,cn) = mode(pVs(:));
             pL_vals_all = [];
-            minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
+            minBin = 0;maxBin = 1;BinWidth = 0.15;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
             minBinD = -1;maxBin = 1;BinWidth = 0.4;  binEsD = minBinD:BinWidth:maxBin; binCsD = binEsD(1:(end-1)) + BinWidth/2;
             minBinFR = 0;maxBinFR = 1;BinWidthFR = 0.2;  binEsFR = minBinFR:BinWidthFR:maxBinFR; binCsFR = binEsFR(1:(end-1)) + BinWidthFR/2;
             pL_vals_trials = []; pL_vals_trialsD = []; pV_vals_trials = [];
@@ -575,7 +575,7 @@ for gn = 1:10
 %     pvalph(gn) = ra.MC.hsd.pL{12,5};
 %     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
     axes(ff.h_axes(1,gn));
-    imagesc(1:5,1:10,m_pL_vals_trials_all{gn},[mm mM]);
+    imagesc(1:length(binCs),1:10,m_pL_vals_trials_all{gn},[mm mM]);
     title(sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
 %     plot(mean(mtvals));
 %     shadedErrorBar(1:5,mean(mtvals),std(mtvals)/sqrt(5));
@@ -591,7 +591,7 @@ for gn = 1:10
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    ylim([0 0.5]); xlim([0.5 5.75]);
+    ylim([0 0.5]); xlim([0.5 length(binCs)+0.75]);
     if gn > 1
         set(gca,'Yticklabels',[]);
     end
