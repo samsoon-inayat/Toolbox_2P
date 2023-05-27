@@ -1,14 +1,14 @@
 function dist_dur
 %% analysing the resp. RF, zMI, and RS for all cells
-ntrials = 50; 
+ntrials = 30; 
 si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
 props_C = get_props_Rs(Rs_C,ntrials);
 pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
-pop_var_name = {'vals'};
-pop_var_name = {'good_FR'};
-sel_pop_C = cell_list_op(props_C,pop_var_name);
+pop_var_name = {'vals','good_zMI'};
+% pop_var_name = {'good_FR'};
+sel_pop_C = cell_list_op(props_C,pop_var_name); 
 %%
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
 varT = 2;%:length(params)

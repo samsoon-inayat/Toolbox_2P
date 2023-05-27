@@ -1,26 +1,8 @@
 function tracePlots_1_C (ei)
 %%
-ei = evalin('base','ei10_A');
 
-% selContexts = [1 2 3 4];
-% rasterNames = {'airD','airD','airD','airD'};
-% RsC = get_rasters_data(ei,selContexts,rasterNames);
-% mRsC = calc_mean_rasters(RsC,1:10);
-% RsC = find_responsive_rasters(RsC,1:10);
-% % view_population_vector(Rs,mRs,300);
-% [resp_fractionC,resp_valsC,OIC,mean_OIC] = get_responsive_fraction(RsC)
-
-si = [C1_t_D C2_t_D C3_t_D C4_t_D];
-RsC = oA.Rs(:,si);
-ntrials = 50;
-props_C = get_props_Rs(RsC,ntrials);
-pop_var_name = {'vals','good_zMI'};
-pop_var_name = {'vals','good_zMI','good_Gauss'};
-sel_pop_C = cell_list_op(props_C,pop_var_name); 
-
-
-mData = evalin('base','mData');
-selAnimals = 2; pl = 1;
+% mData = evalin('base','mData');
+selAnimals = 3; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;
 maxDistTime = [Inf Inf];
@@ -29,35 +11,28 @@ contextNumber = [conditionNumber conditionNumber];
 stimMarkers = {'air','air'};
 rasterTypes = {'dist','time'};
 n = 0;
+%% raw calcium traces and deconvolved spikes
+[signals,signalsR] = get_calcium_data_raw(tei,pl);
+signalsS = tei.plane{pl}.tP.deconv.spSigAll;
 %%
-ntrials = 50;
-props_C = get_props_Rs(RsC,ntrials);
-pop_var_name = {'vals','good_zMI'};
-pop_var_name = {'vals','good_zMI','good_Gauss'};
-sel_pop_C = cell_list_op(props_C,pop_var_name); 
 
-find(sel_pop_C{selAnimals,1})'
-% ccsi = [9    18    22    28    45    65];% 51]; % animal 3 plane 1
+ccsi = [235 158 251 147 97 18];% 51]; % animal 3 plane 1
+
+ccsi = [235 158 251 260 97 18];% 51]; % animal 3 plane 1
 
 n = 0;
-
 %%
 spSigAll = tei.plane{pl}.tP.deconv.spSigAll;
-T_C2 = evalin('base','T_A');
+T_C2 = evalin('base','T_C');
 temp = get_cluster_timecourses(cell2mat(T_C2{selAnimals,7}))
 caSigAll = temp.ratio';
 n = 0;
 %%
-ccsi = [146    155   102   165   161    168];% 51]; % animal 3 plane 1
-
 alltsp = []; allcaSig = []; allsCaSig = [];
-ccs = find(tei.plane{pl}.tP.iscell(:,1));
-lengthSigs = size(caSigAll,2);
-if lengthSigs > length(tei.plane{pl}.b.frames_f)
-    lengthSigs = length(tei.plane{pl}.b.frames_f);
-    caSigAll = caSigAll(:,1:lengthSigs);
-end
+
 signals = caSigAll;%tei.plane{pl}.tP.signals;
+ccs = find(tei.plane{pl}.tP.iscell(:,1));
+lengthSigs = size(signals,2);
 b = tei.b;
 traceTime = b.ts(tei.plane{pl}.b.frames_f(1:lengthSigs));
 for cc = 1:length(ccsi)
@@ -71,8 +46,10 @@ for cc = 1:length(ccsi)
     minSCaSig(cc) = min(sCaSig); maxSCaSig(cc) = max(sCaSig);
     mintsp(cc) = min(tsp); maxtsp(cc) = max(tsp);
 end
-minCaSig = minCaC;%min(minSCaSig);
-maxCaSig = maxCaC/4;%max(maxSCaSig);
+minCaSig = min(minSCaSig);
+maxCaSig = max(maxSCaSig);
+minCaC = minCaSig;
+maxCaC = maxCaSig;
 
 ff = makeFigureRowsCols(100,[1 5 5.4 1.5],'RowsCols',[(length(ccsi))+1 1],'spaceRowsCols',[-0.009 0.0009],...
     'rightUpShifts',[0.04 0.02],'widthHeightAdjustment',[-70 7]);
@@ -152,7 +129,7 @@ while cc<=length(ccsi)+1
         plot([sdfxs sdfxe],[sdfys sdfys],'k','linewidth',0.5);
         plot([sdfxe sdfxe],[sdfys sdfye],'k','linewidth',0.5);
         text(sdfxs-(0.15*60),sdfys + 60,sprintf('%dsecs',ceil(timeLength)),'fontsize',4);
-        text(sdfxe+(0.05*20),sdfys + 60,'25% DF/F (50 A.U. Firing Rate)','fontsize',4);
+        text(sdfxe+(0.05*20),sdfys + 60,'100% DF/F (50 A.U. Firing Rate)','fontsize',4);
     end
     n = 0;
     cc = cc + 1;
@@ -181,7 +158,7 @@ ff = makeFigureRowsCols(100,[1 5 5.4 1.5],'RowsCols',[(length(ccsi))+1 1],'space
 set(gcf,'Position',[10 8 3.5 1]);
 set(gcf,'color','w');
 spSigAll = tei.plane{pl}.tP.deconv.spSigAll;
-caSigAll = tei.plane{pl}.tP.deconv.caSigAll;
+% caSigAll = tei.plane{pl}.tP.deconv.caSigAll;
 signals = tei.plane{pl}.tP.signals;
 ccs = find(tei.plane{pl}.tP.iscell(:,1));
 lengthSigs = size(signals,2);
@@ -313,19 +290,16 @@ save_pdf(gcf,mData.pdf_folder,sprintf('traces.pdf'),600);
 % return;
 end
 
-
-%% raw calcium traces and deconvolved spikes
-[signals,signalsR] = get_calcium_data_raw(tei,pl);
-signalsS = tei.plane{pl}.tP.deconv.spSigAll;
 %%
 % hf = figure(100);clf;set(gcf,'Units','Inches');set(gcf,'Position',[1 5 6.97 5.5],'color','w'); hold on;
 ff = makeFigureRowsCols(100,[3 2 6.97 5],'RowsCols',[7 1],'spaceRowsCols',[0.04 0.02],'rightUpShifts',[0.07 0.08],'widthHeightAdjustment',[-140 -50]);
 selcells = [11 66  3  205   255   196];
 selcells = [11 66  3  205   233   75];
+selcells = ccsi;
 for ii = 1:6
     axes(ff.h_axes(ii,1));
     yyaxis left
-    plot(traceTime,signalsR(selcells(ii),:)','b');hold on;
+    plot(traceTime,caSigAll(selcells(ii),:)','b');hold on;
     yyaxis right
     plot(traceTime,signalsS(selcells(ii),:)','r');
     ylims = ylim; ylim([0 ylims(2)]);
@@ -347,7 +321,7 @@ for ii = 1:6
     end
     format_axes(gca);
     ylabel('DF/F (%)');
-    ylabel('Raw Ca Sig');
+%     ylabel('Raw Ca Sig');
     yyaxis right;
     ylabel('FR (A.U.)');
 end
