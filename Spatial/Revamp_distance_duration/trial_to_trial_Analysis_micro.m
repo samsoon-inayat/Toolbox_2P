@@ -236,6 +236,38 @@ set(gca,'xtick',xticks,'xticklabel',xtickL);
 format_axes(gca);
 changePosition(gca,[-0.08 0.1 0.17 -0.1]);
 save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
+%% Stats resp conj comp1 comp2 across trials configurations
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,10]);
+dataT = make_between_table({respRV},dvn);
+raResp = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raResp)
+
+cconjV = conjV; cconjV(:,[10    20    30    40    50    60    70    80    90]) = [];
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
+dataT = make_between_table({cconjV},dvn);
+raConj = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raConj)
+
+
+ccomp1V = comp1V; ccomp1V (:,[10    20    30    40    50    60    70    80    90]) = [];
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
+dataT = make_between_table({ccomp1V},dvn);
+raComp1 = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raComp1)
+
+
+ccomp2V = comp2V; ccomp2V(:,[10    20    30    40    50    60    70    80    90]) = [];
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
+dataT = make_between_table({ccomp2V},dvn);
+raComp2 = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raComp2)
+
+cccc = [cconjV ccomp1V ccomp2V];
+[within,dvn,xlabels,awithinD] = make_within_table({'CT','Conf','Ph','Tr'},[3,5,2,9]);
+dataT = make_between_table({cccc},dvn);
+raComp2 = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raComp2)
+
 
 %% heatmap conj
 hf = get_figure(6,[8 3 3.25 3.25]);

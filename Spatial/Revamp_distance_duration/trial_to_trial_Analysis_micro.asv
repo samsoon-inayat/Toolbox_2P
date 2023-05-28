@@ -236,6 +236,32 @@ set(gca,'xtick',xticks,'xticklabel',xtickL);
 format_axes(gca);
 changePosition(gca,[-0.08 0.1 0.17 -0.1]);
 save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
+%% Stats resp conj comp1 comp2 across trials configurations
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,10]);
+dataT = make_between_table({respRV},dvn);
+raResp = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raResp)
+
+cconjV = conjV; cconjV(:,[10    20    30    40    50    60    70    80    90]) = [];
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
+dataT = make_between_table({cconjV},dvn);
+raConj = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raConj)
+
+
+ccomp1V = comp1V; cconjV(:,[10    20    30    40    50    60    70    80    90]) = [];
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
+dataT = make_between_table({ccomp1V},dvn);
+raComp1 = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raComp1)
+
+
+cconjV = comp2V; cconjV(:,[10    20    30    40    50    60    70    80    90]) = [];
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
+dataT = make_between_table({cconjV},dvn);
+raComp2 = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raComp2)
+
 
 %% heatmap conj
 hf = get_figure(6,[8 3 3.25 3.25]);
@@ -489,9 +515,9 @@ end
             pLs = allpeakL_trials{an,cn}; dpLs = diff(pLs,[],2)/size_raster_2(cn);  pVs = allpeakV_trials{an,cn};
             resp = allresp_trials{an,cn};
             perc_resp{an,cn} = 100*sum(resp,1)/size(resp,1);
-            mean_pVs(an,cn) = nanmean(pVs(:));
+            mean_pVs(an,cn) = mode(pVs(:));
             pL_vals_all = [];
-            minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
+            minBin = 0;maxBin = 1;BinWidth = 0.15;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
             minBinD = -1;maxBin = 1;BinWidth = 0.4;  binEsD = minBinD:BinWidth:maxBin; binCsD = binEsD(1:(end-1)) + BinWidth/2;
             minBinFR = 0;maxBinFR = 1;BinWidthFR = 0.2;  binEsFR = minBinFR:BinWidthFR:maxBinFR; binCsFR = binEsFR(1:(end-1)) + BinWidthFR/2;
             pL_vals_trials = []; pL_vals_trialsD = []; pV_vals_trials = [];
@@ -509,7 +535,7 @@ end
                     [bar2FR,binEsFR,~] = histcounts(tpV_vals,binEsFR,'Normalization','probability');
 %                      bar2(:,bii) = bar2FR';
                     if ~isempty(tpV_vals)
-                        bar2(bii) = mean(tpV_vals);
+                        bar2(bii) = mode(tpV_vals);
                     end
                 end
 
@@ -562,7 +588,7 @@ ff = makeFigureRowsCols(108,[1 1 6.9 3],'RowsCols',[2 10],...
 [-30 -200]);
 [within,dvn,xlabels,awithinD] = make_within_table({'pL'},[length(binCs)]);
 for gn = 1:10
-    tvals = pV_vals_trials_all_C{gn};
+    tvals = pL_vals_trials_all_C{gn};
     mtvals = (squeeze(mean(tvals,1)))';
 %     mtvals = (squeeze(tvals(10,:,:)))';
     dataT = make_between_table({mtvals},dvn);
@@ -575,7 +601,7 @@ for gn = 1:10
 %     pvalph(gn) = ra.MC.hsd.pL{12,5};
 %     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
     axes(ff.h_axes(1,gn));
-    imagesc(1:5,1:10,m_pV_vals_trials_all{gn},[mmV mMV]);
+    imagesc(1:length(binCs),1:10,m_pL_vals_trials_all{gn},[mm mM]);
     title(sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
 %     plot(mean(mtvals));
 %     shadedErrorBar(1:5,mean(mtvals),std(mtvals)/sqrt(5));
@@ -591,7 +617,7 @@ for gn = 1:10
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    ylim([0 15]); xlim([0.5 5.75]);
+    ylim([0 0.5]); xlim([0.5 length(binCs)+0.75]);
     if gn > 1
         set(gca,'Yticklabels',[]);
     end
@@ -601,7 +627,12 @@ for gn = 1:10
 end
 save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
 
-
+%%
+[within,dvn,xlabels,awithinD] = make_within_table({'cns'},[length(si)]);
+[within,dvn,xlabels,awithinD] = make_within_table({'Br','Ph'},[2,2]);
+dataT = make_between_table({mean_pVs(:,[1 2 3 4])},dvn);
+ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
+print_for_manuscript(ra)
 %%
 ff = makeFigureRowsCols(108,[1 1 6.9 3],'RowsCols',[2 10],...
 'spaceRowsCols',[0.09 0.025],'rightUpShifts',[0.03 0.13],'widthHeightAdjustment',...
