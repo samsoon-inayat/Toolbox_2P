@@ -5,7 +5,7 @@ function trial_to_trial_Analysis
 ntrials = 40;
 si = [Lb_T Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Lbs_T Abs_t_T Abs_i_T];
 si = [Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Abs_t_T Abs_i_T];
-si = [Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Abs_t_T Abs_i_T];
+% si = [Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Abs_t_T Abs_i_T];
 % si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T];
 % si = [Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T];
 % si = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T];
@@ -183,7 +183,7 @@ for ii = find(isnan(mrespActL))
         iii=iii+1;
     end
 end
-xlim([0 length(mrespActL)+1]); ylim([3 33]);
+xlim([0 length(mrespActL)+1]); ylim([3 35]);
 xlabel('Trial-Pairs');ylabel('Cells (%)');box off;
 set(gca,'xtick',xticks,'xticklabel',xtickL);
 legs = {'Conjunctive Cells      ','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 33 0.2]}; 
@@ -235,7 +235,7 @@ set(gca,'xtick',xticks,'xticklabel',xtickL);
 %     putLegendH(gca,legs,{'k'},'sigR',{[],'anova',[],6});
 format_axes(gca);
 changePosition(gca,[-0.08 0.1 0.17 -0.1]);
-save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
+save_pdf(hf,mData.pdf_folder,sprintf('trial_to_trial_unique.pdf'),600);
 %% Stats resp conj comp1 comp2 across trials configurations
 [within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,10]);
 dataT = make_between_table({respRV},dvn);
@@ -249,18 +249,188 @@ raConj = RMA(dataT,within,{0.05,{'hsd'}});
 print_for_manuscript(raConj)
 
 
-ccomp1V = comp1V; cconjV(:,[10    20    30    40    50    60    70    80    90]) = [];
+ccomp1V = comp1V; ccomp1V (:,[10    20    30    40    50    60    70    80    90]) = [];
 [within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
 dataT = make_between_table({ccomp1V},dvn);
 raComp1 = RMA(dataT,within,{0.05,{'hsd'}});
 print_for_manuscript(raComp1)
 
 
-cconjV = comp2V; cconjV(:,[10    20    30    40    50    60    70    80    90]) = [];
+ccomp2V = comp2V; ccomp2V(:,[10    20    30    40    50    60    70    80    90]) = [];
 [within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,9]);
-dataT = make_between_table({cconjV},dvn);
+dataT = make_between_table({ccomp2V},dvn);
 raComp2 = RMA(dataT,within,{0.05,{'hsd'}});
 print_for_manuscript(raComp2)
+
+cccc = [cconjV ccomp1V ccomp2V];
+[within,dvn,xlabels,awithinD] = make_within_table({'CT','Conf','Ph','Tr'},[3,5,2,9]);
+dataT = make_between_table({cccc},dvn);
+raCCCC = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raCCCC)
+
+%%
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[2,2,10]);
+dataT = make_between_table({respRV(:,1:40)},dvn);
+raRespBNB = RMA(dataT,within,{0.05,{'hsd'}});
+print_for_manuscript(raRespBNB)
+%% Resp. two graphs, Conf and Ph
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[10 5 2.2 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],...
+    'widthHeightAdjustment',[10 -510]);
+MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+stp = 0.25*magfac; widths = ([1.25 0.65 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(5:end),1,6);
+axes(ff.h_axes(1,1));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raResp,{'Conf','hsd'},[1.5 1 1]);
+    xdata = make_xdata([5],[1 1.5]);   
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'C2','C3','C4','C5','C7'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(7:end));
+% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','NOrmal');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Pooled'},{[0 0]});
+ylabel(ylabeltxt);
+format_axes(gca);
+
+axes(ff.h_axes(1,2));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raResp,{'Ph','hsd'},[1.5 1 1]);
+    xdata = make_xdata([2],[1 1.5]);   
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+%     h(h==1) = 0;
+tcolors = repmat(mData.colors(1:2),1,6);
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'AOn','AOff'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(3:end));
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Trials','InterTrials'},{[-0.1 -0.012]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0]});
+format_axes(gca);
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+
+%% Conj. one graph Conf
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[10 5 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],...
+    'widthHeightAdjustment',[10 -510]);
+MY = 45; ysp = 5; mY = 0; titletxt = 'Conjunctive Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+stp = 0.25*magfac; widths = ([1.25 0.65 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(5:end),1,6);
+axes(ff.h_axes(1,1));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raConj,{'Conf','hsd'},[1.5 1 1]);
+    xdata = make_xdata([5],[1 1.5]);   
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'C2','C3','C4','C5','C7'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(7:end));
+% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','NOrmal');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Pooled'},{[0 0]});
+ylabel(ylabeltxt);
+format_axes(gca);
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+%% Comp1 two graphs, Ph:Tr and Conf
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[7 5 6 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],...
+    'widthHeightAdjustment',[10 -510]);
+MY = 70; ysp = 5; mY = 0; titletxt = 'Complementary Cells 1'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+stp = 0.25*magfac; widths = ([1.25 4.5 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(5:end),1,6);
+axes(ff.h_axes(1,1));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raComp1,{'Conf','hsd'},[1.5 1 1]);
+    xdata = make_xdata([5],[1 1.5]);   
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'C2','C3','C4','C5','C7'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(7:end));
+% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','NOrmal');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Pooled'},{[0 0]});
+ylabel(ylabeltxt);
+format_axes(gca);
+
+axes(ff.h_axes(1,2));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raComp1,{'Tr_by_Ph','hsd'},[1.5 1 1]);
+    xdata = make_xdata([2 2 2 2 2 2 2 2 2],[1 1.5]);   
+%     xdata = make_xdata([9 9],[1 1.5]);   
+tcolors = repmat(mData.colors(1:2),1,9);
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'AOn','AOff'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(3:end));
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Trials','InterTrials'},{[-0.1 -0.012]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'T1-T2','T2-T3','T3-T4','T4-T5','T5-T6','T6-T7','T7-T8','T8-T9','T9-T10'},{[0 0]});
+format_axes(gca);
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+%% Comp2. two graphs, Conf and Ph
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[10 5 2.2 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],...
+    'widthHeightAdjustment',[10 -510]);
+MY = 50; ysp = 5; mY = 0; titletxt = 'Complementary Cells 2'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+stp = 0.25*magfac; widths = ([1.25 0.65 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(5:end),1,6);
+axes(ff.h_axes(1,1));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raComp2,{'Conf','hsd'},[1.5 1 1]);
+    xdata = make_xdata([5],[1 1.5]);   
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'C2','C3','C4','C5','C7'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(7:end));
+% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','NOrmal');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Pooled'},{[0 0]});
+ylabel(ylabeltxt);
+format_axes(gca);
+
+axes(ff.h_axes(1,2));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raComp2,{'Ph','hsd'},[1.5 1 1]);
+    xdata = make_xdata([2],[1 1.5]);   
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+%     h(h==1) = 0;
+tcolors = repmat(mData.colors(1:2),1,6);
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'AOn','AOff'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(3:end));
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Trials','InterTrials'},{[-0.1 -0.012]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0]});
+format_axes(gca);
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
 
 
 %% heatmap conj
