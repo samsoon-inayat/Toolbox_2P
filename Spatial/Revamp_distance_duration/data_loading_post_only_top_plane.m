@@ -79,6 +79,8 @@ for ii = 1:length(ei)
     dists_centroids{ii} = ei{1}.plane{1}.tP.dists_centroids;
 end
 
+cellposeCells = evalin('base','cellposeCells');
+
 n = 0;
 %%
 % %% Load Data
