@@ -109,6 +109,153 @@ disp('Done');
 %     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_resp_T,0.5,0.05);
  disp('Done');
 
+%% Average distribution of the percentage of responses vs number of trials
+pRtrialsLin = []; numRtrials = [];
+for ani = 1:5
+    tRtrials = [];
+    for cni = 1:length(si)
+        tresptrials = allresp_trials{ani,cni};
+        stresptrials = sum(tresptrials,2);
+        nRT = [];
+        for tii = 0:10
+            numRtrials(tii+1,cni,ani) = 100*sum(stresptrials==tii)/length(stresptrials);
+            nRT(1,tii+1) = numRtrials(tii+1,cni,ani);
+        end
+        tRtrials = [tRtrials nRT];
+    end
+    pRtrialsLin = [pRtrialsLin;tRtrials];
+end
+
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,11]); %these are trials here
+dataT = make_between_table({pRtrialsLin},dvn);
+%     ra = RMA(dataT,within,{0.05,{'hsd'}});
+raBART = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(raBART)
+
+%%
+raBART = [];
+clc
+alpha = 0.05/5;
+for confi = 1:5
+    redF = [1]; redV = {[confi]};
+    [dataTR2,withinR] = reduce_within_between(dataT,within,redF,redV);
+    raBART{confi} = RMA(dataTR2,withinR,{alpha,{'hsd'}});
+%     raR.ranova
+    print_for_manuscript(raBART{confi})
+end
+%% figure bar graphs checking interactions
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[10 5 5 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -470]);
+MY = 170; ysp = 1; mY = 0; titletxt = 'C7'; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = ([4 0.65 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(1:5),1,6);
+axes(ff.h_axes(1,1));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raBART{1},{'Ph_by_Tr','hsd'},[1.5 1 1]);
+    xdata = make_xdata([11 11],[1 1.5]);   
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
+xticklabels = {'0.1','0.3','0.5','0.7','0.9'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+make_bars_hollow(hbs(12:end));
+% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.05 0 0]);set(ht,'FontWeight','NOrmal');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn','AOff'},{[0 0]});
+ylabel(ylabeltxt);
+format_axes(gca);
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+%%
+raBART = [];
+clc
+alpha = (0.05/5)/2;
+for confi = 1:5
+    for phi = 1:2
+        redF = [1,2]; redV = {[confi],[phi]};
+        [dataTR2,withinR] = reduce_within_between(dataT,within,redF,redV);
+        raBART1{confi,phi} = RMA(dataTR2,withinR,{alpha,{'hsd'}});
+    %     raR.ranova
+        print_for_manuscript(raBART1{confi,phi})
+    end
+end
+
+%% figure bar graphs percent cells trial-wise dists
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.25],'RowsCols',[1 10],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -470]);
+MY = 60; ysp = 0.075; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = ([ones(1,10)*0.6]-0.05)*magfac; gap = 0.11*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(1:5),1,6);
+tcolors = [mData.colors(5);mData.colors(5);mData.colors(6);mData.colors(6);...
+    mData.colors(7);mData.colors(7);mData.colors(8);mData.colors(8);mData.colors(9);mData.colors(9)];
+confi = [1 1 2 2 3 3 4 4 5 5];
+phi = [1 2 1 2 1 2 1 2 1 2];
+for gni = 1:10
+    tar = raBART{confi(gni)};
+axes(ff.h_axes(1,gni));
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raBART1{confi(gni),phi(gni)},{'Tr','hsd'},[1.5 1 1]);
+    xdata = make_xdata([11],[1 1.5]);
+    shadedErrorBar(xdata-1,mVar,semVar,{'color',tcolors{gni}});
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+% [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
+%     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
+%     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0 xdata(end)-1],[mY MY]); format_axes(gca); xticks = xdata-1; 
+if gni > 1
+    set(gca,'YTick',[]);
+end
+% xticklabels = {'0.1','0.3','0.5','0.7','0.9'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
+% make_bars_hollow(hbs(6:end));
+% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+if mod(gni,2) == 1
+    titletxt = 'AOn';
+else
+    titletxt = 'AOff';
+end
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.01 -0.2 0.1 0]);set(ht,'FontWeight','NOrmal');
+
+if gni == 1
+    ylabel('Activated Cells (%)');
+end
+if gni == 5
+    xlabel('Number of trials');
+end
+titletxt = (sprintf('%s',rasterNamesTxt{si(gni)}));
+% ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.07 0 0]);set(ht,'FontWeight','NOrmal');
+box off;
+format_axes(gca);
+end
+
+confnames = {'C2','C3','C4','C5','C7'};
+for ii = 1:5
+    tar = raBART{ii};
+    if tar.ranova{7,tar.selected_pval_col} < tar.alpha
+        if ii == 1
+            titletxt = sprintf('# (p<%.3f)',tar.alpha);
+        else
+            titletxt = '#';
+        end
+    end
+
+    titletxts{ii} = sprintf('%s - %s',confnames{ii},titletxt);
+end
+set_sub_graph_text(ff,2,titletxts,[0 0.57 0 0],[0.02 0.07 0 0]);
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
  %% plot conj comp1 and comp2
 clear respRV conjV comp1V comp2V
 
@@ -165,29 +312,29 @@ hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 6.9 1.5]);
 %     plot(xax,mrespActL,'color',rlcolor);hold on;
 %     plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'color',rlcolor);hold on;
-plot(xlim,[nanmean(mconjAct(:)) nanmean(mconjAct(:))],'color','m');hold on;
+plot(xlim,[nanmean(mconjAct(:)) nanmean(mconjAct(:))],'color',mData.dcolors{1});hold on;
 iii=1;
 theinds = find(isnan(mrespActL));
 for ii = find(isnan(mrespActL))
-    plot([ii ii],[4 29],'b-');
+    plot([ii ii],[4 29],'k-');
     if iii <= (size(respRV,2)/10)
         text(ii+2,29,sprintf('%s',xticklabels{iii}),'FontSize',6);
         indsS = (theinds(iii)+1):(theinds(iii+1)-1);
 %             shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{'color',rlcolor},0.5);
         plot(indsS(1:9),mconjAct(iii,:),'m');
-        shadedErrorBar(indsS(1:9),mconjAct(iii,:),semconjAct(iii,:),{'color','m'},0.5);
+        shadedErrorBar(indsS(1:9),mconjAct(iii,:),semconjAct(iii,:),{'color',mData.dcolors{1}},0.5);
         plot(indsS(1:9),mcomp1Act(iii,:),'m');
-        shadedErrorBar(indsS(1:9),mcomp1Act(iii,:),semcomp1Act(iii,:),{'color','c'},0.5);
+        shadedErrorBar(indsS(1:9),mcomp1Act(iii,:),semcomp1Act(iii,:),{'color',mData.dcolors{2}},0.5);
         plot(indsS(1:9),mcomp2Act(iii,:),'m');
-        shadedErrorBar(indsS(1:9),mcomp2Act(iii,:),semcomp2Act(iii,:),{'color','k'},0.5);
+        shadedErrorBar(indsS(1:9),mcomp2Act(iii,:),semcomp2Act(iii,:),{'color',mData.dcolors{3}},0.5);
         iii=iii+1;
     end
 end
 xlim([0 length(mrespActL)+1]); ylim([3 35]);
-xlabel('Trial-Pairs');ylabel('Cells (%)');box off;
+xlabel('Trial-Pair Numbers');ylabel('Cells (%)');box off;
 set(gca,'xtick',xticks,'xticklabel',xtickL);
 legs = {'Conjunctive Cells      ','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 33 0.2]}; 
-putLegendH(gca,legs,{'m','c','k'},'sigR',{[],'anova',[],6});
+putLegendH(gca,legs,mData.dcolors(1:3),'sigR',{[],'anova',[],6});
 format_axes(gca);
 changePosition(gca,[-0.08 0.1 0.17 -0.1]);
 save_pdf(hf,mData.pdf_folder,sprintf('tria_to_trial_unique.pdf'),600);
@@ -215,21 +362,21 @@ end
 
 hf = figure(100);clf;
 set(hf,'units','inches','position',[5 5 6.9 1]);
-plot(xax,mrespActL,'k');hold on;
-plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'m');
+plot(xax,mrespActL,'color',mData.dcolors{9,1});hold on;
+plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'color',mData.dcolors{8,1});
 iii=1;
 theinds = find(isnan(mrespActL));
 for ii = find(isnan(mrespActL))
-    plot([ii ii],[11 26],'b-');
+    plot([ii ii],[11 57],'k-');
     if iii <= (size(respRV,2)/10)
     text(ii+2,55,sprintf('%s',xticklabels{iii}),'FontSize',6);
     indsS = (theinds(iii)+1):(theinds(iii+1)-1);
-    shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{},0.5)
+    shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{'color',mData.dcolors{9}},0.5)
     iii=iii+1;
     end
 end
 xlim([0 length(mrespActL)+1]); ylim([10 60]);
-xlabel('Trials');ylabel('Cells (%)');box off;
+xlabel('Trial Numbers');ylabel('Cells (%)');box off;
 set(gca,'xtick',xticks,'xticklabel',xtickL);
 %     legs = {'Responsive Cells',[9.5 0.1 34 0.2]}; 
 %     putLegendH(gca,legs,{'k'},'sigR',{[],'anova',[],6});
