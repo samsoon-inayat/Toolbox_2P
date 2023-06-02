@@ -190,35 +190,37 @@ end
 %% figure bar graphs percent cells trial-wise dists
 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[3 5 6.9 1.25],'RowsCols',[1 10],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
-    'widthHeightAdjustment',[10 -470]);
+ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 5],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],...
+    'widthHeightAdjustment',[10 -530]);
 MY = 60; ysp = 0.075; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.28*magfac; widths = ([ones(1,10)*0.6]-0.05)*magfac; gap = 0.11*magfac;
+stp = 0.28*magfac; widths = ([ones(1,10)*1.31]-0.05)*magfac; gap = 0.059*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-tcolors = repmat(mData.colors(1:5),1,6);
-tcolors = [mData.colors(5);mData.colors(5);mData.colors(6);mData.colors(6);...
-    mData.colors(7);mData.colors(7);mData.colors(8);mData.colors(8);mData.colors(9);mData.colors(9)];
+tcolors = repmat(mData.dcolors(1:11),1,10);
+% tcolors = [mData.colors(5);mData.colors(5);mData.colors(6);mData.colors(6);...
+%     mData.colors(7);mData.colors(7);mData.colors(8);mData.colors(8);mData.colors(9);mData.colors(9)];
 confi = [1 1 2 2 3 3 4 4 5 5];
 phi = [1 2 1 2 1 2 1 2 1 2];
-for gni = 1:10
-    tar = raBART{confi(gni)};
+for gni = 1:5
+%     tra = raBART{confi(gni)};
+    tra = raBART{gni};
 axes(ff.h_axes(1,gni));
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raBART1{confi(gni),phi(gni)},{'Tr','hsd'},[1.5 1 1]);
-    xdata = make_xdata([11],[1 1.5]);
-    shadedErrorBar(xdata-1,mVar,semVar,{'color',tcolors{gni}});
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,tra,{'Ph_by_Tr','hsd'},[1.5 1 1]);
+    xdata = make_xdata([11 11],[1 3]);
+%     shadedErrorBar(xdata-1,mVar,semVar,{'color',tcolors{gni}});
 %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
-% [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
-%     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-%     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-set_axes_limits(gca,[0 xdata(end)-1],[mY MY]); format_axes(gca); xticks = xdata-1; 
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,[],[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,'capsize',1,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.25 xdata(end)+0.75],[mY MY]); format_axes(gca); xinds = [1 11 12 22]; xticks = xdata(xinds); 
 if gni > 1
     set(gca,'YTick',[]);
 end
-% xticklabels = {'0.1','0.3','0.5','0.7','0.9'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
-% make_bars_hollow(hbs(6:end));
+xticklabels = cellstr(num2str((0:10)')); xticklabels = [xticklabels;xticklabels]; xticklabels = xticklabels(xinds);
+set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
+make_bars_hollow(hbs(12:end));
 % [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,11,{'AOn','AOff'},{[-0.001 -0.012]});
 if mod(gni,2) == 1
     titletxt = 'AOn';
 else
@@ -227,10 +229,10 @@ end
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.01 -0.2 0.1 0]);set(ht,'FontWeight','NOrmal');
 
 if gni == 1
-    ylabel('Activated Cells (%)');
+    ylabel('Cells (%)');
 end
-if gni == 5
-    xlabel('Number of trials');
+if gni == 3
+    hxl = xlabel('Number of trials'); changePosition(hxl,[0 -15 0]);
 end
 titletxt = (sprintf('%s',rasterNamesTxt{si(gni)}));
 % ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.07 0 0]);set(ht,'FontWeight','NOrmal');
@@ -251,7 +253,7 @@ for ii = 1:5
 
     titletxts{ii} = sprintf('%s - %s',confnames{ii},titletxt);
 end
-set_sub_graph_text(ff,2,titletxts,[0 0.57 0 0],[0.02 0.07 0 0]);
+set_sub_graph_text(ff,1,titletxts,[0 0.5 0 0],[0.02 0.07 0 0]);
 
 
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
