@@ -123,7 +123,7 @@ disp('Done');
             mean_pVs(an,cn) = mode(pVs(:));
             pL_vals_all = [];
             minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
-            minBinD = -1;maxBin = 1;BinWidth = 0.4;  binEsD = minBinD:BinWidth:maxBin; binCsD = binEsD(1:(end-1)) + BinWidth/2;
+            minBinD = -1;maxBin = 1;BinWidth = 1;  binEsD = minBinD:BinWidth:maxBin; binCsD = binEsD(1:(end-1)) + BinWidth/2;
             minBinFR = 0;maxBinFR = 1;BinWidthFR = 0.2;  binEsFR = minBinFR:BinWidthFR:maxBinFR; binCsFR = binEsFR(1:(end-1)) + BinWidthFR/2;
             pL_vals_trials = []; pL_vals_trialsD = []; pV_vals_trials = [];
             pL_vals_trialsLin = []; pL_vals_trialsLinD = [];
@@ -131,9 +131,9 @@ disp('Done');
                 pL_vals = pLs(:,trN);  pV_vals = pVs(resp(:,trN),trN);
                 pL_vals = pL_vals(resp(:,trN))/size_raster_2(cn);
                 pL_vals_all{trN,1} = pL_vals;
-%                 [bar1,binEs,binVals] = histcounts(pL_vals,binEs,'Normalization','probability');
-                [bar1,binEs,binVals] = histcounts(pL_vals,binEs);
-                bar1 = bar1/size(pLs,1);
+                [bar1,binEs,binVals] = histcounts(pL_vals,binEs,'Normalization','probability');
+%                 [bar1,binEs,binVals] = histcounts(pL_vals,binEs);
+%                 bar1 = bar1/size(pLs,1);
                 bar2 = NaN(length(binCs),length(binCsFR));
                 bar2 = NaN(length(binCs),1);
                 for bii = 1:length(binCs)
@@ -149,10 +149,10 @@ disp('Done');
                 pL_vals_trials = [pL_vals_trials;bar1]; pV_vals_trials = [pV_vals_trials;(bar2)'];
                 pL_vals_trialsLin = [pL_vals_trialsLin bar1];
                 if trN < 10
-                    tdpLs = dpLs(resp(:,trN),trN);
-%                     [bar1D,binEsD] = histcounts(tdpLs,binEsD,'Normalization','probability');
-                    [bar1D,binEsD] = histcounts(tdpLs,binEsD);
-                    bar1D = bar1D/size(pLs,1);
+                    tdpLs = dpLs((resp(:,trN) & resp(:,trN+1)),trN);
+                    [bar1D,binEsD] = histcounts(tdpLs,binEsD,'Normalization','probability');
+%                     [bar1D,binEsD] = histcounts(tdpLs,binEsD);
+%                     bar1D = bar1D/size(pLs,1);
                     pL_vals_trialsD = [pL_vals_trialsD;bar1D];
                     pL_vals_trialsLinD = [pL_vals_trialsLinD bar1D];
                 end
@@ -194,6 +194,7 @@ disp('Done');
     end
 mM = max(max_maps);  mMD = max(max_mapsD); mMV = max(max_mapsV);
 mm = min(min_maps);  mmD = min(min_mapsD); mmV = min(min_mapsV);
+
 %% big ANOVA
 [within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr','pL'},[5,2,10,length(binCs)]); %these are trials here
 dataT = make_between_table({pL_vals_trials_all_CLin},dvn);
@@ -201,7 +202,7 @@ dataT = make_between_table({pL_vals_trials_all_CLin},dvn);
 raBA = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA)
 
-%%
+%% find average over trials and then run ANOVA
 pLVals3 = [];
 for gni = 1:length(si)
     tpLvals = pL_vals_trials_all_C{gni};
@@ -214,7 +215,7 @@ dataT = make_between_table({pLVals3},dvn);
 raBA3 = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA3)
 
-%%
+%% run post hoc ANOVA for each configuration
 clc
 alpha = 0.05/5;
 for confi = 1:5
@@ -225,38 +226,110 @@ for confi = 1:5
     print_for_manuscript(raBAR3{confi})
 end
 
+%% C2 compare with C7 and C3 and similarly others
+
+redF = [1]; redV = {[1 5]};
+[dataTR3b,withinR] = reduce_within_between(dataT,within,redF,redV);
+raBAR3b = RMA(dataTR3b,withinR,{alpha,{'hsd'}});
+%     raR.ranova
+print_for_manuscript(raBAR3b)
+
+%%
+clc
+alpha = (0.05/5)/2;
+alpha = 0.05;
+for confi = 1:5
+    for phii = 1:2
+        redF = [1,2]; redV = {[confi],[phii]};
+        [dataTR31,withinR] = reduce_within_between(dataT,within,redF,redV);
+        raBAR31{confi,phii} = RMA(dataTR31,withinR,{alpha,{'hsd'}});
+    %     raR.ranova
+        print_for_manuscript(raBAR31{confi,phii})
+    end
+end
+
+%% figure bar graphs percent cells trial-wise dists
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 10],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],...
+    'widthHeightAdjustment',[10 -530]);
+MY = 0.46; ysp = 0.0275; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [ones(1,10)*0.55]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.dcolors(1:5),1,1); 
+confi = [1 1 2 2 3 3 4 4 5 5];
+phi = [1 2 1 2 1 2 1 2 1 2];
+for gni = 1:10
+%     tra = raBART{confi(gni)};
+    tra = raBAR31{confi(gni),phi(gni)};
+    axes(ff.h_axes(1,gni));
+
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,tra,{'pL','hsd'},[1.5 1 1]);
+    xdata = make_xdata([5],[1 3]);
+%     shadedErrorBar(xdata-1,mVar,semVar,{'color',tcolors{gni}});
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+    tcolors1 = tcolors;
+if tra.ranova{3,tra.selected_pval_col} > alpha
+    combs = [];
+end
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors1,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,'capsize',1,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.25 xdata(end)+0.75],[mY MY]); format_axes(gca); xinds = [1 10]; xticks = xdata; 
+if gni > 1
+    set(gca,'YTick',[]);
+end
+if ~mod(gni,2)
+    make_bars_hollow(hbs);
+end
+% xticklabels = cellstr(num2str((0:10)')); xticklabels = [xticklabels;xticklabels]; xticklabels = xticklabels(xinds);
+xticklabels = {'L1','L2','31','L4','L5'};
+set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+if gni == 1
+    ylabel('Probability');
+end
+
+if gni == 5
+     hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 -0.12 0]);
+end
+
+if ismember(gni,[1 3 5 7 9])
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn'},{[0.001 0.0051]});
+else
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOff'},{[0.001 0.0051]});
+end
+
+box off;
+format_axes(gca);
+
+end
+
+confnames = {'C2','C3','C4','C5','C7'};
+for ii = 1:5
+    titletxts{ii} = sprintf('%s',confnames{ii});
+end
+set_sub_graph_text(ff,2,titletxts,[0 0.5 0 0],[0.02 0.07 0 0]);
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+disp('Done')
 
 %% figure bar graphs percent cells trial-wise dists
 
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 5],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],...
     'widthHeightAdjustment',[10 -530]);
-MY = 0.2; ysp = 0.0175; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.28*magfac; widths = [0.25 0.5 0.5 0.5 1]*magfac; gap = 0.0859*magfac;
+MY = 0.6; ysp = 0.0375; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [ones(1,5)*1.245]*magfac; gap = 0.0859*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-tcolors = repmat(mData.dcolors(1:11),1,10);
-% tcolors = [mData.colors(5);mData.colors(5);mData.colors(6);mData.colors(6);...
-%     mData.colors(7);mData.colors(7);mData.colors(8);mData.colors(8);mData.colors(9);mData.colors(9)];
-confi = [1 1 2 2 3 3 4 4 5 5];
-phi = [1 2 1 2 1 2 1 2 1 2];
+tcolors = repmat(mData.dcolors(1:5),1,2); 
 for gni = 1:5
-%     tra = raBART{confi(gni)};
     tra = raBAR3{gni};
 axes(ff.h_axes(1,gni));
-if gni > 1 && gni < 5
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,tra,{'pL','hsd'},[1.5 1 1]);
-    xdata = make_xdata([5],[1 3]);
-else
-    if gni == 1
-            [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,tra,{'Ph','hsd'},[1.5 1 1]);
-            xdata = make_xdata([2],[1 3]);
-    else
-        [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,tra,{'Ph_by_pL','hsd'},[1.5 1 1]);
-        xdata = make_xdata([5 5],[1 3]);
-    end
-end
-%     shadedErrorBar(xdata-1,mVar,semVar,{'color',tcolors{gni}});
-%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,tra,{'Ph_by_pL','hsd'},[1.5 1 1]);
+xdata = make_xdata([5 5],[1 3]);
+
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,'capsize',1,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
@@ -264,24 +337,23 @@ set_axes_limits(gca,[0.25 xdata(end)+0.75],[mY MY]); format_axes(gca); xinds = [
 if gni > 1
     set(gca,'YTick',[]);
 end
+make_bars_hollow(hbs(6:end));
 % xticklabels = cellstr(num2str((0:10)')); xticklabels = [xticklabels;xticklabels]; xticklabels = xticklabels(xinds);
-% set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
-% make_bars_hollow(hbs(12:end));
-% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,11,{'AOn','AOff'},{[-0.001 -0.012]});
-if mod(gni,2) == 1
-    titletxt = 'AOn';
-else
-    titletxt = 'AOff';
+xticklabels = {'L1','L2','L3','L4','L5'};
+set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% if mod(gni,2) == 1
+%     titletxt = 'AOn';
+% else
+%     titletxt = 'AOff';
+% end
+% ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.01 -0.2 0.1 0]);set(ht,'FontWeight','NOrmal');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn','AOff'},{[0.001 0.0051]});
+if gni == 3
+    hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 -0.15 0]);
 end
-ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.01 -0.2 0.1 0]);set(ht,'FontWeight','NOrmal');
 
 if gni == 1
-    ylabel('Cells (%)');
-end
-if gni == 3
-    hxl = xlabel('Number of trials'); changePosition(hxl,[0 -15 0]);
+    ylabel('Cell Probability Density');
 end
 titletxt = (sprintf('%s',rasterNamesTxt{si(gni)}));
 % ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.07 0 0]);set(ht,'FontWeight','NOrmal');
@@ -291,16 +363,6 @@ end
 
 confnames = {'C2','C3','C4','C5','C7'};
 for ii = 1:5
-%     tar = raBART{ii};
-%     if tar.ranova{7,tar.selected_pval_col} < tar.alpha
-%         if ii == 1
-%             titletxt = sprintf('# (p<%.3f)',tar.alpha);
-%         else
-%             titletxt = '#';
-%         end
-%     end
-
-%     titletxts{ii} = sprintf('%s - %s',confnames{ii},titletxt);
     titletxts{ii} = sprintf('%s',confnames{ii});
 end
 set_sub_graph_text(ff,1,titletxts,[0 0.5 0 0],[0.02 0.07 0 0]);
@@ -308,6 +370,7 @@ set_sub_graph_text(ff,1,titletxts,[0 0.5 0 0],[0.02 0.07 0 0]);
 
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 disp('Done')
+
 %% figure bar graphs PLs C2
 
 magfac = mData.magfac;
@@ -339,7 +402,7 @@ format_axes(gca);
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 
 
-%% figure bar graphs PLs C7
+%% discarded figure bar graphs PLs C7
 
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[10 5 1.65 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
@@ -369,7 +432,7 @@ format_axes(gca);
 
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 
-%% figure bar graphs PLs C3 C4 C5
+%% discarded figure bar graphs PLs C3 C4 C5
 
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[10 5 1.25 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
@@ -434,6 +497,7 @@ for phi = 1:2
     print_for_manuscript(raBAR3D{phi})
 end
 print_for_manuscript(raBAR3D{2})
+
 %%
 clc
 alpha = (0.05/2)/10;
@@ -518,10 +582,90 @@ alpha = 0.05/5;
 for confi = 1:5
     redF = [1]; redV = {[confi]};
     [dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
-    raBAR{confi} = RMA(dataTR,withinR,{alpha,{'hsd'}});
+    raBAR{confi} = RMA(dataTR,withinR,{alpha,{''}});
 %     raR.ranova
     print_for_manuscript(raBAR{confi})
 end
+%%
+clc
+alpha = (0.05/5)/2;
+for confi = 1:5
+    for phi = 1:2
+        redF = [1,2]; redV = {[confi],[phi]};
+        [dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+        raBAR1{confi,phi} = RMA(dataTR,withinR,{alpha,{'hsd'}});
+    %     raR.ranova
+        print_for_manuscript(raBAR1{confi,phi})
+    end
+end
+
+
+%% figure bar graphs percent cells trial-wise dists
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 10],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],...
+    'widthHeightAdjustment',[10 -530]);
+MY = 0.8; ysp = 0.00775; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [ones(1,10)*0.55]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(1:10),1,1); 
+confi = [1 1 2 2 3 3 4 4 5 5];
+phi = [1 2 1 2 1 2 1 2 1 2];
+for gni = 1:10
+%     tra = raBART{confi(gni)};
+    tra = raBAR1{confi(gni),phi(gni)};
+    axes(ff.h_axes(1,gni));
+
+    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,tra,{'pL','hsd'},[1.5 1 1]);
+    xdata = make_xdata([2],[1 3]);
+%     shadedErrorBar(xdata-1,mVar,semVar,{'color',tcolors{gni}});
+%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
+    tcolors1 = tcolors;
+if tra.ranova{5,tra.selected_pval_col} > alpha
+    combs = [];
+end
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors1,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,'capsize',1,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.25 xdata(end)+0.75],[mY MY]); format_axes(gca); xinds = [1 10]; xticks = xdata; 
+if gni > 1
+    set(gca,'YTick',[]);
+end
+if ~mod(gni,2)
+    make_bars_hollow(hbs);
+end
+% xticklabels = cellstr(num2str((0:10)')); xticklabels = [xticklabels;xticklabels]; xticklabels = xticklabels(xinds);
+xticklabels = {'-L5','-L4','-L3','-L2','-L1','L1','L2','31','L4','L5'};
+set(gca,'xtick',xdata(1:3:end),'xticklabels',xticklabels(1:3:end)); xtickangle(15);
+if gni == 1
+    ylabel('Probability');
+end
+
+if gni == 5
+     hxl = xlabel('Difference in location of peak firing (binned) between adjacent trials'); changePosition(hxl,[0 -0.15 0]);
+end
+
+if ismember(gni,[1 3 5 7 9])
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,length(binCsD),{'AOn'},{[0.001 0.0051]});
+else
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,length(binCsD),{'AOff'},{[0.001 0.0051]});
+end
+
+box off;
+format_axes(gca);   
+
+end
+
+confnames = {'C2','C3','C4','C5','C7'};
+for ii = 1:5
+    titletxts{ii} = sprintf('%s',confnames{ii});
+end
+set_sub_graph_text(ff,2,titletxts,[0 0.5 0 0],[0.02 0.07 0 0]);
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+disp('Done')
+
 
 %% run ANOVArms PLs
 clc
@@ -568,14 +712,14 @@ for gn = 1:10
 %     ra = RMA(dataT,within,{0.05,''});
 %     ra.ranova
 %     print_for_manuscript(ra)
-    ra = all_ras{gn};
-    pval(gn) = ra.ranova{5,ra.selected_pval_col};
+%     ra = all_ras{gn};
+%     pval(gn) = ra.ranova{5,ra.selected_pval_col};
 %     pvalph(gn) = ra.MC.hsd.pL{12,5};
 %     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
 
     axes(ff.h_axes(1,gn));
     imagesc(binCs,1:10,tvals(:,:,3),[mm mM]);
-    titletxt = (sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
+%     titletxt = (sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
     titletxt = (sprintf('%s',rasterNamesTxt{si(gn)}));
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.1 0 0]);set(ht,'FontWeight','NOrmal');
     set(gca,'Xticklabels',[],'YTick',[1 5 10],'YDir','Normal');
@@ -593,37 +737,17 @@ for gn = 1:10
     else
         ylabel('Trials');
     end
-%     axes(ff.h_axes(3,gn));
-%     ysp = 0.03;
-%     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'pL','hsd'},[1.5 1 1]);
-%     xdata = make_xdata([length(binCs)],[1 1.5]); 
-%     tcolors = mData.dcolors;
-%     if pval(gn) >= 0.005
-%         combs = [];
-%     end 
-%     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-%     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-%     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-%     ylim([0 0.5]); xlim([0.5 xdata(end)+0.75]);
-% %     set(gca,'XTick',[1 3 5],'XTickLabels',{'0.1','0.3','0.5','0.7','0.9'});
-%     set(gca,'XTick',[1 5],'XTickLabels',{'0.1','0.9'});
-%     if gn > 1
-%         set(gca,'Yticklabels',[]);
-%     else
-%         ylabel('Cells (%)');
-%     end
     if gn == 5
         xlabel('Location of Peak Firing as a Fraction of total Phase Length');
+        hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 -0.15 0]);
     end
+    xticklabels = {'L1','L2','L3','L4','L5'};
+    set(gca,'xtick',binCs,'xticklabels',xticklabels); xtickangle(30);
+
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn','AOff'},{[0.001 0.0051]});
+
+
     format_axes(gca);
-%     if pval(gn) < 0.005
-% %     titletxt = (sprintf('%s',getNumberOfAsterisks(pval(gn))));
-% %     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','NOrmal','FontSize',5);
-% %     titletxt = (sprintf('F(4,16) = %.3f',all_pvalsFs(2,gn)));
-% %     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.031 0.2 0]);set(ht,'FontWeight','NOrmal','FontSize',5);
-%     titletxt = (sprintf('%s (%.3f)',getNumberOfAsterisks(pval(gn)),all_pvalsFs(2,gn)));
-%     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.031 0.2 0]);set(ht,'FontWeight','NOrmal','FontSize',6.5);
-%     end
     if gn == 10
         hc = putColorBar(ff.h_axes(1,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
 %         hc = putColorBar(ff.h_axes(2,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
