@@ -127,9 +127,10 @@ disp('Done');
             minBinFR = 0;maxBinFR = 1;BinWidthFR = 0.2;  binEsFR = minBinFR:BinWidthFR:maxBinFR; binCsFR = binEsFR(1:(end-1)) + BinWidthFR/2;
             pL_vals_trials = []; pL_vals_trialsD = []; pV_vals_trials = [];
             pL_vals_trialsLin = []; pL_vals_trialsLinD = [];
-            for trN = 1:10
-                pL_vals = pLs(:,trN);  pV_vals = pVs(resp(:,trN),trN);
-                pL_vals = pL_vals(resp(:,trN))/size_raster_2(cn);
+            for trN = 2:10
+                t_resp = ~resp(:,trN-1) & resp(:,trN);
+                pL_vals = pLs(:,trN);  pV_vals = pVs(t_resp,trN);
+                pL_vals = pL_vals(t_resp)/size_raster_2(cn);
                 pL_vals_all{trN,1} = pL_vals;
                 [bar1,binEs,binVals] = histcounts(pL_vals,binEs,'Normalization','probability');
 %                 [bar1,binEs,binVals] = histcounts(pL_vals,binEs);
@@ -196,7 +197,7 @@ mM = max(max_maps);  mMD = max(max_mapsD); mMV = max(max_mapsV);
 mm = min(min_maps);  mmD = min(min_mapsD); mmV = min(min_mapsV);
 
 %% big ANOVA
-[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr','pL'},[5,2,10,length(binCs)]); %these are trials here
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr','pL'},[5,2,9,length(binCs)]); %these are trials here
 dataT = make_between_table({pL_vals_trials_all_CLin},dvn);
 %     ra = RMA(dataT,within,{0.05,{'hsd'}});
 raBA = RMA(dataT,within,{0.05,{''}});
@@ -729,10 +730,10 @@ ff = makeFigureRowsCols(107,[3 5 6.9 1.25],'RowsCols',[1 2],'spaceRowsCols',[0.0
 MY = 0.9; ysp = 0.025945125; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; iplt = 1.5;% for all cells (vals) MY = 80
 stp = 0.35*magfac; widths = [4.4 1.75]*magfac; gap = 0.0859*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-tcolors = repmat(mData.colors(1:3),1,5); 
-tra = raBA3;
+tcolors = repmat(mData.colors(1:5),1,5); 
+tra = raBA;
 axes(ff.h_axes(1,1));
-[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Conf:Pol','hsd',0.05},[1 2],'yes');
+[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Conf:pL','hsd',0.05},[1 2],'yes');
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp+0.00151,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,'capsize',1,...
     'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
@@ -746,13 +747,13 @@ hxl = xlabel('Polarity of the difference in location of peak firing between adja
 % hyl = ylabel('Cells (% of activated cells)'); changePosition(hyl,[0 -0.2 0]);
 hyl = ylabel('Probability'); %changePosition(hyl,[0 -0.2 0]);
 
-titletxt = (sprintf('%s',rasterNamesTxt{si(gni)}));
+
 % ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.07 0 0]);set(ht,'FontWeight','NOrmal');
 box off;
 format_axes(gca);
 
 axes(ff.h_axes(1,2));
-[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Ph:Pol','hsd',0.05},[1 2]);
+[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Ph:pL','hsd',0.05},[1 2]);
 % h = eliminate_alternate_combs(combs,p,h,nB);
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp+0.04,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,'capsize',1,...
