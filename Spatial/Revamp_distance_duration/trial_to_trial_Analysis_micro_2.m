@@ -109,109 +109,75 @@ disp('Done');
 %     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_resp_T,0.5,0.05);
  disp('Done');
 
-%% plot average distributions of the peak locations themselves
-    all_mVals = []; all_semVals = []; pL_vals_trials_all_C = []; pL_vals_trials_all_CLin = []; pL_vals_trials_all_CLinD = [];
-    pL_vals_trials_all_CD = []; mean_pVs = [];
-    for cn = 1:length(si)
-        all_dist_vals = [];
-        pL_vals_trials_all = []; pL_vals_trials_allD = []; pV_vals_trials_all = [];
-        pL_vals_trials_allLin = []; pL_vals_trials_allLinD = [];
-        for an = 1:5
-            pLs = allpeakL_trials{an,cn}; dpLs = diff(pLs,[],2)/size_raster_2(cn);  pVs = allpeakV_trials{an,cn};
-            resp = allresp_trials{an,cn};
-            perc_resp{an,cn} = 100*sum(resp,1)/size(resp,1);
-            mean_pVs(an,cn) = mode(pVs(:));
-            pL_vals_all = [];
-            minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
-            minBinD = -1;maxBin = 1;BinWidth = 0.2;  binEsD = minBinD:BinWidth:maxBin; binCsD = binEsD(1:(end-1)) + BinWidth/2;
-            minBinFR = 0;maxBinFR = 1;BinWidthFR = 0.2;  binEsFR = minBinFR:BinWidthFR:maxBinFR; binCsFR = binEsFR(1:(end-1)) + BinWidthFR/2;
-            pL_vals_trials = []; pL_vals_trialsD = []; pV_vals_trials = [];
-            pL_vals_trialsLin = []; pL_vals_trialsLinD = [];
-            for trN = 2:10
-                t_resp = ~resp(:,trN-1) & resp(:,trN);
-                pL_vals = pLs(:,trN);  pV_vals = pVs(t_resp,trN);
-                pL_vals = pL_vals(t_resp)/size_raster_2(cn);
-                pL_vals_all{trN,1} = pL_vals;
-                [bar1,binEs,binVals] = histcounts(pL_vals,binEs,'Normalization','probability');
-%                 [bar1,binEs,binVals] = histcounts(pL_vals,binEs);
-%                 bar1 = bar1/size(pLs,1);
-                bar2 = NaN(length(binCs),length(binCsFR));
-                bar2 = NaN(length(binCs),1);
-                for bii = 1:length(binCs)
-                    indsbins = binVals == bii;
-                    tpV_vals = pV_vals(indsbins);
-                    [bar2FR,binEsFR,~] = histcounts(tpV_vals,binEsFR,'Normalization','probability');
-%                      bar2(:,bii) = bar2FR';
-                    if ~isempty(tpV_vals)
-                        bar2(bii) = mode(tpV_vals);
-                    end
-                end
+%%
+minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
+cellpops = {'resp','conj','comp1','comp2'};
+for ii = 1:length(cellpops)
+    [pLdists{ii},pLdistsL{ii},pLdists_T{ii},pLdists_TL{ii}] = get_dist_of_peak_locations(cellpops{ii},si,mRsG,allpeakL_trials,allresp_trials,binEs); % si,an,tr,pL
+end
 
-                pL_vals_trials = [pL_vals_trials;bar1]; pV_vals_trials = [pV_vals_trials;(bar2)'];
-                pL_vals_trialsLin = [pL_vals_trialsLin bar1];
-                if trN < 10
-                    tdpLs = dpLs((resp(:,trN) & resp(:,trN+1)),trN);
-                    [bar1D,binEsD] = histcounts(tdpLs,binEsD,'Normalization','probability');
-%                     [bar1D,binEsD] = histcounts(tdpLs,binEsD);
-%                     bar1D = bar1D/size(pLs,1);
-                    pL_vals_trialsD = [pL_vals_trialsD;bar1D];
-                    pL_vals_trialsLinD = [pL_vals_trialsLinD bar1D];
-                end
-            end
-            pL_vals_trials_all(:,:,an) = pL_vals_trials;  pL_vals_trials_allD(:,:,an) = pL_vals_trialsD;
-            pV_vals_trials_all(:,:,an) = pV_vals_trials;
-            pL_vals_trials_allLin(an,:) = pL_vals_trialsLin;
-            pL_vals_trials_allLinD(an,:) = pL_vals_trialsLinD;
-%             dist_vals = pL_vals_all;
-%             [distDo,allVals] = getAveragesAndAllValues(dist_vals);
-%             minBin = 0;%min(allVals);
-%             maxBin = 1;%max(allVals);
-%             incr = 0.1;
-%             tcolors = mData.colors;
-%             hf = get_figure(8,[5 7 2.25 1.5]);hold on;
-%             [ha,hb,~,bins,mVals,semVals] = plotAverageDistributions(dist_vals,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'pdf_or_cdf','pdf');
-%             all_dist_vals = [all_dist_vals;mVals];
-%             title(sprintf('%s - %d',rasterNamesTxt{si(cn)},an));
-%             pause(0.1);
-        end
-        pL_vals_trials_all_C{cn} = pL_vals_trials_all;  pL_vals_trials_all_CD{cn} = pL_vals_trials_allD;
-        pV_vals_trials_all_C{cn} = pV_vals_trials_all;  
-        m_pL_vals_trials_all{cn} = mean(pL_vals_trials_all,3);  m_pL_vals_trials_allD{cn} = mean(pL_vals_trials_allD,3);
-        m_pV_vals_trials_all{cn} = mean(pV_vals_trials_all,3);
-        max_maps(cn) = max(m_pL_vals_trials_all{cn}(:));  max_mapsD(cn) = max(m_pL_vals_trials_allD{cn}(:));
-        max_mapsV(cn) = max(m_pV_vals_trials_all{cn}(:));
-        min_maps(cn) = min(m_pL_vals_trials_all{cn}(:));  min_mapsD(cn) = min(m_pL_vals_trials_allD{cn}(:));
-        min_mapsV(cn) = min(m_pV_vals_trials_all{cn}(:));
-        
-        sem_pL_vals_trials_all{cn} = std(pL_vals_trials_all,[],3)/sqrt(5);
-        pL_vals_trials_all_CLin = [pL_vals_trials_all_CLin pL_vals_trials_allLin];
-        pL_vals_trials_all_CLinD = [pL_vals_trials_all_CLinD pL_vals_trials_allLinD];
-%         [mVals,semVals] = findMeanAndStandardError(all_dist_vals);
-%         hf = get_figure(8,[5 7 2.25 1.5]);hold on;
-%         plot(bins,mVals);
-%         shadedErrorBar(bins,mVals,semVals);
-%         all_mVals = [all_mVals;mVals];
-%         all_semVals = [all_semVals;semVals];
+%% big ANOVA cell types
+
+pLdistsL_cells = [pLdistsL{2} pLdistsL{3} pLdistsL{4}];
+[within,dvn,xlabels,awithinD] = make_within_table({'CT','Conf','Ph','Tr','pL'},[3,5,2,9,length(binCs)]); %these are trials here
+dataT = make_between_table({pLdistsL_cells},dvn);
+%     ra = RMA(dataT,within,{0.05,{'hsd'}});
+raBA = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(raBA)
+
+%%
+pLdistsL_cells = [pLdists_TL{2} pLdists_TL{3} pLdists_TL{4}];
+[within,dvn,xlabels,awithinD] = make_within_table({'CT','Conf','Ph','pL'},[3,5,2,length(binCs)]); %these are trials here
+dataT = make_between_table({pLdistsL_cells},dvn);
+%     ra = RMA(dataT,within,{0.05,{'hsd'}});
+raBA = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(raBA)
+%%
+clc
+alpha = 0.05/5;
+for cti = 1:5
+    redF = [2]; redV = {[cti]};
+    [dataTR3,withinR] = reduce_within_between(dataT,within,redF,redV);
+    raBAR{cti} = RMA(dataTR3,withinR,{alpha,{''}});
+%     raR.ranova
+    print_for_manuscript(raBAR{cti})
+end
+
+%%
+clc
+alpha = (0.05/5)/3;
+
+for confi = 1%:5
+    for phi = 1:2
+        redF = [2,3]; redV = {[confi],[phi]};
+        [dataTR,withinR1] = reduce_within_between(dataT,within,redF,redV);
+        raBAR{confi,phi} = RMA(dataTR,withinR1,{alpha,{''}});
+    %     raR.ranova
+        print_for_manuscript(raBAR{confi,phi})
     end
-mM = max(max_maps);  mMD = max(max_mapsD); mMV = max(max_mapsV);
-mm = min(min_maps);  mmD = min(min_mapsD); mmV = min(min_mapsV);
+end
+%%
+clc
+alpha = 0.05/3;
+for cti = 1:3
+    redF = [1]; redV = {[cti]};
+    [dataTR3,withinR] = reduce_within_between(dataT,within,redF,redV);
+    raBAR{cti} = RMA(dataTR3,withinR,{alpha,{''}});
+%     raR.ranova
+    print_for_manuscript(raBAR{cti})
+end
+
 
 %% big ANOVA
-[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr','pL'},[5,2,9,length(binCs)]); %these are trials here
-dataT = make_between_table({pL_vals_trials_all_CLin},dvn);
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr','pL'},[5,2,10,length(binCs)]); %these are trials here
+dataT = make_between_table({pLdistsL{1}},dvn);
 %     ra = RMA(dataT,within,{0.05,{'hsd'}});
 raBA = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA)
 
 %% find average over trials and then run ANOVA
-pLVals3 = [];
-for gni = 1:length(si)
-    tpLvals = pL_vals_trials_all_C{gni};
-    mtpLvals = (squeeze(mean(tpLvals,1)))';
-    pLVals3 = [pLVals3 mtpLvals];
-end
 [within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','pL'},[5,2,length(binCs)]); %these are trials here
-dataT = make_between_table({pLVals3},dvn);
+dataT = make_between_table({pLdists_TL{1}},dvn);
 %     ra = RMA(dataT,within,{0.05,{'hsd'}});
 raBA3 = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA3)
@@ -328,9 +294,9 @@ for gni = 1:5
     axes(ff.h_axes(1,gni));
 
     if ismember(gni,[1 5])
-        [xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Ph:pL','hsd',0.05},[1 2]);
+        [xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Ph:pL','hsd',0.05},[1 2],'yes');
     else
-        [xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'pL','hsd',0.05},[1 2]);
+        [xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'pL','hsd',0.05},[1 2],'yes');
     end
 %     ccis = [];
 %     for cci = 1:size(combs,1)
