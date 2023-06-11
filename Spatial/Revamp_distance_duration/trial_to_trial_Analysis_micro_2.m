@@ -134,9 +134,33 @@ raBA = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA)
 %%
 clc
-alpha = 0.05/5;
-for cti = 1:5
-    redF = [2]; redV = {[cti]};
+raBA_R = RMA_R(raBA,{'Conf'});
+print_for_manuscript(raBA_R)
+
+%%
+clc
+raBA_R = RMA_R(raBA,{'pL'});
+print_for_manuscript(raBA_R)
+
+%%
+ra = raBA_R.ras{2};
+tcolors = repmat(mData.colors,1,10);
+figure(300);clf; ha = gca;
+view_results_rmanova(ha,ra,'CT:Ph','hsd',[1 2],tcolors,[0 1 0.05],mData)
+%%
+clc
+close(figure(100));
+tra = raBA_R.ras{1};
+ra_pL1 = RMA_R(tra,{'Ph'});
+print_for_manuscript(ra_pL1)
+view_results_rmanova([],ra_pL1.ras{1},'CT:Conf','hsd',[1 2],tcolors,[0 1 0.05],mData)
+%%
+raBA_R = RMA_R(raBA,redFV);
+%%
+clc
+alpha = 0.05/3;
+for cti = 1:3
+    redF = [1]; redV = {[cti]};
     [dataTR3,withinR] = reduce_within_between(dataT,within,redF,redV);
     raBAR{cti} = RMA(dataTR3,withinR,{alpha,{''}});
 %     raR.ranova
@@ -145,11 +169,25 @@ end
 
 %%
 clc
+alpha = (0.05/5)/5;
+
+for confi = 1%:5
+    for phi = 1:5
+        redF = [4,2]; redV = {[confi],[phi]};
+        [dataTR,withinR1] = reduce_within_between(dataT,within,redF,redV);
+        raBAR{confi,phi} = RMA(dataTR,withinR1,{alpha,{''}});
+    %     raR.ranova
+        print_for_manuscript(raBAR{confi,phi})
+    end
+end
+
+%%
+clc
 alpha = (0.05/5)/3;
 
 for confi = 1%:5
-    for phi = 1:2
-        redF = [2,3]; redV = {[confi],[phi]};
+    for phi = 1:3
+        redF = [1,2]; redV = {[phi],[confi]};
         [dataTR,withinR1] = reduce_within_between(dataT,within,redF,redV);
         raBAR{confi,phi} = RMA(dataTR,withinR1,{alpha,{''}});
     %     raR.ranova
