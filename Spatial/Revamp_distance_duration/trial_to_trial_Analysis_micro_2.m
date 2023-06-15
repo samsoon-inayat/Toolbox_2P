@@ -134,7 +134,7 @@ raBA = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA)
 %%
 clc
-raBA_R = RMA_R(raBA,{'Conf'});
+raBA_R = RMA_R(raBA,{'Conf','Ph'});
 print_for_manuscript(raBA_R)
 
 %%
@@ -143,10 +143,15 @@ raBA_R = RMA_R(raBA,{'pL'});
 print_for_manuscript(raBA_R)
 
 %%
-ra = raBA_R.ras{2};
+clc
+raBA_R1 = RMA_R(raBA_R.ras{5},{'Conf'});
+print_for_manuscript(raBA_R1)
+
+%%
+ra = raBA_R.ras{5};
 tcolors = repmat(mData.colors,1,10);
 figure(300);clf; ha = gca;
-view_results_rmanova(ha,ra,'CT:Ph','hsd',[1 2],tcolors,[0 1 0.05],mData)
+view_results_rmanova(ha,ra,'Ph:CT','hsd',[1 2],tcolors,[0 0.3 0.05],mData)
 %%
 clc
 close(figure(100));
