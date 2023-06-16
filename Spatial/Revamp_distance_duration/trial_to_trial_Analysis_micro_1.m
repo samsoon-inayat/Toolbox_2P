@@ -844,7 +844,7 @@ save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 disp('Done')
 
 
-%% Figure 4C figure heat maps of probabilities trial wise
+%% Figure 4A figure heat maps of probabilities trial wise
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[2 3 6.9 1.5],'RowsCols',[2 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.23],...
     'widthHeightAdjustment',[-100 -180]);
@@ -912,7 +912,7 @@ end
 save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
 
 
-%% Figure 4A figure heat maps of probabilities trial wise diff pL
+%% Figure 4C figure heat maps of probabilities trial wise diff pL
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[2 3 6.9 1.5],'RowsCols',[2 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.24],...
     'widthHeightAdjustment',[-100 -180]);
@@ -942,7 +942,7 @@ for gn = 1:10
 %     pvalphB(gn) = ra.MC.bonferroni.pL{12,5};
 
     axes(ff.h_axes(1,gn));
-    imagesc(binCsD,1:10,tvals(:,:,3),[mmD mMD]);
+    imagesc(binCsD,1:9,tvals(:,:,3),[mmD mMD]);
 %     titletxt = (sprintf('%s - %s',rasterNamesTxt{si(gn)},getNumberOfAsterisks(pval(gn))));
     titletxt = (sprintf('%s',rasterNamesTxt{si(gn)}));
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.1 0 0]);set(ht,'FontWeight','NOrmal');
@@ -954,7 +954,7 @@ for gn = 1:10
     end
     format_axes(gca);
     axes(ff.h_axes(2,gn));
-    imagesc(binCsD,1:10,m_pL_vals_trials_allD{gn},[mmD mMD]);
+    imagesc(binCsD,1:9,m_pL_vals_trials_allD{gn},[mmD mMD]);
     set(gca,'YTick',[1 5 10],'YDir','Normal','XTick',binCs);xtickangle(30);
     if gn > 1
         set(gca,'Yticklabels',[]);
