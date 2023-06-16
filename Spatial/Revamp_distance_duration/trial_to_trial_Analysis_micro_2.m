@@ -134,16 +134,70 @@ dataT = make_between_table({pLdistsL_cells},dvn);
 raBA = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA)
 %%
+%%
+clc
+raBA_R = RMA_R(raBA,{'Conf'});
+print_for_manuscript(raBA_R)
+%%
+clc
+raBA_R1 = RMA_R(raBA_R.ras{1},{'pL'});
+print_for_manuscript(raBA_R1)
+%%
+clc
+raBA_R2 = RMA_R(raBA_R.ras{3},{'Ph'});
+print_for_manuscript(raBA_R2)
+
+%% Figure
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 1+1+1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 0.43; ysp = 0.035285; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [1.35 1 2.85 1]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+
+tcolors = repmat(mData.colors(1:2),1,3); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raBA_R1.ras{5},'CT:Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
+ylabel('Probability');
+axes_title(ff,{1},{'C2 - L5'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.colors(6:10),1,3); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'L1','L2','L3','L4','L5'};
+set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
+axes_title(ff,{2},{'C3'},axes_title_shifts_line,axes_title_shifts_text);
+
+
+tcolors = repmat(mData.colors(6:10),1,3); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,3),raBA_R2.ras{1},'CT:pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'L1','L2','L3','L4','L5'};
+set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
+axes_title(ff,{3},{'C4 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.colors(6:10),1,3); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{4},'pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'L1','L2','L3','L4','L5'};
+set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
+axes_title(ff,{4},{'C5'},axes_title_shifts_line,axes_title_shifts_text);
+
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graph.pdf'),600);
+
+%% anova w.r.t pL
 clc
 raBA_R = RMA_R(raBA,{'pL'});
 print_for_manuscript(raBA_R)
 
-%%
+%% sub anova
 clc
 raBA_R1 = RMA_R(raBA_R.ras{1},{'Ph'});
 print_for_manuscript(raBA_R1)
 
-%%
+%% Figure
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 1+1+2+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
     'widthHeightAdjustment',[10 -500]);
@@ -184,17 +238,17 @@ axes_title(ff,{5},{'L5'},axes_title_shifts_line,axes_title_shifts_text);
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graph.pdf'),600);
 
 
-%%
+%% anova w.r.t. CT
 clc
 raBA_R = RMA_R(raBA,{'CT'});
 print_for_manuscript(raBA_R)
 
-%%
+%% sub anova
 clc
 raBA_R1 = RMA_R(raBA_R.ras{1},{'CT'});
 print_for_manuscript(raBA_R1)
 
-%%
+%% Figure
 clc
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[3 5 6.9 2],'RowsCols',[1 1+1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.2],...
@@ -228,7 +282,7 @@ axes_title(ff,{3},{'Comp2'},axes_title_shifts_line,axes_title_shifts_text);
 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graph.pdf'),600);
 
-%%
+%% random visualize results
 ra = raBA_R.ras{2};
 tcolors = repmat(mData.colors,1,10);
 figure(300);clf; ha = gca;
@@ -257,19 +311,23 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 
 for cti = 2:4
     ttvals = pLdists{cti}; % cn an tr pL
-    ttvals = permute(ttvals,[3 4 1 2])
+    ttvals = permute(ttvals,[3 4 1 2]);
     size(ttvals);
     mttvals = squeeze(mean(ttvals,4));
     amm(cti) = min(mttvals(:));
     amM(cti) = max(mttvals(:));
 end
 mM = max(amM); mm = min(amm);
-
+rep_animal = 1; % if 0 then plot average
 for cti = 2:4
     ttvals = pLdists{cti}; % cn an tr pL
-    ttvals = permute(ttvals,[3 4 1 2])
+    ttvals = permute(ttvals,[3 4 1 2]);
     size(ttvals);
-    mttvals = squeeze(mean(ttvals,4));
+    if rep_animal
+        mttvals = ttvals(:,:,:,3);
+    else
+        mttvals = squeeze(mean(ttvals,4));
+    end
 %     mm = amm(cti); mM = amM(cti);
 for gn = 1:10
     axes(ff.h_axes(cti-1,gn));
