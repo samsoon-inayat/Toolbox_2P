@@ -163,7 +163,7 @@ set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.
 ylabel('Probability');
 axes_title(ff,{1},{'C2 - L5'},axes_title_shifts_line,axes_title_shifts_text);
 
-tcolors = repmat(mData.colors(6:10),1,3); 
+tcolors = repmat(mData.dcolors(1:5),1,3); 
 [xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
 xticklabels = {'L1','L2','L3','L4','L5'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
@@ -171,14 +171,14 @@ set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 axes_title(ff,{2},{'C3'},axes_title_shifts_line,axes_title_shifts_text);
 
 
-tcolors = repmat(mData.colors(6:10),1,3); 
+tcolors = repmat(mData.dcolors(1:5),1,3); 
 [xdata,hbs] = view_results_rmanova(ff.h_axes(1,3),raBA_R2.ras{1},'CT:pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
 xticklabels = {'L1','L2','L3','L4','L5'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
 axes_title(ff,{3},{'C4 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
 
-tcolors = repmat(mData.colors(6:10),1,3); 
+tcolors = repmat(mData.dcolors(1:5),1,3); 
 [xdata,hbs] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{4},'pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
 xticklabels = {'L1','L2','L3','L4','L5'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
@@ -303,13 +303,13 @@ view_results_rmanova([],ra_pL1.ras{1},'CT:Conf','hsd',[1 2],tcolors,[0 1 0.05],m
 
 %% Figure 5A figure heat maps of probabilities trial wise
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[2 3 6.9 2],'RowsCols',[3 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.17],...
-    'widthHeightAdjustment',[-100 -110]);
+ff = makeFigureRowsCols(107,[2 3 6.9 2.25],'RowsCols',[4 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.16],...
+    'widthHeightAdjustment',[-100 -90]);
 MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
 stp = 0.35*magfac; widths = ([ones(1,10)*0.55]-0.05)*magfac; gap = 0.15*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 
-for cti = 2:4
+for cti = 1:4
     ttvals = pLdists{cti}; % cn an tr pL
     ttvals = permute(ttvals,[3 4 1 2]);
     size(ttvals);
@@ -318,8 +318,8 @@ for cti = 2:4
     amM(cti) = max(mttvals(:));
 end
 mM = max(amM); mm = min(amm);
-rep_animal = 1; % if 0 then plot average
-for cti = 2:4
+rep_animal = 0; % if 0 then plot average
+for cti = 1:4
     ttvals = pLdists{cti}; % cn an tr pL
     ttvals = permute(ttvals,[3 4 1 2]);
     size(ttvals);
@@ -330,13 +330,20 @@ for cti = 2:4
     end
 %     mm = amm(cti); mM = amM(cti);
 for gn = 1:10
-    axes(ff.h_axes(cti-1,gn));
-    imagesc(binCs,1:9,mttvals(:,:,gn),[mm mM]);
-    set(gca,'YTick',[1 9],'YDir','Normal','XTick',binCs);xtickangle(30);
+    axes(ff.h_axes(cti,gn));
+    if cti == 1
+        imagesc(binCs,1:10,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 5 10],'YDir','Normal','XTick',binCs);xtickangle(30);
+    else
+        imagesc(binCs,1:9,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 9],'YDir','Normal','XTick',binCs);xtickangle(30);
+    end
     if gn > 1
         set(gca,'Yticklabels',[]);
     else
         switch cti
+            case 1
+                ylabel({'Activ','Trials'});
             case 2
                 ylabel({'Conj','Trials'});
             case 3
@@ -355,7 +362,7 @@ for gn = 1:10
     else
         set(gca,'xtick',binCs,'xticklabels',[]); xtickangle(30);
     end
-    if cti == 2
+    if cti == 1
     titletxt = (sprintf('%s',rasterNamesTxt{si(gn)}));
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.1 0 0]);set(ht,'FontWeight','NOrmal');
     end
@@ -364,7 +371,7 @@ for gn = 1:10
 
     format_axes(gca);
     if gn == 10 && cti == 2
-        hc = putColorBar(ff.h_axes(cti-1,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+        hc = putColorBar(ff.h_axes(cti-1,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.1 0.07 0.1 0.1]);
 %         hc = putColorBar(ff.h_axes(2,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
     end
 end
