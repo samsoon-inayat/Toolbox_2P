@@ -76,7 +76,8 @@ for gii = 1:10
     format_axes(gca)
 end
 
-set_sub_graph_text(ff,2,{'C2','C3','C4','C5','C7'},{[-0.27 -0.05]});
+set_sub_graph_text(ff,2,{'C2','C3','C4','C5','C7'},[0 0 0 0],[0.0 0.0 0 0]);
+% set_sub_graph_text(ff,1,titletxts,[0 0.55 0 0],[0.02 0.07 0 0]);
 
 for gii = 1:10
     axes(ff.h_axes(1,gii)); ha = gca;
