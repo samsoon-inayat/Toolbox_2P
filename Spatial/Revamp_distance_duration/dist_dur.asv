@@ -27,7 +27,7 @@ end
 varC = mean_var_C;
 [within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Cond'},[2,2,3]);
 dataT = make_between_table({varC},dvn);
-ra = RMA(dataT,within,{0.05,{'hsd'}});
+ra = RMA(dataT,within,{0.05,{'bonferroni','hsd'}});
 ra.ranova
 print_for_manuscript(ra)
 %% finding dzMIs for trials and intertrials
@@ -87,8 +87,8 @@ print_for_manuscript(ra)
     %%
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
-%     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
-%     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
+    FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
+    FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
     for rfi = 3
@@ -177,7 +177,7 @@ dur_cells_IA = cell_list_op(dur_cells_I,[],'and',1);
 
 dur_dis_T = cell_list_op(dur_cells_T,dis_cells_T,'or');
 dur_dis_I = cell_list_op(dur_cells_I,dis_cells_I,'or');
-disp('Done');
+
 %% running RMANOVA on all neurons in one animal (animal wise)
 an = 4;
 pop_var_name = {'all'};

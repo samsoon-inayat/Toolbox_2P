@@ -2,7 +2,7 @@ function raster_plots
 
 %% rasters speed
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 6.99 2],'RowsCols',[2 6],'spaceRowsCols',[0.3 0.02],'rightUpShifts',[0.02 0.15],'widthHeightAdjustment',[10 -325]);
+ff = makeFigureRowsCols(108,[10 3 6.99 2],'RowsCols',[2 6],'spaceRowsCols',[0.3 0.02],'rightUpShifts',[0.02 0.135],'widthHeightAdjustment',[10 -325]);
 MY = 10; ysp = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'Trial #'};
 stp = 0.35*magfac; widths = (ones(1,18)*0.77)*magfac; gap = 0.32*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
@@ -82,9 +82,9 @@ for cc = 1:6
     format_axes(gca);
     textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
     if cc < 4
-      textstr = sprintf('C%d - Air',configN(cc));
+      textstr = sprintf('C%d - AOn',configN(cc));
     else
-      textstr = sprintf('C%d - No-Air',configN(cc));
+      textstr = sprintf('C%d - AOff',configN(cc));
     end
     ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 -0.09 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
     if cc == 1

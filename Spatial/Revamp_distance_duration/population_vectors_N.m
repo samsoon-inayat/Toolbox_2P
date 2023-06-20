@@ -16,7 +16,7 @@
     props1 = get_props_Rs(Rs,ntrials);
     good_FR = cell_list_op(props1,{'vals','good_FR'}); 
     good_FR = cell_list_op(props1,{'vals'}); 
-%     good_FR = dzMI_FD.resp_T_g_D;
+% %     good_FR = dzMI_FD.resp_T_g_D;
 %     good_FR = cell_list_op(props1,{'vals'});
     good_FR = dis_cells_T;
     [CRc,aCRc,mRR] = find_population_vector_corr(Rs,mR,good_FR,0);
@@ -224,15 +224,16 @@
     tim = 0;
     if tim
       si = [Ar_t_T ArL_t_T Ars_t_T Ar_i_T ArL_i_T Ars_i_T];% 
+      Rs = o.Rs(:,si);mR = o.mR(:,si); props1 = get_props_Rs(Rs,ntrials);
       good_FR = [dur_cells_T dur_cells_I];
-      %     good_FR = cell_list_op(props1,{'vals'}); 
+%           good_FR = cell_list_op(props1,{'vals'}); 
     else
       si = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];% 
+      Rs = o.Rs(:,si);mR = o.mR(:,si); props1 = get_props_Rs(Rs,ntrials);
       good_FR = [dis_cells_T dis_cells_I];
-      %     good_FR = cell_list_op(props1,{'vals'}); 
+%           good_FR = cell_list_op(props1,{'vals'}); 
     end
 
-    Rs = o.Rs(:,si);mR = o.mR(:,si);
     
     [CRc,aCRc,mRR,~,mxsz] = find_population_vector_corr(Rs,mR,good_FR,0);
     mRRm = [];
@@ -359,8 +360,8 @@
         end
     end
     colormap jet
-    ht = set_axes_top_text(gcf,ff.h_axes(1,1:3),'Air',{0.08,[0.2 -0.05 0 0]});set(ht,'FontWeight','Bold');
-    ht = set_axes_top_text(gcf,ff.h_axes(1,4:6),'No Air',{0.08,[0.17 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,1:3),'AOn',{0.08,[0.2 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,4:6),'AOff',{0.08,[0.17 -0.05 0 0]});set(ht,'FontWeight','Bold');
     save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%d.pdf',ntrials,tim),600);
 
 %% population vector and correlation sensory (Dist and time) conjunctive

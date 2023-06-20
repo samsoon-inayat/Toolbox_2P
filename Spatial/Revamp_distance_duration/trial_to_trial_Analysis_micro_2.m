@@ -109,7 +109,7 @@ disp('Done');
 %     [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_resp_T,0.5,0.05);
  disp('Done');
 
-%%
+%% get dists of peaks
 minBin = 0;maxBin = 1;BinWidth = 0.2;  binEs = minBin:BinWidth:maxBin; binCs = binEs(1:(end-1)) + BinWidth/2;
 cellpops = {'resp','conj','comp1','comp2'};
 for ii = 1:length(cellpops)
@@ -308,23 +308,27 @@ ff = makeFigureRowsCols(107,[2 3 6.9 2.25],'RowsCols',[4 10],'spaceRowsCols',[0.
 MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
 stp = 0.35*magfac; widths = ([ones(1,10)*0.55]-0.05)*magfac; gap = 0.15*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-
-for cti = 1:4
-    ttvals = pLdists{cti}; % cn an tr pL
-    ttvals = permute(ttvals,[3 4 1 2]);
-    size(ttvals);
-    mttvals = squeeze(mean(ttvals,4));
-    amm(cti) = min(mttvals(:));
-    amM(cti) = max(mttvals(:));
-end
-mM = max(amM); mm = min(amm);
-rep_animal = 0; % if 0 then plot average
+rep_animal = 1; % if 0 then plot average
+rep_an = 3;
 for cti = 1:4
     ttvals = pLdists{cti}; % cn an tr pL
     ttvals = permute(ttvals,[3 4 1 2]);
     size(ttvals);
     if rep_animal
-        mttvals = ttvals(:,:,:,3);
+        mttvals = ttvals(:,:,:,rep_an);
+    else
+        mttvals = squeeze(mean(ttvals,4));
+    end
+    amm(cti) = min(mttvals(:));
+    amM(cti) = max(mttvals(:));
+end
+mM = max(amM)/1.25; mm = min(amm);
+for cti = 1:4
+    ttvals = pLdists{cti}; % cn an tr pL
+    ttvals = permute(ttvals,[3 4 1 2]);
+    size(ttvals);
+    if rep_animal
+        mttvals = ttvals(:,:,:,rep_an);
     else
         mttvals = squeeze(mean(ttvals,4));
     end

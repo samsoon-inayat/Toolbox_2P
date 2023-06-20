@@ -1,9 +1,9 @@
 %% Resp. two graphs, all and cond
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[10 5 2.75 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
+ff = makeFigureRowsCols(107,[10 5 2.75 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.08 0.36],'widthHeightAdjustment',[10 -510]);
 switch varT
     case 1 % responsive cells 
-        MY = 70; ysp = 4; mY = 0; titletxt = 'Responsiveness'; ylabeltxt = {'% of cells'}; % for all cells (vals) MY = 80
+        MY = 70; ysp = 4; mY = 0; titletxt = 'Responsiveness'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
     case 2
         MY = 90; ysp = 4; mY = 0; titletxt = 'Response Fidelity'; ylabeltxt = {'% of Trials'};% for all cells (vals) MY = 70
     case 3
@@ -12,11 +12,11 @@ switch varT
     case 10
         MY = 200; ysp = 1; mY = -0.15; titletxt = 'Tuning Width'; ylabeltxt = {'cm'};
 end
-stp = 0.235*magfac; widths = ([1.85 0.65 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+stp = 0.25*magfac; widths = ([1.85 0.65 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = repmat(mData.colors(1:2),1,6);
 axes(ff.h_axes(1,1));
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_Cond_by_DT','bonferroni'},[1.5 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_Cond_by_DT','hsd'},[1.5 1 1]);
     xdata = make_xdata([2 2 2 2 2 2],[1 1.5]);   
 %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
     h(h==1) = 0;
@@ -28,12 +28,12 @@ xticklabels = {'Ti','Di'};set(gca,'xtick',xticks,'xticklabels',xticklabels);% xt
 make_bars_hollow(hbs(7:end));
 [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'AOn','AOff'},{[-0.1 -0.012]});
 ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','Bold');
 format_axes(gca);
 
 axes(ff.h_axes(1,2));
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT','bonferroni'},[1.5 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_DT','hsd'},[1.5 1 1]);
     xdata = make_xdata([4],[1 1.5]);   
 %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
 %     h(h==1) = 0;
@@ -189,7 +189,7 @@ ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0.2 0]);set(ht,'FontWe
 format_axes(gca);
 
 axes(ff.h_axes(1,2));
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','bonferroni'},[1.5 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','hsd'},[1.5 1 1]);
     xdata = make_xdata([2],[1 1.5]);   
 %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
 %     h(h==1) = 0;
@@ -216,7 +216,7 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = repmat(mData.colors(4:6),1,6);
 axes(ff.h_axes(1,1));
 
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','bonferroni'},[1.5 1 1]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI_by_CT','hsd'},[1.5 1 1]);
 xdata = make_xdata([3 3],[1 1.5]);
 %     hf = get_figure(5,[8 7 1.5 1]);
 % tcolors = repmat(mData.colors(1:3),1,2);
@@ -232,9 +232,9 @@ xticks = xdata; xticklabels = {'TE','DE','IE'};
 make_bars_hollow(hbs(4:end))
 set(gca,'xtick',xticks,'xticklabels',xticklabels); %xtickangle(45)
 %     changePosition(gca,[0.04 0.01 -0.1 0]); 
-put_axes_labels(gca,{[],[0 0 0]},{'% of Cells',[0 0 0]});
+put_axes_labels(gca,{[],[0 0 0]},{'Cells (%)',[0 0 0]});
 ht = set_axes_top_text_no_line(gcf,gca,'Responsiveness',[-0.05 -0.01 0.2 0]);set(ht,'FontWeight','Bold');
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Air','No-Air'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'AOn','AOff'});
 format_axes(gca);
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 
