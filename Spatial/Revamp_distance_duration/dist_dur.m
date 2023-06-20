@@ -81,9 +81,34 @@ end
 varC = find_percent(cell_list);
 [within,dvn,xlabels,awithinD] = make_within_table({'TI','CT','Cond'},[2,3,3]);
 dataT = make_between_table({varC},dvn);
-ra = RMA(dataT,within,{0.05,{'hsd'}});
+ra = RMA(dataT,within,{0.05,{''}});
 ra.ranova
 print_for_manuscript(ra)
+%% Figure
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 2.6 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 60; ysp = 5; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [0.87 1.35 2.85 1]*magfac; gap = 0.07105*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+
+tcolors = repmat(mData.colors(4:6),1,2);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),ra,'TI:CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'TE','DE','IE'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); %xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'AOn','AOff'},{[0.001 0.0051]});
+ylabel('Cells (%)');
+axes_title(ff,{1:2},{'Responsivity'},axes_title_shifts_line,axes_title_shifts_text,'no');
+
+tcolors = repmat(mData.colors(7:9),3,1);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),ra,'CT:Cond','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'C3','C4','C5'};
+set(gca,'xtick',xdata,'xticklabels',xticklabels); %xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'TE','DE','IE'},{[0.001 0.0051]});
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+
     %%
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
@@ -111,9 +136,26 @@ print_for_manuscript(ra)
     
     [within,dvn,xlabels] = make_within_table({'TI','CT','Cond'},[2,3,3]);
     dataT = make_between_table({mean_dzMI},dvn);
-    ra = RMA(dataT,within,{0.05,{'bonferroni'}});
+    ra = RMA(dataT,within,{0.05,{''}});
     ra.ranova
     print_for_manuscript(ra)
+
+%% Figure
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 2; ysp = 0.15285; mY = -2.5; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [1.15 1 2.85 1]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+
+tcolors = repmat(mData.colors(1:3),1,2); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),ra,'TI:CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'TE','DE','IE'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
+ylabel('Probability');
+% axes_title(ff,{1},{'C2 - L5'},axes_title_shifts_line,axes_title_shifts_text);
+    
 %%
 % cell_list = [];
 % for rfi = 1:2

@@ -247,7 +247,7 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes(ff.h_axes(1,1));
 
 % [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'CT_by_Cond','bonferroni'},[1.5 1 1]);
-[xdata,mVar,semVar,combs,p,h] = get_vals_RMA(mData,ra,{'CT:Cond','hsd'},[1 2]);
+[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'CT:Cond','bonferroni'},[1.5 1 1]);
 
 tcolors = repmat(mData.colors(7:9),3,1);
 MmVar = max(mVar);
