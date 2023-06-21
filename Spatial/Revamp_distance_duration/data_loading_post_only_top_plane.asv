@@ -83,6 +83,7 @@ cellposeCells = evalin('base','cellposeCells');
 
 o = get_trials_MI(o);
 
+o = calc_trials_MI_mean(o);
 
 n = 0;
 %%

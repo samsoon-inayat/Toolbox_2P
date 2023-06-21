@@ -29,7 +29,7 @@ make_bars_hollow(hbs(7:end));
 [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'AOn','AOff'},{[-0.1 -0.012]});
-ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','Bold');
+ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','Normal');
 format_axes(gca);
 
 axes(ff.h_axes(1,2));
@@ -413,8 +413,10 @@ end
   adjust_axes(ff,[mY MY],stp,widths,gap,{''});
   tcolors = repmat(mData.colors(1:2),1,6);
   axes(ff.h_axes(1,1));
-    [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','bonferroni'},[1.5 1 1]);
-    xdata = make_xdata([2],[1 1.5]);
+%     [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'TI','bonferroni'},[1.5 1 1]);
+%     xdata = make_xdata([2],[1 1.5]);
+    [xdata,mVar,semVar,combs,p,h] = get_vals_RMA(mData,ra,{'TI','hsd'},[1 2]);
+
 %     hf = get_figure(5,[8 7 1.5 1]);
     tcolors = mData.dcolors(7:end);
     [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -424,7 +426,7 @@ end
     ylims = ylim;
     format_axes(gca);
     set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes(gca);
-    xticks = xdata; xticklabels = {'Air','No Air'};
+    xticks = xdata; xticklabels = {'AOn','AOff'};
     set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(45)
     put_axes_labels(gca,{[],[0 0 0]},{'{\Delta} % of trials',[0 0 0]});
 ht = set_axes_top_text_no_line(gcf,gca,'Response Fidelity',[-0.05 -0.01 0.2 0]);set(ht,'FontWeight','Bold');

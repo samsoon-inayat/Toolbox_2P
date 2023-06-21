@@ -207,6 +207,67 @@ raBA_R = RMA_R(raBA,{'Conf'});
 print_for_manuscript(raBA_R)
 
 
+%% figure bar graphs MI trial-wise
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.5],'RowsCols',[1 5],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.33],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 0.8; ysp = 0.05945125; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; iplt = 1.5% for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [ones(1,4)*0.8 iplt]*magfac; gap = 0.0859*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+tcolors = repmat(mData.colors(1:3),1,2); 
+for gni = 1:5
+    tra = raBA_R{gni};
+    axes(ff.h_axes(1,gni));
+
+    if ismember(gni,[5])
+        [xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Ph:Pol','hsd',0.05},[1 2]);
+    else
+        [xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,tra,{'Pol','hsd',0.05},[1 2]);
+    end
+    
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,'capsize',1,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set_axes_limits(gca,[0.25 xdata(end)+0.75],[mY MY]); format_axes(gca); xinds = [1 10]; xticks = xdata; 
+if gni > 1
+    set(gca,'YTick',[]);
+end
+make_bars_hollow(hbs(4:end));
+% xticklabels = cellstr(num2str((0:10)')); xticklabels = [xticklabels;xticklabels]; xticklabels = xticklabels(xinds);
+xticklabels = {'Neg','Zero','Pos'};
+set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(15);
+if ismember(gni,[5])
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,nB(1),{'AOn','AOff'},{[0.001 0.0051]});
+else
+    for hbi = 1:length(hbs)
+        set(hbs(hbi),'facealpha',0.5,'linestyle',':','edgecolor',tcolors{hbi});
+    end
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,nB,{'AOn/AOff'},{[0.001 0.0051]});
+end
+if gni == 3
+    hxl = xlabel('Polarity of the difference in location of peak firing between adjacent trials'); changePosition(hxl,[0 -0.17 0]);
+end
+
+if gni == 1
+    ylabel('Cells (% of activated cells)');
+end
+titletxt = (sprintf('%s',rasterNamesTxt{si(gni)}));
+% ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.07 0 0]);set(ht,'FontWeight','NOrmal');
+box off;
+format_axes(gca);
+end
+
+confnames = {'C2','C3','C4','C5','C7'};
+for ii = 1:5
+    titletxts{ii} = sprintf('%s',confnames{ii});
+end
+set_sub_graph_text(ff,1,titletxts,[0 0.55 0 0],[0.02 0.07 0 0]);
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+disp('Done')
+
 
 %% big ANOVA
 [within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr','pL'},[5,2,10,length(binCs)]); %these are trials here

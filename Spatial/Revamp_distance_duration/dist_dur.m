@@ -10,6 +10,20 @@ pop_var_name = {'vals'};
 % pop_var_name = {'good_FR'};
 sel_pop_C = cell_list_op(props_C,pop_var_name);
 %%
+MI_trials_mean = cell2mat(props_C.MI_trials_mean);
+[within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Conf','Tr'},[2,2,3,10]);
+dataT = make_between_table({MI_trials_mean},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+ra.ranova
+print_for_manuscript(ra)
+
+[EMs,GS] = RMA_get_EM_GS(ra.rm,{'TI','DT'});
+%%
+tcolors = repmat(mData.colors,1,10);
+figure(300);clf; ha = gca;
+view_results_rmanova(ha,ra,'TI:DT','hsd',[1 2],tcolors,[0 1 0.05],mData)
+
+%%
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
 varT = 1;%:length(params)
 for pii = varT
@@ -34,6 +48,26 @@ print_for_manuscript(ra)
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
 RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
 [dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
+
+%%
+
+%% dzMIs 
+meanMITrials_T = []; meanMITrials_I = [];
+for rr = 1:size(RsDt,1)
+    for cc = 1:size(RsDt,2)
+        dMI_TmD = RsTt{rr,cc}.MI_trials - RsDt{rr,cc}.MI_trials;
+        tcellsT{rr,cc} = sum((dMI_TmD > 0),2) > sum((dMI_TmD < 0),2); 
+        dcellsT{rr,cc} = sum((dMI_TmD > 0),2) < sum((dMI_TmD < 0),2);
+        icellsT{rr,cc} = sum((dMI_TmD > 0),2) == sum((dMI_TmD < 0),2);
+        
+        dMI_TmD = RsTi{rr,cc}.MI_trials - RsDi{rr,cc}.MI_trials;
+        tcellsI{rr,cc} = sum((dMI_TmD > 0),2) > sum((dMI_TmD < 0),2); 
+        dcellsI{rr,cc} = sum((dMI_TmD > 0),2) < sum((dMI_TmD < 0),2);
+        icellsI{rr,cc} = sum((dMI_TmD > 0),2) == sum((dMI_TmD < 0),2);
+    end
+end
+disp('Done');
+
 
 %% for different values of RF threshold, we calculate the time, distance, and indistinct encoding cells
 %%this we do for both trials and intertrials
@@ -87,10 +121,10 @@ print_for_manuscript(ra)
 %% Figure
 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[3 5 2.6 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+ff = makeFigureRowsCols(107,[3 5 2.75 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
     'widthHeightAdjustment',[10 -500]);
 MY = 60; ysp = 5; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.28*magfac; widths = [0.87 1.35 2.85 1]*magfac; gap = 0.07105*magfac;
+stp = 0.28*magfac; widths = [0.87 1.35 2.85 1]*magfac+0.061; gap = 0.07105*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
 
@@ -99,7 +133,8 @@ tcolors = repmat(mData.colors(4:6),1,2);
 xticklabels = {'TE','DE','IE'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); %xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'AOn','AOff'},{[0.001 0.0051]});
 ylabel('Cells (%)');
-axes_title(ff,{1:2},{'Responsivity'},axes_title_shifts_line,axes_title_shifts_text,'no');
+ht = axes_title(ff,{1:2},{'Responsiveness'},axes_title_shifts_line,axes_title_shifts_text,'no');
+set(ht,'FontWeight','Bold');
 
 tcolors = repmat(mData.colors(7:9),3,1);
 [xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),ra,'CT:Cond','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
@@ -112,7 +147,7 @@ save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
     %%
     mean_dzMI = [];
     FD_Prop = dzMI_FD.diff_T_D; FT_Prop = dzMI_FT.diff_T_D; 
-%     FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
+    FD_Prop = dzMI_FD.rs.diff_T_D; FT_Prop = dzMI_FT.rs.diff_T_D; 
 %     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
@@ -140,7 +175,7 @@ save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
     ra.ranova
     print_for_manuscript(ra)
 
-%% Figure
+%% Figure delta zMI
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[3 5 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
     'widthHeightAdjustment',[10 -500]);
@@ -149,13 +184,54 @@ stp = 0.28*magfac; widths = [1.15 1 2.85 1]*magfac; gap = 0.115*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 
-tcolors = repmat(mData.colors(1:3),1,2); 
+tcolors = repmat(mData.colors(4:6),1,2);
 [xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),ra,'TI:CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
 xticklabels = {'TE','DE','IE'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+make_bars_hollow(hbs(4:end))
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'AOn','AOff'},{[0.001 0.0051]});
+ylabel('z-score');
+ht = axes_title(ff,{1},{'{\Delta} Mutual Information'},axes_title_shifts_line,axes_title_shifts_text,'no');set(ht,'FontWeight','Bold');
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);  
+   
+%% Figure RF
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 25; ysp = 5; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [0.4 1 2.85 1]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+
+tcolors = mData.dcolors(7:end);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),ra,'TI','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
-ylabel('Probability');
-% axes_title(ff,{1},{'C2 - L5'},axes_title_shifts_line,axes_title_shifts_text);
-    
+ylabel('Trials (%)');
+ht = axes_title(ff,{1},{'{\Delta} Resp. Fidelity'},axes_title_shifts_line+[-0.15 0 0.2 0],axes_title_shifts_text,'no');set(ht,'FontWeight','Bold');
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);  
+%% Figure rs
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 1.75 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 0.3; ysp = 0.0755; mY = -0.3; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [0.45 0.54 1 2.85 1]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+
+tcolors = mData.dcolors(7:end);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),ra,'TI','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
+ylabel('r-squared');
+
+tcolors = mData.colors(4:end);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),ra,'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'TE','DE','IE'}; set(gca,'xtick',xdata,'xticklabels',xticklabels);% xtickangle(30);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
+% ylabel('Trials (%)');
+ht = axes_title(ff,{1:2},{'{\Delta} Goodness of Fit'},axes_title_shifts_line,axes_title_shifts_text,'no');set(ht,'FontWeight','Bold');
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);  
 %%
 % cell_list = [];
 % for rfi = 1:2

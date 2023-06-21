@@ -105,7 +105,8 @@ for rr = 1:size(Rs,1)
         
         o.HaFD{rr,cc} = R.fractal_dim.HaFD';
         o.HiFD{rr,cc} = R.fractal_dim.HiFD';
-        
+        o.MI_trials_mean{rr,cc} = nanmean(R.MI_trials);
+        o.MI_trials{rr,cc} = R.MI_trials;
         xs = R.xs;
 %         if ~isempty(strfind(R.marker_name,'D'))
 %             p = rs > 0.25 & PWs > xs(2) & PWs < xs(end) & centers >= xs(1)  & centers <= xs(end) & MFR < 10000;

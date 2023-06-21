@@ -385,10 +385,113 @@ set(gca,'xtick',xticks,'xticklabel',xtickL);
 format_axes(gca);
 changePosition(gca,[-0.08 0.1 0.17 -0.1]);
 save_pdf(hf,mData.pdf_folder,sprintf('trial_to_trial_unique.pdf'),600);
+
+%% plot MI trial wise
+for rr = 1:size(RsG,1)
+    for cc = 1:size(RsG,2)
+        MI_trials_mean{rr,cc} = nanmean(propsG.MI_trials{rr,cc}.*double(allresp_trials{rr,cc}));
+    end
+end
+
+
+MI_Trial = cell2mat(MI_trials_mean);
+
+mrespV = mean(MI_Trial); semrespV = std(MI_Trial)./sqrt(5);
+respTW = reshape(mrespV,10,(size(MI_Trial,2)/10)); mrespAct = respTW';
+respTW = reshape(semrespV,10,(size(MI_Trial,2)/10)); semrespAct = respTW';
+mrespActL = NaN;  semrespActL = NaN; 
+xtl = {''}; trialsStr = cellfun(@num2str,trials','un',0);
+xaxL = NaN; xticks = []; xtickL =[];
+for ii = 1:(size(MI_Trial,2)/10)
+    mrespActL = [mrespActL mrespAct(ii,:) NaN];
+    semrespActL = [semrespActL semrespAct(ii,:) NaN];
+    xaxL = [xaxL 1:10 NaN];
+    xtl = [xtl trialsStr {''}];
+end
+xax = 1:length(mrespActL); 
+for ii = 1:length(mrespActL)
+    if xaxL(ii) == 1 || xaxL(ii) == 10
+        xticks = [xticks xax(ii)];
+        xtickL = [xtickL xtl(ii)];
+    end
+end
+
+hf = figure(100);clf;
+set(hf,'units','inches','position',[5 5 6.9 1]);
+plot(xax,mrespActL,'color',mData.dcolors{11,1});hold on;
+plot(xlim,[nanmean(mrespActL) nanmean(mrespActL)],'color',mData.dcolors{12,1});
+iii=1;
+theinds = find(isnan(mrespActL));
+for ii = find(isnan(mrespActL))
+    plot([ii ii],[0.1 1.1],'k-');
+    if iii <= (size(MI_Trial,2)/10)
+    text(ii+2,1.1,sprintf('%s',xticklabels{iii}),'FontSize',6);
+    indsS = (theinds(iii)+1):(theinds(iii+1)-1);
+    shadedErrorBar(indsS,mrespActL(indsS),semrespActL(indsS),{'color',mData.dcolors{11}},0.5)
+    iii=iii+1;
+    end
+end
+xlim([0 length(mrespActL)+1]); ylim([-0.1 1.3]);
+xlabel('Trial Numbers');ylabel('Bits');box off;
+set(gca,'xtick',xticks,'xticklabel',xtickL);
+%     legs = {'Responsive Cells',[9.5 0.1 34 0.2]}; 
+%     putLegendH(gca,legs,{'k'},'sigR',{[],'anova',[],6});
+format_axes(gca);
+changePosition(gca,[-0.08 0.1 0.17 -0.1]);
+save_pdf(hf,mData.pdf_folder,sprintf('trial_to_trial_unique.pdf'),600);
+
+%% stats MI
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,10]);
+dataT = make_between_table({MI_Trial},dvn);
+raMIT = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(raMIT)
+
+
+%% MI Two graphs
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 4.7 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 2.7; ysp = 0.17; mY = 0.15; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [2.25 1.9 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+
+tcolors = repmat(mData.colors(1:2),1,5);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raMIT,'Conf:Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(10);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C2','C3','C4','C5','C7'},{[0.001 0.0051]});
+ylabel('Bits');
+
+tcolors = repmat(mData.dcolors(1:10),1,5);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raMIT,'Tr','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'1','2','3','4',}; set(gca,'xtick',xdata); xtickangle(10);
+xlabel('Trial Number');
+ht = axes_title(ff,{1:2},{'Mutual Information'},axes_title_shifts_line,axes_title_shifts_text,'no');
+set(ht,'FontWeight','Bold');
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+
+
+%%
+MIs_avg = exec_fun_on_cell_mat(propsG.zMI,'nanmean');
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph'},[5,2]);
+dataT = make_between_table({MIs_avg},dvn);
+raMIA = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(raMIA)
+
+ra = raMIA;
+tcolors = repmat(mData.colors,1,10);
+figure(300);clf; ha = gca;
+view_results_rmanova(ha,ra,'Ph','hsd',[1 2],tcolors,[0 0.71 0.05],mData)
+
+
+
 %% Stats resp conj comp1 comp2 across trials configurations
 [within,dvn,xlabels,awithinD] = make_within_table({'Conf','Ph','Tr'},[5,2,10]);
 dataT = make_between_table({respRV},dvn);
-raResp = RMA(dataT,within,{0.05,{'hsd'}});
+raResp = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raResp)
 
 cconjV = conjV; cconjV(:,[10    20    30    40    50    60    70    80    90]) = [];
@@ -422,49 +525,28 @@ print_for_manuscript(raCCCC)
 dataT = make_between_table({respRV(:,1:40)},dvn);
 raRespBNB = RMA(dataT,within,{0.05,{'hsd'}});
 print_for_manuscript(raRespBNB)
-%% Resp. two graphs, Conf and Ph
+%% Resp. two graphs, Conf and Ph 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[10 5 2.2 1],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],...
-    'widthHeightAdjustment',[10 -510]);
-MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-stp = 0.25*magfac; widths = ([1.25 0.65 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap = 0.067*magfac;
+ff = makeFigureRowsCols(107,[3 5 2 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 70; ysp = 5; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [1.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+
 tcolors = repmat(mData.colors(5:end),1,6);
-axes(ff.h_axes(1,1));
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raResp,{'Conf','hsd'},[1.5 1 1]);
-    xdata = make_xdata([5],[1 1.5]);   
-%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
-[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
-xticklabels = {'C2','C3','C4','C5','C7'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
-% make_bars_hollow(hbs(7:end));
-% [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,6,{'Air','No-Air'},{[-0.1 -0.012]});
-ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.01 0 0]);set(ht,'FontWeight','NOrmal');
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Pooled'},{[0 0]});
-ylabel(ylabeltxt);
-format_axes(gca);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raResp,'Conf','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'C2','C3','C4','C5','C7'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+ylabel('Cells (%)');
 
-axes(ff.h_axes(1,2));
-[xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raResp,{'Ph','hsd'},[1.5 1 1]);
-    xdata = make_xdata([2],[1 1.5]);   
-%     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
-%     h(h==1) = 0;
-tcolors = repmat(mData.colors(1:2),1,6);
-[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-    'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
-    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',7,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-set_axes_limits(gca,[0.35 xdata(end)+.65],[mY MY]); format_axes_b(gca); xticks = xdata; 
-xticklabels = {'AOn','AOff'};set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30);
-% make_bars_hollow(hbs(3:end));
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Trials','InterTrials'},{[-0.1 -0.012]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0]});
-format_axes(gca);
+tcolors = repmat(mData.colors(1:2),1,1);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raResp,'Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'AOn','AOff'};  set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+ht = axes_title(ff,{1:2},{'Activated Cells'},axes_title_shifts_line,axes_title_shifts_text,'no');
+set(ht,'FontWeight','Bold');
+
+
 save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
-
 
 %% Conj. one graph Conf
 magfac = mData.magfac;
