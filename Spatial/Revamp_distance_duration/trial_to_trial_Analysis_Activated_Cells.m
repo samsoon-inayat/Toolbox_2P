@@ -449,10 +449,10 @@ print_for_manuscript(raMIT)
 
 %% MI Two graphs
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[3 5 4.7 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+ff = makeFigureRowsCols(107,[3 5 4.8 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
     'widthHeightAdjustment',[10 -500]);
 MY = 2.7; ysp = 0.17; mY = 0.15; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.28*magfac; widths = [2.25 1.9 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+stp = 0.28*magfac; widths = [2.2 1.9 2.85 1]*magfac+0.061; gap = 0.259105*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
 
@@ -463,8 +463,8 @@ set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C2','C3','C4','C5','C7'},{[0.001 
 ylabel('Bits');
 
 tcolors = repmat(mData.dcolors(1:10),1,5);
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raMIT,'Tr','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
-xticklabels = {'1','2','3','4',}; set(gca,'xtick',xdata); xtickangle(10);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raMIT,'Tr','hsd',xs_gaps,tcolors,[mY MY-2 ysp-0.1],mData);
+xticklabels = {'1','2','3','4',}; set(gca,'xtick',xdata,'ytick',[0.25 0.5],'yticklabels',{'0.25','0.5'}); xtickangle(10);
 xlabel('Trial Number');
 ht = axes_title(ff,{1:2},{'Mutual Information'},axes_title_shifts_line,axes_title_shifts_text,'no');
 set(ht,'FontWeight','Bold');

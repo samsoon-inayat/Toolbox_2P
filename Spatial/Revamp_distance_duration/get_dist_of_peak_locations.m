@@ -42,7 +42,13 @@ for cn = 1:length(si)
                 case 4
                     t_resp = ~resp(:,trN-1) & resp(:,trN);
             end
-            pL_vals = pLs(:,trN); tMIs = MIs(t_resp,trN); 
+            pL_vals = pLs(:,trN); 
+            if rccc == 2
+%                 tMIs = mean([MIs(t_resp,trN),MIs(t_resp,trN)],2);
+                tMIs = MIs(t_resp,trN);
+            else
+                tMIs = MIs(t_resp,trN);
+            end
             pL_vals = pL_vals(t_resp)/size_raster_2(cn);
             [bar1,binEs,binVals] = histcounts(pL_vals,binEs,'Normalization','probability');
             dist(cn,an,trNi,:) = bar1;

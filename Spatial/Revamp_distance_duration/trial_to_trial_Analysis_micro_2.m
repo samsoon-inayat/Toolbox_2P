@@ -117,6 +117,96 @@ for ii = 1:length(cellpops)
     % cn an tr pL
 end
 disp('Done');
+%% big ANOVA cell types MI
+
+pLdistsL_cells = [allMIL{2} allMIL{3} allMIL{4}];
+pLdistsL_cells = fillmissing(pLdistsL_cells,'linear',2,'EndValues','nearest');
+[within,dvn,xlabels,awithinD] = make_within_table({'CT','Conf','Ph','Tr','pL'},[3,5,2,9,length(binCs)]); %these are trials here
+dataT = make_between_table({pLdistsL_cells},dvn);
+%     ra = RMA(dataT,within,{0.05,{'hsd'}});
+raBA = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(raBA)
+
+%% big ANOVA cell types MI Trial Averaged
+
+pLdistsL_cells = [allMITrL{2} allMITrL{3} allMITrL{4}];
+pLdistsL_cells = fillmissing(pLdistsL_cells,'linear',2,'EndValues','nearest');
+[within,dvn,xlabels,awithinD] = make_within_table({'CT','Conf','Ph','pL'},[3,5,2,length(binCs)]); %these are trials here
+dataT = make_between_table({pLdistsL_cells},dvn);
+%     ra = RMA(dataT,within,{0.05,{'hsd'}});
+raBA = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(raBA)
+
+%% sub anova
+clc
+raBA_R = RMA_R(raBA,{'Conf','Ph'});
+print_for_manuscript(raBA_R)
+%%
+ra = raBA_R.ras{10};
+print_for_manuscript(ra);
+tcolors = repmat(mData.colors,1,10);
+figure(100);clf; ha = gca;
+view_results_rmanova(ha,ra,'CT','hsd',[1 2],tcolors,[0 2 0.071],mData);
+%% Figure
+clc
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 1++2+1+2+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 1.75; ysp = 0.1285; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [ones(1,7)*0.8]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+
+tcolors = repmat(mData.dcolors(6:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raBA_R.ras{1},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
+ylabel('Bits');
+axes_title(ff,{1},{'C2 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.dcolors(6:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
+axes_title(ff,{2},{'C2 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.dcolors(6:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,3),raBA_R.ras{4},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
+axes_title(ff,{3},{'C3 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.dcolors(6:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{5},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
+axes_title(ff,{4},{'C4 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.dcolors(6:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,5),raBA_R.ras{6},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
+axes_title(ff,{5},{'C4 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.dcolors(6:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,6),raBA_R.ras{8},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
+axes_title(ff,{6},{'C5 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
+
+tcolors = repmat(mData.dcolors(6:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,7),raBA_R.ras{10},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
+axes_title(ff,{7},{'C7 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
+
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graph.pdf'),600);
+
+
+%% sub anova
+clc
+raBA_R1 = RMA_R(raBA_R.ras{1},{'Ph'});
+print_for_manuscript(raBA_R1)
 %% big ANOVA cell types
 
 pLdistsL_cells = [pLdistsL{2} pLdistsL{3} pLdistsL{4}];
@@ -125,6 +215,17 @@ dataT = make_between_table({pLdistsL_cells},dvn);
 %     ra = RMA(dataT,within,{0.05,{'hsd'}});
 raBA = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raBA)
+
+%% sub anova
+clc
+raBA_R = RMA_R(raBA,{'CT'});
+print_for_manuscript(raBA_R)
+%%
+ra = raBA_R.ras{5};
+print_for_manuscript(ra);
+tcolors = repmat(mData.colors,1,10);
+figure(100);clf; ha = gca;
+view_results_rmanova(ha,ra,'pL','hsd',[1 2],tcolors,[0 2 0.1],mData);
 
 %% big anova after trial averaging
 pLdistsL_cells = [pLdists_TL{2} pLdists_TL{3} pLdists_TL{4}];
@@ -136,16 +237,52 @@ print_for_manuscript(raBA)
 %%
 %%
 clc
-raBA_R = RMA_R(raBA,{'Conf'});
+raBA_R = RMA_R(raBA,{'Conf','Ph'});
 print_for_manuscript(raBA_R)
-%%
-clc
-raBA_R1 = RMA_R(raBA_R.ras{1},{'pL'});
-print_for_manuscript(raBA_R1)
-%%
-clc
-raBA_R2 = RMA_R(raBA_R.ras{3},{'Ph'});
-print_for_manuscript(raBA_R2)
+%% figure bar graphs percent cells trial-wise dists
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.25],'RowsCols',[1 10],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 1; ysp = 0.05; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [ones(1,10)*0.55]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+tcolors = repmat(mData.dcolors(1:5),1,3); 
+for gni = 1:10
+    tra = raBA_R.ras{gni};
+    [xdata,hbs] = view_results_rmanova(ff.h_axes(1,gni),raBA_R.ras{gni},{'CT:pL','hsd',0.05},xs_gaps,tcolors,[mY MY ysp],mData);
+
+    if gni > 1
+        set(gca,'YTick',[]);
+    end
+    if ~mod(gni,2)
+        make_bars_hollow(hbs);
+    end
+    % xticklabels = cellstr(num2str((0:10)')); xticklabels = [xticklabels;xticklabels]; xticklabels = xticklabels(xinds);
+    xticklabels = {'L1','L2','L3','L4','L5'};
+    set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+    if gni == 1
+        ylabel('Bits');
+    end
+
+    if gni == 5
+         hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 -0.37 0]);
+    end
+    set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp 1','Comp 2'},{[0.001 0.0051]});
+    box off;
+    format_axes(gca);
+end
+
+confnames = {'C2','C3','C4','C5','C7'};
+for ii = 1:5
+    titletxts{ii} = sprintf('%s',confnames{ii});
+end
+set_sub_graph_text(ff,2,titletxts,[0 0.56 0 0],[0.02 0.07 0 0]);
+
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+disp('Done')
 
 %% Figure
 magfac = mData.magfac;
@@ -301,16 +438,16 @@ ra_pL1 = RMA_R(tra,{'Ph'});
 print_for_manuscript(ra_pL1)
 view_results_rmanova([],ra_pL1.ras{1},'CT:Conf','hsd',[1 2],tcolors,[0 1 0.05],mData)
 
-%% Figure 5A figure heat maps of probabilities trial wise
+%% Figure 5A figure heat maps of probabilities trial wise 3 rows Conj, Comp1, Comp2
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[2 3 6.9 2.25],'RowsCols',[4 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.16],...
-    'widthHeightAdjustment',[-100 -90]);
+ff = makeFigureRowsCols(107,[2 3 6.9 2],'RowsCols',[3 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.178],...
+    'widthHeightAdjustment',[-100 -110]);
 MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
 stp = 0.35*magfac; widths = ([ones(1,10)*0.55]-0.05)*magfac; gap = 0.15*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-rep_animal = 1; % if 0 then plot average
+rep_animal = 0; % if 0 then plot average
 rep_an = 3;
-for cti = 1:4
+for cti = 2:4
     ttvals = pLdists{cti}; % cn an tr pL
     ttvals = permute(ttvals,[3 4 1 2]);
     size(ttvals);
@@ -323,7 +460,7 @@ for cti = 1:4
     amM(cti) = max(mttvals(:));
 end
 mM = max(amM)/1.25; mm = min(amm);
-for cti = 1:4
+for cti = 2:4
     ttvals = pLdists{cti}; % cn an tr pL
     ttvals = permute(ttvals,[3 4 1 2]);
     size(ttvals);
@@ -334,7 +471,7 @@ for cti = 1:4
     end
 %     mm = amm(cti); mM = amM(cti);
 for gn = 1:10
-    axes(ff.h_axes(cti,gn));
+    axes(ff.h_axes(cti-1,gn));
     if cti == 1
         imagesc(binCs,1:10,mttvals(:,:,gn),[mm mM]);
         set(gca,'YTick',[1 5 10],'YDir','Normal','XTick',binCs);xtickangle(30);
@@ -356,17 +493,17 @@ for gn = 1:10
                 ylabel({'Comp 2','Trials'});
         end
     end
-    if gn == 5 && cti == 4
+    if gn == 5 && cti-1 == 3
 %         xlabel('Location of Peak Firing as a Fraction of total Phase Length');
         hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 0.51 0]);
     end
     xticklabels = {'L1','L2','L3','L4','L5'};
-    if cti == 4
+    if cti-1 == 3
         set(gca,'xtick',binCs,'xticklabels',xticklabels); xtickangle(30);
     else
         set(gca,'xtick',binCs,'xticklabels',[]); xtickangle(30);
     end
-    if cti == 1
+    if cti == 2
     titletxt = (sprintf('%s',rasterNamesTxt{si(gn)}));
     ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.1 0 0]);set(ht,'FontWeight','NOrmal');
     end
@@ -382,6 +519,87 @@ end
 end
 save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
 
+%% Figure 5A figure heat maps of MI trial wise 3 rows Conj, Comp1, Comp2
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[2 3 6.9 2],'RowsCols',[3 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.178],...
+    'widthHeightAdjustment',[-100 -110]);
+MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+stp = 0.35*magfac; widths = ([ones(1,10)*0.55]-0.05)*magfac; gap = 0.15*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+rep_animal = 0; % if 0 then plot average
+rep_an = 3;
+for cti = 2:4
+    ttvals = allMI{cti}; % cn an tr pL
+    ttvals = permute(ttvals,[3 4 1 2]);
+    size(ttvals);
+    if rep_animal
+        mttvals = ttvals(:,:,:,rep_an);
+    else
+        mttvals = squeeze(nanmean(ttvals,4));
+    end
+    amm(cti) = min(mttvals(:));
+    amM(cti) = max(mttvals(:));
+end
+mM = max(amM); mm = min(amm);
+for cti = 2:4
+    ttvals = allMI{cti}; % cn an tr pL
+    ttvals = permute(ttvals,[3 4 1 2]);
+    size(ttvals);
+    if rep_animal
+        mttvals = ttvals(:,:,:,rep_an);
+    else
+        mttvals = squeeze(mean(ttvals,4));
+    end
+    mttvals = fillmissing(mttvals,'linear',2,'EndValues','nearest');
+%     mm = amm(cti); mM = amM(cti);
+for gn = 1:10
+    axes(ff.h_axes(cti-1,gn));
+    if cti == 1
+        imagesc(binCs,1:10,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 5 10],'YDir','Normal','XTick',binCs);xtickangle(30);
+    else
+        imagesc(binCs,1:9,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 9],'YDir','Normal','XTick',binCs);xtickangle(30);
+    end
+    if gn > 1
+        set(gca,'Yticklabels',[]);
+    else
+        switch cti
+            case 1
+                ylabel({'Activ','Trials'});
+            case 2
+                ylabel({'Conj','Trials'});
+            case 3
+                ylabel({'Comp 1','Trials'});
+            case 4
+                ylabel({'Comp 2','Trials'});
+        end
+    end
+    if gn == 5 && cti-1 == 3
+%         xlabel('Location of Peak Firing as a Fraction of total Phase Length');
+        hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 0.51 0]);
+    end
+    xticklabels = {'L1','L2','L3','L4','L5'};
+    if cti-1 == 3
+        set(gca,'xtick',binCs,'xticklabels',xticklabels); xtickangle(30);
+    else
+        set(gca,'xtick',binCs,'xticklabels',[]); xtickangle(30);
+    end
+    if cti == 2
+    titletxt = (sprintf('%s',rasterNamesTxt{si(gn)}));
+    ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.1 0 0]);set(ht,'FontWeight','NOrmal');
+    end
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn','AOff'},{[0.001 0.0051]});
+
+
+    format_axes(gca);
+    if gn == 10 && cti == 2
+        hc = putColorBar(ff.h_axes(cti-1,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.1 0.07 0.1 0.1]);
+%         hc = putColorBar(ff.h_axes(2,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+    end
+end
+end
+save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
 
 %% Figure 5A figure heat maps of MI trial wise
 magfac = mData.magfac;
@@ -464,6 +682,167 @@ end
 end
 save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
 
+%% Figure 5A figure heat maps of probabilities trial wise (only resp top row)
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[2 3 6.9 1],'RowsCols',[1 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.336],...
+    'widthHeightAdjustment',[-100 -500]);
+MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+stp = 0.35*magfac; widths = ([ones(1,10)*0.55]-0.05)*magfac; gap = 0.15*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+rep_animal = 1; % if 0 then plot average
+rep_an = 3;
+for cti = 1%:4
+    ttvals = pLdists{cti}; % cn an tr pL
+    ttvals = permute(ttvals,[3 4 1 2]);
+    size(ttvals);
+    if rep_animal
+        mttvals = ttvals(:,:,:,rep_an);
+    else
+        mttvals = squeeze(mean(ttvals,4));
+    end
+    amm(cti) = min(mttvals(:));
+    amM(cti) = max(mttvals(:));
+end
+mM = max(amM)/1.25; mm = min(amm);
+for cti = 1%:4
+    ttvals = pLdists{cti}; % cn an tr pL
+    ttvals = permute(ttvals,[3 4 1 2]);
+    size(ttvals);
+    if rep_animal
+        mttvals = ttvals(:,:,:,rep_an);
+    else
+        mttvals = squeeze(mean(ttvals,4));
+    end
+%     mm = amm(cti); mM = amM(cti);
+for gn = 1:10
+    axes(ff.h_axes(cti,gn));
+    if cti == 1
+        imagesc(binCs,1:10,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 5 10],'YDir','Normal','XTick',binCs);xtickangle(30);
+    else
+        imagesc(binCs,1:9,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 9],'YDir','Normal','XTick',binCs);xtickangle(30);
+    end
+    if gn > 1
+        set(gca,'Yticklabels',[]);
+    else
+        switch cti
+            case 1
+                ylabel({'Trials'});
+            case 2
+                ylabel({'Conj','Trials'});
+            case 3
+                ylabel({'Comp 1','Trials'});
+            case 4
+                ylabel({'Comp 2','Trials'});
+        end
+    end
+    if gn == 5 && cti == 1
+%         xlabel('Location of Peak Firing as a Fraction of total Phase Length');
+        hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 0.51 0]);
+    end
+    xticklabels = {'L1','L2','L3','L4','L5'};
+    if cti == 1
+        set(gca,'xtick',binCs,'xticklabels',xticklabels); xtickangle(30);
+    else
+        set(gca,'xtick',binCs,'xticklabels',[]); xtickangle(30);
+    end
+    if cti == 1
+    titletxt = (sprintf('%s',rasterNamesTxt{si(gn)}));
+    ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);set(ht,'FontWeight','NOrmal');
+    end
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn','AOff'},{[0.001 0.0051]});
+
+
+    format_axes(gca);
+    if gn == 10 && cti == 1
+        hc = putColorBar(ff.h_axes(cti,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.1 0.07 0.1 0.1]);
+%         hc = putColorBar(ff.h_axes(2,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+    end
+end
+end
+save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
+
+%% Figure 5A figure heat maps of MI (only resp top row)
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[2 3 6.9 1],'RowsCols',[1 10],'spaceRowsCols',[0.04 0.13],'rightUpShifts',[0.03 0.336],...
+    'widthHeightAdjustment',[-100 -500]);
+MY = 70; ysp = 5; mY = 0; titletxt = 'Activated Cells'; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+stp = 0.35*magfac; widths = ([ones(1,10)*0.55]-0.05)*magfac; gap = 0.15*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+rep_animal = 1; % if 0 then plot average
+rep_an = 3;
+for cti = 1%:4
+    ttvals = allMI{cti}; % cn an tr pL
+    ttvals = permute(ttvals,[3 4 1 2]);
+    size(ttvals);
+    if rep_animal
+        mttvals = ttvals(:,:,:,rep_an);
+    else
+        mttvals = squeeze(mean(ttvals,4));
+    end
+    amm(cti) = min(mttvals(:));
+    amM(cti) = max(mttvals(:));
+end
+mM = max(amM)/1.25; mm = min(amm);
+for cti = 1%:4
+    ttvals = allMI{cti}; % cn an tr pL
+    ttvals = permute(ttvals,[3 4 1 2]);
+    size(ttvals);
+    if rep_animal
+        mttvals = ttvals(:,:,:,rep_an);
+    else
+        mttvals = squeeze(mean(ttvals,4));
+    end
+%     mm = amm(cti); mM = amM(cti);
+for gn = 1:10
+    axes(ff.h_axes(cti,gn));
+    if cti == 1
+        imagesc(binCs,1:10,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 5 10],'YDir','Normal','XTick',binCs);xtickangle(30);
+    else
+        imagesc(binCs,1:9,mttvals(:,:,gn),[mm mM]);
+        set(gca,'YTick',[1 9],'YDir','Normal','XTick',binCs);xtickangle(30);
+    end
+    if gn > 1
+        set(gca,'Yticklabels',[]);
+    else
+        switch cti
+            case 1
+                ylabel({'Trials'});
+            case 2
+                ylabel({'Conj','Trials'});
+            case 3
+                ylabel({'Comp 1','Trials'});
+            case 4
+                ylabel({'Comp 2','Trials'});
+        end
+    end
+    if gn == 5 && cti == 1
+%         xlabel('Location of Peak Firing as a Fraction of total Phase Length');
+        hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 0.51 0]);
+    end
+    xticklabels = {'L1','L2','L3','L4','L5'};
+    if cti == 1
+        set(gca,'xtick',binCs,'xticklabels',xticklabels); xtickangle(30);
+    else
+        set(gca,'xtick',binCs,'xticklabels',[]); xtickangle(30);
+    end
+    if cti == 1
+    titletxt = (sprintf('%s',rasterNamesTxt{si(gn)}));
+    ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0 -0.051 0 0]);set(ht,'FontWeight','NOrmal');
+    end
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn','AOff'},{[0.001 0.0051]});
+
+
+    format_axes(gca);
+    if gn == 10 && cti == 1
+        hc = putColorBar(ff.h_axes(cti,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.1 0.07 0.1 0.1]);
+%         hc = putColorBar(ff.h_axes(2,gn),[0.0 0.03 0 -0.05],[mm mM],6,'eastoutside',[0.07 0.07 0.1 0.1]);
+    end
+end
+end
+save_pdf(ff.hf,mData.pdf_folder,sprintf('peak_firingdists.pdf'),600);
 
 %% Figure 4A figure heat maps of probabilities trial wise diff pL
 magfac = mData.magfac;
