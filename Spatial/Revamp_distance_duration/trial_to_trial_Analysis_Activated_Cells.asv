@@ -601,60 +601,6 @@ cccc = [cconjV1 cconjV2 ccompV1 ccompV2];
 dataT = make_between_table({cccc},dvn);
 raCCCC = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raCCCC)
-%%
-clc
-ra_R = RMA_R(raCCCC,{'Conf'});
-print_for_manuscript(ra_R)
-
-
-%% figure bar graphs percent cells trial-wise dists
-
-magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[3 5 6.9 1.5],'RowsCols',[1 5],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.35],...
-    'widthHeightAdjustment',[10 -500]);
-MY = 3.5; ysp = 0.73; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.28*magfac; widths = [ones(1,5)*1.2]*magfac; gap = 0.115*magfac;
-adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
-tcolors = repmat(mData.dcolors(1:5),1,2); 
-for gni = 1:5
-    [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,gni),ra_R.ras{gni},{'CT:Ph','hsd',0.05},xs_gaps,tcolors,[mY MY ysp],mData);
-
-    if gni > 1
-        set(gca,'YTick',[]);
-    end
-        make_bars_hollow(hbs(6:end));
-
-    % xticklabels = cellstr(num2str((0:10)')); xticklabels = [xticklabels;xticklabels]; xticklabels = xticklabels(xinds);
-    xticklabels = {'AOn','AOff'};
-    set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
-    if gni == 1
-        ylabel('Bits');
-    end
-
-    if gni == 3
-        
-         hxl = xlabel('Location of peak firing (binned) as a percentage of total phase length'); changePosition(hxl,[0 -0.37 0]);
-    end
-
-
-        set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'ConjF','ConjS','Comp1','Comp2'},{[0.001 0.0051]});
-
-
-    box off;
-    format_axes(gca);
-
-end
-
-confnames = {'C2','C3','C4','C5','C7'};
-for ii = 1:5
-    titletxts{ii} = sprintf('%s',confnames{ii});
-end
-set_sub_graph_text(ff,1,titletxts,[0 0.56 0 0],[0.02 0.07 0 0]);
-
-
-save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
-disp('Done')
 
 
 %% Stats resp conj comp1 comp2 across trials configurations
@@ -689,29 +635,21 @@ dataT = make_between_table({cccc},dvn);
 raCCCC = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(raCCCC)
 
-%% two graphs, Conf and Ph  for combined analysis from conj, comp1, and comp2
-clc
+%% Figure 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[3 5 2 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
-    'widthHeightAdjustment',[10 -450]);
-MY = 70; ysp = 9; mY = 0; ystf = 7; ysigf = 1;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.28*magfac; widths = [1.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 50; ysp = 1.7285; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [ones(1,7)*3]*magfac; gap = 0.115*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
-axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 
-tcolors = repmat(mData.colors(5:end),1,6);
-[hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),raCCCC,{'Conf','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
-xticklabels = {'C2','C3','C4','C5','C7'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+tcolors = repmat(mData.dcolors(1:end),1,5); 
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raCCCC,{'Con','hsd',0.05},xs_gaps,tcolors,[mY MY ysp],mData);
+xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 ylabel('Cells (%)');
-
-tcolors = repmat(mData.colors(1:2),1,1);
-[hbs,xdata] = view_results_rmanova(ff.h_axes(1,2),raCCCC,{'Ph','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
-xticklabels = {'AOn','AOff'};  set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
-ht = axes_title(ff,{1:2},{'Activated Cells'},axes_title_shifts_line,axes_title_shifts_text,'no');
-set(ht,'FontWeight','Bold');
-
-
-save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+% axes_title(ff,{1},{'C2 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
 
 
 %%
@@ -723,18 +661,18 @@ print_for_manuscript(raRespBNB)
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[3 5 2 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
     'widthHeightAdjustment',[10 -500]);
-MY = 70; ysp = 8; ystf = 7; ysigf = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+MY = 70; ysp = 5; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 stp = 0.28*magfac; widths = [1.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
 
 tcolors = repmat(mData.colors(5:end),1,6);
-[hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),raResp,{'Conf','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raResp,'Conf','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
 xticklabels = {'C2','C3','C4','C5','C7'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 ylabel('Cells (%)');
 
 tcolors = repmat(mData.colors(1:2),1,1);
-[hbs,xdata] = view_results_rmanova(ff.h_axes(1,2),raResp,{'Ph','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raResp,'Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
 xticklabels = {'AOn','AOff'};  set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 ht = axes_title(ff,{1:2},{'Activated Cells'},axes_title_shifts_line,axes_title_shifts_text,'no');
 set(ht,'FontWeight','Bold');
