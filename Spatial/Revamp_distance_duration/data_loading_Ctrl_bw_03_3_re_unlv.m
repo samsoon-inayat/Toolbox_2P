@@ -3,6 +3,7 @@ for ii = 1:60
 end
 %%
 add_to_path_unlv
+disp('Done')
 %%
 clear all
 % clc
