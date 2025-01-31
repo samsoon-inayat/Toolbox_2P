@@ -13,6 +13,10 @@ for ii = 1:5
     disp(length(ei{ii}.plane))
 end
 
+[udata,udata1] = get_unlv_analysis_data(ei);
+udataT = get_unlv_analysis_data_time_bin(udata1,0.3);
+udataD = get_unlv_analysis_data_dist_bin(udata1,3);
+
 
 selContexts = [1 4 6 2 7 3 3 4 4 5 5 3 3 4 4 5 5 0 0 2 2 7 7 2 7 2 7 3 4 5 3 4 5 3 4 5 3 4 5];
 rasterNames = {'light22T','light22T','light22T','air55T','air55T','airD','airID','airD','airID','airD','airID','airT','airIT','airT','airIT','airT','airIT','motionOnsets','motionOffsets','airRT','airIRT','airRT','airIRT',...
@@ -82,8 +86,9 @@ end
 cellposeCells = evalin('base','cellposeCells');
 
 o = get_trials_MI(o);
-
-o = calc_trials_MI_mean(o);
+n = 0;
+n = 0;
+n = 0;
 
 n = 0;
 %%

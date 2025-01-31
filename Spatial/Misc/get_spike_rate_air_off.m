@@ -9,8 +9,8 @@ for ii = 1:length(ei_C)
 %     inds_rest = find(speed < 0.5);
     
     speed = ei.b.fSpeed;
-    air_offsets = ei.b.air_puff_f(11:40);
-    air_onsets = ei.b.air_puff_r(12:41);
+    air_offsets = ei.b.air_puff_f(11:39);
+    air_onsets = ei.b.air_puff_r(12:40);
     
    
 %     inds_motion = find(speed > 0);
@@ -37,11 +37,18 @@ for ii = 1:length(ei_C)
         tspSigAll = [];
         this_cell_list = logical(ei.plane{pp}.tP.iscell(:,1));
         tspSigAll = ei.plane{pp}.tP.deconv.spSigAll(this_cell_list,:);
+        % tspSigAll = fillmissing(tspSigAll, 'linear', 2);
+        % Find rows where all elements are NaN and replace them with a constant (e.g., 0)
+        % nan_rows = all(isnan(tspSigAll), 2);
+        % tspSigAll(nan_rows, :) = 0;  % Replace entire NaN rows with 0
+        tspSigAll_mean = nanmean(tspSigAll,2); tspSigAll_mean1 = repmat(tspSigAll_mean,1,size(tspSigAll,2));
+        tspSigAll_std = nanstd(tspSigAll,[],2); tspSigAll_std1 = repmat(tspSigAll_std,1,size(tspSigAll,2));
+        tspSigAll = (tspSigAll - tspSigAll_mean1)./tspSigAll_std1;
 %         for cn = 1:length(this_cell_list)
 %             tspSigAll(cn,:) = ei.plane{pp}.tP.deconv.spSigAll{this_cell_list(cn)}';
 %         end
-        mask = tspSigAll > thr;
-        tspSigAll(~mask) = NaN;
+        % mask = tspSigAll > thr;
+        % tspSigAll(~mask) = NaN;
         spSigAll{pp} = tspSigAll;
         all_spSigAll = [all_spSigAll;tspSigAll];
         frames_f = ei.plane{pp}.b.frames_f;

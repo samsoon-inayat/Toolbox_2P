@@ -24,7 +24,13 @@ b.frameRate = ei.thorExp.frameRate;
 % end
 % spSigAll = ei.deconv.spSigAll;
 spSigAll = ei.plane{pp}.tP.deconv.spSigAll;
+tspSigAll= spSigAll;
+tspSigAll_mean = nanmean(tspSigAll,2); tspSigAll_mean1 = repmat(tspSigAll_mean,1,size(tspSigAll,2));
+tspSigAll_std = nanstd(tspSigAll,[],2); tspSigAll_std1 = repmat(tspSigAll_std,1,size(tspSigAll,2));
+tspSigAll = (tspSigAll - tspSigAll_mean1)./tspSigAll_std1;
 rasters = getRasters(b,spSigAll,onsets,offsets,binWidth,nbins,rasterType);
+rastersZ = getRasters(b,tspSigAll,onsets,offsets,binWidth,nbins,rasterType);
+rasters.sp_rastersZ = rastersZ.sp_rasters;
 rasters.bin_width = binWidth;
 rasters.nbins = nbins;
 rasters.onsets = onsets; 

@@ -1,7 +1,7 @@
 function dist_dur
 %% analysing the resp. RF, zMI, and RS for all cells
 ntrials = 50; 
-si = [Ar_t_T ArL_t_T Ars_t_T Ar_t_D ArL_t_D Ars_t_D Ar_i_T ArL_i_T Ars_i_T Ar_i_D ArL_i_D Ars_i_D];
+si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D];
 %     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
 Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
 props_C = get_props_Rs(Rs_C,ntrials);
@@ -10,8 +10,170 @@ pop_var_name = {'all'};
 % pop_var_name = {'good_FR'};
 sel_pop_C = cell_list_op(props_C,pop_var_name);
 %%
+MI_cell = props_C.MI_trials;
+
+% Define the sizes based on the structure
+num_animals = 5;                     % 5 animals (rows in MI_cell)
+num_configs = 3;                     % Configurations (1, 2, 3)
+num_phases = 2;                      % Air phases (1 = on, 2 = off)
+num_encoding_types = 2;              % Encoding types (1 = time, 2 = distance)
+num_trials = 10;                     % Number of trials per neuron
+
+% Initialize a cell array to hold the 5D matrices for each animal
+MI_animal_matrices = cell(num_animals, 1);
+
+% Loop through each animal and construct a 5D matrix for that animal
+for ani_idx = 1:num_animals
+    % Find the maximum number of neurons for the current animal across all configurations and phases
+    max_neurons_ani = 0;
+    for config_idx = 1:6
+        max_neurons_ani = max(max_neurons_ani, size(MI_cell{ani_idx, config_idx}, 1));  % Find max number of neurons for this animal
+    end
+    
+    % Initialize a 5D matrix for this animal (config x phase x encoding type x neuron x trial)
+    MI_matrix_animal = NaN(num_configs, num_phases, num_encoding_types, max_neurons_ani, num_trials);
+    
+    % Loop through configurations and air phases to fill the matrix for this animal
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            % Time encoding data
+            time_col_idx = (config_idx - 1) * 2 + phase_idx;
+            MI_time_matrix = MI_cell{ani_idx, time_col_idx};  % Neuron x Trials matrix
+            num_neurons_time = size(MI_time_matrix, 1);
+            MI_matrix_animal(config_idx, phase_idx, 1, 1:num_neurons_time, :) = MI_time_matrix;
+
+            % Distance encoding data
+            dist_col_idx = 6 + time_col_idx;
+            MI_distance_matrix = MI_cell{ani_idx, dist_col_idx};  % Neuron x Trials matrix
+            num_neurons_distance = size(MI_distance_matrix, 1);
+            MI_matrix_animal(config_idx, phase_idx, 2, 1:num_neurons_distance, :) = MI_distance_matrix;
+        end
+    end
+    
+    % Store the 5D matrix for this animal
+    MI_animal_matrices{ani_idx} = MI_matrix_animal;
+end
+
+% Now 'MI_animal_matrices' holds the 5D MI matrices for each animal
+
+%%
+% Define the encoding type:
+% Set encoding_type = 1 for time MI or encoding_type = 2 for distance MI
+encoding_type = 2;  % Change this to 2 for distance MI
+
+% List of configurations to plot (C3, C4, C5)
+configurations = [1, 2, 3];  % C3, C4, C5
+num_trials = 10;  % Number of trials per neuron
+num_animals = length(MI_animal_matrices);  % Number of animals
+
+% Initialize variables to store MI averaged over neurons and animals
+mean_MI = NaN(length(configurations), 2, num_trials);  % 3 configs x 2 phases x 10 trials
+SEM_MI = NaN(length(configurations), 2, num_trials);   % Standard Error of the Mean
+
+% Loop through each configuration and air phase (on/off)
+for config_idx = 1:length(configurations)
+    for phase_idx = 1:2  % 1 for air-on, 2 for air-off
+        % Temporary variable to collect MI for all neurons across animals
+        MI_all_animals = NaN(num_animals, num_trials);
+        
+        % Loop through animals
+        for ani_idx = 1:num_animals
+            % Extract MI for the current configuration, phase, and encoding type (1 = time, 2 = distance)
+            MI_data = MI_animal_matrices{ani_idx}(configurations(config_idx), phase_idx, encoding_type, :, :);
+            
+            % Average MI over neurons for each trial
+            MI_mean_neurons = squeeze(nanmean(MI_data, 4));  % Mean across neurons (4th dimension)
+            
+            % Store the result for this animal
+            MI_all_animals(ani_idx, :) = MI_mean_neurons;
+        end
+        
+        % Average over animals for each trial
+        mean_MI(config_idx, phase_idx, :) = nanmean(MI_all_animals, 1);  % Mean across animals
+        SEM_MI(config_idx, phase_idx, :) = nanstd(MI_all_animals, 0, 1) / sqrt(num_animals);  % SEM
+    end
+end
+
+% Plotting the results
+figure(1000);clf
+hold on;
+
+% Define labels for air phases
+phase_labels = {'Air-On', 'Air-Off'};
+
+% Loop over configurations and air phases to plot
+for config_idx = 3%:length(configurations)
+    for phase_idx = 1:2  % Air on (1), Air off (2)
+        % Extract mean MI and SEM for this configuration and phase
+        mean_MI_config_phase = squeeze(mean_MI(config_idx, phase_idx, :));
+        sem_MI = squeeze(SEM_MI(config_idx, phase_idx, :));
+        
+        % Plot with error bars (shaded region)
+        trials = 1:num_trials;
+        shadedErrorBar(trials, mean_MI_config_phase, sem_MI);
+        
+        % Add configuration and phase labels
+        text(num_trials * config_idx, mean(mean_MI_config_phase), ['C', num2str(configurations(config_idx)), '-', phase_labels{phase_idx}]);
+    end
+end
+
+xlabel('Trial Numbers');
+ylabel('Mutual Information (Bits)');
+if encoding_type == 1
+    title('Time MI vs Trials (Averaged Over Neurons and Animals)');
+else
+    title('Distance MI vs Trials (Averaged Over Neurons and Animals)');
+end
+hold off;
+
+%%
+% Define dimensions
+num_animals = length(MI_animal_matrices);  % Number of animals
+num_configs = 3;                           % Number of configurations (C3, C4, C5)
+num_phases = 2;                            % Number of phases (air-on, air-off)
+num_trials = 10;                           % Number of trials per configuration
+num_encoding_types = 2;                    % Encoding types: time (1) and distance (2)
+
+% Initialize the big matrix M x N (M = num_animals, N = 120)
+num_total_conditions = num_configs * num_phases * num_trials * num_encoding_types;
+MI_big_matrix = NaN(num_animals, num_total_conditions);
+
+% Loop through each animal
+for ani_idx = 1:num_animals
+    % Initialize a counter for column index in MI_big_matrix
+    col_idx = 1;
+    
+    % Loop through each configuration, phase, and encoding type
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            for encoding_type = 1:num_encoding_types
+                % Extract MI for this configuration, phase, and encoding type
+                MI_data = MI_animal_matrices{ani_idx}(config_idx, phase_idx, encoding_type, :, :);
+                
+                % Average MI over neurons for each trial
+                MI_mean_neurons = squeeze(nanmean(MI_data, 4));  % Mean across neurons
+                
+                % Store the MI averaged over neurons for all trials into the big matrix
+                MI_big_matrix(ani_idx, col_idx:col_idx+num_trials-1) = MI_mean_neurons;
+                
+                % Update column index to move to the next block
+                col_idx = col_idx + num_trials;
+            end
+        end
+    end
+end
+
+% Now 'MI_big_matrix' is the M x N matrix (M = animals, N = conditions)
+
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','TI','DT','Tr'},[3,2,2,10]);
+dataT = make_between_table({MI_big_matrix},dvn);
+ra = RMA(dataT,within,{0.05,{'hsd'}});
+ra.ranova
+print_for_manuscript(ra)
+
+%%
 MI_trials_mean = cell2mat(props_C.MI_trials_mean);
-[within,dvn,xlabels,awithinD] = make_within_table({'TI','DT','Conf','Tr'},[2,2,3,10]);
+[within,dvn,xlabels,awithinD] = make_within_table({'DT','Conf','TI','Tr'},[2,3,2,10]);
 dataT = make_between_table({MI_trials_mean},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 ra.ranova
@@ -26,7 +188,7 @@ view_results_rmanova(ha,ra,{'TI:DT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ys
 
 %%
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
-varT = 3;%:length(params)
+varT = 1;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 
@@ -45,17 +207,14 @@ dataT = make_between_table({varC},dvn);
 ra = RMA(dataT,within,{0.05,{'hsd'}});
 ra.ranova
 print_for_manuscript(ra)
-%%
-tcolors = repmat(mData.colors,1,10);
-figure(300);clf; ha = gca;
-MY = 4; ysp = 0.23; mY = 0; ystf = 0.25; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-view_results_rmanova(ha,ra,{'DT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 %% finding dzMIs for trials and intertrials
 RsDt = o.Rs(:,[Ar_t_D ArL_t_D Ars_t_D]);  RsTt = o.Rs(:,[Ar_t_T ArL_t_T Ars_t_T]);
 RsDi = o.Rs(:,[Ar_i_D ArL_i_D Ars_i_D]);  RsTi = o.Rs(:,[Ar_i_T ArL_i_T Ars_i_T]);
 [dzMI_FD,dzMI_FT] = get_zMI_comp_dist_time(RsDt,RsTt,RsDi,RsTi);
 
 %%
+props_Dt = get_props_Rs(RsDt,ntrials); props_Tt = get_props_Rs(RsTt,ntrials);
+props_Di = get_props_Rs(RsDi,ntrials); props_Ti = get_props_Rs(RsTi,ntrials);
 
 %% dzMIs 
 meanMITrials_T = []; meanMITrials_I = [];
@@ -157,7 +316,7 @@ save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
 %     FD_Prop = dzMI_FD.RF.diff_T_D; FT_Prop = dzMI_FT.RF.diff_T_D; 
 %     FD_Prop = dzMI_FD.HaFD.diff_T_D; FT_Prop = dzMI_FT.HaFD.diff_T_D; 
 %     FD_Prop = dzMI_FD.HiFD.diff_T_D; FT_Prop = dzMI_FT.HiFD.diff_T_D; 
-    for rfi = 4
+    for rfi = 3
         TD = FD_Prop;
         cell_resp = FD_Dur_comp{rfi};
         mean_dzMI = [ mean_dzMI exec_fun_on_cell_mat(TD,'nanmean',cell_resp)];
@@ -592,3 +751,72 @@ while 1
     %%
     break;
 end
+
+%%
+
+peak_location_cell = props_C.peak_locations_trials;
+
+% Variables:
+% - peak_location_cell: This variable contains the peak location data (5x12 cell).
+% - air_on_time: Time index for when air turns on (e.g., 5 seconds).
+% - air_off_time: Time index for when air turns off (e.g., 15 seconds).
+% - num_animals: Number of animals (5).
+% - num_configs: Number of configurations (e.g., 3).
+% - num_trials: Number of trials per neuron.
+
+% Example air event times (you will adjust these based on your data):
+air_on_time = 5;   % Air-On time (adjust as per your data)
+air_off_time = 15; % Air-Off time (adjust as per your data)
+
+% Initialize arrays to store peak location data
+peak_locations_on = [];  % Peaks during air-on
+peak_locations_off = []; % Peaks during air-off
+
+% Loop through animals and configurations to extract peak locations
+for ani_idx = 1:5  % Number of animals
+    for config_idx = 1:num_configs  % Configurations (e.g., 3, 4, 5)
+        for encoding_type = 1:2  % 1 = Time, 2 = Distance
+            % Calculate the column index in peak_location_cell
+            col_idx = (config_idx - 1) * 2 + encoding_type;
+
+            % Extract peak location data for this animal, configuration, and encoding type
+            peak_data = peak_location_cell{ani_idx, col_idx};  % M x N (Neurons x Trials)
+
+            % Loop through neurons and trials
+            for neuron_idx = 1:size(peak_data, 1)  % Number of neurons
+                for trial_idx = 1:size(peak_data, 2)  % Number of trials
+                    peak_loc = peak_data(neuron_idx, trial_idx);  % Peak location in the trial
+                    
+                    % Separate peak locations based on air phase (Air-On or Air-Off)
+                    if peak_loc <= air_off_time && peak_loc >= air_on_time
+                        peak_locations_on = [peak_locations_on, peak_loc];
+                    else
+                        peak_locations_off = [peak_locations_off, peak_loc];
+                    end
+                end
+            end
+        end
+    end
+end
+
+% Plot histogram of peak locations
+figure(1000);c
+subplot(2,1,1);
+histogram(peak_locations_on, 'BinWidth', 1);
+title('Peak Locations During Air-On Phase');
+xlabel('Peak Location (Time)');
+ylabel('Frequency');
+hold on;
+xline(air_on_time, 'r--', 'Air-On Time');
+xline(air_off_time, 'r--', 'Air-Off Time');
+hold off;
+
+subplot(2,1,2);
+histogram(peak_locations_off, 'BinWidth', 1);
+title('Peak Locations During Air-Off Phase');
+xlabel('Peak Location (Time)');
+ylabel('Frequency');
+hold on;
+xline(air_on_time, 'r--', 'Air-On Time');
+xline(air_off_time, 'r--', 'Air-Off Time');
+hold off;

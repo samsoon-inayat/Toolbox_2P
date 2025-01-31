@@ -7,5 +7,6 @@ o.Rs = find_responsive_rasters(o.Rs,[]);
 % o.resp = get_responsive_cells(o.Rs); 
 % [o.resp_FR,o.resp_FR_ei] = get_responsive_fraction_FR(ei,o.Rs,10000);
 [o.mR,~,o.mR1] = calc_mean_rasters(o.Rs,[]); 
+[o.mRMC,~,o.mR1MC] = calc_mean_rasters(o.RsMC,[]); 
 % o.props = get_props_Rs(o.Rs,50);
 

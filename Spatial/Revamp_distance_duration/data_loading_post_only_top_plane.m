@@ -3,7 +3,11 @@ function conjunctive_representation
 %% Load Data
 tic
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
-ei = evalin('base','ei'); 
+ei = evalin('base','ei');
+udata = evalin('base','udata');
+udata1 = evalin('base','udata1');
+udataT = evalin('base','udataT');
+udataD = evalin('base','udataD');
 
 % delete second plane data
 for ii = 1:5
@@ -12,6 +16,10 @@ for ii = 1:5
     end
     disp(length(ei{ii}.plane))
 end
+
+% [udata,udata1] = get_unlv_analysis_data(ei);
+% udataT = get_unlv_analysis_data_time_bin(udata1,0.3);
+% udataD = get_unlv_analysis_data_dist_bin(udata1,3);
 
 
 selContexts = [1 4 6 2 7 3 3 4 4 5 5 3 3 4 4 5 5 0 0 2 2 7 7 2 7 2 7 3 4 5 3 4 5 3 4 5 3 4 5];
@@ -82,7 +90,9 @@ end
 cellposeCells = evalin('base','cellposeCells');
 
 o = get_trials_MI(o);
-
+n = 0;
+n = 0;
+n = 0;
 
 n = 0;
 %%

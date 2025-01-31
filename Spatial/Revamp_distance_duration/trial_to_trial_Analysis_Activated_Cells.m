@@ -220,13 +220,13 @@ set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(0);
 make_bars_hollow(hbs(12:end));
 % [~,hyl] = put_axes_labels(gca,{'',[]},{ylabeltxt,[]}); set(hyl,'FontWeight','bold');
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'C3','C4','C5','C3','C4','C5'},{[0 0.03]});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,11,{'AOn','AOff'},{[-0.001 -0.012]});
-if mod(gni,2) == 1
-    titletxt = 'AOn';
-else
-    titletxt = 'AOff';
-end
-ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.01 -0.2 0.1 0]);set(ht,'FontWeight','NOrmal');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,11,{'AOn','AOff'},{[-0.001 -0.00012]});
+% if mod(gni,2) == 1
+    % titletxt = 'AOn';
+% else
+%     titletxt = 'AOff';
+% end
+% ht = set_axes_top_text_no_line(gcf,gca,titletxt,[0.01 -0.2 0.1 0]);set(ht,'FontWeight','NOrmal');
 
 if gni == 1
     ylabel('Cells (%)');
@@ -247,7 +247,8 @@ for ii = 1:5
         if ii == 1
             titletxt = sprintf('# (p<%.3f)',tar.alpha);
         else
-            titletxt = '#';
+            titletxt = sprintf('# (p<%.3f)',tar.alpha);
+            % titletxt = '#';
         end
     end
 
@@ -618,7 +619,7 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 tcolors = repmat(mData.dcolors(1:5),1,2); 
 for gni = 1:5
-    [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,gni),ra_R.ras{gni},{'CT:Ph','hsd',0.05},xs_gaps,tcolors,[mY MY ysp],mData);
+    [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,gni),ra_R.ras{gni},{'CT:Ph','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 
     if gni > 1
         set(gca,'YTick',[]);
@@ -721,7 +722,7 @@ raRespBNB = RMA(dataT,within,{0.05,{'hsd'}});
 print_for_manuscript(raRespBNB)
 %% Resp. two graphs, Conf and Ph 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(107,[3 5 2 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+ff = makeFigureRowsCols(108,[3 5 2 1],'RowsCols',[1 1+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
     'widthHeightAdjustment',[10 -500]);
 MY = 70; ysp = 8; ystf = 7; ysigf = 0.5; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 stp = 0.28*magfac; widths = [1.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;

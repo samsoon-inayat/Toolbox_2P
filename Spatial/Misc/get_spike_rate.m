@@ -25,11 +25,14 @@ for ii = 1:length(ei_C)
         tspSigAll = [];
         this_cell_list = logical(ei.plane{pp}.tP.iscell(:,1));
         tspSigAll = ei.plane{pp}.tP.deconv.spSigAll(this_cell_list,:);
+        tspSigAll_mean = nanmean(tspSigAll,2); tspSigAll_mean1 = repmat(tspSigAll_mean,1,size(tspSigAll,2));
+        tspSigAll_std = nanstd(tspSigAll,[],2); tspSigAll_std1 = repmat(tspSigAll_std,1,size(tspSigAll,2));
+        tspSigAll = (tspSigAll - tspSigAll_mean1)./tspSigAll_std1;
 %         for cn = 1:length(this_cell_list)
 %             tspSigAll(cn,:) = ei.plane{pp}.tP.deconv.spSigAll{this_cell_list(cn)}';
 %         end
-        mask = tspSigAll > thr;
-        tspSigAll(~mask) = NaN;
+        % mask = tspSigAll > thr;
+        % tspSigAll(~mask) = NaN;
         spSigAll{pp} = tspSigAll;
         all_spSigAll = [all_spSigAll;tspSigAll];
         frames_f = ei.plane{pp}.b.frames_f;

@@ -1,0 +1,437 @@
+function activated_cells_trial
+
+%% Load Data
+tic
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
+ei = evalin('base','ei');
+udata = evalin('base','udata');
+udata1 = evalin('base','udata1');
+udataT = evalin('base','udataT');
+udataD = evalin('base','udataD');
+
+n  = 0;
+%%
+% Define parameters
+configs = {'C2', 'C3', 'C4', 'C5', 'C7'}; % Configurations
+num_animals = length(udataT); % Number of animals
+num_configs = length(configs); % Number of configurations
+num_trials = 10; % Trials per configuration
+window_length = 5; % Length of the window in seconds
+bin_size = mean(diff(udataT{1}.ts)); % Time bin size (assume consistent for all animals)
+num_bins = round(window_length / bin_size); % Number of bins in the 3-second window
+num_before_after = 2; % Before (1) and After (2)
+
+% Initialize percent_active matrix
+percent_active = NaN(num_animals, num_configs, num_trials, num_before_after);
+
+% Loop through each animal
+for a = 1:num_animals
+    % Get animal-specific data
+    firing_rate = udataT{a}.firing_rate;
+    air = udataT{a}.air;
+    ts = udataT{a}.ts;
+    
+    % Loop through configurations
+    for c = 1:num_configs
+        config = configs{c};
+        
+        % Get configuration-specific indices
+        config_idx = udataT{a}.(config) == 1;
+        
+        % Find air-onset indices within this configuration
+        air_onsets = find(diff(air) == 1 & config_idx(2:end));
+        
+        % Loop through trials
+        for t = 1:min(num_trials, length(air_onsets))
+            % Get air-onset index for this trial
+            onset_idx = air_onsets(t);
+            
+            % Calculate percentage of active cells for before/after windows
+            for b = 1:num_before_after
+                if b == 1
+                    % Before air-onset (3 seconds)
+                    bins = onset_idx - num_bins : onset_idx - 1;
+                else
+                    % After air-onset (3 seconds)
+                    bins = onset_idx : onset_idx + num_bins - 1;
+                end
+                
+                % Ensure bins are within bounds
+                bins = bins(bins > 0 & bins <= size(firing_rate, 2));
+                
+                % Calculate percentage of active cells
+                active_cells = any(firing_rate(:, bins) > 0, 2); % Active if firing > 0 in any bin
+                percent_active(a, c, t, b) = sum(active_cells) / size(firing_rate, 1) * 100;
+            end
+        end
+    end
+end
+
+% Prepare ANOVA-style matrix
+% Total columns = Configurations × Trials × Before/After
+total_columns = num_configs * num_trials * num_before_after;
+anova_matrix = NaN(num_animals, total_columns);
+
+% Populate ANOVA-style matrix
+col_idx = 1;
+for c = 1:num_configs
+    for t = 1:num_trials
+        for b = 1:num_before_after
+            anova_matrix(:, col_idx) = percent_active(:, c, t, b);
+            col_idx = col_idx + 1;
+        end
+    end
+end
+
+% Display results
+disp('ANOVA-style matrix created:');
+disp(size(anova_matrix)); % Should be [num_animals, total_columns]
+%%
+clc
+[within,dvn,xlabels,awithinD] = make_within_table({'Conf','TR','BA'},[5,10,2]);
+dataT = make_between_table({anova_matrix},dvn);
+ra = RMA(dataT,within,{0.05,{'hsd'}});
+ra.ranova
+print_for_manuscript(ra)
+%%
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -450]);
+MY = 30; ysp = 0.51; mY = 0; ystf = 0.51; ysigf = 0.31;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [2.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+
+tcolors = repmat(mData.colors(5:end),1,6);
+[hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),ra,{'Conf:BA','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+% xticklabels = {'T1','T2','T3','T4','T5',}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+ylabel('Cells (%)'); xlabel('Trials');
+
+save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+
+
+
+% 
+
+%%
+% % 
+% % an = 1;
+% % tudata = udataT{an}
+% % field_names = fieldnames(tudata);
+% % for ii = 1:length(field_names)
+% %     varname = field_names{ii};
+% %     cmdTxt = sprintf('%s = tudata.%s;',varname,varname);
+% %     eval(cmdTxt);
+% % end
+% %%
+% % Define parameters
+% configs = {'C2', 'C3', 'C4', 'C5', 'C7'};
+% num_animals = length(udataT); % Number of animals
+% num_configs = length(configs); % Number of configurations
+% num_trials = 10; % Trials per configuration
+% num_before_after = 2; % Before/After (1 = Before, 2 = After)
+% num_time_windows = 4; % 4 time windows per side
+% num_time_points = 3; % 3 bins per window
+% bin_size = mean(diff(udataT{1}.ts)); % Bin size from timestamps
+% num_bins_per_window = round(1 / bin_size); % 1-second window = num_bins_per_window
+% 
+% % Initialize multidimensional percent_active
+% percent_active = NaN(num_animals, num_configs, num_trials, num_before_after, num_time_windows, num_time_points);
+% 
+% % Loop through each animal
+% for a = 1:num_animals
+%     % Get animal-specific data
+%     firing_rate = udataT{a}.firing_rate;
+%     air = udataT{a}.air;
+%     ts = udataT{a}.ts;
+% 
+%     % Initialize structure for air-on events
+%     air_events = struct();
+% 
+%     % Loop through configurations
+%     for c = 1:num_configs
+%         config = configs{c};
+% 
+%         % Get configuration-specific indices
+%         config_idx = udataT{a}.(config) == 1;
+% 
+%         % Find air-onset indices within this configuration
+%         air_onsets = find(diff(air) == 1 & config_idx(2:end));
+% 
+%         % Store air-onset windows (4 before, 4 after, each 1 second wide)
+%         air_events.(config).onset_windows = arrayfun(@(x) ...
+%             [  (x-4*num_bins_per_window:x-3*num_bins_per_window-1); ...
+%                (x-3*num_bins_per_window:x-2*num_bins_per_window-1); ...
+%                (x-2*num_bins_per_window:x-1*num_bins_per_window-1); ...
+%                (x-1*num_bins_per_window:x+0*num_bins_per_window-1); ... % 4 BEFORE
+%                (x+0*num_bins_per_window:x+1*num_bins_per_window-1); ...
+%                (x+1*num_bins_per_window:x+2*num_bins_per_window-1); ...
+%                (x+2*num_bins_per_window:x+3*num_bins_per_window-1); ...
+%                (x+3*num_bins_per_window:x+4*num_bins_per_window-1) ], ... % 4 AFTER
+%                air_onsets, 'UniformOutput', false);
+% 
+%         % Compute percentage of active cells for each air-onset event
+%         for t = 1:length(air_onsets)
+%             for b = 1:2 % 1 = Before, 2 = After
+%                 for w = 1:num_time_windows
+%                     % Determine window index
+%                     window_idx = (b - 1) * num_time_windows + w;
+% 
+%                     % Get bin indices for the window
+%                     bin_idx = air_events.(config).onset_windows{t}(window_idx, :);
+% 
+%                     % Calculate percentage of active cells for each time point
+%                     for p = 1:num_time_points
+%                         active_cells = firing_rate(:, bin_idx(p)) > 0; % Active = firing > 0
+%                         percent_active(a, c, t, b, w, p) = sum(active_cells) / size(firing_rate, 1) * 100;
+%                     end
+%                 end
+%             end
+%         end
+%     end
+% end
+% 
+% % Display summary of percent_active
+% disp('Multidimensional percent_active created:');
+% disp(size(percent_active)); % Should be [num_animals, num_configs, num_trials, 2, 4, 3]
+% %%
+% % Initialize parameters
+% num_animals = size(percent_active, 1);
+% num_configs = size(percent_active, 2);
+% num_trials = size(percent_active, 3);
+% num_before_after = size(percent_active, 4);
+% num_time_windows = size(percent_active, 5);
+% num_time_points = size(percent_active, 6);
+% 
+% % Total columns for ANOVA matrix
+% total_columns = num_configs * num_trials * num_before_after * num_time_windows * num_time_points;
+% 
+% % Initialize ANOVA-style matrix
+% anova_matrix = NaN(num_animals, total_columns);
+% 
+% % Column index for filling the matrix
+% col_idx = 1;
+% 
+% % Loop through configurations
+% for c = 1:num_configs
+%     % Loop through trials
+%     for t = 1:num_trials
+%         % Loop through Before/After
+%         for b = 1:num_before_after
+%             % Loop through time windows
+%             for w = 1:num_time_windows
+%                 % Loop through time points
+%                 for p = 1:num_time_points
+%                     % Extract data for all animals
+%                     anova_matrix(:, col_idx) = percent_active(:, c, t, b, w, p);
+% 
+%                     % Increment column index
+%                     col_idx = col_idx + 1;
+%                 end
+%             end
+%         end
+%     end
+% end
+% 
+% % Display summary
+% disp('ANOVA-style matrix created:');
+% disp(size(anova_matrix)); % Should be [5, 1200]
+% 
+% 
+% %%
+% [within,dvn,xlabels,awithinD] = make_within_table({'Conf','TR','BA','TW','TP'},[5,10,2,4,3]);
+% dataT = make_between_table({anova_matrix},dvn);
+% ra = RMA(dataT,within,{0.05,{''}});
+% ra.ranova
+% print_for_manuscript(ra)
+% %%
+% % redF = [1,2]; redV = {[1,2],1};
+% % [dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+% % raR = RMA(dataTR,withinR,{0.025,{'hsd'}});
+% % raR.ranova
+% % print_for_manuscript(raR)
+% % 
+% % Average over Time Points (TP) in the percent_active variable
+% % Input dimensions of percent_active: [Animals, Configurations, Trials, BA, TW, TP]
+% 
+% % Average along the TP dimension (6th dimension)
+% percent_active_avg = mean(percent_active, 6, 'omitnan'); % Resulting size: [Animals, Configurations, Trials, BA, TW]
+% 
+% % Display size of the averaged percent_active matrix
+% disp('Dimensions of percent_active after averaging over TP:');
+% disp(size(percent_active_avg)); % Should be [Animals, Configurations, Trials, BA, TW]
+% 
+% % Prepare an ANOVA-style matrix
+% % Initialize parameters
+% num_animals = size(percent_active_avg, 1);
+% num_configs = size(percent_active_avg, 2);
+% num_trials = size(percent_active_avg, 3);
+% num_before_after = size(percent_active_avg, 4);
+% num_time_windows = size(percent_active_avg, 5);
+% 
+% % Total columns for ANOVA matrix
+% total_columns = num_configs * num_trials * num_before_after * num_time_windows;
+% 
+% % Initialize ANOVA-style matrix
+% anova_matrix_avg = NaN(num_animals, total_columns);
+% 
+% % Column index for filling the matrix
+% col_idx = 1;
+% 
+% % Loop through configurations
+% for c = 1:num_configs
+%     % Loop through trials
+%     for t = 1:num_trials
+%         % Loop through Before/After
+%         for b = 1:num_before_after
+%             % Loop through Time Windows
+%             for w = 1:num_time_windows
+%                 % Extract data for all animals
+%                 anova_matrix_avg(:, col_idx) = percent_active_avg(:, c, t, b, w);
+% 
+%                 % Increment column index
+%                 col_idx = col_idx + 1;
+%             end
+%         end
+%     end
+% end
+% 
+% % Display summary of the ANOVA matrix
+% disp('ANOVA-style matrix after averaging over TP created:');
+% disp(size(anova_matrix_avg)); % Should be [num_animals, total_columns]
+% %%
+% [within,dvn,xlabels,awithinD] = make_within_table({'Conf','TR','BA','TW'},[5,10,2,4]);
+% dataT = make_between_table({anova_matrix_avg},dvn);
+% ra = RMA(dataT,within,{0.05,{'hsd'}});
+% ra.ranova
+% print_for_manuscript(ra)
+% 
+% %%
+% %% two graphs, Conf and Ph  for combined analysis from conj, comp1, and comp2
+% clc
+% magfac = mData.magfac;
+% ff = makeFigureRowsCols(107,[3 5 2 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+%     'widthHeightAdjustment',[10 -450]);
+% MY = 4; ysp = 0.51; mY = 1.5; ystf = 0.51; ysigf = 0.31;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+% stp = 0.28*magfac; widths = [1.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+% adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+% axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+% 
+% tcolors = repmat(mData.colors(5:end),1,6);
+% [hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),ra,{'TR','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+% % xticklabels = {'T1','T2','T3','T4','T5',}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% ylabel('Cells (%)'); xlabel('Trials');
+% 
+% save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+% 
+% %% two graphs, Conf and Ph  for combined analysis from conj, comp1, and comp2
+% clc
+% magfac = mData.magfac;
+% ff = makeFigureRowsCols(107,[3 5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+%     'widthHeightAdjustment',[10 -450]);
+% MY = 7; ysp = 0.51; mY = 0; ystf = 0.51; ysigf = 0.31;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+% stp = 0.28*magfac; widths = [2.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+% adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+% axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+% 
+% tcolors = repmat(mData.colors(5:end),1,6);
+% [hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),ra,{'Conf:TW','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+% % xticklabels = {'T1','T2','T3','T4','T5',}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% ylabel('Cells (%)'); xlabel('Trials');
+% 
+% save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+% %%
+% redF = [1]; redV = {[5]};
+% [dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+% raR = RMA(dataTR,withinR,{0.05,{'hsd'}});
+% raR.ranova
+% print_for_manuscript(raR)
+% 
+% %% two graphs, Conf and Ph  for combined analysis from conj, comp1, and comp2
+% clc
+% magfac = mData.magfac;
+% ff = makeFigureRowsCols(107,[3 5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+%     'widthHeightAdjustment',[10 -450]);
+% MY = 7; ysp = 0.51; mY = 0; ystf = 0.51; ysigf = 0.31;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+% stp = 0.28*magfac; widths = [2.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+% adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+% axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+% 
+% tcolors = repmat(mData.colors(5:end),1,6);
+% [hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),raR,{'BA','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+% % xticklabels = {'T1','T2','T3','T4','T5',}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% ylabel('Cells (%)'); xlabel('Trials');
+% 
+% save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);
+% 
+% %%
+% % Average over Time Windows (TW) in the percent_active variable
+% % Input dimensions of percent_active: [Animals, Configurations, Trials, BA, TW, TP]
+% 
+% % Average along the TW dimension (5th dimension)
+% percent_active_reduced = mean(percent_active, 5, 'omitnan'); % Resulting size: [Animals, Configurations, Trials, BA, TP]
+% 
+% % Further average over Time Points (TP) to completely reduce TW and TP
+% percent_active_final = mean(percent_active_reduced, 5, 'omitnan'); % Resulting size: [Animals, Configurations, Trials, BA]
+% 
+% % Display size of the reduced percent_active matrix
+% disp('Dimensions of percent_active after averaging across TW and TP:');
+% disp(size(percent_active_final)); % Should be [Animals, Configurations, Trials, BA]
+% 
+% % Prepare an ANOVA-style matrix
+% % Initialize parameters
+% num_animals = size(percent_active_final, 1);
+% num_configs = size(percent_active_final, 2);
+% num_trials = size(percent_active_final, 3);
+% num_before_after = size(percent_active_final, 4);
+% 
+% % Total columns for ANOVA matrix
+% total_columns = num_configs * num_trials * num_before_after;
+% 
+% % Initialize ANOVA-style matrix
+% anova_matrix_reduced = NaN(num_animals, total_columns);
+% 
+% % Column index for filling the matrix
+% col_idx = 1;
+% 
+% % Loop through configurations
+% for c = 1:num_configs
+%     % Loop through trials
+%     for t = 1:num_trials
+%         % Loop through Before/After
+%         for b = 1:num_before_after
+%             % Extract data for all animals
+%             anova_matrix_reduced(:, col_idx) = percent_active_final(:, c, t, b);
+% 
+%             % Increment column index
+%             col_idx = col_idx + 1;
+%         end
+%     end
+% end
+% 
+% % Display summary of the ANOVA matrix
+% disp('ANOVA-style matrix after averaging across TW and TP created:');
+% disp(size(anova_matrix_reduced)); % Should be [num_animals, total_columns]
+% %%
+% [within,dvn,xlabels,awithinD] = make_within_table({'Conf','TR','BA'},[5,10,2]);
+% dataT = make_between_table({anova_matrix_reduced},dvn);
+% ra = RMA(dataT,within,{0.05,{'hsd'}});
+% ra.ranova
+% print_for_manuscript(ra)
+% 
+% %% two graphs, Conf and Ph  for combined analysis from conj, comp1, and comp2
+% clc
+% magfac = mData.magfac;
+% ff = makeFigureRowsCols(107,[3 5 4 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+%     'widthHeightAdjustment',[10 -450]);
+% MY = 7; ysp = 0.51; mY = 0; ystf = 0.51; ysigf = 0.31;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+% stp = 0.28*magfac; widths = [2.1 0.35 2.85 1]*magfac+0.061; gap = 0.09105*magfac;
+% adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+% axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+% 
+% tcolors = repmat(mData.colors(5:end),1,6);
+% [hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),ra,{'TR','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+% % xticklabels = {'T1','T2','T3','T4','T5',}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
+% ylabel('Cells (%)'); xlabel('Trials');
+% 
+% save_pdf(ff.hf,mData.pdf_folder,'bar_graph.pdf',600);

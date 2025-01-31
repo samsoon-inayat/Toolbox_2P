@@ -146,56 +146,56 @@ ra = raBA_R.ras{10};
 print_for_manuscript(ra);
 tcolors = repmat(mData.colors,1,10);
 figure(100);clf; ha = gca;
-view_results_rmanova(ha,ra,'CT','hsd',[1 2],tcolors,[0 2 0.071],mData);
+view_results_rmanova(ha,ra,{'CT','hsd',0.05},[1 2],tcolors,[0 2 0.071],mData);
 %% Figure
 clc
 magfac = mData.magfac;
 ff = makeFigureRowsCols(107,[3 5 6.9 1.3],'RowsCols',[1 1++2+1+2+1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
     'widthHeightAdjustment',[10 -500]);
-MY = 1.75; ysp = 0.1285; mY = 0; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+MY = 1.75; ysp = 0.1285; mY = 0; ystf = 0.25; ysigf = 0.05; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 stp = 0.28*magfac; widths = [ones(1,7)*0.8]*magfac; gap = 0.115*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 
 tcolors = repmat(mData.dcolors(6:end),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raBA_R.ras{1},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),raBA_R.ras{1},{'CT','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 ylabel('Bits');
 axes_title(ff,{1},{'C2 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(6:end),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs,xdata] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},{'CT','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 axes_title(ff,{2},{'C2 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(6:end),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,3),raBA_R.ras{4},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,3),raBA_R.ras{4},{'CT','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 axes_title(ff,{3},{'C3 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(6:end),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{5},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{5},{'CT','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 axes_title(ff,{4},{'C4 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(6:end),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,5),raBA_R.ras{6},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,5),raBA_R.ras{6},{'CT','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 axes_title(ff,{5},{'C4 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(6:end),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,6),raBA_R.ras{8},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,6),raBA_R.ras{8},{'CT','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 axes_title(ff,{6},{'C5 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(6:end),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,7),raBA_R.ras{10},'CT','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,7),raBA_R.ras{10},{'CT','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'Conj','Comp 1','Comp 2'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'PL Pooled'},{[0.001 0.0051]});
 axes_title(ff,{7},{'C7 - AOff'},axes_title_shifts_line,axes_title_shifts_text);
@@ -251,7 +251,7 @@ axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; 
 tcolors = repmat(mData.dcolors(1:5),1,3); 
 for gni = 1:10
     tra = raBA_R.ras{gni};
-    [xdata,hbs] = view_results_rmanova(ff.h_axes(1,gni),raBA_R.ras{gni},{'CT:pL','hsd',0.05},xs_gaps,tcolors,[mY MY ysp],mData);
+    [hbs, xdata] = view_results_rmanova(ff.h_axes(1,gni),raBA_R.ras{gni},{'CT:pL','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 
     if gni > 1
         set(gca,'YTick',[]);
@@ -294,14 +294,14 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 
 tcolors = repmat(mData.colors(1:2),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raBA_R1.ras{5},'CT:Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,1),raBA_R1.ras{5},'CT:Ph','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
 ylabel('Probability');
 axes_title(ff,{1},{'C2 - L5'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(1:5),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'pL','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'L1','L2','L3','L4','L5'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
@@ -309,14 +309,14 @@ axes_title(ff,{2},{'C3'},axes_title_shifts_line,axes_title_shifts_text);
 
 
 tcolors = repmat(mData.dcolors(1:5),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,3),raBA_R2.ras{1},'CT:pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,3),raBA_R2.ras{1},'CT:pL','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'L1','L2','L3','L4','L5'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
 axes_title(ff,{3},{'C4 - AOn'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(1:5),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{4},'pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{4},'pL','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'L1','L2','L3','L4','L5'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
@@ -344,7 +344,7 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 
 tcolors = repmat(mData.colors(6:10),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raBA_R1.ras{1},'CT:Conf','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,1),raBA_R1.ras{1},'CT:Conf','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 ylabel('Probability');
 xticklabels = {'C2','C3','C4','C5','C7'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
@@ -352,22 +352,22 @@ set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'Conj','Comp1','Comp2'},{[0.001 0.
 axes_title(ff,{1},{'L1'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.colors(1:2),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'CT:Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'CT:Ph','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
 axes_title(ff,{2},{'L2'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.colors(6:10),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,3),raBA_R.ras{4},'Conf','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,3),raBA_R.ras{4},'Conf','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'C2','C3','C4','C5','C7'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 
 tcolors = repmat(mData.colors(1:2),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{4},'Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,4),raBA_R.ras{4},'Ph','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 axes_title(ff,{3:4},{'L4'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.colors(1:2),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,5),raBA_R.ras{5},'CT:Ph','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,5),raBA_R.ras{5},'CT:Ph','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'AOn','AOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Conj','Comp1','Comp2'},{[0.001 0.0051]});
 axes_title(ff,{5},{'L5'},axes_title_shifts_line,axes_title_shifts_text);
@@ -397,7 +397,7 @@ MY = 0.65; ysp = 0.0275; mY = 0;
 axes_title_shifts_line = [0 0.675 0 0]; axes_title_shifts_text = [0.02 0.071 0 0]; xs_gaps = [1 2];
 
 tcolors = repmat(mData.dcolors(1:5),1,3); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,1),raBA_R.ras{1},'Ph:pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,1),raBA_R.ras{1},'Ph:pL','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 ylabel('Probability');
 xticklabels = {'L1','L2','L3','L4','L5'};
 set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
@@ -405,13 +405,13 @@ set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'AOn','AOff'},{[0.001 0.0051]});
 axes_title(ff,{1},{'Conj'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(1:5),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'Conf:pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,2),raBA_R.ras{2},'Conf:pL','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'L1','L2','L3','L4','L5'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'C2','C3','C4','C5','C7'},{[0.001 0.0051]});
 axes_title(ff,{2},{'Comp1'},axes_title_shifts_line,axes_title_shifts_text);
 
 tcolors = repmat(mData.dcolors(1:5),1,5); 
-[xdata,hbs] = view_results_rmanova(ff.h_axes(1,3),raBA_R.ras{3},'Conf:pL','hsd',xs_gaps,tcolors,[mY MY ysp],mData);
+[hbs, xdata] = view_results_rmanova(ff.h_axes(1,3),raBA_R.ras{3},'Conf:pL','hsd',xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
 xticklabels = {'L1','L2','L3','L4','L5'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); xtickangle(30);
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,5,{'C2','C3','C4','C5','C7'},{[0.001 0.0051]});
 axes_title(ff,{3},{'Comp2'},axes_title_shifts_line,axes_title_shifts_text);

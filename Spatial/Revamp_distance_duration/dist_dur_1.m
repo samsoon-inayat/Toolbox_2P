@@ -9,7 +9,7 @@ props_C = get_props_Rs(Rs_C,ntrials);
 sel_pop_C = [dur_cells_T dis_cells_T dur_cells_I dis_cells_I];
 %%
 params = {'perc','N_Resp_Trials','zMI','rs','nan_zMI','nan_rs','HaFD','HiFD','PWs','centers','peak_locations'};
-varT = 4;%:length(params)
+varT = 1;%:length(params)
 for pii = varT
     if pii == 1
         mean_var_C = exec_fun_on_cell_mat(sel_pop_C,'percent'); 

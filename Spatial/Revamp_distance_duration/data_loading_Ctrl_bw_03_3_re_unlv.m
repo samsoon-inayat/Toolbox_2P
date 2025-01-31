@@ -71,6 +71,14 @@ disp('Done');
 for ii = 1:length(ei)
     ei(ii) = cellular_spatial_distances(ei(ii));
 end
+close all;
+disp('Done');
+
+%% new analysis
+[udata,udata1] = get_unlv_analysis_data(ei);
+udataT = get_unlv_analysis_data_time_bin(udata1,0.3);
+udataD = get_unlv_analysis_data_dist_bin(udata1,3);
+disp('Done');
 %%
 binwidths = [0.3 3];
 for ii = 1:length(ei)
@@ -133,6 +141,9 @@ for ii = 1:length(ei)
 end
 toc
 
+disp('Done');
+
+
 %%
 for ii = 1:length(ei)
     min_speed(ii) = min(ei{ii}.b.fSpeed);
@@ -166,6 +177,7 @@ cellposeCells(3) = totalCells(5);
 cellposeCells(4) = totalCells(6);
 cellposeCells(5) = totalCells(7);
 
+disp('Done');
 
 %% training
 
