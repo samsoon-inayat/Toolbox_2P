@@ -1,4 +1,4 @@
-function [speedRs,resp_speed,pR,resp_speedN] = get_speed_response(ei)
+function [speedRs,resp_speed,pR,resp_speedN] = load_speed_response(ei)
 
 
 var_names = {'linear','sigmoid','gauss'};

@@ -50,6 +50,12 @@ out.fits = find_cellular_speed_tuning(ei,pp,bin_centers,cell_act,owr(2));
 out.FR_vs_speed = cell_act;
 out.bin_centers = bin_centers;
 
+for ii = 1:size(cell_act,1)
+    [output ~] = info_metrics_S_onlyMI(cell_act(ii,:), [], 4, [], 0);
+    out.bMI(ii) = output.ShannonMI;
+    out.mMI(ii) = compute_mutual_information(cell_act(ii,:),[],4);
+end
+
 function out = find_cellular_speed_tuning_McN(ei,pp,bins,activity,owr)
 n = 0;
 file_name = fullfile(ei.plane{pp}.folder,sprintf('speed_tuning_McN.mat'));

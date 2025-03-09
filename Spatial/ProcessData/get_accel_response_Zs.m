@@ -6,7 +6,7 @@ end
 function ei = process_one_animal(ei,thr,owr)
 % disp(sprintf('%d,%d - %d,%d',length(mOnst),length(mOnse),length(mOffst),length(mOffse)));
 binwidths = evalin('base','binwidths');
-for pp = 1:length(ei.plane)
+for pp = 1%:length(ei.plane)
     ei.tP = ei.plane{pp}.tP;
     thispFolder = ei.plane{pp}.folder;
     ei.deconv = ei.plane{pp}.tP.deconv;
@@ -22,11 +22,12 @@ for pp = 1:length(ei.plane)
 %     ei.plane{pp}.motionOffset_rasters = rasters;
     
 %     ei.plane{pp}.acc_response = find_acc_response(ei,pp,owr(5));
-    ei.plane{pp}.accel_response = find_speed_response(ei,pp,owr);
+    ei.plane{pp}.accel_responseZ = find_speed_response(ei,pp,owr);
 end
 
 function out = find_speed_response(ei,pp,owr)
-activity = ei.deconv.spSigAll;
+raw_activity = ei.deconv.spSigAll;
+activity = (raw_activity - mean(raw_activity, 2)) ./ std(raw_activity, [], 2);
 speed = ei.b.fSpeed(ei.plane{pp}.b.frames_f);
 ts = ei.b.ts(ei.plane{pp}.b.frames_f);
 speed = speed(1:size(activity,2));
@@ -51,11 +52,6 @@ out.fits = find_cellular_accel_tuning(ei,pp,bin_centersa,cell_acta,owr(1));
 out.FR_vs_accel = cell_acta;
 out.bin_centers = bin_centersa;
 
-for ii = 1:size(cell_acta,1)
-    [output ~] = info_metrics_S_onlyMI(cell_acta(ii,:), [], 4, [], 0);
-    out.MI(ii) = output.ShannonMI;
-end
-
 function fits = find_cellular_accel_tuning(ei,pp,bcs,cell_act,owr)
 n = 0;
 max_fr = max(cell_act,[],2);
@@ -73,7 +69,7 @@ fr = cell_act;
 func_names = {'do_gauss_fit','do_sigmoid_fit','do_linear_fit'};
 var_names = {'gauss','sigmoid','linear'};
 for ii = 1:length(var_names)
-    file_name = fullfile(ei.plane{pp}.folder,sprintf('accel_tuning_%s.mat',var_names{ii}));
+    file_name = fullfile(ei.plane{pp}.folder,sprintf('accel_tuning_%sZ.mat',var_names{ii}));
     if exist(file_name,'file') && owr == 0
         cmdTxt = sprintf('fits.%s = load(file_name);',var_names{ii});
         eval(cmdTxt);

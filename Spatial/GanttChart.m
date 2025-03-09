@@ -17,6 +17,7 @@
 %                       'InputFormat', 'dd-MMM-yyyy');
 % 
 path = 'G:\My Drive\Research\Grant_Applications\NOT_AG_21_044__PAR_22_094';
+path = 'G:\My Drive\Research\Grant_Applications\NOT_AG_24_031_Meta';
 % Define the file path and sheet name
 file_path = fullfile(path,'TimeLine.xlsx'); % Change to the path of your Excel file
 sheet_name = 'Sheet1'; % Specify the sheet name if not the default
@@ -26,8 +27,8 @@ data = readtable(file_path, 'Sheet', sheet_name);
 
 % Extract the task names, start dates, and end dates
 tasks = data{:, 1}; % Task names in the first column
-start_dates = datetime(data{:, 2}, 'InputFormat', 'dd-MMM-yyyy'); % Start dates in the second column
-end_dates = datetime(data{:, 3}, 'InputFormat', 'dd-MMM-yyyy'); % End dates in the third column
+start_dates = datetime(data{:, 4}, 'InputFormat', 'dd-MMM-yyyy'); % Start dates in the second column
+end_dates = datetime(data{:, 7}, 'InputFormat', 'dd-MMM-yyyy'); % End dates in the third column
 
 % % Display the variables
 % disp(tasks);
@@ -60,7 +61,7 @@ grid on;
 
 % Adjust x-axis to display datetime values
 ax = gca;
-ax.XLim = [datenum('01-Jan-2025'), datenum('30-Jun-2028')]; % Set limits based on start and end dates
+ax.XLim = [datenum('01-Jun-2025'), datenum('30-Jun-2031')]; % Set limits based on start and end dates
 % tick_values = linspace(min(datenum(start_dates)), max(datenum(end_dates)), 3);
 
 datetick('x', 'mmm yy', 'keeplimits'); % Format the x-axis with date labels
@@ -70,13 +71,13 @@ for i = 1:length(tasks)
     text(datenum(start_dates(i)), i, datestr(start_dates(i), 'mmm yy'), ...
          'VerticalAlignment', 'middle', 'HorizontalAlignment', 'right', 'FontSize', 8);
 end
-x_start = datenum(datetime('01-Jul-2025', 'InputFormat', 'dd-MMM-yyyy')); % X-axis starting point
-x_end_line = datenum(datetime('30-Jun-2027', 'InputFormat', 'dd-MMM-yyyy')); % Project end line
+x_start = datenum(datetime('01-Dec-2025', 'InputFormat', 'dd-MMM-yyyy')); % X-axis starting point
+x_end_line = datenum(datetime('30-Nov-30', 'InputFormat', 'dd-MMM-yyyy')); % Project end line
 plot([x_end_line x_end_line],ylim);%, 'End of Project', 'LabelOrientation', 'horizontal', 'LabelVerticalAlignment', 'middle');
 plot([x_start x_start],ylim);%, 'End of Project', 'LabelOrientation', 'horizontal', 'LabelVerticalAlignment', 'middle');
 % annotation('textbox', [0.4, 0.7, 0.1, 0.1], 'String', 'Project Start', 'FontSize', 8, 'FontWeight', 'bold', 'EdgeColor', 'black', 'BackgroundColor', 'yellow');
 hold off;
-set(gca,'YDir','reverse');
+set(gca,'YDir','reverse','YLim',[0 17]);
 xtickangle(15); ytickangle(15);
 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('gantt_chart.pdf'),600);

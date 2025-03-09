@@ -48,6 +48,7 @@ Ar_On = 28; ArL_On = 29; Ars_On = 30; Ar_Off = 31; ArL_Off = 32; Ars_Off = 33; A
 Ar_B_T = 37; ArL_B_T = 38; Ars_B_T = 39;
 
     [speedRs,resp_speed,speed_percent,resp_speedAcc] = load_speed_response(ei);
+    % [speedRsZ] = load_speed_responseZ(ei);
 %     all_xl{ii+1} = 'sp';
 %     resp = [o.resp.vals resp_speed];
 

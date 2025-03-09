@@ -27,7 +27,7 @@ while 1
     clear d;
     d.bcs = speedRs{an,3}.bin_centers;
     d.FR = speedRs{an,3}.FR_vs_speed;
-    fitg = speedRs{an,3}.fits.gaussR; 
+    fitg = speedRs{an,3}.fits.gaussR;
     d.fFRg = fitg.fitted; d.cg = fitg.coeffsrs(:,3);
 %     [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
     inds = resp_speedAcc{an,1};
@@ -46,7 +46,7 @@ while 1
     an = 4;
 %     resp_sp = resp_speed(:,[1 3]);
     
-    sMcN = speedRs{an,2};
+    % sMcN = speedRs{an,2};
     resp_M = resp_speed(an,3);
     d.bcs = speedRs{an}.bin_centers;
     d.FR = speedRs{an}.FR_vs_speed;

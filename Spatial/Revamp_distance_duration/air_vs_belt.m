@@ -35,6 +35,7 @@ end
 
 %% Resp. two graphs, all and cond
 ff = makeFigureRowsCols(107,[10 5 2.75 1.25],'RowsCols',[1 2],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.36],'widthHeightAdjustment',[10 -510]);
+magfac = 1;
 switch varT
     case 1 % responsive cells 
         MY = 70; ysp = 4; mY = 0; titletxt = 'Responsivity'; ylabeltxt = {'% of cells'}; % for all cells (vals) MY = 80
