@@ -83,7 +83,7 @@ for ii = 1:length(field_names)
     cmdTxt = sprintf('o.%s = %s_binned;',varname,varname);
     eval(cmdTxt);
 end
-
+n = 0;
 % % Display the binned results for verification
 % disp('Binned firing rates, speed, and logical variables (bnb, C1, C2):');
 % disp(firing_rate_binned);

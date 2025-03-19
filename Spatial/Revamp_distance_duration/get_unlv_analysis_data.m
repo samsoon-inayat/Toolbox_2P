@@ -138,6 +138,17 @@ belt = sei.b.photo_sensor_raw;
 light = sei.b.stim_raw;
 ts = sei.b.ts; tsm = ts/60;
 ds = sei.b.dist; 
+accel = [0 diff(speed)./diff(ts)];
+jerk = [0 diff(accel)./diff(ts)];
+snap = [0 diff(jerk)./diff(ts)];
+
+dads = [0 diff(accel)./diff(speed)];
+
+
+daccel = [0 diff(speed)./diff(ds)];
+djerk = [0 diff(daccel)./diff(ds)];
+dsnap = [0 diff(djerk)./diff(ds)];
+
 frf = logical(zeros(size(ts)));
 frf(frames_f) = 1;
 bnb = zeros(size(ts));
@@ -234,6 +245,7 @@ udata.ts = ts;
 udata.tsm = tsm;
 udata.ds = ds;
 udata.speed = speed;
+udata.accel = accel;
 udata.animal_motion = animal_motion;
 udata.C1 = C1;
 udata.C2 = C2;

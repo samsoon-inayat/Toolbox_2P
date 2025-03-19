@@ -11,6 +11,9 @@ while 1
     [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
     inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
     inds = logical(resp_speed{an,4});
+    inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
+    inds = centers > 25;
+    inds = ~(centers < 1 | centers > 39 | rs < 0.25 | PWs < 10);% | PWs > 20 | PWs < 10;
 %     t_resp = cell_list_op(resp,[],'or');
 %     inds = ~inds;
 %     inds = inds & ~t_resp{an}';
@@ -23,7 +26,7 @@ end
 
 %% visualize the data
 while 1
-    an = 4;
+    an = 3;
     clear d;
     d.bcs = speedRs{an,3}.bin_centers;
     d.FR = speedRs{an,3}.FR_vs_speed;
@@ -57,13 +60,13 @@ while 1
     inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
     inds = ~inds;
     resp_sp_and = cell_list_op([resp_M,{inds'}],[],'and'); %resp_sp_and = resp_sp_and(:,1);
-    inds = resp_speed{an,4};
-    inds_cn = find(inds);
+    % inds = resp_speed{an,4};
+    % inds_cn = find(inds);
     100*sum(inds)/length(inds)
     d.FR = d.FR(inds,:); d.fFRl = d.fFRl(inds,:); d.fFRs = d.fFRs(inds,:); d.fFRg = d.fFRg(inds,:);
     d.cl = d.cl(inds); d.cs = d.cs(inds); d.cg = d.cg(inds);
     cell_inds = [8 13 10];
-    cell_inds = [32 41 24];
+    cell_inds = [48 49 30];
 %     cell_inds = [1 2 3]+(5*3);
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 3],...
         'spaceRowsCols',[0.15 0.065],'rightUpShifts',[0.15 0.28],'widthHeightAdjustment',...
