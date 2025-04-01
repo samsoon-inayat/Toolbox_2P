@@ -9,8 +9,13 @@ end
 
 
 function udata = return_data_animal(sei,ani)
-
-firing_rate = sei.tP.deconv.spSigAll;
+pl = 1;
+try
+    firing_rate = sei.tP.deconv.spSigAll;
+catch
+    firing_rate = sei.plane{1}.tP.deconv.spSigAll;
+end
+ca_signal = get_calcium_data(sei,pl);
 frames_f = sei.plane{1}.b.frames_f(1:size(firing_rate,2))';
 speed = sei.b.fSpeed(frames_f);
 air = sei.b.air_puff_raw(frames_f);
@@ -106,6 +111,7 @@ C(st:en) = 1; C = C(frames_f);
 C7 = C;
 
 udata.firing_rate = firing_rate;
+udata.ca_signal = ca_signal;
 udata.bnb = logical(bnb);
 udata.air = air_events;
 udata.light = light_events;
@@ -128,8 +134,13 @@ udata.frf = frf;
 
 
 function udata = return_data_animal_O(sei,ani)
-
-firing_rate = sei.tP.deconv.spSigAll;
+pl = 1;
+try
+    firing_rate = sei.tP.deconv.spSigAll;
+catch
+    firing_rate = sei.plane{1}.tP.deconv.spSigAll;
+end
+ca_signal = get_calcium_data(sei,pl);
 frames_f = sei.plane{1}.b.frames_f(1:size(firing_rate,2))';
 frames_f = frames_f(1:size(firing_rate,2));
 speed = sei.b.fSpeed;
@@ -202,43 +213,70 @@ prepost = 10000;
 inmat = logical(zeros(size(sei.b.ts))); 
 
 C = inmat; 
-st = sei.b.stim_r(1)-prepost; en = sei.b.stim_r(10)+prepost;
+s_time = sei.b.ts(sei.b.stim_r(2))-sei.b.ts(sei.b.stim_f(1));
+st = sei.b.stim_r(1)-prepost; en = sei.b.stim_f(10)+s_time*(1e6/sei.b.si)+prepost;
 C(st:en) = 1;
 C1 = C;
 
 C = inmat;
-st = sei.b.air_puff_r(1)-prepost; en = sei.b.air_puff_f(10)+prepost;
+s_time = sei.b.ts(sei.b.air_puff_r(2))-sei.b.ts(sei.b.air_puff_f(1));
+st = sei.b.air_puff_r(1)-prepost; en = sei.b.air_puff_f(10)+s_time*(1e6/sei.b.si)+prepost;
 C(st:en) = 1; 
 C2 = C;
 
 C = inmat;
-st = sei.b.air_puff_r(11)-prepost; en = sei.b.air_puff_f(20)+prepost;
+s_time = sei.b.ts(sei.b.air_puff_r(12))-sei.b.ts(sei.b.air_puff_f(11));
+st = sei.b.air_puff_r(11)-prepost; en = sei.b.air_puff_f(20)+s_time*(1e6/sei.b.si)+prepost;
 C(st:en) = 1;
 C3 = C;
 
 C = inmat;
-st = sei.b.air_puff_r(21)-prepost; en = sei.b.air_puff_f(30)+prepost;
+s_time = sei.b.ts(sei.b.air_puff_r(22))-sei.b.ts(sei.b.air_puff_f(21));
+st = sei.b.air_puff_r(21)-prepost; en = sei.b.air_puff_f(30)+s_time*(1e6/sei.b.si)+prepost;
 C(st:en) = 1; 
 C4 = C;
 
 C = inmat;
-st = sei.b.air_puff_r(31)-prepost; en = sei.b.air_puff_f(40)+prepost;
+s_time = sei.b.ts(sei.b.air_puff_r(32))-sei.b.ts(sei.b.air_puff_f(31));
+st = sei.b.air_puff_r(31)-prepost; en = sei.b.air_puff_f(40)+s_time*(1e6/sei.b.si)+prepost;
 C(st:en) = 1; 
 C5 = C;
 
 C = inmat; 
-st = sei.b.stim_r(21)-prepost; en = sei.b.stim_r(30)+prepost;
+s_time = sei.b.ts(sei.b.stim_r(22))-sei.b.ts(sei.b.stim_f(21));
+st = sei.b.stim_r(21)-prepost; en = sei.b.stim_f(30)+s_time*(1e6/sei.b.si)+prepost;
 C(st:en) = 1; 
 C6 = C;
 
 C = inmat;
-st = sei.b.air_puff_r(41)-prepost; en = sei.b.air_puff_f(50)+prepost;
+s_time = sei.b.ts(sei.b.air_puff_r(42))-sei.b.ts(sei.b.air_puff_f(41));
+st = sei.b.air_puff_r(41)-prepost; en = sei.b.air_puff_f(50)+s_time*(1e6/sei.b.si)+prepost;
 C(st:en) = 1;
 C7 = C;
 
+air_trials = zeros(size(sei.b.ts));
+air_trials = build_trials(air_trials,ts,C2 & air_events,10);
+air_trials = build_trials(air_trials,ts,C3 & air_events,15);
+air_trials = build_trials(air_trials,ts,C4 & air_events,15);
+air_trials = build_trials(air_trials,ts,C5 & air_events,15);
+air_trials = build_trials(air_trials,ts,C7 & air_events,10);
+air_trials_on = air_trials;
+
+air_trials = zeros(size(sei.b.ts));
+air_trials = build_trials_off(air_trials,ts,C2 & air_events,10);
+air_trials = build_trials_off(air_trials,ts,C3 & air_events,15);
+air_trials = build_trials_off(air_trials,ts,C4 & air_events,15);
+air_trials = build_trials_off(air_trials,ts,C5 & air_events,15);
+air_trials = build_trials_off(air_trials,ts,C7 & air_events,10);
+air_trials_off = air_trials;
+
+
 udata.firing_rate = firing_rate;
+udata.ca_signal = ca_signal;
 udata.bnb = logical(bnb);
 udata.air = air_events;
+udata.air_trials_on = air_trials_on;
+udata.air_trials_off = air_trials_off;
 udata.light = light_events;
 udata.belt = belt_events;
 udata.ts = ts;
@@ -264,3 +302,32 @@ for ii = 1:7
     tcontext = contexts(ii);
     startM = tcontext.markers
 end
+
+function trials = build_trials(trials,ts,series,lasttrialdur)
+redges = find_rising_edge(series,0.5,0.05);
+fedges = find_falling_edge(series,-0.5,0.05);
+
+if length(redges) ~= 10
+    error('something wrong');
+end
+redges(11) = fedges(10) + (lasttrialdur/(ts(2)-ts(1)));
+
+for ii = 1:10
+    trials(redges(ii):(fedges(ii)-1)) = ii;
+end
+
+
+function trials = build_trials_off(trials,ts,series,lasttrialdur)
+redges = find_rising_edge(series,0.5,0.05);
+fedges = find_falling_edge(series,-0.5,0.05);
+
+if length(redges) ~= 10
+    error('something wrong');
+end
+redges(11) = fedges(10) + (lasttrialdur/(ts(2)-ts(1)));
+
+for ii = 1:10
+    trials(fedges(ii):(redges(ii+1)-1)) = ii;
+end
+
+n = 0;

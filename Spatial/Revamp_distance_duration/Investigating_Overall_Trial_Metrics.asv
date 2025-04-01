@@ -11,82 +11,91 @@ function Investigating_Overall
 % ANOVA at the animal level will provide me with the information whether
 % there was a certain effect of categorical variables which may be
 % consistent across animals if I find significant differences.
-
-udataT = evalin('base','udataT'); %Time Bins
-udataD = evalin('base','udataD'); %Dist Bins
+udata = evalin('base','udata1');
 ei = evalin('base','ei');
+trial_dataT = evalin('base','trial_dataT'); trial_dataD = evalin('base','trial_dataD');
 configurations = {'C3','C4','C5'};
 air_phases = {'ON','OFF'};
-bin_types = {'time_bin','dist_bin'};
-variable_combs = {'time_dist','time_speed','dist_speed','FR_time','FR_dist','FR_speed'};
-variable_combs = {'time_dist','time_speed','dist_speed'};
-azMI_vals = []; azPC_vals = [];
-ow = [0 0] ;
+% trial_metrics_code = {'time','distance','movement_latency','mean_speed','std_speed','cov_speed','ske_speed','kurt_speed'};
+var_name = 'mean_speed';
+var_name = 'time';
+avar = [];
 for an = 1:5
-    zMI_vals = []; zPC_vals = [];
-    for bn = 1:length(bin_types)
-        if bn == 1
-            data_an = udataT{an};
-        else
-            data_an = udataD{an};
-        end
-        for cn = 1:length(configurations)
-            for ap = 1:length(air_phases)
-                out = get_continuous_variables(data_an,air_phases{ap},configurations{cn}); % concatenate the variables, time, distance, speed, and neural firing rates for trials in air phase (on or off) and configuration (C3, C4, or C5)
-                % find the pairwise metrics including mutual information and
-                % correlation
-                for vn = 1:length(variable_combs)
-                    tvar = variable_combs{vn};
-                    spos = strfind(tvar,'_'); var1 = tvar(1:(spos-1)); var2 = tvar((spos+1):end);
-                    cmdTxt = sprintf('var1v = out.%s;',var1); eval(cmdTxt); cmdTxt = sprintf('var2v = out.%s;',var2); eval(cmdTxt);
-                    params = {'no_of_bins_for_MI',10,'no_of_shuffles_for_norm',500,'animal_info',ei{an},'overwrite_processing',ow,'air_phase',air_phases{ap},...
-                        'configuration',configurations{cn},'variables',variable_combs{vn},'bin_type',bin_types{bn},'trial_type','concatenated'};
-                    met = myMetrics(var1v,var2v,params);
-                    MIs = nanmean(met.MI,1); PCs = nanmean(met.PC,1);
-                    zMI_vals = [zMI_vals MIs(1,1)]; zPC_vals = [zPC_vals PCs(1,1)];
-                end
-            end
+    anvar = [];
+    for cn = 1:length(configurations)
+        for ap = 1:length(air_phases)
+            outT = trial_dataT{an,cn,ap}; outD = trial_dataD{an,cn,ap};
+            idx = strcmp(outT.trial_metrics_code,var_name);
+            % anvar = [anvar outT.trial_metrics(:,idx)' outD.trial_metrics(:,idx)'];
+            anvar = [anvar outT.trial_metrics(:,idx)'];% outD.trial_metrics(:,idx)'];
+            % anvar = [outD.trial_metrics(:,idx)'];
+            n = 0;
         end
     end
-    azMI_vals(an,:) = zMI_vals; azPC_vals(an,:) = zPC_vals;
+    avar(an,:) = anvar;
 end
-
 n = 0;
-% (Intercept):Bin_Type:Air_Phase:Corr_Type [F(2,8) = 28.96, p < 0.001, η2 = .14] <--
-
 %%
-[within,dvn,xlabels,awithinD] = make_within_table({'BT','CN','AP','PT'},[2,3,2,3]);
-data_matrix = azPC_vals; 
-dataT = make_between_table({data_matrix},dvn);
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN'},[3,2,10]);
+dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 ra.ranova
 print_for_manuscript(ra)
-%% pooling data across configurations
-% Initialize a matrix to store pooled data (5 animals × 12 conditions)
-[dataP,withinP,withinPD] = pool_within_between(ra,'CN');
-[within,dvn,xlabels,awithinD] = make_within_table({'BT','AP','PT'},[2,2,3]);
-dataTP = make_between_table({dataP},dvn);
-raP = RMA(dataTP,within,{0.05,{''}});
-print_for_manuscript(raP)
 %%
-redF = [3]; redV = {3};
-[dataTR1,withinR1] = reduce_within_between(dataTP,within,redF,redV);
-raR = RMA(dataTR1,withinR1,{0.05/3,{'hsd'}});
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','BT','TN'},[3,2,2,10]);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+ra.ranova
+print_for_manuscript(ra)
+% %%
+% [pooled_data,withinR,withinD] = pool_within_between(ra,'AP')
+%% for checking whether during the air on or off phase whether there was any difference in total time or distance taken to complete the phase
+redF = [2,3]; redV = {1,1};
+redF = [2]; redV = {2};
+[dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+raR = RMA(dataTR,withinR,{0.05,{''}});
+print_for_manuscript(raR)
+
+%% for checking whether during the air off phase whether there was any difference in total distance covered
+redF = [1,2]; redV = {3,2};
+[dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+raR = RMA(dataTR,withinR,{0.05,{'hsd'}});
+print_for_manuscript(raR)
+%%
+redF = [3]; redV = {1};
+[dataTR,withinR] = reduce_within_between(dataT,within,redF,redV);
+raR = RMA(dataTR,withinR,{0.05,{'hsd'}});
 print_for_manuscript(raR)
 %%
 % visualization
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.dcolors,1,10);
+tcolors = repmat(mData.dcolors(1:10),1,2);
 % figure(300);clf; ha = gca;
-ff = makeFigureRowsCols(2020,[10 4 1 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.27 0.25],'widthHeightAdjustment',[-360 -360]);
-MY = 0.7; ysp = 0.15; mY = -0.5; ystf = 0.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR,{'AP','hsd',(0.05/3)},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+ff = makeFigureRowsCols(2020,[10 4 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[-100 -380]);
+MY = 235.7; ysp = 3.25; mY = 0; ystf = 3.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP:BT','hsd',(0.05/2)},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'AOn','AOff'});xtickangle(20);
-ylabel('PCC')
-box off; ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('Dist-Speed'),[0 0.10 0.2 0]); 
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Time-Bin','Dist-Bin'},{[0 0]});
+    'XTick',xdata,'XTickLabel',{'T01','T02','T03','T04','T05','T06','T07','T08','T09','T10'});xtickangle(20);
+ylabel('Time (s)')
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,10,{'Time-Bin','Dist-Bin'},{[0 0]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%%
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors(1:10),1,2);
+% figure(300);clf; ha = gca;
+ff = makeFigureRowsCols(2020,[10 4 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[-100 -380]);
+MY = 135.7; ysp = 3.25; mY = 0; ystf = 3.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR,{'BT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Time-B','Dist-B'});xtickangle(20);
+ylabel('Time (s)')
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,10,{'Time-Bin','Dist-Bin'},{[0 0]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
 %%
 redF = [2]; redV = {1};

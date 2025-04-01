@@ -33,6 +33,7 @@ colormaps.colorblind = flipud(colormaps.colorblind);
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 mData.dcolors = mat2cell(distinguishable_colors(20,'w'),[ones(1,20)]);
 mData.axes_font_size = 6; mData.sigColor = [0.54 0.27 0.06];
+mData.asterisk_font_size = 9;
 mData.shades = generate_shades(3);
 mData.conj_comp_colors = [mData.dcolors(9);mData.colors([3 5])];
 % display_colors(mData.colors);
@@ -85,8 +86,26 @@ disp('Done');
 
 %% new analysis
 [udata,udata1] = get_unlv_analysis_data(ei);
+% udataT = get_unlv_analysis_data_bin(udata1,0.3,'time');
+% udataD = get_unlv_analysis_data_bin(udata1,3,'distance');
 udataT = get_unlv_analysis_data_time_bin(udata1,0.3);
 udataD = get_unlv_analysis_data_dist_bin(udata1,3);
+% udataD = get_unlv_analysis_data_dist_bin(udata1,0.5);
+disp('Done');
+%%
+trial_dataT = []; trial_dataD = [];
+configurations = {'C3','C4','C5'};
+air_phases = {'ON','OFF'};
+for an = 1:5
+    data_an = udata1{an};
+    for cn = 1:length(configurations)
+        for ap = 1:length(air_phases)
+            [an,cn,ap]
+            trial_dataT{an,cn,ap} = get_trial_metrics(data_an,'time',0.3,air_phases{ap},configurations{cn});
+            trial_dataD{an,cn,ap} = get_trial_metrics(data_an,'distance',3,air_phases{ap},configurations{cn});
+        end
+    end
+end
 disp('Done');
 %%
 % % binwidths = [0.3 3];

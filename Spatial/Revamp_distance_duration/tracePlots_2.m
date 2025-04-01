@@ -1,7 +1,7 @@
 function tracePlots_1_C (ei)
 %%
 
-% mData = evalin('base','mData');
+ei = evalin('base','ei');
 selAnimals = 3; pl = 1;
 tei = ei{selAnimals};
 planeNumbers = pl;

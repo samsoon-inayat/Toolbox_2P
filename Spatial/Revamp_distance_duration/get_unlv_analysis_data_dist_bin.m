@@ -1,4 +1,4 @@
-function data = get_unlv_analysis_data_time_bin (udata,binwidth)
+function data = get_unlv_analysis_data_dist_bin (udata,binwidth)
 %%
 for ani = 1:5
     disp(ani)
@@ -85,6 +85,12 @@ for ii = 1:length(field_names)
     cmdTxt = sprintf('o.%s = %s_binned;',varname,varname);
     eval(cmdTxt);
 end
+
+% Compute bin duration (difference of ts within each bin)
+o.bindur = (accumarray(bin_indices', ts', [], @(x) max(x) - min(x)))';
+ % Compute bin distance (difference of ds within each bin)
+o.bindist = (accumarray(bin_indices', ds', [], @(x) max(x) - min(x)))';
+
 
 % % Display the binned results for verification
 % disp('Binned firing rates, speed, and logical variables (bnb, C1, C2):');

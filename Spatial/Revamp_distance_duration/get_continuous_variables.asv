@@ -2,17 +2,13 @@ function out = get_continuous_variables(data_an,air,conf,ctrl)
 ts = data_an.ts;ds = data_an.ds;sp = data_an.speed;tm = data_an.animal_motion; bindur = data_an.bindur; bindist = data_an.bindist;
 ac = diff(sp)./diff(ts); ac = [0 ac];
 cmdTxt = sprintf('csel = data_an.air & data_an.%s;',conf); eval(cmdTxt);
-if strcmp(air,'ON')
-    air_trials = data_an.air_trials_on;
-end
-if strcmp(air,'OFF')
-    air_trials = data_an.air_trials_off;
-    csel = ~csel;
-end
+if strcmp(air)
+air_trials = data_an.air_trials_on;
+
 atts = []; atds = []; atsp = []; attm = []; aFR = []; atac = [];otts = []; attn = [];atbn = []; atbdur = []; atbdist = [];
 % figure(100);clf;plot(ts,csel);pause(0.05);
 % air = 0;
-for ii = 1:10
+for ii = 1:length(redges)
     % trial = sevent(ii):eevent(ii);
     trials = (air_trials == ii) & csel;
     trial = find(trials);
