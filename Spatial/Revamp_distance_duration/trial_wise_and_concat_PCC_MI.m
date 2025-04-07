@@ -8,10 +8,11 @@ air_phases = {'ON','OFF'};
 bin_types = {'time_bin','dist_bin'};
 variable_combs = {'time_dist','time_speed','dist_speed','FR_time','FR_dist','FR_speed'};
 variable_combs = {'time_dist','time_speed','dist_speed'};
+% variable_combs = {'FR_time','FR_dist','FR_speed'};
 
 time_bins = 0:0.3:1000; % set a large number of bins
 dist_bins = 0:3:1000;
-avar = [];
+avar = []; avarC = {};
 cnnnn = 1;
 for an = 1:5
     data_an = udata{an};
@@ -29,7 +30,7 @@ for an = 1:5
     % dds = diff(ds); spike_idx = find(abs(dds) > 50) + 1;
     % ds(spike_idx) = NaN; ds(spike_idx-1) = NaN; ds(spike_idx+1) = NaN; ds = fillmissing(ds, 'spline');
 
-    anvar = [];
+    anvar = []; anvarC = {};
     for cn = 1:length(configurations)
         for ap = 1:2
             for tn = 1:10
@@ -46,7 +47,7 @@ for an = 1:5
                 idx_fr = frf_n(idx);
                 FR = firing_rate(:,idx_fr);
 
-                for bt = 1:2
+                for bt = 1
                     if bt == 1
                         bin_indices = discretize(tts,time_bins);
                         
@@ -78,17 +79,67 @@ for an = 1:5
                                 'configuration',configurations{cn},'variables',variable_combs{vn},'bin_type',bin_types{bt},'trial_type',sprintf('trial_%d',tn)};
                         met = myMetrics(var1v,var2v,params);
                         % met = myMetrics(var2v,var1v,params);
-                        thisvar = met.PC(1,1);
-                        anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
+                        if strcmp(var1,'FR')
+                            thisvar = met.MI;
+                            anvarC{cn,ap,tn,bt,vn} = thisvar;% outD.trial_metrics(:,idx)'];
+                        else
+                            thisvar = met.PC(1,1);
+                            anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
+                        end
                     end
                     n = 0;
                 end
             end
         end
     end
-    avar(an,:) = anvar;
+    if strcmp(var1,'FR')
+        avarC{an} = anvarC;
+    else
+        avar(an,:) = anvar;
+    end
 end
 n = 0;
+%%
+nn = 1;
+for an = 1:5
+    anvarC = avarC{an};
+    anvar = []; 
+    for cn = 1:length(configurations)
+        for ap = 1:2
+            for tn = 1:10
+                for bt = 1:2
+                    for vn = 1:length(variable_combs)
+                        [an cn ap tn bt vn]
+                        thisvar = nanmean(anvarC{cn,ap,tn,bt,vn});
+                        anvar = [anvar thisvar(1)];% outD.trial_metrics(:,idx)'];
+                    end
+                end
+            end
+        end
+    end
+    avar(an,:) = anvar;
+end
+%%
+nn = 1;
+an = 1
+anvarC = avarC{an};
+anvar = []; 
+for cn = 1:length(configurations)
+    for ap = 1:2
+        for tn = 1:10
+            for bt = 1:2
+                for vn = 1:length(variable_combs)
+                    [an cn ap tn bt vn]
+                    vidx = 3;
+                    thisvar_vn1 = anvarC{cn,ap,tn,bt,1}; thisvar_vn2 = anvarC{cn,ap,tn,bt,2}; thisvar_vn3 = anvarC{cn,ap,tn,bt,3};
+                    thisvar = [thisvar_vn1(:,vidx) thisvar_vn2(:,vidx) thisvar_vn3(:,vidx)];
+                    anvar = [anvar thisvar(nn,1)];% outD.trial_metrics(:,idx)'];
+                end
+            end
+        end
+    end
+end
+avar = anvar;
 %%
 n = 0;
 clc
@@ -96,6 +147,16 @@ clc
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
+%%
+n = 0;
+clc
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN','PT'},[3,2,10,3]);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+%%
+clc
+raR = RMA_bonferroni(ra,4);
 %%
 n = 0;
 [within,dvn,xlabels,awithinD] = make_within_table({'CN','TN','BT'},[3,10,2]);
@@ -106,9 +167,17 @@ print_for_manuscript(ra)
 clc
 raR = RMA_bonferroni(ra,5);
 %%
+[xdata,mVar,semVar,combs,p,h] = get_vals_RMA(mData,raR{3},{'AP:BT','hsd',0.05},[1 2]);
+
+%%
+temp_data = table2array(raR{1}.rm.BetweenDesign);
+descriptiveStatistics(temp_data(:));
+%%
 clc
 raRR = RMA_bonferroni(raR{3},4);
-
+%%
+temp_data = table2array(raRR{1}.rm.BetweenDesign);
+descriptiveStatistics(temp_data(:));
 %%
 n = 0;
 [within,dvn,xlabels,awithinD] = make_within_table({'CN','TN'},[3,10]);
@@ -127,8 +196,8 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 tcolors = repmat(mData.dcolors(1:10),1,3);
 % figure(300);clf; ha = gca;
 ff = makeFigureRowsCols(2020,[4 4 6.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.35],'widthHeightAdjustment',[-550 -380]);
-MY = 5; ysp = 1.25; mY = 0; ystf = 1.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raRR{1},{'TN','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+MY = 0.5; ysp = 1.25; mY = 0; ystf = 1.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'CN:TN','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 % make_bars_hollow(hbs(2))
 format_axes(gca);
 xlbl = {'T01','T02','T03','T04','T05','T06','T07','T08','T09','T10'}
@@ -145,8 +214,8 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 tcolors = repmat(mData.dcolors(1),1,2);
 % figure(300);clf; ha = gca;
 ff = makeFigureRowsCols(2020,[10 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.35],'widthHeightAdjustment',[-550 -380]);
-MY = 3; ysp = 0.5; mY = -1; ystf = 0.52; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+MY = 5; ysp = 0.5; mY = -1; ystf = 0.52; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{2},{'AP','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 make_bars_hollow(hbs(2))
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
@@ -165,12 +234,12 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 tcolors = repmat(mData.dcolors(1:10),1,2);
 % figure(300);clf; ha = gca;
 ff = makeFigureRowsCols(2020,[10 4 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[-100 -380]);
-MY = 5; ysp = 0.25; mY = 0; ystf = 3.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP:BT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+MY = 1; ysp = 0.25; mY = -1; ystf = 0.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{3},{'AP:BT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
     'XTick',xdata,'XTickLabel',{'Time-B','Dist-B'});xtickangle(20);
-ylabel('Time (s)')
+ylabel('MI')
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,10,{'Time-Bin','Dist-Bin'},{[0 0]});
 % ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);

@@ -8,12 +8,11 @@ air_phases = {'ON','OFF'};
 bin_types = {'time_bin','dist_bin'};
 variable_combs = {'time_dist','time_speed','dist_speed','FR_time','FR_dist','FR_speed'};
 variable_combs = {'time_dist','time_speed','dist_speed'};
-% variable_combs = {'FR_time','FR_dist','FR_speed'};
+variable_combs = {'FR_time','FR_dist','FR_speed'};
 
 time_bins = 0:0.3:1000; % set a large number of bins
 dist_bins = 0:3:1000;
-avar = []; avarC = {};
-cnnnn = 1;
+all_data = {};
 for an = 1:5
     data_an = udata{an};
     field_names = fieldnames(data_an);
@@ -30,7 +29,6 @@ for an = 1:5
     % dds = diff(ds); spike_idx = find(abs(dds) > 50) + 1;
     % ds(spike_idx) = NaN; ds(spike_idx-1) = NaN; ds(spike_idx+1) = NaN; ds = fillmissing(ds, 'spline');
 
-    anvar = []; anvarC = {};
     for cn = 1:length(configurations)
         for ap = 1:2
             for tn = 1:10
@@ -46,79 +44,60 @@ for an = 1:5
                 tsp = speed(idx);
                 idx_fr = frf_n(idx);
                 FR = firing_rate(:,idx_fr);
-
-                for bt = 1
+                for bt = 1:2
+                    [an cn ap tn bt]
                     if bt == 1
                         bin_indices = discretize(tts,time_bins);
-                        
                     else
                         bin_indices = discretize(tds,dist_bins);
                     end
                     time_binned = accumarray(bin_indices',tts,[],@mean); time_binned = time_binned - time_binned(1);
                     dist_binned = accumarray(bin_indices',tds,[],@mean); dist_binned = dist_binned - dist_binned(1);
                     speed_binned = accumarray(bin_indices',tsp,[],@mean); 
-                    for vn = 1:length(variable_combs)
-                        [an cn ap tn bt vn]
-                        var_name = variable_combs{vn};
-                        idx_us = strfind(var_name,'_');
-                        var1 = var_name(1:(idx_us-1)); var2 = var_name((idx_us+1):end);
-                        if strcmp(var1,'FR')
-                            FR_binned = [];
-                            parfor neuron_idx = 1:size(firing_rate,1)
-                                % Calculate the binned firing rate for each neuron using the frame-based bin indices
-                                FR_binned(neuron_idx, :) = accumarray(bin_indices', FR(neuron_idx, :),[], @mean, NaN)';
-                            end
-                            FR_binned = FR_binned';
-                            nshuffles = 500;
-                        else
-                            nshuffles = 0;
-                        end
-                        cmdTxt = sprintf('var1v = %s_binned;',var1);eval(cmdTxt); cmdTxt = sprintf('var2v = %s_binned;',var2);eval(cmdTxt);
-                        ow = [0 0] ;
-                        params = {'no_of_bins_for_MI',10,'no_of_shuffles_for_norm',nshuffles,'animal_info',ei{an},'overwrite_processing',ow,'air_phase',air_phases{ap},...
-                                'configuration',configurations{cn},'variables',variable_combs{vn},'bin_type',bin_types{bt},'trial_type',sprintf('trial_%d',tn)};
-                        met = myMetrics(var1v,var2v,params);
-                        % met = myMetrics(var2v,var1v,params);
-                        if strcmp(var1,'FR')
-                            thisvar = met.MI;
-                            anvarC{cn,ap,tn,bt,vn} = thisvar;% outD.trial_metrics(:,idx)'];
-                        else
-                            thisvar = met.PC(1,1);
-                            anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
-                        end
+
+                    FR_binned = [];
+                    parfor neuron_idx = 1:size(firing_rate,1)
+                        % Calculate the binned firing rate for each neuron using the frame-based bin indices
+                        FR_binned(neuron_idx, :) = accumarray(bin_indices', FR(neuron_idx, :),[], @mean, NaN)';
                     end
+                    FR_binned = FR_binned';
+                    td.time_binned = time_binned; td.dist_binned = dist_binned; td.speed_binned = speed_binned; td.FR_binned = FR_binned;
+                    all_data{an,cn,ap,tn,bt} = td;
                     n = 0;
                 end
             end
         end
     end
-    if strcmp(var1,'FR')
-        avarC{an} = anvarC;
-    else
-        avar(an,:) = anvar;
-    end
 end
 n = 0;
-%%
-nn = 1;
+%% concat trial-wise
+var_names = {'time','dist','speed','FR'};
 for an = 1:5
-    anvarC = avarC{an};
-    anvar = []; 
-    for cn = 1:length(configurations)
+    for cn = 1:3
         for ap = 1:2
+            for vn = 1:length(var_names)
+                cmdTxt = sprintf('%s_t = [];',var_names{vn}); eval(cmdTxt);
+                cmdTxt = sprintf('%s_d = [];',var_names{vn}); eval(cmdTxt);
+            end
             for tn = 1:10
                 for bt = 1:2
-                    for vn = 1:length(variable_combs)
-                        [an cn ap tn bt vn]
-                        thisvar = nanmean(anvarC{cn,ap,tn,bt,vn});
-                        anvar = [anvar thisvar(1)];% outD.trial_metrics(:,idx)'];
+                    [an cn ap tn bt]
+                    td = all_data{an,cn,ap,tn,bt};
+                    if bt == 1
+                        for vn = 1:length(var_names)
+                            cmdTxt = sprintf('%s_t = [%s_t;td.%s_binned];',var_names{vn},var_names{vn},var_names{vn}); eval(cmdTxt);
+                        end
+                    else
+                        for vn = 1:length(var_names)
+                            cmdTxt = sprintf('%s_d = [%s_d;td.%s_binned];',var_names{vn},var_names{vn},var_names{vn}); eval(cmdTxt);
+                        end
                     end
                 end
             end
         end
     end
-    avar(an,:) = anvar;
 end
+
 %%
 nn = 1;
 an = 1
@@ -147,16 +126,6 @@ clc
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
-%%
-n = 0;
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN','PT'},[3,2,10,3]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-%%
-clc
-raR = RMA_bonferroni(ra,4);
 %%
 n = 0;
 [within,dvn,xlabels,awithinD] = make_within_table({'CN','TN','BT'},[3,10,2]);
@@ -214,7 +183,7 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 tcolors = repmat(mData.dcolors(1),1,2);
 % figure(300);clf; ha = gca;
 ff = makeFigureRowsCols(2020,[10 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.35],'widthHeightAdjustment',[-550 -380]);
-MY = 5; ysp = 0.5; mY = -1; ystf = 0.52; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+MY = 3; ysp = 0.5; mY = -1; ystf = 0.52; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{2},{'AP','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 make_bars_hollow(hbs(2))
 format_axes(gca);

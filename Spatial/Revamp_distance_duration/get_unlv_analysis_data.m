@@ -27,6 +27,9 @@ tso = sei.b.ts;
 dso = sei.b.dist;
 frf = logical(zeros(size(tso)));
 frf(frames_f) = 1;
+frf_n = double(frf);
+num_frames = sum(frf==1);
+frf_n(frf==1) = 1:num_frames;
 bnb = zeros(size(ts));
 bnbts = [0.08510 4.09609 19.756 23.9481;
     0.1 4.425 17.02 21.14;
@@ -131,6 +134,7 @@ udata.C7 = C7;
 udata.tso = tso;
 udata.dso = dso;
 udata.frf = frf;
+udata.frf_n = frf_n;
 
 
 function udata = return_data_animal_O(sei,ani)
@@ -162,6 +166,9 @@ dsnap = [0 diff(djerk)./diff(ds)];
 
 frf = logical(zeros(size(ts)));
 frf(frames_f) = 1;
+frf_n = double(frf);
+num_frames = sum(frf==1);
+frf_n(frf==1) = 1:num_frames;
 bnb = zeros(size(ts));
 bnbts = [0.08510 4.09609 19.756 23.9481;
     0.1 4.425 17.02 21.14;
@@ -293,6 +300,7 @@ udata.C5 = C5;
 udata.C6 = C6;
 udata.C7 = C7;
 udata.frf = frf;
+udata.frf_n = frf_n;
 
 
 function Cs = build_configurations(sei)
