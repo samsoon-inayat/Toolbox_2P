@@ -9,7 +9,7 @@ variable_combs = {'time_dist','time_speed','dist_speed','FR_time','FR_dist','FR_
 variable_combs = {'time_dist','time_speed','dist_speed'};
 % variable_combs = {'FR_time','FR_dist','FR_speed'};
 time_bins = 0:0.15:1000; % set a large number of bins
-atimecc = {}; adistcc = {}; aspeedcc = {}; aFRcc = {};
+atimecc = {}; adistcc = {}; aspeedcc = {}; aFRcc = {}; atrialcc = {};  o_atimecc = {}; o_adistcc = {}; o_aspeedcc = {}; o_atrialcc = {}; 
 for an = 1:5
     data_an = udata{an};
     field_names = fieldnames(data_an);
@@ -22,7 +22,8 @@ for an = 1:5
     % firing_rate = data_an.ca_signal;
     for cn = 1:length(configurations)
         for ap = 1:2
-            timecc = []; distcc = []; speedcc = []; FRcc = [];
+            timecc = []; distcc = []; speedcc = []; FRcc = []; trialcc = [];
+            otimecc = []; odistcc = []; ospeedcc = []; otrialcc = [];
             for tn = 1:10
                 [an cn ap tn]
                 % get time to complete trial
@@ -34,6 +35,9 @@ for an = 1:5
                 idx = find(air_trials == tn & frf);
                 tts = ts(idx)-ts(idx(1)); tds = ds(idx)-ds(idx(1)); tds(tds<0) = 0; 
                 tsp = speed(idx);
+
+                otimecc = [otimecc;tts']; odistcc = [odistcc;tds']; ospeedcc = [ospeedcc;tsp']; otrialcc = [otrialcc;tn*ones(size(tts'))];
+
                 idx_fr = frf_n(idx);
                 FR = firing_rate(:,idx_fr);
                 bin_indices = discretize(tts,time_bins);
@@ -41,6 +45,7 @@ for an = 1:5
                 dist_binned = accumarray(bin_indices',tds,[],@mean); dist_binned = dist_binned - dist_binned(1);
                 speed_binned = accumarray(bin_indices',tsp,[],@mean);
                 timecc = [timecc;time_binned]; distcc = [distcc;dist_binned]; speedcc = [speedcc;speed_binned];
+                trialcc = [trialcc;tn*ones(size(time_binned))];
                 FR_binned = [];
                 parfor neuron_idx = 1:size(firing_rate,1)
                     % Calculate the binned firing rate for each neuron using the frame-based bin indices
@@ -48,13 +53,154 @@ for an = 1:5
                 end
                 FR_binned = FR_binned';
                 FRcc = [FRcc;FR_binned];
+
             end
-            atimecc{an,cn,ap} = timecc; adistcc{an,cn,ap} = distcc; aspeedcc{an,cn,ap} = speedcc; aFRcc{an,cn,ap} = FRcc;
+            atimecc{an,cn,ap} = timecc; adistcc{an,cn,ap} = distcc; aspeedcc{an,cn,ap} = speedcc; aFRcc{an,cn,ap} = FRcc; atrialcc{an,cn,ap} = trialcc;
+            o_atimecc{an,cn,ap} = otimecc; o_adistcc{an,cn,ap} = odistcc; o_aspeedcc{an,cn,ap} = ospeedcc; o_atrialcc{an,cn,ap} = otrialcc;
             n = 0;
         end
     end
 end
 n = 0;
+%% average speed and other speed characteristics
+% for total time, distance use the variable_combs = {'time'} or distance
+% and then use the max_fun. you may also change ap to 1 or 2 depending upon
+% whether we want air on phase or air off phase
+
+mean_fun = @(x) mean(x);
+std_fun = @(x) std(x, 0);  % Standard deviation (unbiased)
+cv_fun = @(x) std(x, 0) ./ mean(x);  % Coefficient of Variation (CV)
+skew_fun = @(x) skewness(x);  % Skewness
+kurt_fun = @(x) kurtosis(x);  % Kurtosis
+max_fun = @(x) max(x); 
+min_fun = @(x) min(x);
+% latency_fun = @(x, t) t(find(x > 0, 1, 'first'));  
+% rlatency_fun = @(x, t) t(find(x > 0, 1, 'last'));  
+
+variable_combs = {'speed'};
+% variable_combs = {'time'};
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            timecc = o_atimecc{an,cn,ap}; distcc = o_adistcc{an,cn,ap}; speedcc = o_aspeedcc{an,cn,ap}; trialcc = o_atrialcc{an,cn,ap};
+            for vn = 1:length(variable_combs)
+                [an cn ap vn]
+                var_name = variable_combs{vn};
+                idx_us = strfind(var_name,'_');
+                if length(variable_combs) == 1
+                    cmdTxt = sprintf('var1v = %scc;',var_name);eval(cmdTxt);
+                end
+                thisvar = (accumarray(trialcc,var1v,[],max_fun))';
+                anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
+                n = 0;
+            end
+        end
+    end
+    avar = [avar;anvar];
+end
+%
+n = 0;
+clc
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN'},[3,2,10]);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+%%
+% the following or the previous one to this will give error depending on
+% the value of ap if it is only air on phase or air off phase
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','TN'},[3,10]);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+%% total time, distance and other things 
+
+mean_fun = @(x) mean(x);
+std_fun = @(x) std(x, 0);  % Standard deviation (unbiased)
+cv_fun = @(x) std(x, 0) ./ mean(x);  % Coefficient of Variation (CV)
+skew_fun = @(x) skewness(x);  % Skewness
+kurt_fun = @(x) kurtosis(x);  % Kurtosis
+max_fun = @(x) max(x); 
+min_fun = @(x) min(x);
+latency_fun = @(x, t) t(find(x > 0, 1, 'first'));  % movement_latency = accumarray(trialcc, speed, [], @(x) latency_fun(x, time));
+rlatency_fun = @(x, t) t(find(x > 0, 1, 'last'));  % rest_latency = accumarray(trialcc, speed, [], @(x) latency_fun(x, time));
+sp_thr = 0;
+mon_fun = @(x) length(find_rising_edge(x > sp_thr,0.1,500));
+moff_fun = @(x) length(find_falling_edge(x > sp_thr,-0.1,500));
+latency_fun1 = @(x, t) t(find_first_rising_edge(x > sp_thr,0.1,0));  % movement_latency = accumarray(trialcc, speed, [], @(x) latency_fun(x, time));
+rlatency_fun1 = @(x, t) t(find_first_falling_edge(x > sp_thr,-0.1,0));
+
+variable_combs = {'speed'};
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1
+            timecc = o_atimecc{an,cn,ap}; distcc = o_adistcc{an,cn,ap}; speedcc = o_aspeedcc{an,cn,ap}; trialcc = o_atrialcc{an,cn,ap};
+            for vn = 1:length(variable_combs)
+                [an cn ap vn]
+                var_name = variable_combs{vn};
+                idx_us = strfind(var_name,'_');
+                if length(variable_combs) == 1
+                    cmdTxt = sprintf('var1v = %scc;',var_name);eval(cmdTxt);
+                end
+                thisvar = (accumarray(trialcc,[var1v timecc],[],@(x) rlatency_fun1(x(:,1), x(:,2))))';
+                % thisvar = (accumarray(trialcc,var1v,[],moff_fun))';
+                anvar = [anvar thisvar];
+                n = 0;
+            end
+        end
+    end
+    avar = [avar;anvar];
+end
+%%
+n = 0;
+clc
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN'},[3,2,10]);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+%%
+clc
+raR = RMA_bonferroni(ra,1);
+%%
+clc
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','TN'},[3,10]);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+
+%%
+MI_fun = @(x,y,noofbMI,nshuffles) calc_metric_MI(x,y,noofbMI,nshuffles);
+
+variable_combs = {'time_dist','time_speed','dist_speed'};
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            timecc = atimecc{an,cn,ap}; distcc = adistcc{an,cn,ap}; speedcc = aspeedcc{an,cn,ap}; FRcc = aFRcc{an,cn,ap}; trialcc = atrialcc{an,cn,ap};
+            for vn = 1:length(variable_combs)
+                [an cn ap vn]
+                var_name = variable_combs{vn};
+                idx_us = strfind(var_name,'_');
+                var1 = var_name(1:(idx_us-1)); var2 = var_name((idx_us+1):end);
+                cmdTxt = sprintf('var1v = %scc;',var1);eval(cmdTxt); cmdTxt = sprintf('var2v = %scc;',var2);eval(cmdTxt);
+                noofbMI = 10; nshuffles = 0;
+                params = {'no_of_bins_for_MI',10,'no_of_shuffles_for_norm',nshuffles,'animal_info',ei{an},'overwrite_processing',ow,'air_phase',air_phases{ap},...
+                            'configuration',configurations{cn},'variables',variable_combs{vn},'bin_type','time_1p5','trial_type','concat'};
+
+                thisvar = (accumarray(trialcc,var1v,[],@(x) MI_fun(x, var2v,noofbMI,nshuffles)))';
+
+                anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
+                n = 0;
+            end
+        end
+    end
+    avar = [avar;anvar];
+end
+
 %%
 variable_combs = {'time_dist','time_speed','dist_speed'};
 avar = [];
@@ -73,7 +219,7 @@ for an = 1:5
                 params = {'no_of_bins_for_MI',10,'no_of_shuffles_for_norm',nshuffles,'animal_info',ei{an},'overwrite_processing',ow,'air_phase',air_phases{ap},...
                             'configuration',configurations{cn},'variables',variable_combs{vn},'bin_type','time_1p5','trial_type','concat'};
                 met = myMetrics(var1v,var2v,params);
-                thisvar = met.PC(1,1);
+                thisvar = met.MI(1,1);
                 anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
                 n = 0;
             end
@@ -88,38 +234,29 @@ clc
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
-
-%%
-% visualization
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.dcolors(1:3),1,2);
-% figure(300);clf; ha = gca;
-ff = makeFigureRowsCols(2020,[10 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.35],'widthHeightAdjustment',[-550 -380]);
-MY = 5; ysp = 0.5; mY = -1; ystf = 0.52; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'CN','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
-% make_bars_hollow(hbs(2))
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'C3','C4','C5'});xtickangle(20);
-ylabel({'Ske. Speed'});
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0]});
-% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
-save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
-%%
-% visualization
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.dcolors(1:10),1,2);
-% figure(300);clf; ha = gca;
-ff = makeFigureRowsCols(2020,[10 4 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[-100 -380]);
-MY = 5; ysp = 0.25; mY = -1; ystf = 0.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP:PT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'Time-Dist','Time-Speed','Dist-Speed'});xtickangle(20);
-ylabel('MI')
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,10,{'Time-Bin','Dist-Bin'},{[0 0]});
-% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
-save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+%% speed time and dist glm
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            timecc = o_atimecc{an,cn,ap}; distcc = o_adistcc{an,cn,ap}; speedcc = o_aspeedcc{an,cn,ap}; trialcc = o_atrialcc{an,cn,ap};
+            Y = speedcc; % Firing rate for current neuron (timepoints x 1)
+            X = [timecc, distcc]; % Predictors (time, distance, speed)
+            
+            % Fit the GLM (here we use a linear model, but you can modify it for other GLM families)
+            mdl = fitglm(X, Y, 'linear');
+            aglm{an,cn,ap} = mdl;
+            anvar = [anvar mdl.Coefficients.pValue(1) mdl.Coefficients.pValue(2)];
+        end
+    end
+    avar = [avar;anvar];
+end
+clc
+[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','DT'},[3,2,2]);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
 %%
 aglm = {};
 for an = 1:5
@@ -221,18 +358,3 @@ print_for_manuscript(ra)
 %%
 clc
 raR = RMA_bonferroni(ra,3);
-%%
-% visualization
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.dcolors(1:10),1,2);
-% figure(300);clf; ha = gca;
-ff = makeFigureRowsCols(2020,[4 4 6.5 3],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.07 0.15],'widthHeightAdjustment',[-100 -380]);
-MY = 0.7; ysp = 0.05; mY = 0; ystf = 0.02; ysigf = 0.015;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP:TT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',tuningTypes([2 3 5]));xtickangle(20);
-ylabel('MI')
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,10,{'Time-Bin','Dist-Bin'},{[0 0]});
-% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
-save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);

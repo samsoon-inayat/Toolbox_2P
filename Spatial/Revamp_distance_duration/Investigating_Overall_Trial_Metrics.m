@@ -72,8 +72,8 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 tcolors = repmat(mData.dcolors(1:10),1,2);
 % figure(300);clf; ha = gca;
 ff = makeFigureRowsCols(2020,[10 4 3.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.07 0.35],'widthHeightAdjustment',[-100 -380]);
-MY = 235.7; ysp = 3.25; mY = 0; ystf = 3.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP:BT','hsd',(0.05/2)},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+MY = 25.7; ysp = 3.25; mY = 0; ystf = 3.12; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'TN','hsd',(0.05/2)},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
     'XTick',xdata,'XTickLabel',{'T01','T02','T03','T04','T05','T06','T07','T08','T09','T10'});xtickangle(20);

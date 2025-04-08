@@ -88,8 +88,8 @@ disp('Done');
 [udata,udata1] = get_unlv_analysis_data(ei);
 % udataT = get_unlv_analysis_data_bin(udata1,0.3,'time');
 % udataD = get_unlv_analysis_data_bin(udata1,3,'distance');
-udataT = get_unlv_analysis_data_time_bin(udata1,0.3);
-udataD = get_unlv_analysis_data_dist_bin(udata1,3);
+% udataT = get_unlv_analysis_data_time_bin(udata1,0.3);
+% udataD = get_unlv_analysis_data_dist_bin(udata1,3);
 % udataD = get_unlv_analysis_data_dist_bin(udata1,0.5);
 disp('Done');
 %%
