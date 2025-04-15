@@ -1,107 +1,324 @@
 function time_trial_distance_speed
-
+%% Load Data
 udata = evalin('base','udata1');
 ei = evalin('base','ei');
-configurations = {'C3','C4','C5'};
-air_phases = {'ON','OFF'};
 
-time_bins = 0:0.15:1000; % set a large number of bins
-atimecc = {}; adistcc = {}; aspeedcc = {}; aFRcc = {}; atrialcc = {};  o_atimecc = {}; o_adistcc = {}; o_aspeedcc = {}; o_atrialcc = {}; 
-for an = 1:5
-    data_an = udata{an};
-    field_names = fieldnames(data_an);
-    for ii = 1:length(field_names)
-        varname = field_names{ii};
-        cmdTxt = sprintf('clear %s;',varname);eval(cmdTxt);
-        cmdTxt = sprintf('%s = data_an.%s;',varname,varname);eval(cmdTxt);
+outT = get_the_binned_data(udata,'time',0.3);
+outD = get_the_binned_data(udata,'dist',3);
+
+filename = 'FR_tuning.mat';
+if exist(filename,'file')
+    load(filename);
+else
+    % Get the metrics and run stats
+    variable_combs = {'FR_time','FR_dist','FR_speed'};
+    trialsOrConcat = 'concatenate'; %'trials' or "concatenate"
+    nshuffles = 1000;
+    clc
+    for vn = 1:length(variable_combs)
+        vn
+        met_valsT{vn} = get_metrics_FR(outT,variable_combs{vn},trialsOrConcat,nshuffles);
+        met_valsD{vn} = get_metrics_FR(outD,variable_combs{vn},trialsOrConcat,nshuffles);
     end
-    firing_rate = data_an.firing_rate;
-    % firing_rate = data_an.ca_signal;
-    for cn = 1:length(configurations)
+    
+    save(filename,"met_valsT","met_valsD");
+end
+
+n = 0;
+
+%% find the lengths of the bins in air on and off phases
+alensig = [];
+for an = 1:5
+    len_sig = [];
+    for cn = 1:3
         for ap = 1:2
-            timecc = []; distcc = []; speedcc = []; FRcc = []; trialcc = [];
-            otimecc = []; odistcc = []; ospeedcc = []; otrialcc = [];
-            for tn = 1:10
-                [an cn ap tn]
-                % get time to complete trial
-                if ap == 1
-                    cmdTxt = sprintf('air_trials = air_trials_on .* %s;',configurations{cn}); eval(cmdTxt);
-                else
-                    cmdTxt = sprintf('air_trials = air_trials_off .* %s;',configurations{cn}); eval(cmdTxt);
-                end
-                idx = find(air_trials == tn & frf);
-                tts = ts(idx)-ts(idx(1)); tds = ds(idx)-ds(idx(1)); tds(tds<0) = 0; 
-                tsp = speed(idx);
-
-                otimecc = [otimecc;tts']; odistcc = [odistcc;tds']; ospeedcc = [ospeedcc;tsp']; otrialcc = [otrialcc;tn*ones(size(tts'))];
-
-                idx_fr = frf_n(idx);
-                FR = firing_rate(:,idx_fr);
-                bin_indices = discretize(tts,time_bins);
-                time_binned = accumarray(bin_indices',tts,[],@mean); time_binned = time_binned - time_binned(1);
-                dist_binned = accumarray(bin_indices',tds,[],@mean); dist_binned = dist_binned - dist_binned(1);
-                speed_binned = accumarray(bin_indices',tsp,[],@mean);
-                timecc = [timecc;time_binned]; distcc = [distcc;dist_binned]; speedcc = [speedcc;speed_binned];
-                trialcc = [trialcc;tn*ones(size(time_binned))];
-                FR_binned = [];
-                parfor neuron_idx = 1:size(firing_rate,1)
-                    % Calculate the binned firing rate for each neuron using the frame-based bin indices
-                    FR_binned(neuron_idx, :) = accumarray(bin_indices', FR(neuron_idx, :),[], @mean, NaN)';
-                end
-                FR_binned = FR_binned';
-                FRcc = [FRcc;FR_binned];
-
+            if ap == 2
+                out = outT;
+            else
+                out = outD;
             end
-            atimecc{an,cn,ap} = timecc; adistcc{an,cn,ap} = distcc; aspeedcc{an,cn,ap} = speedcc; aFRcc{an,cn,ap} = FRcc; atrialcc{an,cn,ap} = trialcc;
-            o_atimecc{an,cn,ap} = otimecc; o_adistcc{an,cn,ap} = odistcc; o_aspeedcc{an,cn,ap} = ospeedcc; o_atrialcc{an,cn,ap} = otrialcc;
-            n = 0;
+            len_sig = [len_sig length(out.atimecc{an,cn,ap})];
+        end
+    end
+    alensig = [alensig;len_sig];
+end
+%% Get the metrics and run stats (Time-Speed and Distance-Speed
+variable_combs = {'time_speed','dist_speed'};
+met = 'MI'; trialsOrConcat = 'concatenate'; %'trials' or "concatenate"
+avar = [];
+for vn = 1:length(variable_combs)
+    avar = [avar get_metrics(outT,variable_combs{vn},met,trialsOrConcat)];
+end
+
+for vn = 1:length(variable_combs)
+    avar = [avar get_metrics(outD,variable_combs{vn},met,trialsOrConcat)];
+end
+
+clc
+descriptiveStatistics(avar(:)); %(mean ± sem: 0.281 ± 0.022, range: -0.957, 0.999, median: 0.485) concatenate MI (mean ± sem: 0.746 ± 0.051, range: 0.187, 1.998, median: 0.593)
+% (Intercept):PT [F(2,8) = 116.50, p < 0.001, η2 = .84] <--
+fac_names = {'BT','PT','CN','AP','TN'}; fac_levels = [2,2,3,2,10];
+% fac_names = {'PT','CN','AP'}; fac_levels = [3,3,2];
+% fac_names = {'CN','PT'}; fac_levels = [3,3];
+fac_names = {'BT','PT','CN','AP'}; fac_levels = [2,2,3,2];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+
+%% Run Reduced Subset RM-ANOVA
+clc
+raR = RMA_subset(ra,'AP');
+% Run Bonferroni adjusted alpha RM-ANOVA
+clc
+raRB = RMA_bonferroni(raR{1},'BT');
+
+%% Plot rasters
+out = outT;
+for an = 1:5
+    for cn = 1:3
+        for ap = 2
+            rasters = out.arasters{an,cn,ap}; rx = out.arx{an,cn,ap}; ry = out.ary{an,cn,ap};
+            num_neurons = size(rasters,3);
+            for nn = 1:num_neurons
+                figure(100);clf;
+                imagesc(rx,ry,rasters(:,:,nn));colorbar;
+                pause(0.3);
+            end
         end
     end
 end
-n = 0;
-%%
-noofbMI = 10; nshuffles = 0;
-MI_fun = @(x,y,noofbMI,nshuffles) calc_metric_MI(x,y,noofbMI,nshuffles);
-PC_fun = @(x,y,nshuffles) calc_metric_PC(x,y,nshuffles);
+
+%% Plot active cells heatmap
+tmvT = met_valsT{1};
+mctFR = zeros(500,500);
+for an = 1:5
+    for cn = 1
+        for ap = 1
+            if ap == 1
+                out = outD;
+            end
+            if ap == 2
+                out = outT;
+            end
+            tPCT = ~isnan(tmvT{an,cn,ap}.PC(:,1));
+            tFR = (out.aFRcc{an,cn,ap})'; tTrials = out.atrialcc{an,cn,ap};
+            tFR = tFR(tPCT,:);
+            [rasters,x,y] = build_rasters(tTrials,tFR);
+            mRasters = (squeeze(nanmean(rasters,1)))';
+            [~,midx] = max(mRasters,[],2);
+            [~,smidx] = sort(midx);
+            mmRasters = mRasters(smidx,:);
+            % figure(100);clf;imagesc(x,y,mmRasters);set(gca,'Ydir','normal');colorbar;
+            % ctFR = corr(mmRasters);
+            [~,midx] = max(tFR,[],2);
+            [~,smidx] = sort(midx);
+            mtFR = tFR(smidx,:);
+            % figure(100);clf;imagesc(tTrials,1:size(tFR,1),mtFR,[0 80]);set(gca,'Ydir','normal');colorbar;
+            ctFR = corr(tFR);
+            % figure(200);clf;imagesc(tTrials,tTrials,ctFR); set(gca,'Ydir','normal');colorbar;
+
+        end
+    end
+    sz_ctFR = size(ctFR,1);
+    if size(ctFR,1) < 500
+        ctFR = padarray(ctFR, [500-size(ctFR,1), 500-size(ctFR,1)], 'replicate', 'post'); 
+    end
+    mctFR = mctFR + ctFR;
+end
+mctFR = fillmissing(mctFR,'nearest','EndValues','extrap');
+mctFR = fillmissing(mctFR','nearest','EndValues','extrap');
+mctFR = mctFR'/5;
+figure(200);clf;imagesc(tTrials,tTrials,mctFR,[0 0.5]); set(gca,'Ydir','normal');colorbar;
+%% Active Cells non-NaN (For Firing Rate and finding the tuning of different neurons with respect to time, distance, and speed)
 variable_combs = {'FR_time','FR_dist','FR_speed'};
-avar = []; Mvals={};
+% Factors, CN, 
+clc
+active_cells = {};
+out = outT;
+ap = 1;
+avar = [];
 for an = 1:5
     anvar = [];
     for cn = 1:3
         for ap = 1:2
-            timecc = atimecc{an,cn,ap}; distcc = adistcc{an,cn,ap}; speedcc = aspeedcc{an,cn,ap}; FRcc = aFRcc{an,cn,ap}; trialcc = atrialcc{an,cn,ap};
-            for vn = 1:length(variable_combs)
-                [an cn ap vn]
-                var_name = variable_combs{vn};
-                idx_us = strfind(var_name,'_');
-                var1 = var_name(1:(idx_us-1)); var2 = var_name((idx_us+1):end);
-                cmdTxt = sprintf('var1v = %scc;',var1);eval(cmdTxt); cmdTxt = sprintf('var2v = %scc;',var2);eval(cmdTxt);
-                grouped_var2v = accumarray(trialcc, var2v, [], @(x) {x});
-                num_neurons = size(var1v,2);
-                PC_vals = []; MI_vals = []; PC_valscc = []; MI_valscc = [];
-                clear metric_vals
-                for nn = 1:num_neurons
-                    thisFR = var1v(:,nn);
-                    grouped_var1v = accumarray(trialcc, var1v(:,nn), [], @(x) {x});
-                    thisvar = arrayfun(@(i) MI_fun(grouped_var1v{i}, grouped_var2v {i},noofbMI,nshuffles), 1:length(grouped_var1v));
-                    MI_vals(:,nn) = thisvar;
-                    thisvar = arrayfun(@(i) PC_fun(grouped_var1v{i}, grouped_var2v {i},nshuffles), 1:length(grouped_var1v));
-                    PC_vals(:,nn) = thisvar';
-                    MI_valscc(nn) = MI_fun(var1v(:,nn), var2v,noofbMI,nshuffles);
-                    PC_valscc(nn) = PC_fun(var1v(:,nn), var2v,nshuffles);
+            AC = out.active_cells{an,cn,ap};
+            for vn = 1%:length(variable_combs)
+                tmvT = met_valsT{vn};
+                tmvD = met_valsD{vn};
+                tPCT = ~isnan(tmvT{an,cn,ap}.PC(:,1));
+                tPCD = ~isnan(tmvD{an,cn,ap}.PC(:,1));
+                % tPCT = AC;
+                active_cells{an,cn,ap} = tPCT;
+                NR = [tPCT tPCD];
+                if sum(tPCT) ~= sum(tPCD)
+                    disp('Differences Found')
+                else
+                    fResp = (sum(tPCT)/length(tPCT))*100;
                 end
-                metric_vals.PC_vals = PC_vals; metric_vals.PC_valscc = PC_valscc; metric_vals.MI_vals = MI_vals; metric_vals.MI_valscc = MI_valscc;
-                Mvals{an,cn,ap,vn} = metric_vals;
+                anvar = [anvar fResp];
             end
         end
     end
+    avar = [avar;anvar];
 end
-n = 0;
+descriptiveStatistics(avar(:)); %(mean ± sem: 0.281 ± 0.022, range: -0.957, 0.999, median: 0.485) concatenate MI (mean ± sem: 0.746 ± 0.051, range: 0.187, 1.998, median: 0.593)
+% (Intercept):PT [F(2,8) = 116.50, p < 0.001, η2 = .84] <--
+fac_names = {'CN','AP'}; fac_levels = [3,2];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+% Run Reduced Subset RM-ANOVA
+raR = RMA_subset(ra,'AP');
+descriptiveStatistics(raR{1}.ds)
+descriptiveStatistics(raR{2}.ds)
+
+% Sanity Check
+% for an = 1:5
+%     for cn = 1:3
+%         for ap = 1:2
+%             AC = out.active_cells{an,cn,ap};
+%             if AC ~= active_cells{an,cn,ap}
+%                 disp('Differences_Found');
+%             end
+%         end
+%     end
+% end
+%% Trial-Wise --> Active Cells FR > 0
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+% Factors, CN, 
+clc
+active_cells = {};
+out = outT;
+ap = 1;
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            AC = out.active_cells_trials{an,cn,ap};
+            fResp = (sum(AC)/size(AC,1))*100;
+            anvar = [anvar fResp];
+        end
+    end
+    avar = [avar;anvar];
+end
+descriptiveStatistics(avar(:)); %(mean ± sem: 0.281 ± 0.022, range: -0.957, 0.999, median: 0.485) concatenate MI (mean ± sem: 0.746 ± 0.051, range: 0.187, 1.998, median: 0.593)
+% (Intercept):PT [F(2,8) = 116.50, p < 0.001, η2 = .84] <--
+fac_names = {'CN','AP','TN'}; fac_levels = [3,2,10];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+% Run Reduced Subset RM-ANOVA
+raR = RMA_subset(ra,'AP');
+descriptiveStatistics(raR{1}.ds)
+descriptiveStatistics(raR{2}.ds)
+
+%% Response Fidelity --> Active Cells FR > 0
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+% Factors, CN, 
+clc
+active_cells = {};
+out = outT;
+ap = 1;
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            AC = out.active_cells_trials{an,cn,ap};
+            fResp = (sum(AC,2)/10)*100;
+            anvar = [anvar fResp];
+        end
+    end
+    avar = [avar;anvar];
+end
+descriptiveStatistics(avar(:)); %(mean ± sem: 0.281 ± 0.022, range: -0.957, 0.999, median: 0.485) concatenate MI (mean ± sem: 0.746 ± 0.051, range: 0.187, 1.998, median: 0.593)
+% (Intercept):PT [F(2,8) = 116.50, p < 0.001, η2 = .84] <--
+fac_names = {'CN','AP'}; fac_levels = [3,2];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+% Run Reduced Subset RM-ANOVA
+raR = RMA_subset(ra,'AP');
+descriptiveStatistics(raR{1}.ds)
+descriptiveStatistics(raR{2}.ds)
+
+
+%% Conjunctive and Complementary populations
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+% Factors, CN, 
+clc
+ap = 1;
+avar = [];
+tmvT = met_valsT{1};
+tmvD = met_valsD{vn};
+for an = 1:5
+    for cn = 1:3
+        tPCT1 = ~isnan(tmvT{an,cn,1}.PC(:,1));
+        tPCT2 = ~isnan(tmvT{an,cn,2}.PC(:,1));
+        conj(an,cn) = 100*(sum((tPCT1 & tPCT2))/length(tPCT1));
+        comp1(an,cn) = 100*(sum((tPCT1 & ~tPCT2))/length(tPCT1));
+        comp2(an,cn) = 100*(sum((~tPCT1 & tPCT2))/length(tPCT1));
+    end
+end
+avar = [conj comp1 comp2];
+fac_names = {'CT','CN'}; fac_levels = [3,3];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+
+%% Air-On --> Get the metrics and run stats FR --> time, distance, speed
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+% Factors, CN, 
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            for bn = 1:2
+                if bn == 1
+                    out = outT; MV = met_valsT;
+                else
+                    out = outD; MV = met_valsD;
+                end
+                AC = out.active_cells_trials{an,cn,ap};
+                AAC = sum(AC,2) > 5;
+                for vn = 1:length(variable_combs)
+                    tMV = MV{vn};
+                    tmet = tMV{an,cn,ap}.MI(AAC,1);
+                    anvar = [anvar mean(tmet)];
+                end
+                % pTC = 100*(sum(cellT(:,1) & ~cellT(:,2) & ~cellT(:,3))/size(tun,1));
+                % pDC = 100*(sum(~cellT(:,1) & cellT(:,2) & ~cellT(:,3))/size(tun,1));
+                % pSC = 100*(sum(~cellT(:,1) & ~cellT(:,2) & cellT(:,3))/size(tun,1));
+                % anvar = [anvar pTC pDC pSC];
+            end
+        end
+    end
+    avar = [avar;anvar];
+end
+
+fac_names = {'CN','AP','BT','TT'}; fac_levels = [3,2,2,3];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+clc
+raR = RMA_subset(ra,'AP');
+%% RM-ANOVA Bonferroni
+clc
+raRB = RMA_bonferroni(raR{1},'BT');
+raRB = RMA_bonferroni(raR{2},'BT');
 %% average speed and other speed characteristics
 % for total time, distance use the variable_combs = {'time'} or distance
 % and then use the max_fun. you may also change ap to 1 or 2 depending upon
 % whether we want air on phase or air off phase
-
+out = outT;
 mean_fun = @(x) mean(x);
 std_fun = @(x) std(x, 0);  % Standard deviation (unbiased)
 cv_fun = @(x) std(x, 0) ./ mean(x);  % Coefficient of Variation (CV)
@@ -119,7 +336,7 @@ for an = 1:5
     anvar = [];
     for cn = 1:3
         for ap = 1:2
-            timecc = o_atimecc{an,cn,ap}; distcc = o_adistcc{an,cn,ap}; speedcc = o_aspeedcc{an,cn,ap}; trialcc = o_atrialcc{an,cn,ap};
+            timecc = out.otime{an,cn,ap}; distcc = out.odist{an,cn,ap}; speedcc = out.ospeed{an,cn,ap}; trialcc = out.otrial{an,cn,ap};
             for vn = 1:length(variable_combs)
                 [an cn ap vn]
                 var_name = variable_combs{vn};
@@ -191,13 +408,7 @@ for an = 1:5
     avar = [avar;anvar];
 end
 descriptiveStatistics(avar(:));
-%%
-n = 0;
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN'},[3,2,10]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
+
 %%
 clc
 raR = RMA_bonferroni(ra,1);
@@ -208,46 +419,14 @@ dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
 
-%%
-noofbMI = 10; nshuffles = 0;
-MI_fun = @(x,y,noofbMI,nshuffles) calc_metric_MI(x,y,noofbMI,nshuffles);
-PC_fun = @(x,y,nshuffles) calc_metric_PC(x,y,nshuffles);
-variable_combs = {'time_dist','time_speed','dist_speed'};
-variable_combs = {'time_speed','dist_speed'};
-avar = [];
-for an = 1:5
-    anvar = [];
-    for cn = 1:3
-        for ap = 1:2
-            timecc = atimecc{an,cn,ap}; distcc = adistcc{an,cn,ap}; speedcc = aspeedcc{an,cn,ap}; FRcc = aFRcc{an,cn,ap}; trialcc = atrialcc{an,cn,ap};
-            for vn = 1:length(variable_combs)
-                [an cn ap vn]
-                var_name = variable_combs{vn};
-                idx_us = strfind(var_name,'_');
-                var1 = var_name(1:(idx_us-1)); var2 = var_name((idx_us+1):end);
-                cmdTxt = sprintf('var1v = %scc;',var1);eval(cmdTxt); cmdTxt = sprintf('var2v = %scc;',var2);eval(cmdTxt);
-                grouped_var1v = accumarray(trialcc, var1v, [], @(x) {x}); grouped_var2v = accumarray(trialcc, var2v, [], @(x) {x});
-                thisvar = arrayfun(@(i) MI_fun(grouped_var1v{i}, grouped_var2v {i},noofbMI,nshuffles), 1:length(grouped_var1v));
-                % thisvar = arrayfun(@(i) PC_fun(grouped_var1v{i}, grouped_var2v {i},nshuffles), 1:length(grouped_var1v));
 
-                % thisvar = MI_fun(var1v, var2v,noofbMI,nshuffles);
-                % thisvar = PC_fun(var1v, var2v,nshuffles);
-
-                anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
-                n = 0;
-            end
-        end
-    end
-    avar = [avar;anvar];
-end
-descriptiveStatistics(avar(:));
 %%
 n = 0;
 clc
 fac_names = {'CN','TN'}; fac_levels = [3,10];
 fac_names = {'CN','PT','TN'}; fac_levels = [3,3,10];
 % fac_names = {'CN','AP','TN'}; fac_levels = [3,2,10];
-fac_names = {'CN','AP','PT','TN'}; fac_levels = [3,2,2,10];
+fac_names = {'CN','AP','PT','TN'}; fac_levels = [3,2,3,10];
 % fac_names = {'CN','AP','PT'}; fac_levels = [3,2,3];
 % fac_names = {'CN','PT'}; fac_levels = [3,3];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
@@ -277,12 +456,13 @@ dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
 %% speed time and dist glm
+out = outD;
 avar = [];
 for an = 1:5
     anvar = [];
     for cn = 1:3
         for ap = 1:2
-            timecc = o_atimecc{an,cn,ap}; distcc = o_adistcc{an,cn,ap}; speedcc = o_aspeedcc{an,cn,ap}; trialcc = o_atrialcc{an,cn,ap};
+            timecc = out.atimecc{an,cn,ap}; distcc = out.adistcc{an,cn,ap}; speedcc = out.aspeedcc{an,cn,ap}; trialcc = out.atrialcc{an,cn,ap};
             Y = speedcc; % Firing rate for current neuron (timepoints x 1)
             X = [timecc,distcc]; % Predictors (time, distance, speed)
             
@@ -299,7 +479,7 @@ clc
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
-%%
+%% GLM
 aglm = {};
 for an = 1:5
     for cn = 1:3
@@ -390,71 +570,3 @@ for an = 1:numAnimals
     avar = [avar;anvar];
 end
 
-%%
-n = 0;
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TT'},[3,2,3]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-%%
-clc
-raR = RMA_bonferroni(ra,3);
-
-
-%%
-noofbMI = 10; nshuffles = 0;
-MI_fun = @(x,y,noofbMI,nshuffles) calc_metric_MI(x,y,noofbMI,nshuffles);
-PC_fun = @(x,y,nshuffles) calc_metric_PC(x,y,nshuffles);
-variable_combs = {'FR_time','FR_dist','FR_speed'};
-avar = []; FRvals={};
-for an = 1:5
-    anvar = [];
-    for cn = 1:3
-        for ap = 1:2
-            timecc = atimecc{an,cn,ap}; distcc = adistcc{an,cn,ap}; speedcc = aspeedcc{an,cn,ap}; FRcc = aFRcc{an,cn,ap}; trialcc = atrialcc{an,cn,ap};
-            for vn = 1:length(variable_combs)
-                [an cn ap vn]
-                var_name = variable_combs{vn};
-                idx_us = strfind(var_name,'_');
-                var1 = var_name(1:(idx_us-1)); var2 = var_name((idx_us+1):end);
-                cmdTxt = sprintf('var1v = %scc;',var1);eval(cmdTxt); cmdTxt = sprintf('var2v = %scc;',var2);eval(cmdTxt);
-                grouped_var2v = accumarray(trialcc, var2v, [], @(x) {x});
-                num_neurons = size(var1v,2);
-                metric_vals = [];
-                for nn = 1:num_neurons
-                    thisFR = var1v(:,nn);
-                    grouped_var1v = accumarray(trialcc, var1v(:,nn), [], @(x) {x});
-                    thisvar = arrayfun(@(i) MI_fun(grouped_var1v{i}, grouped_var2v {i},noofbMI,nshuffles), 1:length(grouped_var1v));
-                    thisvar = arrayfun(@(i) PC_fun(grouped_var1v{i}, grouped_var2v {i},nshuffles), 1:length(grouped_var1v));
-                    metric_vals(:,nn) = thisvar';
-                    % thisvar = MI_fun(var1v, var2v,noofbMI,nshuffles);
-                    % thisvar = PC_fun(var1v, var2v,nshuffles);
-                end
-                FRvals{an,cn,ap,vn} = metric_vals;
-                thisvar = nanmean(metric_vals,2);
-                anvar = [anvar thisvar'];% outD.trial_metrics(:,idx)'];
-                n = 0;
-            end
-        end
-    end
-    avar = [avar;anvar];
-end
-descriptiveStatistics(avar(:));
-%%
-n = 0;
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN','PT'},[3,2,10,3]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-%%
-clc
-raR = RMA_bonferroni(ra,4);
-%%
-n = 0;
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','PT'},[3,2,3]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)

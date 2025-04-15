@@ -213,7 +213,7 @@ noofbMI = 10; nshuffles = 0;
 MI_fun = @(x,y,noofbMI,nshuffles) calc_metric_MI(x,y,noofbMI,nshuffles);
 PC_fun = @(x,y,nshuffles) calc_metric_PC(x,y,nshuffles);
 variable_combs = {'time_dist','time_speed','dist_speed'};
-variable_combs = {'time_speed','dist_speed'};
+% variable_combs = {'time_speed','dist_speed'};
 avar = [];
 for an = 1:5
     anvar = [];
@@ -228,9 +228,9 @@ for an = 1:5
                 cmdTxt = sprintf('var1v = %scc;',var1);eval(cmdTxt); cmdTxt = sprintf('var2v = %scc;',var2);eval(cmdTxt);
                 grouped_var1v = accumarray(trialcc, var1v, [], @(x) {x}); grouped_var2v = accumarray(trialcc, var2v, [], @(x) {x});
                 thisvar = arrayfun(@(i) MI_fun(grouped_var1v{i}, grouped_var2v {i},noofbMI,nshuffles), 1:length(grouped_var1v));
-                % thisvar = arrayfun(@(i) PC_fun(grouped_var1v{i}, grouped_var2v {i},nshuffles), 1:length(grouped_var1v));
+                thisvar = arrayfun(@(i) PC_fun(grouped_var1v{i}, grouped_var2v {i},nshuffles), 1:length(grouped_var1v));
 
-                % thisvar = MI_fun(var1v, var2v,noofbMI,nshuffles);
+                thisvar = MI_fun(var1v, var2v,noofbMI,nshuffles);
                 % thisvar = PC_fun(var1v, var2v,nshuffles);
 
                 anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
@@ -247,13 +247,17 @@ clc
 fac_names = {'CN','TN'}; fac_levels = [3,10];
 fac_names = {'CN','PT','TN'}; fac_levels = [3,3,10];
 % fac_names = {'CN','AP','TN'}; fac_levels = [3,2,10];
-fac_names = {'CN','AP','PT','TN'}; fac_levels = [3,2,2,10];
-% fac_names = {'CN','AP','PT'}; fac_levels = [3,2,3];
+fac_names = {'CN','AP','PT','TN'}; fac_levels = [3,2,3,10];
+fac_names = {'CN','AP','PT'}; fac_levels = [3,2,3];
 % fac_names = {'CN','PT'}; fac_levels = [3,3];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
+% (Intercept) [F(1,4) = 26.90, p = .007, η2 = .44] <--
+% (Intercept):AP [F(1,4) = 42.13, p = .003, η2 = .54] <--
+% (Intercept):PT [F(2,8) = 335.19, p < 0.001, η2 = .62] <--
+% (Intercept):AP:PT [F(2,8) = 39.24, p < 0.001, η2 = .18] <--
 %%
 ra1 = ra;
 ra2 = ra;

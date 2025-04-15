@@ -97,145 +97,92 @@ for an = 1:5
     end
 end
 n = 0;
-%% average speed and other speed characteristics
-% for total time, distance use the variable_combs = {'time'} or distance
-% and then use the max_fun. you may also change ap to 1 or 2 depending upon
-% whether we want air on phase or air off phase
-
-mean_fun = @(x) mean(x);
-std_fun = @(x) std(x, 0);  % Standard deviation (unbiased)
-cv_fun = @(x) std(x, 0) ./ mean(x);  % Coefficient of Variation (CV)
-skew_fun = @(x) skewness(x);  % Skewness
-kurt_fun = @(x) kurtosis(x);  % Kurtosis
-max_fun = @(x) max(x); 
-min_fun = @(x) min(x);
-% latency_fun = @(x, t) t(find(x > 0, 1, 'first'));  
-% rlatency_fun = @(x, t) t(find(x > 0, 1, 'last'));  
-
-variable_combs = {'speed'};
-% variable_combs = {'time'};
-avar = [];
-for an = 1:5
-    anvar = [];
-    for cn = 1:3
-        for ap = 1:2
-            timecc = o_atimecc{an,cn,ap}; distcc = o_adistcc{an,cn,ap}; speedcc = o_aspeedcc{an,cn,ap}; trialcc = o_atrialcc{an,cn,ap};
-            for vn = 1:length(variable_combs)
-                [an cn ap vn]
-                var_name = variable_combs{vn};
-                idx_us = strfind(var_name,'_');
-                if length(variable_combs) == 1
-                    cmdTxt = sprintf('var1v = %scc;',var_name);eval(cmdTxt);
-                end
-                thisvar = (accumarray(trialcc,var1v,[],max_fun))';
-                anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
-                n = 0;
-            end
-        end
-    end
-    avar = [avar;anvar];
-end
-%
-n = 0;
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN'},[3,2,10]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-%%
-% the following or the previous one to this will give error depending on
-% the value of ap if it is only air on phase or air off phase
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','TN'},[3,10]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-%% total time, distance and other things 
-
-mean_fun = @(x) mean(x);
-std_fun = @(x) std(x, 0);  % Standard deviation (unbiased)
-cv_fun = @(x) std(x, 0) ./ mean(x);  % Coefficient of Variation (CV)
-skew_fun = @(x) skewness(x);  % Skewness
-kurt_fun = @(x) kurtosis(x);  % Kurtosis
-max_fun = @(x) max(x); 
-min_fun = @(x) min(x);
-latency_fun = @(x, t) t(find(x > 0, 1, 'first'));  % movement_latency = accumarray(trialcc, speed, [], @(x) latency_fun(x, time));
-rlatency_fun = @(x, t) t(find(x > 0, 1, 'last'));  % rest_latency = accumarray(trialcc, speed, [], @(x) latency_fun(x, time));
-sp_thr = 0;
-mon_fun = @(x) length(find_rising_edge(x > sp_thr,0.1,500));
-moff_fun = @(x) length(find_falling_edge(x > sp_thr,-0.1,500));
-latency_fun1 = @(x, t) t(find_first_rising_edge(x > sp_thr,0.1,0));  % movement_latency = accumarray(trialcc, speed, [], @(x) latency_fun(x, time));
-rlatency_fun1 = @(x, t) t(find_first_falling_edge(x > sp_thr,-0.1,0));
-
-variable_combs = {'speed'};
-avar = [];
-for an = 1:5
-    anvar = [];
-    for cn = 1:3
-        for ap = 2
-            timecc = o_atimecc{an,cn,ap}; distcc = o_adistcc{an,cn,ap}; speedcc = o_aspeedcc{an,cn,ap}; trialcc = o_atrialcc{an,cn,ap};
-            for vn = 1:length(variable_combs)
-                [an cn ap vn]
-                var_name = variable_combs{vn};
-                idx_us = strfind(var_name,'_');
-                if length(variable_combs) == 1
-                    cmdTxt = sprintf('var1v = %scc;',var_name);eval(cmdTxt);
-                end
-                grouped_var1v = accumarray(trialcc, var1v, [], @(x) {x}); grouped_timecc = accumarray(trialcc, timecc, [], @(x) {x});
-                thisvar = arrayfun(@(i) rlatency_fun1(grouped_var1v{i}, grouped_timecc{i}), 1:length(grouped_var1v));
-                % thisvar = (accumarray(trialcc,var1v,[],moff_fun))';
-                anvar = [anvar thisvar];
-                n = 0;
-            end
-        end
-    end
-    avar = [avar;anvar];
-end
-descriptiveStatistics(avar(:));
-%%
-n = 0;
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','AP','TN'},[3,2,10]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-%%
-clc
-raR = RMA_bonferroni(ra,1);
-%%
-clc
-[within,dvn,xlabels,awithinD] = make_within_table({'CN','TN'},[3,10]);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
 
 %%
-noofbMI = 10; nshuffles = 0;
-MI_fun = @(x,y,noofbMI,nshuffles) calc_metric_MI(x,y,noofbMI,nshuffles);
-PC_fun = @(x,y,nshuffles) calc_metric_PC(x,y,nshuffles);
-variable_combs = {'time_dist','time_speed','dist_speed'};
-variable_combs = {'time_speed','dist_speed'};
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+process_var = 5;
 avar = [];
 for an = 1:5
     anvar = [];
     for cn = 1:3
         for ap = 1:2
             timecc = atimecc{an,cn,ap}; distcc = adistcc{an,cn,ap}; speedcc = aspeedcc{an,cn,ap}; FRcc = aFRcc{an,cn,ap}; trialcc = atrialcc{an,cn,ap};
-            for vn = 1:length(variable_combs)
-                [an cn ap vn]
-                var_name = variable_combs{vn};
-                idx_us = strfind(var_name,'_');
-                var1 = var_name(1:(idx_us-1)); var2 = var_name((idx_us+1):end);
-                cmdTxt = sprintf('var1v = %scc;',var1);eval(cmdTxt); cmdTxt = sprintf('var2v = %scc;',var2);eval(cmdTxt);
-                grouped_var1v = accumarray(trialcc, var1v, [], @(x) {x}); grouped_var2v = accumarray(trialcc, var2v, [], @(x) {x});
-                thisvar = arrayfun(@(i) MI_fun(grouped_var1v{i}, grouped_var2v {i},noofbMI,nshuffles), 1:length(grouped_var1v));
-                % thisvar = arrayfun(@(i) PC_fun(grouped_var1v{i}, grouped_var2v {i},nshuffles), 1:length(grouped_var1v));
-
-                % thisvar = MI_fun(var1v, var2v,noofbMI,nshuffles);
-                % thisvar = PC_fun(var1v, var2v,nshuffles);
-
-                anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
-                n = 0;
+            if process_var == 1 % checking the fraction of non-responsive cells
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.PC_valscc;
+                thisvar_time = sum(isnan(tvar_time))/length(tvar_time);
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.PC_valscc;
+                thisvar_dist = sum(isnan(tvar_dist))/length(tvar_dist);
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.PC_valscc;
+                thisvar_speed = sum(isnan(tvar_speed))/length(tvar_time);
+                thisvar = [thisvar_time thisvar_dist thisvar_speed];
             end
+            if process_var == 2 % checking the fraction of responsive cells
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.PC_valscc;
+                thisvar_time = sum(~isnan(tvar_time))/length(tvar_time);
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.PC_valscc;
+                thisvar_dist = sum(~isnan(tvar_dist))/length(tvar_dist);
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.PC_valscc;
+                thisvar_speed = sum(~isnan(tvar_speed))/length(tvar_time);
+                thisvar = [thisvar_time thisvar_dist thisvar_speed];
+            end
+            if process_var == 3 % checking the mean PC
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.PC_valscc; resp_time = ~isnan(tvar_time);
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.PC_valscc; resp_dist = ~isnan(tvar_dist);
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.PC_valscc; resp_speed = ~isnan(tvar_speed);
+                
+                resp = resp_time;
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.PC_valscc; thisvar_time = mean(tvar_time(resp));
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.PC_valscc; thisvar_dist = mean(tvar_dist(resp));
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.PC_valscc; thisvar_speed = mean(tvar_speed(resp));
+                thisvar = [thisvar_time thisvar_dist thisvar_speed];
+            end
+            if process_var == 4 % checking the mean MI
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.PC_valscc; resp_time = ~isnan(tvar_time);
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.PC_valscc; resp_dist = ~isnan(tvar_dist);
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.PC_valscc; resp_speed = ~isnan(tvar_speed);
+                
+                resp = resp_time;
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.MI_valscc; thisvar_time = mean(tvar_time(resp));
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.MI_valscc; thisvar_dist = mean(tvar_dist(resp));
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.MI_valscc; thisvar_speed = mean(tvar_speed(resp));
+                thisvar = [thisvar_time thisvar_dist thisvar_speed];
+            end
+            if process_var == 5 % checking the tuning type
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.PC_valscc; resp_time = ~isnan(tvar_time);
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.PC_valscc; resp_dist = ~isnan(tvar_dist);
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.PC_valscc; resp_speed = ~isnan(tvar_speed);
+                resp = resp_time; idx_resp = find(resp);
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.PC_valscc; thisvar_time = tvar_time(resp);
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.PC_valscc; thisvar_dist = tvar_dist(resp);
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.PC_valscc; thisvar_speed = tvar_speed(resp);
+                
+                PC_vals = abs([thisvar_time' thisvar_dist' thisvar_speed']);
+
+                metric_vals = Mvals{an,cn,ap,1}; tvar_time = metric_vals.MI_valscc; thisvar_time = tvar_time(resp);
+                metric_vals = Mvals{an,cn,ap,2}; tvar_dist = metric_vals.MI_valscc; thisvar_dist = tvar_dist(resp);
+                metric_vals = Mvals{an,cn,ap,3}; tvar_speed = metric_vals.MI_valscc; thisvar_speed = tvar_speed(resp);
+                
+                MI_vals = abs([thisvar_time' thisvar_dist' thisvar_speed']);
+
+                [~,idx_PC_vals] = max(PC_vals,[],2);
+                [~,idx_MI_vals] = max(MI_vals,[],2);
+                equal_idx = (idx_MI_vals - idx_MI_vals) == 0; tuning_type = idx_MI_vals(equal_idx);
+                % equal_idx = (idx_PC_vals - idx_PC_vals) == 0; tuning_type = idx_PC_vals(equal_idx);
+                thisvar_time = sum(tuning_type == 1)/length(tvar_time);
+                thisvar_dist = sum(tuning_type == 2)/length(tvar_time);
+                thisvar_speed = sum(tuning_type == 3)/length(tvar_speed);
+                thisvar = [thisvar_time thisvar_dist thisvar_speed];
+                if 1
+                    idx_resp_2 = idx_resp(tuning_type == 2);
+                    for ii = 1:length(idx_resp_2)
+                        thisFR = FRcc(:,idx_resp_2(ii));
+                        xs = 1:length(thisFR);
+                        figure(100);clf; plotyy(xs,distcc,xs,thisFR);
+                        pause(0.5);
+                    end
+                end
+            end
+            anvar = [anvar thisvar];
         end
     end
     avar = [avar;anvar];
@@ -248,7 +195,7 @@ fac_names = {'CN','TN'}; fac_levels = [3,10];
 fac_names = {'CN','PT','TN'}; fac_levels = [3,3,10];
 % fac_names = {'CN','AP','TN'}; fac_levels = [3,2,10];
 fac_names = {'CN','AP','PT','TN'}; fac_levels = [3,2,2,10];
-% fac_names = {'CN','AP','PT'}; fac_levels = [3,2,3];
+fac_names = {'CN','AP','PT'}; fac_levels = [3,2,3];
 % fac_names = {'CN','PT'}; fac_levels = [3,3];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
@@ -264,7 +211,8 @@ raR = RMA_bonferroni(ra,2);
 clc
 raR = RMA_subset(ra,'AP');
 %%
-raRR = RMA_bonferroni(raR{1},'PT');
+clc
+raRR = RMA_bonferroni(raR{2},'PT');
 % [xdata,mVar,semVar,combs,p,h,nB] = RMA_get_multcompare(raR{1},{'TN','hsd',0.05},[1 1]);
 %%
 raRB = RMA_bonferroni(raR.ras{2},3);
