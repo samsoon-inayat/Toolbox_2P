@@ -303,26 +303,54 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
 %% Figure 4 Tuning type time, distance, speed cells percentages
 % visualization
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.colors(1:3),1,2);
-ff = makeFigureRowsCols(2020,[5 4 1.75 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0.091],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-170 -550]);
-MY = 0.5; ysp = 0.15; mY = 0; ystf = 0.15; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{1},{'BT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+tcolors = repmat(mData.colors(1:7),1,3);
+ff = makeFigureRowsCols(2020,[5 4 3.5 3],'RowsCols',[1 2],'spaceRowsCols',[0.07 0.091],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-170 -550]);
+MY = 0.15; ysp = 0.015; mY = -0.1; ystf = 0.015; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PC'}; % for all cells (vals) MY = 80
+MY = 20; ysp = 1; mY = 0; ystf = 0.15; ysigf = 0.025;titletxt = ''; ylabeltxt = {'MI'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra_AP1_MT1_RF{2},{'CT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'TimeB','DistB','Speed'});xtickangle(30);
-ylabel('Cells (%)');
+    'XTick',xdata,'XTickLabel',{'T','D','S','TD','TS','DS','TDS'});xtickangle(30);
+% ylabel('Cells (%)');
 shift_ticklabels(gca,-3,0);
 axes_title_shifts_line = [-0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,7,{'RF1','RF2','RF3'},{[0 0]});
 ht = axes_title(ff,{1},{'Air-On (Pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
 
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raR{1},{'TT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+% [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raRB2{1},{'TT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+% format_axes(gca);
+% set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+%     'XTick',xdata,'XTickLabel',{'T','D','S','TD','TS','DS','TDS'});xtickangle(30);
+% % ylabel('Cells (%)');
+% shift_ticklabels(gca,-3,0);
+% axes_title_shifts_line = [0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
+% ht = axes_title(ff,{2},{'Air-Off (Pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
+
+%% Figure 4 Tuning type time, distance, speed cells percentages
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.colors(1:3),1,3);
+ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0.091],'rightUpShifts',[0.25 0.35],'widthHeightAdjustment',[-350 -550]);
+MY = 0.15; ysp = 0.015; mY = -0.051; ystf = 0.015; ysigf = 0.0025;titletxt = ''; ylabeltxt = {'PC'}; % for all cells (vals) MY = 80
+MY = 0.35; ysp = 0.0515; mY = 0; ystf = 0.15; ysigf = 0.025;titletxt = ''; ylabeltxt = {'MI'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{2},{'TT:RF','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
     'XTick',xdata,'XTickLabel',{'Time','Dist','Speed'});xtickangle(30);
-% ylabel('Cells (%)');
+ylabel(ylabeltxt);
 shift_ticklabels(gca,-3,0);
-axes_title_shifts_line = [0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
-ht = axes_title(ff,{2},{'Air-Off (Pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
+axes_title_shifts_line = [0 0 0.5 0]; axes_title_shifts_text = [0 0.6155 0 0];
+ht = axes_title(ff,{1},{'Air-On (Pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Time','Dist','Speed'},{[0 0]});
+delete(ff.h_axes(1,2))
+% [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raR{1},{'TT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+% format_axes(gca);
+% set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+%     'XTick',xdata,'XTickLabel',{'Time','Dist','Speed'});xtickangle(30);
+% % ylabel('Cells (%)');
+% shift_ticklabels(gca,-3,0);
+% axes_title_shifts_line = [0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
+% ht = axes_title(ff,{2},{'Air-Off (Pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
 
 %% Response Fidelity
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
@@ -334,6 +362,23 @@ MY = 80; ysp = 10.05; mY = 0; ystf = 10.23; ysigf = 0.025;titletxt = ''; ylabelt
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
     'XTick',xdata,'XTickLabel',{'C3','C4','C5'});xtickangle(30);
+ylabel('Trials (%)')
+shift_ticklabels(gca,-3,0);
+axes_title_shifts_line = [-0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
+ht = axes_title(ff,{1},{'Air-Off (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
+delete(ff.h_axes(1,2))
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%% Low, Medium, High Response Fidelity
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.colors(1:3),1,3);
+ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0.071],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-170 -550]);
+axes(ff.h_axes(1,1))
+MY = 80; ysp = 10.05; mY = 0; ystf = 10.23; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{2},{'RF','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'L','M','H'});xtickangle(30);
 ylabel('Trials (%)')
 shift_ticklabels(gca,-3,0);
 axes_title_shifts_line = [-0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];

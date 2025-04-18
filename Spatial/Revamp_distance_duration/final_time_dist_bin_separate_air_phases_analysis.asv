@@ -24,6 +24,9 @@ else
     save(filename,"met_valsT","met_valsD");
 end
 
+cell_typesT = get_cell_types(outT,met_valsT);
+cell_typesD = get_cell_types(outD,met_valsD);
+
 n = 0;
 
 %% find the lengths of the bins in air on and off phases
@@ -186,6 +189,7 @@ descriptiveStatistics(raR{2}.ds)
 %     end
 % end
 %% Trial-Wise --> Active Cells FR > 0
+
 variable_combs = {'FR_time','FR_dist','FR_speed'};
 % Factors, CN, 
 clc
@@ -215,6 +219,7 @@ print_for_manuscript(ra)
 raR = RMA_subset(ra,'AP');
 descriptiveStatistics(raR{1}.ds)
 descriptiveStatistics(raR{2}.ds)
+
 
 %% Response Fidelity --> Active Cells FR > 0
 variable_combs = {'FR_time','FR_dist','FR_speed'};
@@ -247,6 +252,39 @@ raR = RMA_subset(ra,'AP');
 descriptiveStatistics(raR{1}.ds)
 descriptiveStatistics(raR{2}.ds)
 
+%% low, medium, high Response Fidelity --> Active Cells FR > 0 but categorized as low, medium, high
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+% Factors, CN, 
+clc
+active_cells = {};
+out = outT;
+ap = 1;
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            AC = out.active_cells_trials{an,cn,ap};
+            AAC1 = sum(AC,2) > 0 & sum(AC,2) <= 3;
+            AAC2 = sum(AC,2) > 3 & sum(AC,2) <= 6;
+            AAC3 = sum(AC,2) > 6 & sum(AC,2) < 10;
+            fResp = [((sum(AAC1)/length(AAC1))*100) ((sum(AAC2)/length(AAC2))*100) ((sum(AAC3)/length(AAC3))*100)] ;
+            anvar = [anvar fResp];
+        end
+    end
+    avar = [avar;anvar];
+end
+descriptiveStatistics(avar(:)); %(mean ± sem: 0.281 ± 0.022, range: -0.957, 0.999, median: 0.485) concatenate MI (mean ± sem: 0.746 ± 0.051, range: 0.187, 1.998, median: 0.593)
+% (Intercept):PT [F(2,8) = 116.50, p < 0.001, η2 = .84] <--
+fac_names = {'CN','AP','RF'}; fac_levels = [3,2,3];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+% Run Reduced Subset RM-ANOVA
+raR = RMA_subset(ra,'AP');
+descriptiveStatistics(raR{1}.ds)
+descriptiveStatistics(raR{2}.ds)
 
 %% Conjunctive and Complementary populations
 variable_combs = {'FR_time','FR_dist','FR_speed'};
@@ -273,47 +311,103 @@ ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
 
 %% Air-On --> Get the metrics and run stats FR --> time, distance, speed
+
 variable_combs = {'FR_time','FR_dist','FR_speed'};
+CT_labels = cell_typesT.cell_types;
 % Factors, CN, 
 avar = [];
 for an = 1:5
     anvar = [];
     for cn = 1:3
         for ap = 1:2
+            AC = outT.active_cells{an,cn,ap};
             for bn = 1:2
                 if bn == 1
-                    out = outT; MV = met_valsT;
+                    out = outT; MV = met_valsT; cell_types = cell_typesT;
                 else
-                    out = outD; MV = met_valsD;
+                    out = outD; MV = met_valsD; cell_types = cell_typesD;
                 end
-                AC = out.active_cells_trials{an,cn,ap};
-                AAC = sum(AC,2) > 5;
-                for vn = 1:length(variable_combs)
-                    tMV = MV{vn};
-                    tmet = tMV{an,cn,ap}.MI(AAC,1);
-                    anvar = [anvar mean(tmet)];
+                RF = {};
+                RF{1} = cell_types.RF1{an,cn,ap}; RF{2} = cell_types.RF2{an,cn,ap}; RF{3} = cell_types.RF3{an,cn,ap};
+                % RF{1} = cell_types.RFl5{an,cn,ap}; RF{2} = cell_types.RFg5{an,cn,ap}; 
+                CT_pc = cell_types.CT_PCd{an,cn,ap};
+                CT_mi = cell_types.CT_MId{an,cn,ap};
+                for rfi = 1:length(RF)
+                    selcells = AC & RF{rfi}; pct = [];
+                    for cti = 1:length(CT_labels)
+                        pct(1,cti) = 100* sum(CT_pc(selcells) == cti)/length(AC);
+                    end
+                    anvar = [anvar pct(1:end)]; pct = [];
+                    for cti = 1:length(CT_labels)
+                        pct(1,cti) = 100* sum(CT_mi(selcells) == cti)/length(AC);
+                    end
+                    anvar = [anvar pct(1:end)];
                 end
-                % pTC = 100*(sum(cellT(:,1) & ~cellT(:,2) & ~cellT(:,3))/size(tun,1));
-                % pDC = 100*(sum(~cellT(:,1) & cellT(:,2) & ~cellT(:,3))/size(tun,1));
-                % pSC = 100*(sum(~cellT(:,1) & ~cellT(:,2) & cellT(:,3))/size(tun,1));
-                % anvar = [anvar pTC pDC pSC];
             end
         end
     end
     avar = [avar;anvar];
 end
 
-fac_names = {'CN','AP','BT','TT'}; fac_levels = [3,2,2,3];
+fac_names = {'CN','AP','BT','TT','RF'}; fac_levels = [3,2,bn,vn,3];
+fac_names = {'CN','AP','TT','RF'}; fac_levels = [3,2,3,3];
+fac_names = {'CN','AP','BT','RF','MT','CT'}; fac_levels = [3,2,2,3,2,8];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
+% 'NoT' 'speed'  'dist'  'dist-speed'  'time'  'time-speed'  'time-dist'  'TDS'
+%% separation by AP - air phase
 clc
-raR = RMA_subset(ra,'AP');
-%% RM-ANOVA Bonferroni
+ra_AP = RMA_subset(ra,'AP');
+%% separation AP by MT - air phase by metric type
 clc
-raRB = RMA_bonferroni(raR{1},'BT');
-raRB = RMA_bonferroni(raR{2},'BT');
+ra_AP1_MT = RMA_subset(ra_AP{1},'CT');
+
+clc
+ra_AP2_MT = RMA_subset(ra_AP{2},'CT');
+
+%% separation AP by MT by BT
+clc
+ra_AP1_MT1_BT = RMA_subset(ra_AP1_MT{1},'BT');
+
+clc
+ra_AP1_MT2_BT = RMA_subset(ra_AP1_MT{2},'BT');
+
+%% separation AP by MT by RF
+clc
+ra_AP1_MT1_RF = RMA_subset(ra_AP1_MT{1},'RF');
+
+clc
+ra_AP1_MT2_RF = RMA_subset(ra_AP1_MT{2},'RF');
+
+
+%% separation AP by RF - response fidelity
+clc
+ra_AP1_RF = RMA_subset(ra_AP{1},'RF');
+
+clc
+ra_AP2_RF = RMA_subset(ra_AP{2},'RF');
+
+%% separation AP by RF by MT
+clc
+ra_AP1_RF = RMA_subset(ra_AP{1},'RF');
+
+clc
+ra_AP2_RF = RMA_subset(ra_AP{2},'RF');
+
+
+%%
+clc
+ra_AP1_MT = RMA_subset(ra_AP{1},'MT');
+clc
+ra_AP1_MT1 = RMA_subset(ra_AP1_MT{1},'RF');
+clc
+ra_AP1_MT2 = RMA_subset(ra_AP1_MT{2},'RF');
+
+
+ra_AP2_MT = RMA_subset(ra_AP{2},'MT');
+
 %% average speed and other speed characteristics
 % for total time, distance use the variable_combs = {'time'} or distance
 % and then use the max_fun. you may also change ap to 1 or 2 depending upon

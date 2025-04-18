@@ -186,6 +186,7 @@ descriptiveStatistics(raR{2}.ds)
 %     end
 % end
 %% Trial-Wise --> Active Cells FR > 0
+
 variable_combs = {'FR_time','FR_dist','FR_speed'};
 % Factors, CN, 
 clc
@@ -215,6 +216,7 @@ print_for_manuscript(ra)
 raR = RMA_subset(ra,'AP');
 descriptiveStatistics(raR{1}.ds)
 descriptiveStatistics(raR{2}.ds)
+
 
 %% Response Fidelity --> Active Cells FR > 0
 variable_combs = {'FR_time','FR_dist','FR_speed'};
@@ -247,6 +249,39 @@ raR = RMA_subset(ra,'AP');
 descriptiveStatistics(raR{1}.ds)
 descriptiveStatistics(raR{2}.ds)
 
+%% low, medium, high Response Fidelity --> Active Cells FR > 0 but categorized as low, medium, high
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+% Factors, CN, 
+clc
+active_cells = {};
+out = outT;
+ap = 1;
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            AC = out.active_cells_trials{an,cn,ap};
+            AAC1 = sum(AC,2) > 0 & sum(AC,2) <= 3;
+            AAC2 = sum(AC,2) > 3 & sum(AC,2) <= 6;
+            AAC3 = sum(AC,2) > 6 & sum(AC,2) < 10;
+            fResp = [((sum(AAC1)/length(AAC1))*100) ((sum(AAC2)/length(AAC2))*100) ((sum(AAC3)/length(AAC3))*100)] ;
+            anvar = [anvar fResp];
+        end
+    end
+    avar = [avar;anvar];
+end
+descriptiveStatistics(avar(:)); %(mean ± sem: 0.281 ± 0.022, range: -0.957, 0.999, median: 0.485) concatenate MI (mean ± sem: 0.746 ± 0.051, range: 0.187, 1.998, median: 0.593)
+% (Intercept):PT [F(2,8) = 116.50, p < 0.001, η2 = .84] <--
+fac_names = {'CN','AP','RF'}; fac_levels = [3,2,3];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+% Run Reduced Subset RM-ANOVA
+raR = RMA_subset(ra,'AP');
+descriptiveStatistics(raR{1}.ds)
+descriptiveStatistics(raR{2}.ds)
 
 %% Conjunctive and Complementary populations
 variable_combs = {'FR_time','FR_dist','FR_speed'};
@@ -287,23 +322,48 @@ for an = 1:5
                     out = outD; MV = met_valsD;
                 end
                 AC = out.active_cells_trials{an,cn,ap};
-                AAC = sum(AC,2) > 0;
+                AAC1 = sum(AC,2) > 0 & sum(AC,2) <= 3;
+                AAC2 = sum(AC,2) > 3 & sum(AC,2) <= 6;
+                AAC3 = sum(AC,2) > 6 & sum(AC,2) < 10;
+                selCells = AAC2 | AAC3; cellP = []; cellP1 = [];
+                selCells = sum(AC,2) > 3;
                 for vn = 1:length(variable_combs)
                     tMV = MV{vn};
-                    tmet = tMV{an,cn,ap}.MI(:,1);
-                    anvar = [anvar mean(ztMI)];
+                    tmet = tMV{an,cn,ap}.PC(selCells,3);
+                    tmet1 = tMV{an,cn,ap}.MI(selCells,3);
+                %     tmet1 = tMV{an,cn,ap}.MI(AAC1,1); tmet2 = tMV{an,cn,ap}.MI(AAC2,1); tmet3 = tMV{an,cn,ap}.MI(AAC3,1);
+                %     anvar = [anvar mean(tmet1) mean(tmet2) mean(tmet3)];
+                    cellP = [cellP tmet];
+                    cellP1 = [cellP1 tmet1];
                 end
-                % pTC = 100*(sum(cellT(:,1) & ~cellT(:,2) & ~cellT(:,3))/size(tun,1));
-                % pDC = 100*(sum(~cellT(:,1) & cellT(:,2) & ~cellT(:,3))/size(tun,1));
-                % pSC = 100*(sum(~cellT(:,1) & ~cellT(:,2) & cellT(:,3))/size(tun,1));
-                % anvar = [anvar pTC pDC pSC];
+                cellT = cellP < 0.05;
+                pTC = 100*(sum(cellT(:,1) & ~cellT(:,2) & ~cellT(:,3))/size(AC,1));
+                pDC = 100*(sum(~cellT(:,1) & cellT(:,2) & ~cellT(:,3))/size(AC,1));
+                pSC = 100*(sum(~cellT(:,1) & ~cellT(:,2) & cellT(:,3))/size(AC,1));
+                pTDC = 100*(sum((cellT(:,1) | cellT(:,2)) & ~cellT(:,3))/size(AC,1));
+                pTSC = 100*(sum((cellT(:,1) | cellT(:,3)) & ~cellT(:,2))/size(AC,1));
+                pDSC = 100*(sum((cellT(:,2) | cellT(:,3)) & ~cellT(:,1))/size(AC,1));
+                pTDS = 100*(sum((cellT(:,2) & cellT(:,3) & cellT(:,1)))/size(AC,1));
+                anvar = [anvar pTC pDC pSC pTDC pTSC pDSC pTDS];
+
+                cellT = cellP1 < 0.05;
+                pTC = 100*(sum(cellT(:,1) & ~cellT(:,2) & ~cellT(:,3))/size(AC,1));
+                pDC = 100*(sum(~cellT(:,1) & cellT(:,2) & ~cellT(:,3))/size(AC,1));
+                pSC = 100*(sum(~cellT(:,1) & ~cellT(:,2) & cellT(:,3))/size(AC,1));
+                pTDC = 100*(sum((cellT(:,1) | cellT(:,2)) & ~cellT(:,3))/size(AC,1));
+                pTSC = 100*(sum((cellT(:,1) | cellT(:,3)) & ~cellT(:,2))/size(AC,1));
+                pDSC = 100*(sum((cellT(:,2) | cellT(:,3)) & ~cellT(:,1))/size(AC,1));
+                pTDS = 100*(sum((cellT(:,2) & cellT(:,3) & cellT(:,1)))/size(AC,1));
+                anvar = [anvar pTC pDC pSC pTDC pTSC pDSC pTDS];
             end
         end
     end
     avar = [avar;anvar];
 end
 
-fac_names = {'CN','AP','BT','TT'}; fac_levels = [3,2,2,3];
+fac_names = {'CN','AP','BT','TT','RF'}; fac_levels = [3,2,bn,vn,3];
+fac_names = {'CN','AP','TT','RF'}; fac_levels = [3,2,3,3];
+fac_names = {'CN','AP','BT','MT','TT'}; fac_levels = [3,2,2,2,7];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
@@ -312,8 +372,8 @@ clc
 raR = RMA_subset(ra,'AP');
 %% RM-ANOVA Bonferroni
 clc
-raRB = RMA_bonferroni(raR{1},'BT');
-raRB = RMA_bonferroni(raR{2},'BT');
+raRB1 = RMA_bonferroni(raR{1},'BT');
+raRB2 = RMA_bonferroni(raR{2},'BT');
 %% average speed and other speed characteristics
 % for total time, distance use the variable_combs = {'time'} or distance
 % and then use the max_fun. you may also change ap to 1 or 2 depending upon
