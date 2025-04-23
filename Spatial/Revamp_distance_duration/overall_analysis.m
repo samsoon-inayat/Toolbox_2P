@@ -168,7 +168,7 @@ while 1
     mOI1(isnan(mOI1)) = 1;
     Di = pdist(mOI1);
     tree = linkage(Di);
-    figure(hf);clf
+    figure(100);clf
     [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold','default');
     hf = gcf;
     set(hf,'Position',[7 3 1.25 2]);

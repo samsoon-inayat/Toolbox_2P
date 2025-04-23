@@ -24,6 +24,9 @@ else
     save(filename,"met_valsT","met_valsD");
 end
 
+% cell_typesT = get_cell_types(outT,met_valsT);
+% cell_typesD = get_cell_types(outD,met_valsD);
+
 n = 0;
 
 %% find the lengths of the bins in air on and off phases
@@ -217,6 +220,42 @@ raR = RMA_subset(ra,'AP');
 descriptiveStatistics(raR{1}.ds)
 descriptiveStatistics(raR{2}.ds)
 
+%% Trial-Wise --> Active Cells FR > 0 ... comparison of percentage distributions
+%
+
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+% Factors, CN, 
+clc
+active_cells = {};
+out = outT;
+ap = 1;
+avar = [];
+for an = 1:5
+    anvar = [];
+    for cn = 1:3
+        for ap = 1:2
+            AC = out.active_cells_trials{an,cn,ap};
+            fResp = hist(sum(AC,2),[0:10]);
+            fResp = 100*fResp/sum(fResp);
+            if length(fResp) < 11
+                err
+            end
+            anvar = [anvar fResp];
+        end
+    end
+    avar = [avar;anvar];
+end
+descriptiveStatistics(avar(:)); %(mean ± sem: 0.281 ± 0.022, range: -0.957, 0.999, median: 0.485) concatenate MI (mean ± sem: 0.746 ± 0.051, range: 0.187, 1.998, median: 0.593)
+% (Intercept):PT [F(2,8) = 116.50, p < 0.001, η2 = .84] <--
+fac_names = {'CN','AP','NT'}; fac_levels = [3,2,11];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+print_for_manuscript(ra)
+% Run Reduced Subset RM-ANOVA
+raR = RMA_subset(ra,'AP');
+descriptiveStatistics(raR{1}.ds)
+descriptiveStatistics(raR{2}.ds)
 
 %% Response Fidelity --> Active Cells FR > 0
 variable_combs = {'FR_time','FR_dist','FR_speed'};
@@ -309,71 +348,113 @@ print_for_manuscript(ra)
 
 %% Air-On --> Get the metrics and run stats FR --> time, distance, speed
 variable_combs = {'FR_time','FR_dist','FR_speed'};
-% Factors, CN, 
+metric = 'MI';
+% metric = 'PC';
+RV = 'perc';
+RV = 'rfid';
+% RV = 'mval';
+
+
 avar = [];
 for an = 1:5
     anvar = [];
     for cn = 1:3
         for ap = 1:2
+            AC = outT.active_cells_trials{an,cn,ap}; mAC = outT.active_cells{an,cn,ap}; RF = sum(AC,2);
             for bn = 1:2
                 if bn == 1
-                    out = outT; MV = met_valsT;
+                    out = outT; MV = met_valsT; 
                 else
-                    out = outD; MV = met_valsD;
+                    out = outD; MV = met_valsD; 
                 end
-                AC = out.active_cells_trials{an,cn,ap};
-                AAC1 = sum(AC,2) > 0 & sum(AC,2) <= 3;
-                AAC2 = sum(AC,2) > 3 & sum(AC,2) <= 6;
-                AAC3 = sum(AC,2) > 6 & sum(AC,2) < 10;
-                selCells = AAC2 | AAC3; cellP = []; cellP1 = [];
-                selCells = sum(AC,2) > 3;
-                for vn = 1:length(variable_combs)
-                    tMV = MV{vn};
-                    tmet = tMV{an,cn,ap}.PC(selCells,3);
-                    tmet1 = tMV{an,cn,ap}.MI(selCells,3);
-                %     tmet1 = tMV{an,cn,ap}.MI(AAC1,1); tmet2 = tMV{an,cn,ap}.MI(AAC2,1); tmet3 = tMV{an,cn,ap}.MI(AAC3,1);
-                %     anvar = [anvar mean(tmet1) mean(tmet2) mean(tmet3)];
-                    cellP = [cellP tmet];
-                    cellP1 = [cellP1 tmet1];
+                selcells = mAC;% & (RF>0);
+                if strcmp(metric,'PC')
+                    idx = 3; pvals = [MV{1}{an,cn,ap}.PC(:,idx) MV{2}{an,cn,ap}.PC(:,idx) MV{3}{an,cn,ap}.PC(:,idx)];
+                    idx = 2; zvals = [MV{1}{an,cn,ap}.PC(:,idx) MV{2}{an,cn,ap}.PC(:,idx) MV{3}{an,cn,ap}.PC(:,idx)];
+                else
+                    idx = 3; pvals = [MV{1}{an,cn,ap}.MI(:,idx) MV{2}{an,cn,ap}.MI(:,idx) MV{3}{an,cn,ap}.MI(:,idx)];
+                    idx = 2; zvals = [MV{1}{an,cn,ap}.MI(:,idx) MV{2}{an,cn,ap}.MI(:,idx) MV{3}{an,cn,ap}.MI(:,idx)];
                 end
-                cellT = cellP < 0.05;
-                pTC = 100*(sum(cellT(:,1) & ~cellT(:,2) & ~cellT(:,3))/size(AC,1));
-                pDC = 100*(sum(~cellT(:,1) & cellT(:,2) & ~cellT(:,3))/size(AC,1));
-                pSC = 100*(sum(~cellT(:,1) & ~cellT(:,2) & cellT(:,3))/size(AC,1));
-                pTDC = 100*(sum((cellT(:,1) | cellT(:,2)) & ~cellT(:,3))/size(AC,1));
-                pTSC = 100*(sum((cellT(:,1) | cellT(:,3)) & ~cellT(:,2))/size(AC,1));
-                pDSC = 100*(sum((cellT(:,2) | cellT(:,3)) & ~cellT(:,1))/size(AC,1));
-                pTDS = 100*(sum((cellT(:,2) & cellT(:,3) & cellT(:,1)))/size(AC,1));
-                anvar = [anvar pTC pDC pSC pTDC pTSC pDSC pTDS];
+                % criteria for finding the types of cells
+                tCells = ((pvals < 0.05) * [4; 2; 1]) == 4; dCells = ((pvals < 0.05) * [4; 2; 1]) == 2; sCells = ((pvals < 0.05) * [4; 2; 1]) == 1;
+                time_cells{an,cn,ap,bn} = tCells; distance_cells{an,cn,ap,bn} = dCells; speed_cells{an,cn,ap,bn} = sCells;
+                if strcmp(RV,'perc')
+                    anvar = [anvar sum(tCells & selcells)/length(AC) sum(dCells & selcells)/length(AC) sum(sCells & selcells)/length(AC)];
+                end
+                if strcmp(RV,'mval')
+                    anvar = [anvar nanmean(zvals(tCells&selcells,1)) nanmean(zvals(dCells&selcells,2)) nanmean(zvals(sCells&selcells,3))];
+                end
+                if strcmp(RV,'rfid')
+                    anvar = [anvar mean(RF(tCells&selcells,1)) mean(RF(dCells&selcells,1)) mean(RF(sCells&selcells,1))];
+                end
+                if sum(isnan(anvar)) > 0
+                    [an cn ap bn rfi]
+                end
 
-                cellT = cellP1 < 0.05;
-                pTC = 100*(sum(cellT(:,1) & ~cellT(:,2) & ~cellT(:,3))/size(AC,1));
-                pDC = 100*(sum(~cellT(:,1) & cellT(:,2) & ~cellT(:,3))/size(AC,1));
-                pSC = 100*(sum(~cellT(:,1) & ~cellT(:,2) & cellT(:,3))/size(AC,1));
-                pTDC = 100*(sum((cellT(:,1) | cellT(:,2)) & ~cellT(:,3))/size(AC,1));
-                pTSC = 100*(sum((cellT(:,1) | cellT(:,3)) & ~cellT(:,2))/size(AC,1));
-                pDSC = 100*(sum((cellT(:,2) | cellT(:,3)) & ~cellT(:,1))/size(AC,1));
-                pTDS = 100*(sum((cellT(:,2) & cellT(:,3) & cellT(:,1)))/size(AC,1));
-                anvar = [anvar pTC pDC pSC pTDC pTSC pDSC pTDS];
             end
         end
     end
-    avar = [avar;anvar];
+    if strcmp(RV,'perc')
+        avar = [avar;100*anvar];
+    else
+        avar = [avar;anvar];
+    end
 end
 
-fac_names = {'CN','AP','BT','TT','RF'}; fac_levels = [3,2,bn,vn,3];
-fac_names = {'CN','AP','TT','RF'}; fac_levels = [3,2,3,3];
-fac_names = {'CN','AP','BT','MT','TT'}; fac_levels = [3,2,2,2,7];
+fac_names = {'CN','AP','BT','TT'}; fac_levels = [3,2,2,3];
+% fac_names = {'CN','AP','BT','RF','CT'}; fac_levels = [3,2,2,3,4];
+% fac_names = {'CN','AP','BT','CT'}; fac_levels = [3,2,2,7];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
+clc
 print_for_manuscript(ra)
+% 'NoT' 'speed'  'dist'  'dist-speed'  'time'  'time-speed'  'time-dist'  'TDS'
+% separation by AP - air phase
 clc
-raR = RMA_subset(ra,'AP');
-%% RM-ANOVA Bonferroni
+ra_AP = RMA_subset(ra,'AP');
+%% visualizing the results in the previous section
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra_AP{2},{'CN:TT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+%% separation AP by MT - air phase by metric type
 clc
-raRB1 = RMA_bonferroni(raR{1},'BT');
-raRB2 = RMA_bonferroni(raR{2},'BT');
+ra_AP1_BT = RMA_bonferroni(ra_AP{2},'CN');
+
+% ra_AP1_BT2_CN = RMA_subset(ra_AP1_BT{2},'CN');
+%% Overlap indices
+ti_cells = []; di_cells = []; sp_cells = [];
+bn = 1;
+for an = 1:5
+    cc = 1;
+    for cn = 1:3
+        for ap = 1:2
+            ti_cells{an,cc} = time_cells{an,cn,ap,bn};
+            di_cells{an,cc} = distance_cells{an,cn,ap,bn};
+            sp_cells{an,cc} = speed_cells{an,cn,ap,bn};
+            cc = cc + 1;
+        end
+    end
+end
+
+allresp = [ti_cells di_cells sp_cells];
+
+% [OIo,mOI,semOI,OI_mato,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(allresp,0.5,0.05);\
+hf = figure(100);clf;clc
+txl = {'C3-AOn-T','C3-AOff-T','C4-AOn-T','C4-AOff-T','C5-AOn-T','C5-AOff-T','C3-AOn-D','C3-AOff-D','C4-AOn-D','C4-AOff-D','C5-AOn-D','C5-AOff-D','C3-AOn-S','C3-AOff-S','C4-AOn-S','C4-AOff-S','C5-AOn-S','C5-AOff-S'};
+[mOI,semOI] = heatmap_conj_comp(gca,allresp,0,{1:18,txl,1});
+mOI1 = mOI;
+    mOI1(isnan(mOI1)) = 1;
+    Di = pdist(mOI1);
+    tree = linkage(Di);
+    figure(hf);clf
+    [H,T,TC] = dendrogram(tree,'Orientation','right','ColorThreshold',1.305);
+    hf = gcf;
+    % set(hf,'Position',[7 3 1.25 2]);
+    set(H,'linewidth',1);
+    set(gca,'yticklabels',txl(TC));ytickangle(30);
+    format_axes(gca);
+    hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
+    changePosition(gca,[0 0.0 0.05 0.05]);
+    save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
 %% average speed and other speed characteristics
 % for total time, distance use the variable_combs = {'time'} or distance
 % and then use the max_fun. you may also change ap to 1 or 2 depending upon

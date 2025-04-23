@@ -23,7 +23,7 @@ end
     switch type
         case 0
             n = 0;
-%             mOI = mOI; semOI = semOI;
+            mOI = mOI; semOI = semOI;
         case 1
             mOI = mCI; semOI = semCI;
         case 2
