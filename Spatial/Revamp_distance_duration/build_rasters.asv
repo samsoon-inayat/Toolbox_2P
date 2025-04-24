@@ -10,9 +10,7 @@ for nn = 1:size(FR,1)
     for ii = 1:length(trialidxnums)
         lenT = sum(trials == ii);
         rasters(ii,1:lenT,nn) = tFR(trials == ii);
-        if sum(tFR(trials == ii)) > 0
-            [~,pL(nn,ii)] = max(tFR(trials == ii));
-        end
+        [pL(nn,ii) = 
     end
 end
 
