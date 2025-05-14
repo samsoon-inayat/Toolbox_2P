@@ -348,10 +348,10 @@ print_for_manuscript(ra)
 
 %% Air-On --> Get the metrics and run stats FR --> time, distance, speed
 variable_combs = {'FR_time','FR_dist','FR_speed'};
-metric = 'MI';
-% metric = 'PC';
+% metric = 'MI';
+metric = 'PC';
 RV = 'perc';
-RV = 'rfid';
+% RV = 'rfid';
 % RV = 'mval';
 
 
@@ -414,11 +414,11 @@ print_for_manuscript(ra)
 clc
 ra_AP = RMA_subset(ra,'AP');
 %% visualizing the results in the previous section
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra_AP{2},{'CN:TT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra_AP{2},{'BT:TT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 %% separation AP by MT - air phase by metric type
 clc
-ra_AP1_BT = RMA_bonferroni(ra_AP{2},'CN');
-
+ra_AP1_BT = RMA_bonferroni(ra_AP{2},'TT');
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra_AP1_BT{3},{'BT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 % ra_AP1_BT2_CN = RMA_subset(ra_AP1_BT{2},'CN');
 %% Overlap indices
 ti_cells = []; di_cells = []; sp_cells = [];
@@ -455,6 +455,25 @@ mOI1 = mOI;
     hx = xlabel('Eucledian Distance');%changePosition(hx,[-0.051 0 0]);
     changePosition(gca,[0 0.0 0.05 0.05]);
     save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
+%% transition of time, distance, and speed cells across air-on and air-off phases
+ti_cellsC = []; di_cellsC = []; sp_cellsC = [];
+bn = 1;
+for an = 1:5
+    cc = 1; ti_cells = []; di_cells = []; sp_cells = [];
+    for cn = 1%:3
+        for ap = 1:2
+            ti_cells(:,cc) = time_cells{an,cn,ap,bn};
+            di_cells(:,cc) = distance_cells{an,cn,ap,bn};
+            sp_cells(:,cc) = speed_cells{an,cn,ap,bn};
+            cc = cc + 1;
+        end
+    end
+    ti_cellsC{an,1} = ti_cells;
+    di_cellsC{an,1} = di_cells;
+    sp_cellsC{an,1} = sp_cells;
+end
+
+
 %% average speed and other speed characteristics
 % for total time, distance use the variable_combs = {'time'} or distance
 % and then use the max_fun. you may also change ap to 1 or 2 depending upon
