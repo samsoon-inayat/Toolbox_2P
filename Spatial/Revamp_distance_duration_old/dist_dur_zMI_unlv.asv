@@ -1,0 +1,425 @@
+function dist_dur
+%% analysing the resp. RF, zMI, and RS for all cells
+ntrials = 50; 
+si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D];
+%     si = [C1_i_T C2_i_T C3_i_T C4_i_T];
+Rs_C = o.Rs(:,si);mRs_C = o.mR(:,si);
+props_C = get_props_Rs(Rs_C,ntrials);
+pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
+pop_var_name = {'all'};
+% pop_var_name = {'good_FR'};
+sel_pop_C = cell_list_op(props_C,pop_var_name);
+%%
+% Assuming 'props_C.zMI' is structured like MI_cell but with one value per neuron for zMI
+
+zMI_cell = props_C.zMI;
+
+% Define the sizes based on the structure
+num_animals = 5;                     % 5 animals (rows in zMI_cell)
+num_configs = 3;                     % Configurations (1, 2, 3)
+num_phases = 2;                      % Air phases (1 = on, 2 = off)
+num_encoding_types = 2;              % Encoding types (1 = time, 2 = distance)
+
+% Initialize a cell array to hold the 4D matrices for each animal
+zMI_animal_matrices = cell(num_animals, 1);
+
+% Loop through each animal and construct a 4D matrix for that animal
+for ani_idx = 1:num_animals
+    % Find the maximum number of neurons for the current animal across all configurations and phases
+    max_neurons_ani = 0;
+    for config_idx = 1:6
+        max_neurons_ani = max(max_neurons_ani, size(zMI_cell{ani_idx, config_idx}, 1));  % Find max number of neurons for this animal
+    end
+    
+    % Initialize a 4D matrix for this animal (config x phase x encoding type x neuron)
+    zMI_matrix_animal = NaN(num_configs, num_phases, num_encoding_types, max_neurons_ani);
+    
+    % Loop through configurations and air phases to fill the matrix for this animal
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            % Time encoding data
+            time_col_idx = (config_idx - 1) * 2 + phase_idx;
+            zMI_time_matrix = zMI_cell{ani_idx, time_col_idx};  % Neuron vector (1 value per neuron)
+            num_neurons_time = size(zMI_time_matrix, 1);
+            zMI_matrix_animal(config_idx, phase_idx, 1, 1:num_neurons_time) = zMI_time_matrix;
+
+            % Distance encoding data
+            dist_col_idx = 6 + time_col_idx;
+            zMI_distance_matrix = zMI_cell{ani_idx, dist_col_idx};  % Neuron vector (1 value per neuron)
+            num_neurons_distance = size(zMI_distance_matrix, 1);
+            zMI_matrix_animal(config_idx, phase_idx, 2, 1:num_neurons_distance) = zMI_distance_matrix;
+        end
+    end
+    
+    % Store the 4D matrix for this animal
+    zMI_animal_matrices{ani_idx} = zMI_matrix_animal;
+end
+
+% Now 'zMI_animal_matrices' holds the 4D zMI matrices for each animal
+
+%%
+% Define sizes
+num_animals = 5;          % 5 animals
+num_configs = 3;          % Configurations (C3, C4, C5)
+num_phases = 2;           % Phases (Air-on, Air-off)
+num_encoding_types = 2;   % Encoding types (Time, Distance)
+
+% Initialize a matrix to store the mean zMI values for each animal
+mean_zMI_matrix = NaN(num_animals, num_configs * num_phases * num_encoding_types);
+
+% Loop through each animal and calculate the mean zMI over neurons for each condition
+for ani_idx = 1:num_animals
+    % Get the zMI 4D matrix for this animal
+    zMI_matrix_animal = zMI_animal_matrices{ani_idx};
+    
+    % Initialize a column index for the output matrix
+    col_idx = 1;
+    
+    % Loop through configurations, phases, and encoding types
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            for encoding_type = 1:num_encoding_types
+                % Extract the zMI values for the current condition
+                zMI_values = zMI_matrix_animal(config_idx, phase_idx, encoding_type, :);
+                
+                % Remove NaNs (if any) and calculate the mean zMI over neurons
+                zMI_values = squeeze(zMI_values);
+                mean_zMI = mean(zMI_values(~isnan(zMI_values)));
+                
+                % Store the mean zMI in the output matrix
+                mean_zMI_matrix(ani_idx, col_idx) = mean_zMI;
+                
+                % Move to the next column
+                col_idx = col_idx + 1;
+            end
+        end
+    end
+end
+
+% Now 'mean_zMI_matrix' holds the mean zMI for each animal across configurations, phases, and encoding types.
+% You can now use this matrix for ANOVA analysis.
+
+[within,dvn,xlabels,awithinD] = make_within_table({'Configurations','Phases','EncodingType'},[3,2,2]);
+dataT = make_between_table({mean_zMI_matrix},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+ra.ranova
+print_for_manuscript(ra)
+
+%% Figure (not working right now but make it work)
+
+magfac = mData.magfac;
+ff = makeFigureRowsCols(107,[3 5 2.75 1],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.07 0.3],...
+    'widthHeightAdjustment',[10 -500]);
+MY = 3; ysp = 5; mY = 0; ystf = 0.25; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.28*magfac; widths = [0.87 1.35 2.85 1]*magfac+0.061; gap = 0.07105*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 1.5];
+
+tcolors = repmat(mData.colors(4:6),1,2);
+[hbs,xdata] = view_results_rmanova(ff.h_axes(1,1),ra,{'Phases','hsd',0.05},xs_gaps,tcolors,[mY MY ysp ystf ysigf],mData);
+xticklabels = {'AirOn','AirOff'}; set(gca,'xtick',xdata,'xticklabels',xticklabels); %xtickangle(30);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'AOn','AOff'},{[0.001 0.0051]});
+ylabel('Cells (%)');
+% ht = axes_title(ff,{1:2},{'Responsiveness'},axes_title_shifts_line,axes_title_shifts_text,'no');
+% set(ht,'FontWeight','Bold');
+
+%%
+% Define the sizes
+num_animals = 5;          % Number of animals
+num_configs = 3;          % Configurations (C3, C4, C5)
+num_phases = 2;           % Phases (Air-on, Air-off)
+num_encoding_types = 2;   % Encoding types (Time, Distance)
+
+% Initialize a cell array to store zMI differences for each animal
+zMI_diff_animal = cell(num_animals, 1);
+
+% Loop through each animal and calculate zMI difference (time - distance) for each neuron
+for ani_idx = 1:num_animals
+    % Get the zMI 4D matrix for this animal
+    zMI_matrix_animal = zMI_animal_matrices{ani_idx};
+    
+    % Initialize a matrix to store the zMI differences (config x phase x neuron)
+    max_neurons_ani = size(zMI_matrix_animal, 4);  % Number of neurons for this animal
+    zMI_diff_matrix = NaN(num_configs, num_phases, max_neurons_ani);
+    
+    % Loop through configurations and phases to calculate zMI differences
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            % Extract the zMI values for time and distance encoding
+            zMI_time = zMI_matrix_animal(config_idx, phase_idx, 1, :);  % Time encoding
+            zMI_distance = zMI_matrix_animal(config_idx, phase_idx, 2, :);  % Distance encoding
+            
+            % Calculate the difference (time - distance) for each neuron
+            zMI_diff = squeeze(zMI_time - zMI_distance);  % Neuron-wise difference
+            
+            % Store the differences in the matrix
+            zMI_diff_matrix(config_idx, phase_idx, :) = zMI_diff;
+        end
+    end
+    
+    % Store the difference matrix for this animal
+    zMI_diff_animal{ani_idx} = zMI_diff_matrix;
+end
+
+% Now 'zMI_diff_animal' holds the zMI difference (time - distance) for each neuron in each animal.
+
+%% mean_zMI
+% Define the sizes
+num_animals = 5;          % Number of animals
+num_configs = 3;          % Configurations (C3, C4, C5)
+num_phases = 2;           % Phases (Air-on, Air-off)
+
+% Initialize a matrix to store the mean zMI differences for each animal
+mean_zMI_diff_matrix = NaN(num_animals, num_configs * num_phases);
+
+% Loop through each animal and calculate the mean zMI difference (time - distance) for each condition
+for ani_idx = 1:num_animals
+    % Get the zMI difference matrix for this animal
+    zMI_diff_matrix_animal = zMI_diff_animal{ani_idx};
+    
+    % Initialize a column index for the output matrix
+    col_idx = 1;
+    
+    % Loop through configurations and phases to calculate the mean zMI difference over neurons
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            % Extract the zMI difference values for the current configuration and phase
+            zMI_diff_values = squeeze(zMI_diff_matrix_animal(config_idx, phase_idx, :));
+            
+            % Remove NaN values and calculate the mean difference
+            zMI_diff_values = zMI_diff_values(~isnan(zMI_diff_values));
+            mean_zMI_diff = mean(zMI_diff_values);
+            
+            % Store the mean zMI difference in the output matrix
+            mean_zMI_diff_matrix(ani_idx, col_idx) = mean_zMI_diff;
+            
+            % Move to the next column
+            col_idx = col_idx + 1;
+        end
+    end
+end
+
+% Now 'mean_zMI_diff_matrix' holds the mean zMI difference (time - distance) for each animal across configurations and phases
+
+[within,dvn,xlabels,awithinD] = make_within_table({'Configurations','Phases'},[3,2]);
+dataT = make_between_table({mean_zMI_diff_matrix},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+ra.ranova
+print_for_manuscript(ra)
+
+%%
+% Combine zMI differences across all animals, configurations, and phases
+all_zMI_diffs = [];
+
+% Loop through each animal and collect zMI differences
+for ani_idx = 1:num_animals
+    zMI_diff_matrix_animal = zMI_diff_animal{ani_idx};  % Get the zMI difference matrix for this animal
+    zMI_diff_values = zMI_diff_matrix_animal(:);        % Flatten the matrix
+    all_zMI_diffs = [all_zMI_diffs; zMI_diff_values];   % Concatenate zMI differences
+end
+
+% Remove NaN values
+all_zMI_diffs = all_zMI_diffs(~isnan(all_zMI_diffs));
+
+% Plot the histogram of zMI differences
+figure(1000); clf;
+histogram(all_zMI_diffs, 30);  % 30 bins
+xlabel('zMI Difference (Time - Distance)');
+ylabel('Count of Neurons');
+title('Distribution of zMI Differences Across All Neurons');
+
+% Calculate mean and standard deviation of zMI differences
+mean_diff = mean(all_zMI_diffs);
+std_diff = std(all_zMI_diffs);
+
+% Set thresholds (1 SD in this example)
+threshold_pos = mean_diff + 0.25*std_diff;  % Positive threshold (time-dominance)
+threshold_neg = mean_diff - 0.25*std_diff;  % Negative threshold (distance-dominance)
+
+% Categorize neurons based on thresholds
+time_dominant_neurons = all_zMI_diffs > threshold_pos;
+distance_dominant_neurons = all_zMI_diffs < threshold_neg;
+neutral_neurons = (all_zMI_diffs >= threshold_neg) & (all_zMI_diffs <= threshold_pos);
+
+% Display the counts of each type
+num_time_dominant = sum(time_dominant_neurons);
+num_distance_dominant = sum(distance_dominant_neurons);
+num_neutral = sum(neutral_neurons);
+
+fprintf('Time-Dominant Neurons: %d\n', num_time_dominant);
+fprintf('Distance-Dominant Neurons: %d\n', num_distance_dominant);
+fprintf('Neutral Neurons: %d\n', num_neutral);
+%%
+% Initialize matrices to store the proportions
+num_configs = 3;  % C3, C4, C5
+num_phases = 2;   % Air-on, Air-off
+time_dominant_proportions = zeros(num_animals, num_configs * num_phases);
+distance_dominant_proportions = zeros(num_animals, num_configs * num_phases);
+neutral_proportions = zeros(num_animals, num_configs * num_phases);
+
+% Loop through each animal, configuration, and phase
+for ani_idx = 1:num_animals
+    col_idx = 1;  % Column index to fill in proportions
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            % Get the zMI differences for this animal, configuration, and phase
+            zMI_diff_values = zMI_diff_animal{ani_idx}(config_idx, phase_idx, :);
+            zMI_diff_values = zMI_diff_values(:);  % Flatten the matrix
+            
+            % Apply thresholds to categorize neurons
+            time_dominant_neurons = zMI_diff_values > threshold_pos;
+            distance_dominant_neurons = zMI_diff_values < threshold_neg;
+            neutral_neurons = (zMI_diff_values >= threshold_neg) & (zMI_diff_values <= threshold_pos);
+            
+            % Calculate the proportions of each category
+            total_neurons = numel(zMI_diff_values(~isnan(zMI_diff_values)));  % Exclude NaNs
+            time_dominant_proportions(ani_idx, col_idx) = sum(time_dominant_neurons) / total_neurons;
+            distance_dominant_proportions(ani_idx, col_idx) = sum(distance_dominant_neurons) / total_neurons;
+            neutral_proportions(ani_idx, col_idx) = sum(neutral_neurons) / total_neurons;
+            
+            % Move to the next column
+            col_idx = col_idx + 1;
+        end
+    end
+end
+
+% Now you have the proportion matrices for each animal, configuration, and phase.
+%%
+% Initialize the combined matrix for ANOVA
+combined_matrix = zeros(num_animals, num_configs * num_phases * 3);  % 3 neuron types: time, distance, neutral
+
+% Loop through each animal
+for ani_idx = 1:num_animals
+    col_idx = 1;  % Initialize column index
+    
+    % Loop through configurations and phases
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            % Get the zMI differences for this animal, configuration, and phase
+            zMI_diff_values = zMI_diff_animal{ani_idx}(config_idx, phase_idx, :);
+            zMI_diff_values = zMI_diff_values(:);  % Flatten the matrix
+            
+            % Apply thresholds to categorize neurons
+            time_dominant_neurons = zMI_diff_values > threshold_pos;
+            distance_dominant_neurons = zMI_diff_values < threshold_neg;
+            neutral_neurons = (zMI_diff_values >= threshold_neg) & (zMI_diff_values <= threshold_pos);
+            
+            % Calculate the proportions of each category
+            total_neurons = numel(zMI_diff_values(~isnan(zMI_diff_values)));  % Exclude NaNs
+            time_prop = sum(time_dominant_neurons) / total_neurons;
+            distance_prop = sum(distance_dominant_neurons) / total_neurons;
+            neutral_prop = sum(neutral_neurons) / total_neurons;
+            
+            % Store the proportions in the combined matrix
+            combined_matrix(ani_idx, col_idx) = time_prop;         % Time-dominant neurons
+            combined_matrix(ani_idx, col_idx + 1) = distance_prop; % Distance-dominant neurons
+            combined_matrix(ani_idx, col_idx + 2) = neutral_prop;  % Neutral neurons
+            
+            % Move to the next set of columns
+            col_idx = col_idx + 3;
+        end
+    end
+end
+
+% Now the combined_matrix holds the proportions of neuron types for each animal, configuration, and phase.
+[within,dvn,xlabels,awithinD] = make_within_table({'Configurations','Phases','NeuronTypes'},[3,2,3]);
+dataT = make_between_table({combined_matrix},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+ra.ranova
+print_for_manuscript(ra)
+
+% Assuming 'combined_matrix' holds the proportions (time, distance, neutral) for each configuration and phase
+% where rows represent animals and columns represent combinations of configurations, phases, and neuron types.
+
+% Define the number of configurations and phases
+num_configs = 3; % C3, C4, C5
+num_phases = 2;  % air-on and air-off
+neuron_types = {'Time-Dominant', 'Distance-Dominant', 'Neutral'};
+phases = {'Air-On', 'Air-Off'};
+configs = {'C3', 'C4', 'C5'};
+
+% Initialize figure
+figure(1000); clf;
+hold on;
+
+% Plot the means for each neuron type across configurations and phases
+for config_idx = 1:num_configs
+    for phase_idx = 1:num_phases
+        % Calculate the means and SEM for each neuron type across animals
+        time_dominant_mean = mean(combined_matrix(:, (config_idx-1)*6 + (phase_idx-1)*3 + 1));
+        distance_dominant_mean = mean(combined_matrix(:, (config_idx-1)*6 + (phase_idx-1)*3 + 2));
+        neutral_mean = mean(combined_matrix(:, (config_idx-1)*6 + (phase_idx-1)*3 + 3));
+        
+        time_dominant_sem = std(combined_matrix(:, (config_idx-1)*6 + (phase_idx-1)*3 + 1)) / sqrt(num_animals);
+        distance_dominant_sem = std(combined_matrix(:, (config_idx-1)*6 + (phase_idx-1)*3 + 2)) / sqrt(num_animals);
+        neutral_sem = std(combined_matrix(:, (config_idx-1)*6 + (phase_idx-1)*3 + 3)) / sqrt(num_animals);
+
+        % Create x-axis position for each set of bars
+        x = (config_idx-1)*4 + (phase_idx-1)*1.5;
+
+        % Plot bars with error bars for each neuron type
+        bar(x, time_dominant_mean, 0.4, 'FaceColor', [0.3 0.7 0.9]);
+        errorbar(x, time_dominant_mean, time_dominant_sem, 'k', 'LineWidth', 1.5);
+        
+        bar(x + 0.5, distance_dominant_mean, 0.4, 'FaceColor', [0.9 0.7 0.3]);
+        errorbar(x + 0.5, distance_dominant_mean, distance_dominant_sem, 'k', 'LineWidth', 1.5);
+        
+        bar(x + 1, neutral_mean, 0.4, 'FaceColor', [0.5 0.5 0.5]);
+        errorbar(x + 1, neutral_mean, neutral_sem, 'k', 'LineWidth', 1.5);
+    end
+end
+
+% Customize plot
+xlabel('Configurations and Phases');
+ylabel('Proportion of Neurons');
+title('Proportion of Time-Dominant, Distance-Dominant, and Neutral Neurons');
+legend(neuron_types);
+set(gca, 'XTick', [1.5 5.5 9.5], 'XTickLabel', configs);
+hold off;
+%%
+% Set the fidelity threshold (e.g., 50%)
+% Set the fidelity threshold
+fidelity_threshold = 0.5;  % Example threshold, adjust as needed
+
+% Extract response fidelity (props_C.N_Resp_Trials) and zMI values (props_C.zMI)
+fidelity_values = props_C.N_Resp_Trials;  % Response fidelity values for both time and distance
+zMI_values = props_C.zMI;  
+
+% Initialize filtered zMI matrices (after applying fidelity threshold)
+filtered_zMI_time = cell(size(zMI_values, 1), 6);  % For time encoding, 6 columns
+filtered_zMI_dist = cell(size(zMI_values, 1), 6);  % For distance encoding, 6 columns
+
+% Loop over animals, configurations, and phases to filter based on fidelity
+for ani_idx = 1:num_animals
+    for config_idx = 1:num_configs
+        for phase_idx = 1:num_phases
+            % Time encoding fidelity and zMI
+            time_fidelity = fidelity_values{ani_idx, (config_idx - 1) * 2 + phase_idx};  % Time fidelity
+            time_zMI = zMI_values{ani_idx, (config_idx - 1) * 2 + phase_idx};            % Time zMI
+
+            % Filter neurons based on fidelity threshold for time encoding
+            high_fid_time = time_fidelity >= fidelity_threshold;
+            filtered_zMI_time{ani_idx, (config_idx - 1) * 2 + phase_idx} = time_zMI(high_fid_time & ~isnan(time_zMI));
+
+            % Distance encoding fidelity and zMI
+            dist_fidelity = fidelity_values{ani_idx, 6 + (config_idx - 1) * 2 + phase_idx};  % Distance fidelity
+            dist_zMI = zMI_values{ani_idx, 6 + (config_idx - 1) * 2 + phase_idx};            % Distance zMI
+
+            % Filter neurons based on fidelity threshold for distance encoding
+            high_fid_dist = dist_fidelity >= fidelity_threshold;
+            filtered_zMI_dist{ani_idx, (config_idx - 1) * 2 + phase_idx} = dist_zMI(high_fid_dist & ~isnan(dist_zMI));
+        end
+    end
+end
+
+% After filtering, calculate the mean zMI values for high-fidelity neurons only
+mean_filtered_zMI_time = cellfun(@(x) nanmean(x(:)), filtered_zMI_time);  % 6 columns for time encoding
+mean_filtered_zMI_dist = cellfun(@(x) nanmean(x(:)), filtered_zMI_dist);  % 6 columns for distance encoding
+
+% Now 'mean_filtered_zMI_time' and 'mean_filtered_zMI_dist' contain the mean zMI values
+% for neurons that passed the fidelity threshold. These can be used for further analysis.
+[within,dvn,xlabels,awithinD] = make_within_table({'Configurations','Phases'},[3,2]);
+dataT = make_between_table({mean_zMI_diff_matrix},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+ra.ranova
+print_for_manuscript(ra)

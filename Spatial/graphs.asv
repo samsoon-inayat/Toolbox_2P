@@ -579,7 +579,7 @@ save_pdf(ff.hf,mData.pdf_folder,'firing_rate.pdf',600);
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
 tcolors = {'b','m'};
 % figure(300);clf; ha = gca
-ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.25],'widthHeightAdjustment',[-650 -350]);
+ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.25],'widthHeightAdjustment',[-550 -350]);
 MY = 0.071; ysp = 0.02; mY = -0.05; ystf = 0.02; ysigf = 0.00715;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'RM','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);

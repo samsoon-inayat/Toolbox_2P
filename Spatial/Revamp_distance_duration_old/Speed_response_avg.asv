@@ -1,0 +1,84 @@
+an = 1;
+% Assuming FR_vs_speed is of size [num_neurons x num_speed_bins]
+FR_vs_speed = ei{an}.plane{1}.speed_response.FR_vs_speed;
+FR_vs_speedF = ei{an}.plane{1}.speed_response.fits.gauss.fitted;
+speed_bins = ei{an}.plane{1}.speed_response.bin_centers;
+% FR_vs_speed = ei{1}.plane{1}.accel_responseZ.FR_vs_accel;
+% speed_bins = ei{1}.plane{1}.accel_responseZ.bin_centers;
+
+nan_rows = all(isnan(FR_vs_speed), 2); % Logical index of rows with all NaNs
+disp(['Number of neurons with all NaNs: ', num2str(sum(nan_rows))]);
+num_neurons = size(FR_vs_speed,1)
+
+% Compute the max firing rate per neuron, ignoring NaNs
+max_FR = nanmax(FR_vs_speed, [], 2);
+
+% Replace zeros with a small value to avoid division by zero
+max_FR(max_FR == 0) = eps; % Alternatively, use eps (smallest positive number)
+
+% Normalize firing rates
+FR_data = FR_vs_speed ./ max_FR;
+% FR_data = FR_vs_speed;
+
+
+
+figure(100);clf;
+hold on;
+speed_MI = [];
+% Plot all neurons' firing rates as thin lines
+for i = 1:num_neurons
+    plot(speed_bins, FR_data(i, :), 'Color', [0.5 0.5 0.5 0.3]); % Gray lines with transparency
+    plot(speed_bins, FR_vs_speedF(i, :), 'Color', 'b'); % Gray lines with transparency
+    [output FRbin] = info_metrics_S_onlyMI(FR_vs_speed(i,:), [], 4, [], 0);
+    speed_MI(i) = output.ShannonMI;
+end
+
+% Load indices of neurons with good Gaussian fits
+good_fit_indices = 1:size(FR_data,1);%find(Gaussian_fit_flag); % Replace with actual flag variable
+
+% Compute average and SEM for Gaussian-tuned neurons
+avg_FR = mean(FR_data(good_fit_indices, :), 1);
+sem_FR = std(FR_data(good_fit_indices, :), [], 1) / sqrt(length(good_fit_indices));
+
+% % Plot the average tuning curve for Gaussian-tuned neurons
+% plot(speed_bins, avg_FR, 'k', 'LineWidth', 2, 'DisplayName', 'Average (Gaussian-Tuned)');
+% fill([speed_bins, fliplr(speed_bins)], ...
+%      [avg_FR - sem_FR, fliplr(avg_FR + sem_FR)], ...
+%      'k', 'FaceAlpha', 0.2, 'EdgeColor', 'none');
+% ylim([0 2.5])
+% Add labels and formatting
+xlabel('Speed (cm/s)');
+ylabel('Firing Rate (Hz)');
+title('Neuronal Speed Tuning Curves');
+% legend show;
+hold off;
+
+%
+
+[ptco,CRc,cellNums] = findPopulationVectorPlot(FR_data,[]);
+
+figure(101);clf;
+subplot(2,1,1);imagesc(ptco);colorbar; xlabel('Speed (cm/s)'); ylabel('Cell Number');set(gca,'Ydir','normal');
+subplot(2,1,2);imagesc(CRc,[0 1]);colorbar;set(gca,'Ydir','normal'); xlabel('Speed (cm/s)'); ylabel('Speed (cm/s)')
+
+%%
+% find the correlation between firing rate of each neuron and the speed.
+for an = 1:5
+    firing_rate = udata{an}.firing_rate;
+    speed = udata{an}.speed;
+    sp_d{an}.corr_values = (corr(firing_rate', speed', 'Rows', 'complete'))';
+    sp_d{an}.MI = ei{an}.plane{1}.speed_response.MI;
+    sp_d{an}.speed.bincenters = ei{an}.plane{1}.speed_response.bin_centers;
+    sp_d{an}.speed.FR = ei{an}.plane{1}.speed_response.FR_vs_speed;
+    sp_d{an}.speed.FRf = ei{an}.plane{1}.speed_response.fits.gauss.fitted;
+    bcs = sp_d{an}.speed.bincenters;
+    [sp_d{an}.rs,sp_d{an}.MFR,sp_d{an}.centers,sp_d{an}.PWs] = get_gauss_fit_parameters(ei{an}.plane{1}.speed_response.fits.gauss.coeffsrs,bcs(2)-bcs(1));
+end
+for an = 1:5
+    rs = sp_d{an}.rs; MFR = sp_d{an}.MFR; centers = sp_d{an}.centers; PWs = sp_d{an}.PWs;
+    MI = sp_d{an}.MI; corrV = sp_d{an}.corr_values;
+    inds = centers < 1 | centers > 39 | PWs < 1 | PWs > 40 | rs < 0.3 | isnan(MI);
+    inds = ~inds;
+    aMI(an,1) = mean(sp_d{an}.MI(inds));
+    aMI(an,2) = mean(sp_d{an}.MI(~inds));
+end

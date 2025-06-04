@@ -46,69 +46,6 @@ for an = 1:5
     end
     alensig = [alensig;len_sig];
 end
-%% plot the firing rate after z-scoring
-clear mean_rest mean_motion
-for an = 1:5
-    this_data = udata{an};
-    ts = this_data.ts;
-    FR = this_data.firing_rate;
-    meanFR = mean(FR,2,'omitnan'); meanFR = repmat(meanFR,[1, size(FR,2)]);
-    stdFR = std(FR,[],2,'omitnan'); stdFR = repmat(stdFR,[1, size(FR,2)]);
-    zFR = (FR - meanFR)./stdFR;
-    frames = this_data.frf;
-    bnb = this_data.bnb;
-    speed = this_data.speed;
-    speed(bnb==1) = nan;
-    speedFR = speed(frames);
-    restperiod = speedFR == 0;
-    motionperiod = speedFR > 0;
-    restperiodFR = mean(zFR(:,restperiod),2,'omitnan');
-    motionperiodFR = mean(zFR(:,motionperiod),2,'omitnan');
-    mean_rest(an,1) = nanmean(restperiodFR);
-    mean_motion(an,1) = nanmean(motionperiodFR);
-    distD{an,1} = restperiodFR;
-    distD{an,2} = motionperiodFR;
-    figure(100);clf;plot(ts,speed)
-end
-
-avar = [mean_rest mean_motion];
-fac_names = {'RM'}; fac_levels = [2];
-[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-% visualizing the results in the previous section
-tcolors = repmat(mData.dcolors(8:10),1,3); MY = 0.1; ysp = 0.01; mY = -0.05; ystf = 0.01; ysigf = 0.01;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'RM','hsd',0.05},[1 1.75],{'b','m'},[mY MY ysp ystf ysigf],mData);
-%% plot firing rate vs configurations and air phases
-avar = [];
-for an = 1:5
-    this_data = udata{an};
-    ts = this_data.ts;
-    FR = this_data.firing_rate;
-    meanFR = mean(FR,2,'omitnan'); meanFR = repmat(meanFR,[1, size(FR,2)]);
-    stdFR = std(FR,[],2,'omitnan'); stdFR = repmat(stdFR,[1, size(FR,2)]);
-    zFR = (FR - meanFR)./stdFR;
-    frames = this_data.frf; trials = this_data.air_trials_on;
-    C = this_data.C3; framesC3 = frames .* C .* (trials > 0); czFR3 = zFR(:,this_data.frf_n(framesC3 == 1)); mczFR3 = mean(mean(czFR3,2,'omitnan'));
-    C = this_data.C4; framesC4 = frames .* C .* (trials > 0); czFR4 = zFR(:,this_data.frf_n(framesC4 == 1)); mczFR4 = mean(mean(czFR4,2,'omitnan'));
-    C = this_data.C5; framesC5 = frames .* C .* (trials > 0); czFR5 = zFR(:,this_data.frf_n(framesC5 == 1)); mczFR5 = mean(mean(czFR5,2,'omitnan'));
-    
-    frames = this_data.frf; trials = this_data.air_trials_off;
-    C = this_data.C3; framesC3 = frames .* C .* (trials > 0); czFR3O = zFR(:,this_data.frf_n(framesC3 == 1)); mczFR3O = mean(mean(czFR3O,2,'omitnan'));
-    C = this_data.C4; framesC4 = frames .* C .* (trials > 0); czFR4O = zFR(:,this_data.frf_n(framesC4 == 1)); mczFR4O = mean(mean(czFR4O,2,'omitnan'));
-    C = this_data.C5; framesC5 = frames .* C .* (trials > 0); czFR5O = zFR(:,this_data.frf_n(framesC5 == 1)); mczFR5O = mean(mean(czFR5O,2,'omitnan'));
-    avar = [avar;mczFR3 mczFR4 mczFR5 mczFR3O mczFR4O mczFR5O];
-    % figure(100);clf;plot(ts,framesC3);
-end
-fac_names = {'AP','CN'}; fac_levels = [2,3];
-[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-print_for_manuscript(ra)
-% visualizing the results in the previous section
-tcolors = repmat(mData.dcolors(8:10),1,3); MY = 0.1; ysp = 0.01; mY = -0.05; ystf = 0.01; ysigf = 0.01;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'AP','hsd',0.05},[1 1.75],{'b','m'},[mY MY ysp ystf ysigf],mData);
 %% Get the metrics and run stats (Time-Speed and Distance-Speed
 variable_combs = {'time_speed','dist_speed'};
 met = 'MI'; trialsOrConcat = 'concatenate'; %'trials' or "concatenate"
@@ -417,21 +354,21 @@ metric = 'PC';
 RV = 'perc';
 % RV = 'rfid';
 % RV = 'mval';
-% RV = 'MI';
-% RV = 'PC';
+
+
 avar = [];
 for an = 1:5
     anvar = [];
     for cn = 1:3
         for ap = 1:2
-            AC = outT.active_cells_trials{an,cn,ap}; mAC1 = outT.active_cells{an,cn,ap}; RF = sum(AC,2); mAC = RF>5;
+            AC = outT.active_cells_trials{an,cn,ap}; mAC = outT.active_cells{an,cn,ap}; RF = sum(AC,2);
             for bn = 1:2
                 if bn == 1
                     out = outT; MV = met_valsT; 
                 else
                     out = outD; MV = met_valsD; 
                 end
-                selcells = mAC1;% & (RF>0);
+                selcells = mAC;% & (RF>0);
                 if strcmp(metric,'PC')
                     idx = 3; pvals = [MV{1}{an,cn,ap}.PC(:,idx) MV{2}{an,cn,ap}.PC(:,idx) MV{3}{an,cn,ap}.PC(:,idx)];
                     idx = 2; zvals = [MV{1}{an,cn,ap}.PC(:,idx) MV{2}{an,cn,ap}.PC(:,idx) MV{3}{an,cn,ap}.PC(:,idx)];
@@ -440,9 +377,6 @@ for an = 1:5
                     idx = 2; zvals = [MV{1}{an,cn,ap}.MI(:,idx) MV{2}{an,cn,ap}.MI(:,idx) MV{3}{an,cn,ap}.MI(:,idx)];
                 end
                 % criteria for finding the types of cells
-                % NOTE: tCells are the ones that are not dCells or sCells
-                % i.e. for tCells only pvals < 0.05 for the FR_time
-                % measurement and not for FR_dist or FR_speed measurement
                 tCells = ((pvals < 0.05) * [4; 2; 1]) == 4; dCells = ((pvals < 0.05) * [4; 2; 1]) == 2; sCells = ((pvals < 0.05) * [4; 2; 1]) == 1;
                 time_cells{an,cn,ap,bn} = tCells; distance_cells{an,cn,ap,bn} = dCells; speed_cells{an,cn,ap,bn} = sCells;
                 if strcmp(RV,'perc')
@@ -452,9 +386,6 @@ for an = 1:5
                     anvar = [anvar nanmean(zvals(tCells&selcells,1)) nanmean(zvals(dCells&selcells,2)) nanmean(zvals(sCells&selcells,3))];
                 end
                 if strcmp(RV,'rfid')
-                    anvar = [anvar mean(RF(tCells&selcells,1)) mean(RF(dCells&selcells,1)) mean(RF(sCells&selcells,1))];
-                end
-                if strcmp(RV,'MI')
                     anvar = [anvar mean(RF(tCells&selcells,1)) mean(RF(dCells&selcells,1)) mean(RF(sCells&selcells,1))];
                 end
                 if sum(isnan(anvar)) > 0
@@ -483,16 +414,6 @@ print_for_manuscript(ra)
 % separation by AP - air phase
 clc
 ra_AP = RMA_subset(ra,'AP');
-
-ra_AP1_BT = RMA_subset(ra_AP{1},'BT');
-ra_AP2_BT = RMA_subset(ra_AP{2},'BT');
-
-%% visualizing the results in the previous section
-tcolors = repmat(mData.dcolors(8:10),1,3); MY = 30; ysp = 1; mY = 0; ystf = 2; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra_AP2_BT{1},{'TT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
-%% visualizing the results in the previous section
-tcolors = repmat(mData.dcolors(8:10),1,3); MY = 20; ysp = 1; mY = 0; ystf = 2; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra_BT{1},{'TT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 %% visualizing the results in the previous section
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra_AP{2},{'BT:TT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 %% separation AP by MT - air phase by metric type
