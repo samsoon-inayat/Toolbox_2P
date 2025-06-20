@@ -196,7 +196,7 @@ toc
 
 %% cell_pose total cells
 
-files = dir(sprintf('%s/*.mat',mData.pd_folder));
+files = dir(sprintf('%s/mi*.mat',mData.pd_folder));
 for ii = 1:length(files)
     tname = files(ii).name;
     anN = str2num(tname(9)); plN = str2num(tname(11));
