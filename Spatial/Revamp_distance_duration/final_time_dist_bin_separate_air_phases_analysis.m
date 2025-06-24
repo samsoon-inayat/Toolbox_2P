@@ -111,7 +111,7 @@ tcolors = repmat(mData.dcolors(8:10),1,3); MY = 0.1; ysp = 0.01; mY = -0.05; yst
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'AP','hsd',0.05},[1 1.75],{'b','m'},[mY MY ysp ystf ysigf],mData);
 %% Get the metrics and run stats (Time-Speed and Distance-Speed
 variable_combs = {'time_speed','dist_speed'};
-met = 'PC'; trialsOrConcat = 'concatenate'; %'trials' or "concatenate"
+met = 'MI'; trialsOrConcat = 'concatenate'; %'trials' or "concatenate"
 out = outD; avar = [];
 for vn = 1:length(variable_combs)
     avar = [avar get_metrics(out,variable_combs{vn},met,trialsOrConcat)];
