@@ -12,7 +12,34 @@ si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; si_cn_ap = [[1 1 2 2 3 3];
 props = get_props_Rs(o.Rs(:,si),30);
 propsT = get_props_new(outT,met_valsT,props,si_cn_ap);
 propsD = get_props_new(outD,met_valsD,props,si_cn_ap);
-[SinT,MixT,AllT] = get_the_pops(propsT,propsD);
+% [SinT,MixT,AllT] = get_the_pops(propsT,propsD);
+%% untuned or non-responsive cells
+pop_names = {'R','NR'};
+all_cellsnew = []; all_cellsnew_vals = [];
+for ii = 1:length(pop_names)
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsD.newPC.cells_%s propsT.newMI.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii},pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    % cmdTxt = sprintf('all_cellsnew_vals = [all_cellsnew propsT.newPC.cells_%s_zvals propsD.newPC.cells_%s propsT.newMI.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii},pop_names{ii},pop_names{ii}); eval(cmdTxt);
+end
+
+avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
+fac_names = {'PoT','MT','BT','CN','AP'}; fac_levels = [2,2,2,3,2];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+clc
+print_for_manuscript(ra)
+%%
+clc
+raR = RMA_bonferroni(ra,'BT');
+
+%%
+clc
+raRR1 = RMA_bonferroni(raR{1},'MT');
+%%
+clc
+raRR2 = RMA_bonferroni(raR{2},'MT');
+
+
 %%
 % {'NR','speed','dist','dist_speed','time','time_speed','time_dist','time_dist_speed','singularly_tuned','mixed_tuned','all_tuned'};
 pop_names = {'time','dist','speed'};
@@ -31,13 +58,13 @@ clc
 print_for_manuscript(ra)
 %%
 clc
-raR = RMA_subset(ra,'MT');
+raR = RMA_bonferroni(ra,'BT');
 %%
 clc
-raRR = RMA_subset(raR{1},'BT');
+raRR1 = RMA_bonferroni(raR{1},'MT');
 %%
 clc
-raRR = RMA_subset(raR{2},'BT');
+raRR2 = RMA_bonferroni(raR{2},'AP');
 
 %%
 avar = cell_list_op_percent(props.good_FR,props.good_FR);

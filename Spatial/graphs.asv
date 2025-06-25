@@ -137,111 +137,27 @@ ylabel('MI')
 % ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
 
-%% Figure 2B Air-On PC
+%% Figure 2B,C,D,E Time-Binned PC
 % visualization
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
 tcolors = repmat(mData.colors(1:2),1,2);
 % figure(300);clf; ha = gca
 ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-250 -550]);
-MY = 0.71; ysp = 0.155; mY = 0; ystf = 0.073; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{1},{'BT:PT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+MY = 0.81; ysp = 0.1955; mY = -0.7; ystf = 0.213; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+MY = 1; mY = 0;
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP:PT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
 set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
     'XTick',xdata,'XTickLabel',{'Ti-Sp','Di-Sp'});xtickangle(20);
 shift_ticklabels(gca,-3,0)
-ylabel('PC')
-axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
-ht = axes_title(ff,{1},{'Air-On (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
-set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Time-Bin','Dist-Bin'},{[0 0.00531]});
+ylabel('MI')
+axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.1 0.6155 0.1 0];
+ht = axes_title(ff,{1},{'Distance-Binned Data'},axes_title_shifts_line,axes_title_shifts_text,'no');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air-On','Air-Off'},{[0 0.00531]});
 % set_sub_graph_text(ff,1,{'Pooled'},[0.05 -0.375 0.3 0],[0.25 -0.041 0 0]);
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Pooled'},{[0 -0.075]});
 % ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('Pooled'),[0.051 0.0 0 0]); 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
-%% Figure 2D Air-Off PC
-% visualization
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.colors(1:2),1,2);
-ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0.071],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-170 -550]);
-axes(ff.h_axes(1,1))
-MY = 0.1; ysp = 0.05; mY = -0.55; ystf = 0.23; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{2},{'PT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'Ti-Sp','Di-Sp'});xtickangle(30);
-ylabel('PC')
-shift_ticklabels(gca,-3,0);
-axes_title_shifts_line = [-0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
-ht = axes_title(ff,{1},{'Air-Off (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
-
-tcolors = repmat(mData.colors(3:4),1,2);
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raR{2},{'BT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'Time-Bin','Dist-Bin'},'YTickLabel',[]);xtickangle(30);
-% ylabel('PC')
-
-% axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.1 0.45 0 0];ht = axes_title(ff,{1:2},{'Air-Off (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'yes');
-save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
-
-
-%% Figure 2D Air-ON MI
-% visualization
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.colors(1:2),1,2);
-ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0.071],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-170 -550]);
-axes(ff.h_axes(1,1))
-MY = 1; ysp = 0.01; mY = 0; ystf = 0.13; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{1},{'PT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'Ti-Sp','Di-Sp'});xtickangle(30);
-ylabel('MI')
-shift_ticklabels(gca,-3,0);
-axes_title_shifts_line = [-0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
-ht = axes_title(ff,{1},{'Air-On (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
-
-
-tcolors = repmat(mData.colors(3:4),1,2);
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raR{1},{'BT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'Time-Bin','Dist-Bin'},'YTickLabel',[]);xtickangle(30);
-% ylabel('PC')
-
-% axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.1 0.45 0 0];ht = axes_title(ff,{1:2},{'Air-Off (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'yes');
-save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
-
-winopen(fullfile(mData.pdf_folder,'bar_graphs.pdf'))
-
-%% Figure 2D Air-OFF MI
-% visualization
-mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
-tcolors = repmat(mData.colors(1:2),1,2);
-ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0.071],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-170 -550]);
-axes(ff.h_axes(1,1))
-MY = 1; ysp = 0.01; mY = 0; ystf = 0.13; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{2},{'PT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'Ti-Sp','Di-Sp'});xtickangle(30);
-ylabel('MI')
-shift_ticklabels(gca,-3,0);
-axes_title_shifts_line = [-0.1 0 0.5 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
-ht = axes_title(ff,{1},{'Air-Off (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'no');
-
-
-tcolors = repmat(mData.colors(3:4),1,2);
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raR{2},{'BT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
-format_axes(gca);
-set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
-    'XTick',xdata,'XTickLabel',{'Time-Bin','Dist-Bin'},'YTickLabel',[]);xtickangle(30);
-% ylabel('PC')
-
-% axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.1 0.45 0 0];ht = axes_title(ff,{1:2},{'Air-Off (pooled)'},axes_title_shifts_line,axes_title_shifts_text,'yes');
-save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
-
-winopen(fullfile(mData.pdf_folder,'bar_graphs.pdf'))
-
 %% Figure 3 Active Cells
 % visualization
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
@@ -579,7 +495,7 @@ save_pdf(ff.hf,mData.pdf_folder,'firing_rate.pdf',600);
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
 tcolors = {'b','m'};
 % figure(300);clf; ha = gca
-ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.25],'widthHeightAdjustment',[-550 -350]);
+ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.25],'widthHeightAdjustment',[-650 -350]);
 MY = 0.071; ysp = 0.02; mY = -0.05; ystf = 0.02; ysigf = 0.00715;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'RM','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
@@ -591,4 +507,76 @@ axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.1 0.6155 0 0];
 % set_sub_graph_text(ff,1,{'Pooled'},[0.05 -0.375 0.3 0],[0.25 -0.041 0 0]);
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Pooled'},{[0 -0.075]});
 % ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('Pooled'),[0.051 0.0 0 0]); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%% Figure 5A ... comparison of good FR air-on vs air-off phase
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors(1),1,2);
+% figure(300);clf; ha = gca;
+ff = makeFigureRowsCols(2020,[10 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.3 0.335],'widthHeightAdjustment',[-550 -380]);
+MY = 80; ysp = 10; mY = 0; ystf = 5; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+make_bars_hollow(hbs(2))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Air-On','Air-Off'});xtickangle(20);
+ylabel({'Cells (%)'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%% Figure 5 D Time-Binned PC REsponsive vs Non-Responsive
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.colors(7:8),1,2);
+% figure(300);clf; ha = gca
+ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.335],'widthHeightAdjustment',[-650 -380]);
+MY = 65; ysp = 10; mY = 0; ystf = 10; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raRR1{1},{'PoT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Tuned','Untuned'});xtickangle(20);
+shift_ticklabels(gca,-3,0)
+ylabel('Cells (%)')
+axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.051 0.5155 0.3 0];
+% ht = axes_title(ff,{1},{'PC-Based Time-Binned Data'},axes_title_shifts_line,axes_title_shifts_text,'no');
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0.0131]});
+% set_sub_graph_text(ff,1,{'Pooled'},[0.05 -0.375 0.3 0],[0.25 -0.041 0 0]);
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'},{[0 -0.095]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('Pooled'),[0.051 0.0 0 0]); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%% Figure 5G ... comparison of time-binned PC response vs non-responsive AP main effect
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.colors(1:3),1,2);
+% figure(300);clf; ha = gca;
+ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.335],'widthHeightAdjustment',[-200 -380]);
+MY = 90; ysp = 10; mY = 0; ystf = 10; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raRR2{1},{'PoT:CN','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+% make_bars_hollow(hbs(2))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'C3','C4','C5'});xtickangle(20);
+ylabel({'Cells (%)'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Tuned','Untuned'},{[0 0]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%% Figure 5H ... comparison of time-binned PC response vs non-responsive AP main effect
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors(1),1,6);
+% figure(300);clf; ha = gca;
+ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.335],'widthHeightAdjustment',[-250 -380]);
+MY = 70; ysp = 10; mY = 0; ystf = 10; ysigf = 0.05;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raRR1{1},{'PoT:AP','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+make_bars_hollow(hbs(2:2:end))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'AOn','AOff'});xtickangle(20);
+ylabel({'Cells (%)'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Singular','Mixed','All-Tuned'},{[0 0]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
