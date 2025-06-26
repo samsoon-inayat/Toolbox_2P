@@ -221,7 +221,7 @@
     conf = repmat([3 4 5],1,2);
     o = o; G = 'C'; %all_cells_1 = all_cells(:,1:2:end); all_cells_1 = cell_list_op(all_cells_1,props.good_FR,'and');
     % all_cells_1 = cell_list_op(propsD.newMI.cells_R,props.good_FR,'and'); 
-    an = 4; all_cells_1 = propsD.newMI.cells_dist; %all_cells_1 = props.all;
+    an = 4; all_cells_1 = propsT.newMI.cells_speed; %all_cells_1 = props.all;
     good_FR = all_cells_1(:,[1 3 5 2 4 6]);
     cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
     for ii = 1:size(ff.h_axes,2)
@@ -264,7 +264,11 @@
         if ii == 1
             textstr = sprintf('C%d  %d/%d',conf(ii),floor(ylims(2)),NCells); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 0.051 0.05 0]);
         else
-            textstr = sprintf('C%d    %d',conf(ii),floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 0.051 0 0]);
+            if sum(tmRR,'all') == 0
+                textstr = sprintf('C%d    %d',conf(ii),0); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 0.051 0 0]);
+            else
+                textstr = sprintf('C%d    %d',conf(ii),floor(ylims(2))); set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 0.051 0 0]);
+            end
         end
 %         textstr = sprintf('C%d',conf(ii)); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.085 0 0]);
         format_axes(gca);

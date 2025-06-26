@@ -9,6 +9,11 @@ function [ptco,CRc,cellNums] = findPopulationVectorPlot(ptc,ccs,cellNums)
 
 if isempty(ccs)
     ccs = 1:size(ptc,1);
+    ptc = zeros(size(ptc));
+    CRc = corr(ptc);
+    ptco = ptc;
+    cellNums = 0;
+    return;
 end
 
 ptc = ptc(ccs,:);

@@ -30,7 +30,7 @@ clc
 print_for_manuscript(ra)
 %%
 clc
-raR = RMA_bonferroni(ra,'BT');
+raR = RMA_bonferroni(ra,'PoT');
 
 %%
 clc
@@ -42,7 +42,6 @@ raRR2 = RMA_bonferroni(raR{2},'MT');
 
 %%
 % {'NR','speed','dist','dist_speed','time','time_speed','time_dist','time_dist_speed','singularly_tuned','mixed_tuned','all_tuned'};
-pop_names = {'time','dist','speed'};
 pop_names = {'singularly_tuned','mixed_tuned','all_tuned'};
 all_cellsnew = [];
 for ii = 1:length(pop_names)
@@ -58,13 +57,18 @@ clc
 print_for_manuscript(ra)
 %%
 clc
-raR = RMA_bonferroni(ra,'BT');
+raR = RMA_bonferroni(ra,'PoT');
+% RMA_visualize(raR{1},{'MT:BT','hsd',0.05});
 %%
 clc
 raRR1 = RMA_bonferroni(raR{1},'MT');
 %%
 clc
-raRR2 = RMA_bonferroni(raR{2},'AP');
+raRR2 = RMA_bonferroni(raR{2},'MT');
+%%
+tcolors = repmat(mData.dcolors(1:10),1,3); MY = 100; ysp = 5; mY = 0; ystf = 5; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raR{1},{'MT:BT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+
 
 %%
 avar = cell_list_op_percent(props.good_FR,props.good_FR);
@@ -76,9 +80,32 @@ ra = RMA(dataT,within,{0.05,{''}});
 clc
 print_for_manuscript(ra)
 
+%%
+% {'NR','speed','dist','dist_speed','time','time_speed','time_dist','time_dist_speed','singularly_tuned','mixed_tuned','all_tuned'};
+pop_names = {'time','dist','speed'};
+all_cellsnew = [];
+for ii = 1:length(pop_names)
+    if ii == 1 || ii == 3
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsT.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    else
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsD.newPC.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    end
+end
+
+avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
+fac_names = {'PoT','MT','CN','AP'}; fac_levels = [length(pop_names),2,3,2];
+% fac_names = {'MT','CN','AP'}; fac_levels = [2,3,2];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+clc
+print_for_manuscript(ra)
+%%
+clc
+raR = RMA_bonferroni(ra,'AP');
 %% visualizing the results in the previous section
 tcolors = repmat(mData.dcolors(1:10),1,3); MY = 100; ysp = 1; mY = 0; ystf = 2; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raRR{1},{'AP:PT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raR,{'MT:AP','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 
 
 %% Plot rasters for one animal top-down concatenated time-distance-and speed cells
