@@ -1,0 +1,98 @@
+%% first find the variables time_cells, distance_cells, and speed_cells in the final_time_dist_bin...m file
+variable_combs = {'FR_time','FR_dist','FR_speed'};
+metric = 'MI';
+metric = 'PC';
+clear time_cells distance_cells speed_cells
+clear t_cells_T d_cells_T s_cells_T td_cells_T ds_cells_T ts_cells_T tds_cells_T ntds_cells_T
+clear t_cells_I d_cells_I s_cells_I td_cells_I ds_cells_I ts_cells_I tds_cells_I ntds_cells_I
+all_cells = {};
+si = [Ar_t_T Ar_i_T Ar_t_D Ar_i_D ArL_t_T ArL_i_T ArL_t_D ArL_i_D Ars_t_T Ars_i_T Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
+si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; si_cn_ap = [[1 1 2 2 3 3];[1 2 1 2 1 2]];
+% si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; 
+props = get_props_Rs(o.Rs(:,si),30);
+propsT = get_props_new(outT,met_valsT,props,si_cn_ap);
+propsD = get_props_new(outD,met_valsD,props,si_cn_ap);
+% [SinT,MixT,AllT] = get_the_pops(propsT,propsD);
+
+%%
+MVT = met_valsT; MVD = met_valsD;
+for an = 1:5
+    for cni = 1:size(si_cn_ap,2)
+        cn = si(1,ii); ap = si(2,ii);
+        idx = 3; pvals = [MV{1}{an,cn,ap}.PC(:,idx) MV{2}{an,cn,ap}.PC(:,idx) MV{3}{an,cn,ap}.PC(:,idx)];
+        idvPC{an,cni} = [propsT.newPC.cells_time{an,cni} propsD.newPC.cells_dist{an,cni} propsT.newPC.cells_speed{an,cni}];
+        idvMI{an,cni} = [propsT.newMI.cells_time{an,cni} propsD.newMI.cells_dist{an,cni} propsT.newMI.cells_speed{an,cni}];
+    end
+end
+
+%%
+% {'NR','speed','dist','dist_speed','time','time_speed','time_dist','time_dist_speed','singularly_tuned','mixed_tuned','all_tuned'};
+pop_names = {'time','dist','speed'};
+% pop_names = {'time','dist','speed','time_speed','time_dist','dist_speed'};
+all_cellsnew = [];  all_cellsnew_hm = []; txl_all = {}; cnti = 1;
+all_cellsnew_zvals = []; all_cellsnew_rs = []; MTs = {'PC','MI'};
+all_cellsnew_peakvalsT = []; all_cellsnew_peakvalsD = [];
+all_cellsnew_GWT = []; all_cellsnew_GWD = [];
+for ii = 1:length(pop_names)
+    if ii == 1 || ii == 3
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsT.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsT.newMI.cells_%s];',pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsT.newPC.cells_%s_zvals,ii) get_zvals(propsT.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    else
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsD.newPC.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsD.newMI.cells_%s];',pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsD.newPC.cells_%s_zvals,ii) get_zvals(propsD.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    end
+    si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; propsPL = get_props_Rs(o.Rs(:,si),30);
+    all_cellsnew_peakvalsT = [all_cellsnew_peakvalsT propsPL.peak_locations propsPL.peak_locations];
+    all_cellsnew_GWT = [all_cellsnew_GWT propsPL.PWs propsPL.PWs];
+    si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
+    all_cellsnew_peakvalsD = [all_cellsnew_peakvalsD propsPL.peak_locations propsPL.peak_locations];
+    all_cellsnew_GWD = [all_cellsnew_GWD propsPL.PWs propsPL.PWs];
+    for cn = 1:3
+        for ap = 1:2
+            for mti = 2
+                txl_all{cnti} = sprintf('C%d-A%d-%s-%s',cn+2,ap,MTs{mti},upper(pop_names{ii}(1)));
+                cnti = cnti + 1;
+            end
+        end
+    end
+end
+
+for ii = 1:length(pop_names)
+    if ii == 1 || ii == 3
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsD.newPC.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsD.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsD.newPC.cells_%s_zvals,ii) get_zvals(propsD.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    else
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsT.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsT.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsT.newPC.cells_%s_zvals,ii) get_zvals(propsT.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    end
+    si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; propsPL = get_props_Rs(o.Rs(:,si),30);
+    all_cellsnew_peakvalsT = [all_cellsnew_peakvalsT propsPL.peak_locations propsPL.peak_locations];
+    all_cellsnew_GWT = [all_cellsnew_GWT propsPL.PWs propsPL.PWs];
+    si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
+    all_cellsnew_peakvalsD = [all_cellsnew_peakvalsD propsPL.peak_locations propsPL.peak_locations];
+    all_cellsnew_GWD = [all_cellsnew_GWD propsPL.PWs propsPL.PWs];
+    for cn = 1:3
+        for ap = 1:2
+            for mti = 1
+                txl_all{cnti} = sprintf('C%d-A%d-%s-%s',cn+2,ap,MTs{mti},upper(pop_names{ii}(1)));
+                cnti = cnti + 1;
+            end
+        end
+    end
+end
+
+avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
+avar = exec_fun_on_cell_mat(all_cellsnew_zvals,'nanmean',all_cellsnew);
+% avar = exec_fun_on_cell_mat(all_cellsnew_GWT,'nanmean',all_cellsnew);
+% avar = exec_fun_on_cell_mat(all_cellsnew_peakvalsT,'nanmean',all_cellsnew);
+fac_names = {'FM','PoT','MT','CN','AP'}; fac_levels = [2,length(pop_names),2,3,2];
+% fac_names = {'MT','CN','AP'}; fac_levels = [2,3,2];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({avar},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+clc
+print_for_manuscript(ra)
