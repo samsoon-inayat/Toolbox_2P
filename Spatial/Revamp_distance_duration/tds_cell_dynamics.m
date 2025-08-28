@@ -23,228 +23,67 @@ for an = 1:5
         idx = 3; pvalsMI = [MVT{1}{an,cn,ap}.MI(:,idx) MVD{2}{an,cn,ap}.MI(:,idx) MVT{3}{an,cn,ap}.MI(:,idx)];
         idvPC{an,cni} = pvalsPC < 0.05;
         idvMI{an,cni} = pvalsMI < 0.05;
+        pvalsPC_a{an,cni} = pvalsPC;
+        pvalsMI_a{an,cni} = pvalsMI;
+        idx = 2; zvalsPC = [MVT{1}{an,cn,ap}.PC(:,idx) MVD{2}{an,cn,ap}.PC(:,idx) MVT{3}{an,cn,ap}.PC(:,idx)];
+        idx = 2; zvalsMI = [MVT{1}{an,cn,ap}.MI(:,idx) MVD{2}{an,cn,ap}.MI(:,idx) MVT{3}{an,cn,ap}.MI(:,idx)];
+        zvalsPC_a{an,cni} = zvalsPC;
+        zvalsMI_a{an,cni} = zvalsMI;
     end
 end
 
-idv = idvMI;
+idv = idvPC;
+pvals = pvalsPC_a; zvals = zvalsPC_a;
+disp('Done')
+%%
+%% Set input (you already have these in workspace)
+% idv = idvPC;              % or: idv = idvMI;
 
-%% === INPUT: idv is 5x6 cell, each cell: [nCells x 3] logical [T D S] ===
-% rows = animals (A=5), cols = 6 cases (e.g., C1A1, C1A2, C2A1, C2A2, C3A1, C3A2)
+%% --- Pick one animal for detailed view
+a = 1;
+[D_cell, D_mean, D_sem, N_pair, P_same] = jaccard_animal(idv, a);
+adj_idx = sub2ind([6 6], 1:5, 2:6);
+mean_adj = mean(D_mean(adj_idx), 'omitnan');
+fprintf('Animal %d: mean adjacent identity distance = %.3f\n', a, mean_adj);
 
-A = size(idv,1);
-C = size(idv,2);         % should be 6
-assert(C==6, 'Expected 6 cases (columns) in idv');
-
-% Storage
-D_mean_PC   = cell(A,1);   % 6x6 identity-distance (mean over cells)
-P_same_PC   = cell(A,1);   % 6x6 agreement = 1 - distance
-N_pair_PC   = cell(A,1);   % 6x6 contributing cell counts
-Ptrans_PC   = cell(A,1);   % 5x5 global adjacent transitions (row-stochastic)
-PtransS_PC  = cell(A,1);   % 5x5 transitions conditioned on start in T/D/S
-Ctrans_PC   = cell(A,1);   % 5x5 integer counts
-
-mean_adj_dist_PC = nan(A,1);   % mean distance for adjacent pairs per animal
-
-% Labels for plotting
-labs5 = {'T','D','S','Mixed','None'};
-caseLabs = arrayfun(@(k)sprintf('Case %d',k), 1:C, 'UniformOutput', false);
-
-for a = 1:A
-    % --- Build X3: [nCells x 3 x 6] from your idv{a,c} ---
-    nCells = size(idv{a,1},1);
-    X3 = false(nCells,3,C);
-    for c = 1:C
-        X3(:,:,c) = logical(idv{a,c});
-        if size(idv{a,c},1) ~= nCells || size(idv{a,c},2) ~= 3
-            error('Animal %d: size mismatch at case %d', a, c);
-        end
-    end
-
-    % --- Per-cell 6x6 Jaccard distance on the 3-bit vectors ---
-    D_cell = nan(nCells, C, C);
-    for r = 1:nCells
-        for i = 1:C
-            vi = X3(r,:,i)>0;   % 1x3
-            for j = 1:C
-                vj = X3(r,:,j)>0;
-                U = sum(vi | vj);
-                if U==0
-                    D_cell(r,i,j) = NaN;   % None↔None: uninformative
-                else
-                    K = sum(vi & vj);
-                    D_cell(r,i,j) = 1 - (K / U);
-                end
-            end
-        end
-    end
-    Dm = squeeze(mean(D_cell,1,'omitnan'));      % 6x6
-    D_mean_PC{a} = Dm;
-    P_same_PC{a} = 1 - Dm;
-
-    % Contributing counts per (i,j)
-    Nij = zeros(C,C);
-    for i=1:C
-        for j=1:C
-            Nij(i,j) = sum(~isnan(D_cell(:,i,j)));
-        end
-    end
-    N_pair_PC{a} = Nij;
-
-    % Adjacent-pair mean distance (i -> i+1)
-    adj_idx = sub2ind([C C], 1:C-1, 2:C);
-    mean_adj_dist_PC(a) = mean(Dm(adj_idx),'omitnan');
-
-    % --- Global adjacent transitions among {T,D,S,Mixed,None} ---
-    % Convert bits to labels 1..5 per cell×case
-    L = 5*ones(nCells,C);  % default None=5
-    for c = 1:C
-        M = X3(:,:,c);                % nCells x 3
-        s = sum(M,2);                 % #bits on
-        idx1 = find(s==1);
-        for k = idx1.'
-            % find which of T(1),D(2),S(3) is on
-            L(k,c) = find(M(k,:),1,'first');
-        end
-        L(s>=2, c) = 4;               % Mixed=4
-        % None stays 5
-    end
-
-    % Aggregate transitions over the 5 adjacent steps
-    C5  = zeros(5,5);
-    C5s = zeros(5,5);    % conditioned on start in T/D/S (1..3)
-    for t = 1:C-1
-        from = L(:,t); to = L(:,t+1);
-        ok = ~isnan(from) & ~isnan(to);
-        for rlab = 1:5
-            idx = ok & (from==rlab);
-            if any(idx)
-                for clab = 1:5
-                    C5(rlab,clab) = C5(rlab,clab) + sum(to(idx)==clab);
-                end
-            end
-        end
-        % starts in T/D/S only
-        okS = ok & ismember(from,1:3);
-        for rlab = 1:5
-            idx = okS & (from==rlab);
-            if any(idx)
-                for clab = 1:5
-                    C5s(rlab,clab) = C5s(rlab,clab) + sum(to(idx)==clab);
-                end
-            end
-        end
-    end
-
-    % Row-normalize to probabilities
-    P5  = nan(5,5);
-    P5s = nan(5,5);
-    for rlab = 1:5
-        den  = sum(C5(rlab,:));
-        denS = sum(C5s(rlab,:));
-        if den>0,  P5(rlab,:)  = C5(rlab,:) / den;   end
-        if denS>0, P5s(rlab,:) = C5s(rlab,:) / denS; end
-    end
-    Ptrans_PC{a}  = P5;
-    PtransS_PC{a} = P5s;
-    Ctrans_PC{a}  = C5;
-end
-
-%% === Quick plots for Animal 1 ===
-a = 3;
+% Plots: per-animal mean & SEM
 figure('Color','w');
-subplot(1,3,1);
-imagesc(D_mean_PC{a}, [0 1]); axis square; colormap(parula); colorbar
-set(gca,'XTick',1:C,'XTickLabel',caseLabs,'YTick',1:C,'YTickLabel',caseLabs);
-xtickangle(45); title(sprintf('Animal %d: Identity distance (PC)',a));
+subplot(1,3,1); imagesc(D_mean,[0 1]); axis square; colormap(parula); colorbar
+title(sprintf('Jaccard distance (mean over cells) — A%d',a));
+subplot(1,3,2); imagesc(P_same,[0 1]); axis square; colormap(parula); colorbar
+title('Agreement = 1 - distance');
+subplot(1,3,3); imagesc(D_sem,[0 0.3]); axis square; colormap(parula); colorbar
+title('SEM over cells');
 
-subplot(1,3,2);
-imagesc(P_same_PC{a}, [0 1]); axis square; colormap(parula); colorbar
-set(gca,'XTick',1:C,'XTickLabel',caseLabs,'YTick',1:C,'YTickLabel',caseLabs);
-xtickangle(45); title('Agreement = 1 - distance');
+%% --- Group Jaccard stats
+G = jaccard_group(idv);
+figure('Color','w');
+subplot(1,2,1); imagesc(G.D_group_mean,[0 1]); axis square; colormap(parula); colorbar
+title('Group Jaccard distance (mean over animals)');
+subplot(1,2,2); imagesc(G.P_group_mean,[0 1]); axis square; colormap(parula); colorbar
+title('Group agreement (=1 - distance)');
 
-subplot(1,3,3);
-imagesc(PtransS_PC{a}, [0 1]); axis square; colormap(parula); colorbar
-set(gca,'XTick',1:5,'XTickLabel',labs5,'YTick',1:5,'YTickLabel',labs5);
-title('Adjacent transitions (start in T/D/S)');
-
-%% === Across-animal summaries (PC) ===
-fprintf('\nMean adjacent identity distance per animal (PC):\n');
-disp(mean_adj_dist_PC');
-
-% Group mean ± SEM
-mAdj = mean(mean_adj_dist_PC,'omitnan');
-sAdj = std(mean_adj_dist_PC,'omitnan') / sqrt(sum(~isnan(mean_adj_dist_PC)));
-fprintf('Group mean adjacent distance (PC): %.3f ± %.3f (SEM)\n', mAdj, sAdj);
-
-
-%%
-%% --- Quick numbers & a permutation test (Animal 1, PC) ---
-a = 1; C = 6; labs5 = {'T','D','S','Mixed','None'};
-
-% 1) Mean adjacent identity distance (i -> i+1)
-adj_idx = sub2ind([C C], 1:C-1, 2:C);
-madj = mean(D_mean_PC{a}(adj_idx), 'omitnan');
-fprintf('Animal %d (PC): mean adjacent distance = %.3f\n', a, madj);
-
-% 2) Adjacent transition rows (conditioned on starting in T/D/S)
-for r = 1:3
-    v = PtransS_PC{a}(r,:);
-    fprintf('%-5s ->  T:%4.2f  D:%4.2f  S:%4.2f  Mix:%4.2f  None:%4.2f\n', ...
-        labs5{r}, v(1), v(2), v(3), v(4), v(5));
-end
-
-% 3) Permutation test: is stability above chance?
-%    (Null preserves per-case label frequencies by shuffling cells within each case.)
-%    For distance, "more stable than chance" means OBSERVED distance is LOWER than null.
-X3 = false(size(idv{a,1},1),3,C);
-for c = 1:C, X3(:,:,c) = logical(idv{a,c}); end
-
-nperm = 1000;                         % reduce to 200 for a quick run
-null_adj = nan(nperm,1);
-for r = 1:nperm
-    Xp = X3;
-    for c = 1:C
-        idx = randperm(size(X3,1));
-        Xp(:,:,c) = X3(idx,:,c);      % shuffle across cells, preserve marginals
-    end
-    % compute mean adjacent distance for Xp
-    Dp = nan(C,C);
-    for i = 1:C
-        for j = 1:C
-            % Jaccard distance averaged over cells, with None<->None skipped
-            U = sum( (Xp(:,:,i)|Xp(:,:,j)), 2 );
-            K = sum( (Xp(:,:,i)&Xp(:,:,j)), 2 );
-            dj = nan(size(U));
-            nz = U>0;
-            dj(nz) = 1 - (K(nz)./U(nz));
-            Dp(i,j) = mean(dj, 'omitnan');
-        end
-    end
-    null_adj(r) = mean(Dp(adj_idx), 'omitnan');
-end
-p_left  = mean(null_adj <= madj);                      % stability > chance (distance lower)
-z_eff   = (madj - mean(null_adj)) / std(null_adj);     % effect size (negative = more stable)
-
-fprintf('Permutation: p_left=%.4f (stability above chance), z=%.2f\n', p_left, z_eff);
-%%
-% Inputs: idv (A x 6 cell), choose animal a
-a = 1; C = 6;
-X3 = cell(C,1);
-for c=1:C, X3{c} = logical(idv{a,c}); end  % [nCells x 3]
-
-dists = nan(C-1,1);
-for t = 1:C-1
-    M1 = X3{t};      M2 = X3{t+1};
-    tuned_both = (sum(M1,2)>0) & (sum(M2,2)>0);   % keep only both tuned
-    if any(tuned_both)
-        U = sum( M1(tuned_both,:) | M2(tuned_both,:), 2 );
-        K = sum( M1(tuned_both,:) & M2(tuned_both,:), 2 );
-        dj = 1 - (K./U);                          % Jaccard distance per cell
-        dists(t) = mean(dj,'omitnan');
+%% --- Stability percentages (Stable / Dynamic / Middle per label)
+P = stability_percentages(idv);
+labels = {'Time','Distance','Speed'};
+fprintf('\nPer-animal %%Stable / %%Dynamic / %%Middle (denominators = cells that ever had the label)\n');
+for a = 1:size(idv,1)
+    fprintf('Animal %d:\n', a);
+    for b = 1:3
+        fprintf('  %-8s  S=%.1f%%  D=%.1f%%  M=%.1f%%   (n=%d)\n', ...
+            labels{b}, P.stable(a,b), P.dynamic(a,b), P.middle(a,b), P.denom(a,b));
     end
 end
-mean_adj_tuned_only = mean(dists,'omitnan');
-fprintf('Animal %d (PC): mean adj distance (tuned-only) = %.3f\n', a, mean_adj_tuned_only);
 
-ESI = (mean(null_adj) - madj) / mean(null_adj);   % % reduction vs null
-fprintf('Excess stability index: %.1f%% below null\n', 100*ESI);
+fprintf('\nGroup means ± SEM (%%):\n');
+for b = 1:3
+    fprintf('  %-8s  Stable  %5.1f ± %4.1f   Dynamic %5.1f ± %4.1f   Middle %5.1f ± %4.1f\n', ...
+        labels{b}, ...
+        P.mean_sem.stable_mean(b),  P.mean_sem.stable_sem(b), ...
+        P.mean_sem.dynamic_mean(b), P.mean_sem.dynamic_sem(b), ...
+        P.mean_sem.middle_mean(b),  P.mean_sem.middle_sem(b));
+end
+
+%% (Optional) save results
+% save results_idv.mat D_cell D_mean D_sem N_pair P_same G P
+
