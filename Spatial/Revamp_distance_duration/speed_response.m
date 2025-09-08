@@ -14,6 +14,7 @@ while 1
     inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
     inds = centers > 25;
     inds = ~(centers < 1 | centers > 39 | rs < 0.25 | PWs < 10);% | PWs > 20 | PWs < 10;
+    inds = propsT.newPC.cells_speed{an,3};
 %     t_resp = cell_list_op(resp,[],'or');
 %     inds = ~inds;
 %     inds = inds & ~t_resp{an}';
@@ -50,7 +51,7 @@ while 1
 %     resp_sp = resp_speed(:,[1 3]);
     
     sMcN = speedRs{an,2};
-    resp_M = resp_speed(an,3);
+    % resp_M = resp_speed(an,3);
     d.bcs = speedRs{an}.bin_centers;
     d.FR = speedRs{an}.FR_vs_speed;
     fitg = speedRs{an}.fits.gauss; fits = speedRs{an}.fits.sigmoid; fitl = speedRs{an}.fits.linear;
@@ -59,7 +60,7 @@ while 1
     [rs,MFR,centers,PWs] = get_gauss_fit_parameters(fitg.coeffsrs,d.bcs(2)-d.bcs(1));
     inds = centers < 1 | centers > 39 | rs < 0.25 | PWs < 10;% | PWs > 20 | PWs < 10;
     inds = ~inds;
-    resp_sp_and = cell_list_op([resp_M,{inds'}],[],'and'); %resp_sp_and = resp_sp_and(:,1);
+    % resp_sp_and = cell_list_op([resp_M,{inds'}],[],'and'); %resp_sp_and = resp_sp_and(:,1);
     % inds = resp_speed{an,4};
     % inds_cn = find(inds);
     100*sum(inds)/length(inds)
@@ -70,7 +71,7 @@ while 1
 %     cell_inds = [1 2 3]+(5*3);
     ff = makeFigureRowsCols(2020,[0.5 0.5 4 1],'RowsCols',[1 3],...
         'spaceRowsCols',[0.15 0.065],'rightUpShifts',[0.15 0.28],'widthHeightAdjustment',...
-        [-100 -415]);    set(gcf,'color','w'); set(gcf,'Position',[10 4 3 1]);
+        [-100 -415]);    set(gcf,'color','w'); set(gcf,'Position',[5 4 3 1]);
 %     ff1 = makeFigureRowsCols(2021,[0.5 0.5 4 1],'RowsCols',[1 3],...
 %         'spaceRowsCols',[0.15 0.06],'rightUpShifts',[0.14 0.26],'widthHeightAdjustment',...
 %         [-100 -415]);    set(gcf,'color','w'); set(gcf,'Position',[10 6 3 1]);
@@ -142,7 +143,7 @@ while 1
    minBin = -2;
    maxBin = max(allVals);
    incr = 0.01;
-   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 1.25 1],'color','w');
    hold on;
    [ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
    set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
@@ -156,25 +157,23 @@ while 1
 end
 
 %% mean rs values
-while 1
-    meanDistD = arrayfun(@(x)nanmean(x{1}),distD);
-    within = make_within_table({'Type'},3);
-    dataT = make_between_table({meanDistD},{'Rs_L','Rs_S','Rs_G'});
-    ra = repeatedMeasuresAnova(dataT,within,0.05);
-    [xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
-     hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w'); hold on;
-    [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
-        'ySpacing',0.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
-    set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[-0.75 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
-    xticks = [xdata(1:end)]; xticklabels = {'Linear','Sigmoid','Gaussian'};
-    set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
-    changePosition(gca,[0.11 0.03 -0.3 -0.05]);
-    put_axes_labels(gca,{[],[0 0 0]},{{'R-Squared'},[0 0 0]});
-    format_axes(gca);
-    save_pdf(hf,mData.pdf_folder,sprintf('mean_Rsquared'),600);
-    break;
-end
+meanDistD = arrayfun(@(x)nanmean(x{1}),distD);
+within = make_within_table({'Type'},3);
+dataT = make_between_table({meanDistD},{'Rs_L','Rs_S','Rs_G'});
+ra = repeatedMeasuresAnova(dataT,within,0.05);
+[xdata,mVar,semVar,combs,p,h,colors,hollowsep] = get_vals_for_bar_graph(mData,ra,0,[1 1 1]);
+ hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 1.25 1],'color','w'); hold on;
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
+    'ySpacing',0.25,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+    'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',10,'barWidth',0.5,'sigLinesStartYFactor',0.05);
+set(gca,'xlim',[0.25 xdata(end)+0.75],'ylim',[-0.75 maxY],'FontSize',6,'FontWeight','Normal','TickDir','out');
+xticks = [xdata(1:end)]; xticklabels = {'Linear','Sigmoid','Gaussian'};
+set(gca,'xtick',xticks,'xticklabels',xticklabels); xtickangle(30)
+changePosition(gca,[0.11 0.03 -0.3 -0.05]);
+put_axes_labels(gca,{[],[0 0 0]},{{'R-Squared'},[0 0 0]});
+format_axes(gca);
+save_pdf(hf,mData.pdf_folder,sprintf('mean_Rsquared'),600);
+
 
 %%
 [within,dvn,xlabels,awithinD] = make_within_table({'Rs_f'},[3]);
@@ -214,7 +213,7 @@ while 1
    minBin = min(allVals);
    maxBin = max(allVals);
    incr = 2;
-   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 1.25 1],'color','w');
    hold on;
    [ha,hb,hca] = plotAverageDistributions(distD,'colors',{'k'},'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
    set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
@@ -245,7 +244,7 @@ while 1
    minBin = min(allVals);
    maxBin = max(allVals);
    incr = 2;
-   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.25 1],'color','w');
+   hf = figure(8);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 1.25 1],'color','w');
    hold on;
    [ha,hb,hca] = plotAverageDistributions(distD,'colors',{'k'},'maxY',100,'min',minBin,'incr',incr,'max',maxBin);
    set(gca,'FontSize',6,'FontWeight','Normal','TickDir','out','xcolor','k','ycolor','k');
@@ -260,6 +259,36 @@ while 1
     format_axes(gca);
     break;
 end
+
+
+%%
+mRsG = [];
+for an = 1:5
+    spR = speedRs{an,4};
+    tsRG = spR.fits.gauss.coeffsrs(:,4);
+    tmRsG = []
+    for cn = 1:6
+        cellL = propsT.newPC.cells_time{an,cn};
+        tmRsG = [tmRsG nanmean(tsRG(cellL))];
+        cellL = propsD.newPC.cells_dist{an,cn};
+        tmRsG = [tmRsG nanmean(tsRG(cellL))];
+        cellL = propsT.newPC.cells_speed{an,cn};
+        tmRsG = [tmRsG nanmean(tsRG(cellL))];
+    end
+    mRsG = [mRsG;tmRsG];
+end
+
+fac_names = {'CN','AP','PoT'}; fac_levels = [3,2,3];
+% fac_names = {'AP','PoT'}; fac_levels = [3,3];
+[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
+dataT = make_between_table({mRsG},dvn);
+ra = RMA(dataT,within,{0.05,{''}});
+clc
+print_for_manuscript(ra)
+%%
+tcolors = repmat(mData.dcolors(1:10),1,3); MY = 0.75; ysp = 5; mY = 0; ystf = 5; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'AP','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+
 
 %% exploring McN speed curves
 while 1

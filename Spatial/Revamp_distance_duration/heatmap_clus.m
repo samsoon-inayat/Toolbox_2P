@@ -1,12 +1,14 @@
-sel_inds = 1:36;
-% sel_inds = 19:36;
-all_cellsnew_hm1 = all_cellsnew_hm(:,sel_inds);
+sel_inds = 1:18;
+sel_inds = 19:36;
+all_cellsnew_hmPC = all_cellsnew_hm(:,19:36);
+all_cellsnew_hmPC = all_cellsnew_hm(:,1:18);
 txl = txl_all(:,sel_inds);
+txl = txl_all18;
 
     %%
-    [OIo,mOIo,semOIo,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(all_cellsnew_hm1,0.5,0.05);
+    [OIo,mOIo,semOIo,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(cell_popsPC,0.5,0.05);
     mOI = mCI; semOI = semCI;
-    mCI = mOIo; semCI = semOIo;
+    % mCI = mOIo; semCI = semOIo;
 
     mUni = nanmean(uni,3); mUni1 = tril(mUni,-1) + tril(mUni,-1)'; mUni2 = triu(mUni,1) + triu(mUni,1)'; mmUni = min(mUni(:)); MmUni = max(mUni(:));
     semUni = nanstd(uni,[],3)/sqrt(5); semUni1 = tril(semUni,-1) + tril(semUni,-1)'; semUni2 = triu(semUni,1) + triu(semUni,1)'; msemUni = min(semUni(:)); MsemUni = max(semUni(:));

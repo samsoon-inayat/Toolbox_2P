@@ -92,11 +92,11 @@ all_cellsnew_GWT = []; all_cellsnew_GWD = [];
 for ii = 1:length(pop_names)
     if ii == 1 || ii == 3
     cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsT.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsT.newMI.cells_%s];',pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsT.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
     cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsT.newPC.cells_%s_zvals,ii) get_zvals(propsT.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
     else
     cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsD.newPC.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsD.newMI.cells_%s];',pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsD.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
     cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsD.newPC.cells_%s_zvals,ii) get_zvals(propsD.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
     end
     si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; propsPL = get_props_Rs(o.Rs(:,si),30);
