@@ -12,6 +12,7 @@ si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; si_cn_ap = [[1 1 2 2 3 3];
 props = get_props_Rs(o.Rs(:,si),30);
 propsT = get_props_new(outT,met_valsT,props,si_cn_ap);
 propsD = get_props_new(outD,met_valsD,props,si_cn_ap);
+propsTDM = get_props_new_matched({outT;outD},{met_valsT;met_valsD},props,si_cn_ap);
 
 siB = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; si_cn_apB = [[1 1 2 2];[1 2 1 2]]; propsB = get_props_Rs(o.Rs(:,siB),30);
 propsTB = get_props_newB(outTB,met_valsTB,propsB,si_cn_apB);
@@ -70,12 +71,12 @@ ylim([0 0.5])
 pop_names = {'R','NR'};
 all_cellsnew = []; all_cellsnew_vals = [];
 for ii = 1:length(pop_names)
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsD.newPC.cells_%s propsT.newMI.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii},pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsTDM.newPC.cells_%s propsTDM.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
     % cmdTxt = sprintf('all_cellsnew_vals = [all_cellsnew propsT.newPC.cells_%s_zvals propsD.newPC.cells_%s propsT.newMI.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii},pop_names{ii},pop_names{ii}); eval(cmdTxt);
 end
 
 avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
-fac_names = {'PoT','MT','BT','CN','AP'}; fac_levels = [2,2,2,3,2];
+fac_names = {'PoT','MT','CN','AP'}; fac_levels = [2,2,3,2];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
@@ -91,6 +92,10 @@ raRR1 = RMA_bonferroni(raR{1},'MT');
 %%
 clc
 raRR2 = RMA_bonferroni(raR{2},'MT');
+%%
+tcolors = repmat(mData.dcolors(1:3),1,3); MY = 100; ysp = 5; mY = 0; ystf = 5; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'PoT:CN','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+
 
 
 %% this is basically for singularly_tuned mixed_tuned etc., but I am just checking for other to use the same code
@@ -99,11 +104,11 @@ pop_names = {'singularly_tuned','mixed_tuned','all_tuned'};
 % pop_names = {'time','dist','speed','time_speed','time_dist','dist_speed'};
 all_cellsnew = [];
 for ii = 1:length(pop_names)
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsD.newPC.cells_%s propsT.newMI.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii},pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsTDM.newPC.cells_%s propsTDM.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
 end
 
 avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
-fac_names = {'PoT','MT','BT','CN','AP'}; fac_levels = [length(pop_names),2,2,3,2];
+fac_names = {'PoT','MT','CN','AP'}; fac_levels = [length(pop_names),2,3,2];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
@@ -121,7 +126,7 @@ clc
 raRR2 = RMA_bonferroni(raR{2},'MT');
 %%
 tcolors = repmat(mData.dcolors(1:10),1,3); MY = 100; ysp = 5; mY = 0; ystf = 5; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raR{1},{'MT:BT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raR{1},{'AP','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 
 
 %%
@@ -143,15 +148,10 @@ all_cellsnew_zvals = []; all_cellsnew_rs = []; MTs = {'PC','MI'};
 all_cellsnew_peakvalsT = []; all_cellsnew_peakvalsD = [];
 all_cellsnew_GWT = []; all_cellsnew_GWD = [];
 for ii = 1:length(pop_names)
-    if ii == 1 || ii == 3
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsT.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsT.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsT.newPC.cells_%s_zvals,ii) get_zvals(propsT.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    else
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsD.newPC.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsD.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsD.newPC.cells_%s_zvals,ii) get_zvals(propsD.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    end
+    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsTDM.newPC.cells_%s propsTDM.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsTDM.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
+    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsTDM.newPC.cells_%s_zvals,ii) get_zvals(propsTDM.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+
     si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; propsPL = get_props_Rs(o.Rs(:,si),30);
     all_cellsnew_peakvalsT = [all_cellsnew_peakvalsT propsPL.peak_locations propsPL.peak_locations];
     all_cellsnew_GWT = [all_cellsnew_GWT propsPL.PWs propsPL.PWs];
@@ -168,43 +168,22 @@ for ii = 1:length(pop_names)
     end
 end
 
-for ii = 1:length(pop_names)
-    if ii == 1 || ii == 3
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsD.newPC.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsD.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsD.newPC.cells_%s_zvals,ii) get_zvals(propsD.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    else
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsT.newPC.cells_%s propsT.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_hm = [all_cellsnew_hm propsT.newPC.cells_%s];',pop_names{ii}); eval(cmdTxt);
-    cmdTxt = sprintf('all_cellsnew_zvals = [all_cellsnew_zvals get_zvals(propsT.newPC.cells_%s_zvals,ii) get_zvals(propsT.newMI.cells_%s_zvals,ii)];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    end
-    si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; propsPL = get_props_Rs(o.Rs(:,si),30);
-    all_cellsnew_peakvalsT = [all_cellsnew_peakvalsT propsPL.peak_locations propsPL.peak_locations];
-    all_cellsnew_GWT = [all_cellsnew_GWT propsPL.PWs propsPL.PWs];
-    si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
-    all_cellsnew_peakvalsD = [all_cellsnew_peakvalsD propsPL.peak_locations propsPL.peak_locations];
-    all_cellsnew_GWD = [all_cellsnew_GWD propsPL.PWs propsPL.PWs];
-    for cn = 1:3
-        for ap = 1:2
-            for mti = 1
-                txl_all{cnti} = sprintf('C%d-A%d-%s-%s',cn+2,ap,MTs{mti},upper(pop_names{ii}(1)));
-                cnti = cnti + 1;
-            end
-        end
-    end
-end
-
 avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
 avar = exec_fun_on_cell_mat(all_cellsnew_zvals,'nanmean',all_cellsnew);
 % avar = exec_fun_on_cell_mat(all_cellsnew_GWT,'nanmean',all_cellsnew);
-% avar = exec_fun_on_cell_mat(all_cellsnew_peakvalsT,'nanmean',all_cellsnew);
-fac_names = {'FM','PoT','MT','CN','AP'}; fac_levels = [2,length(pop_names),2,3,2];
+avar = exec_fun_on_cell_mat(all_cellsnew_peakvalsT,'nanmean',all_cellsnew);
+fac_names = {'PoT','MT','CN','AP'}; fac_levels = [length(pop_names),2,3,2];
 % fac_names = {'MT','CN','AP'}; fac_levels = [2,3,2];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 clc
 print_for_manuscript(ra)
+%%
+tcolors = repmat(mData.dcolors(1:10),1,3); MY = 100; ysp = 5; mY = 0; ystf = 5; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raS{2},{'AP:PoT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+
+
 %%
 for cid = 1:3
 rows = awithinD(:,3) == 1 & awithinD(:,1) == 1 & awithinD(:,2) == cid;
@@ -230,8 +209,8 @@ clc
 raR = RMA_bonferroni(raS{2},'PoT');
 
 %% visualizing the results in the previous section
-tcolors = repmat(mData.dcolors(1:10),1,3); MY = 5; ysp = 1; mY = 0; ystf = 2; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raS{1},{'MT:AP','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+tcolors = repmat(mData.dcolors(1:10),1,3); MY = 15; ysp = 1; mY = 0; ystf = 2; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raS{2},{'AP:PoT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 
 %%
 clc
@@ -349,3 +328,5 @@ print_for_manuscript(ra)
 %% visualizing the results in the previous section
 tcolors = repmat(mData.dcolors(8:10),1,3); MY = 30; ysp = 1; mY = 0; ystf = 2; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'CN','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+
+%%

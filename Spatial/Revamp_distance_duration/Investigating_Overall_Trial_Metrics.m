@@ -13,7 +13,8 @@ function Investigating_Overall
 % consistent across animals if I find significant differences.
 udata = evalin('base','udata1');
 ei = evalin('base','ei');
-trial_dataT = evalin('base','trial_dataT'); trial_dataD = evalin('base','trial_dataD');
+% trial_dataT = evalin('base','trial_dataT'); trial_dataD = evalin('base','trial_dataD');
+trial_dataT = outT; trial_dataD = outD;
 configurations = {'C3','C4','C5'};
 air_phases = {'ON','OFF'};
 % trial_metrics_code = {'time','distance','movement_latency','mean_speed','std_speed','cov_speed','ske_speed','kurt_speed'};

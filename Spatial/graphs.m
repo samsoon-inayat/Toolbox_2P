@@ -143,7 +143,7 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 tcolors = repmat(mData.colors(1:2),1,2);
 % figure(300);clf; ha = gca
 ff = makeFigureRowsCols(2020,[5 4 1.5 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.35],'widthHeightAdjustment',[-250 -550]);
-MY = 0.81; ysp = 0.1955; mY = -0.7; ystf = 0.213; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+MY = 0.81; ysp = 0.1; mY = -0.7; ystf = 0.13; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 MY = 1; mY = 0;
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'AP:PT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
@@ -152,7 +152,7 @@ set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
 shift_ticklabels(gca,-3,0)
 ylabel('MI')
 axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.1 0.6155 0.1 0];
-ht = axes_title(ff,{1},{'Distance-Binned Data'},axes_title_shifts_line,axes_title_shifts_text,'no');
+% ht = axes_title(ff,{1},{'Distance-Binned Data'},axes_title_shifts_line,axes_title_shifts_text,'no');
 set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air-On','Air-Off'},{[0 0.00531]});
 % set_sub_graph_text(ff,1,{'Pooled'},[0.05 -0.375 0.3 0],[0.25 -0.041 0 0]);
 % set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,4,{'Pooled'},{[0 -0.075]});

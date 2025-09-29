@@ -16,12 +16,12 @@ mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor
 tcolors = repmat(mData.dcolors(1:10),1,2);
 % figure(300);clf; ha = gca;
 ytxt = 49; fs = 6;
-ff = makeFigureRowsCols(2020,[10 4 5.9 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.05 0.3],'widthHeightAdjustment',[-70 -350]);
+ff = makeFigureRowsCols(2020,[5 4 2.0 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.13 0.3],'widthHeightAdjustment',[-170 -350]);
 plot(ts,speed,'color','b','LineWidth',0.5); hold on;
 plot(ts,C3*43,'color',colors{1}); re = find_rising_edge(C3,0.5,0.05); text(ts(re),ytxt,'C3','FontSize',fs);
-plot(ts,C4*43,'color',colors{2}); re = find_rising_edge(C4,0.5,0.05); text(ts(re),ytxt,'C4','FontSize',fs);
-plot(ts,C5*43,'color',colors{3}); re = find_rising_edge(C5,0.5,0.05); text(ts(re),ytxt,'C5','FontSize',fs);
-xlim([250,1180]); ylim([0 50]);
+% plot(ts,C4*43,'color',colors{2}); re = find_rising_edge(C4,0.5,0.05); text(ts(re),ytxt,'C4','FontSize',fs);
+% plot(ts,C5*43,'color',colors{3}); re = find_rising_edge(C5,0.5,0.05); text(ts(re),ytxt,'C5','FontSize',fs);
+xlim([250,550]); ylim([0 50]);
 format_axes(gca);
 box off; ylabel('Speed (cm/s)'); xlabel('Time (s)');
 
@@ -33,7 +33,7 @@ ylims = ylim; ylims(2) = 43
 [BLx BLy] = ds2nfu(ts(onsets(1)),ylims(1));
 aH = (TLy - BLy);
 % for ii = 1:length(onsets)
-for ii = [11:40]%length(onsets)
+for ii = [11:20]%length(onsets)
     [BRx BRy] = ds2nfu(ts(offsets(ii)),ylims(1));
     [BLx BLy] = ds2nfu(ts(onsets(ii)),ylims(1));
     aW = (BRx-BLx);

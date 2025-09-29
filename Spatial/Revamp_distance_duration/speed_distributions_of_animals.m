@@ -5,7 +5,7 @@ bin_incr = 1;
 speed_bins = min_speed:bin_incr:max_speed;
 
 % Load speed data from all animals
-num_animals = length(udataT); % Assuming udataT contains data for all animals
+num_animals = length(ei); % Assuming udataT contains data for all animals
 all_histograms = zeros(num_animals, length(speed_bins)-1);
 
 ff = makeFigureRowsCols(2020,[0.5 0.5 1 1],'RowsCols',[1 1],...

@@ -213,12 +213,12 @@ noofbMI = 10; nshuffles = 0;
 MI_fun = @(x,y,noofbMI,nshuffles) calc_metric_MI(x,y,noofbMI,nshuffles);
 PC_fun = @(x,y,nshuffles) calc_metric_PC(x,y,nshuffles);
 variable_combs = {'time_dist','time_speed','dist_speed'};
-% variable_combs = {'time_speed','dist_speed'};
+variable_combs = {'time_speed','dist_speed'};
 avar = [];
 for an = 1:5
     anvar = [];
     for cn = 1:3
-        for ap = 1:2
+        for ap = 1
             timecc = atimecc{an,cn,ap}; distcc = adistcc{an,cn,ap}; speedcc = aspeedcc{an,cn,ap}; FRcc = aFRcc{an,cn,ap}; trialcc = atrialcc{an,cn,ap};
             for vn = 1:length(variable_combs)
                 [an cn ap vn]
@@ -231,7 +231,7 @@ for an = 1:5
                 thisvar = arrayfun(@(i) PC_fun(grouped_var1v{i}, grouped_var2v {i},nshuffles), 1:length(grouped_var1v));
 
                 thisvar = MI_fun(var1v, var2v,noofbMI,nshuffles);
-                % thisvar = PC_fun(var1v, var2v,nshuffles);
+                thisvar = PC_fun(var1v, var2v,nshuffles);
 
                 anvar = [anvar thisvar];% outD.trial_metrics(:,idx)'];
                 n = 0;
@@ -248,8 +248,8 @@ fac_names = {'CN','TN'}; fac_levels = [3,10];
 fac_names = {'CN','PT','TN'}; fac_levels = [3,3,10];
 % fac_names = {'CN','AP','TN'}; fac_levels = [3,2,10];
 fac_names = {'CN','AP','PT','TN'}; fac_levels = [3,2,3,10];
-fac_names = {'CN','AP','PT'}; fac_levels = [3,2,3];
-% fac_names = {'CN','PT'}; fac_levels = [3,3];
+fac_names = {'CN','AP','PT'}; fac_levels = [3,2,2];
+fac_names = {'CN','PT'}; fac_levels = [3,2];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});

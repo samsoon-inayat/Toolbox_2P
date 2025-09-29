@@ -463,7 +463,7 @@ end
 xlim([0 length(mrespActL)+1]); ylim([0 1.5]);
 xlabel('Trial-Pair Numbers');ylabel('Bits');box off;
 set(gca,'xtick',xticks,'xticklabel',xtickL);
-legs = {'Conjunctive Cells First ','Conjunctive Cells Second','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 1.4 0.2]}; 
+legs = {'Conjunctive Cells 1 ','Conjunctive Cells 2','Complementary Cells 1','Complementary Cells 2',[9.5 0.1 1.4 0.2]}; 
 putLegendH(gca,legs,mData.dcolors([1 4 2 3]),'sigR',{[],'anova',[],6});
 format_axes(gca);
 changePosition(gca,[-0.08 0.1 0.17 -0.1]);
@@ -781,7 +781,7 @@ stp = 0.25*magfac; widths = ([0.75 3 1.3 1.3 1.3 0.5 0.5 0.5]-0.05)*magfac; gap 
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = repmat(mData.colors(5:end),1,6);
 axes(ff.h_axes(1,1));
-[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp1,{'Conf','hsd',0.05},[1 1.5]);
+[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp1,{'Conf','hsd',0.05,1},[1 1.5]);
 
 %     combs = [[1:2:12]' [2:2:12]']; p = ra.MC.hsd.Cond_by_CT_ET{1:2:12,6}; h = p<0.05;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -799,7 +799,7 @@ ylabel(ylabeltxt);
 format_axes(gca);
 
 axes(ff.h_axes(1,2));
-[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp1,{'Tr:Ph','hsd',0.05},[1 1.5]);
+[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp1,{'Tr:Ph','hsd',0.05,1},[1 1.5]);
 %     xdata = make_xdata([9 9],[1 1.5]);   
 tcolors = repmat(mData.colors(1:2),1,9);
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
@@ -823,7 +823,7 @@ adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 tcolors = repmat(mData.colors(5:end),1,6);
 axes(ff.h_axes(1,1));
 % [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raComp2,{'Conf','hsd'},[1.5 1 1]);
-[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp2,{'Conf','hsd',0.05},[1 1.5]);
+[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp2,{'Conf','hsd',0.05,1},[1 1.5]);
 
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...
     'ySpacing',ysp,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.01,...
@@ -837,7 +837,7 @@ format_axes(gca);
 
 axes(ff.h_axes(1,2));
 % [xdata,mVar,semVar,combs,p,h,colors,xlabels] = get_vals_for_bar_graph_RMA(mData,raComp2,{'Ph','hsd'},[1.5 1 1]);
-[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp2,{'Ph','hsd',0.05},[1 1.5]);
+[xdata,mVar,semVar,combs,p,h,nB] = get_vals_RMA(mData,raComp2,{'Ph','hsd',0.05,1},[1 1.5]);
 
 tcolors = repmat(mData.colors(1:2),1,6);
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',tcolors,'sigColor','k',...

@@ -18,7 +18,7 @@ for ii = 1:size(T,1)
         matlab_planeD{1} = fullfile(cell2mat(T{ii,8}),'suite2P\plane0');
         matlab_planeD{2} = fullfile(cell2mat(T{ii,8}),'suite2P\plane1');
     end
-    for pp = 1%:length(plane)
+    for pp = 1:length(plane)
         if isempty(plane{pp})
             continue;
         end

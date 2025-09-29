@@ -5,11 +5,79 @@ tic
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size;
 ei = evalin('base','ei');
 udata = evalin('base','udata');
-udata1 = evalin('base','udata1');
-udataT = evalin('base','udataT');
-udataD = evalin('base','udataD');
-
+% udata1 = evalin('base','udata1');
+% udataT = evalin('base','udataT');
+% udataD = evalin('base','udataD');
+udataT = udata;
 n  = 0;
+%% Ian's suggestion of checking activated cells along trial
+figure(100);clf;
+for an = 1:5
+    tdataT = udata{an};
+    aFR = 100*sum(tdataT.firing_rate>0)/size(tdataT.firing_rate,1);
+    spd = tdataT.speed;
+    tm = tdataT.ts;
+    r = corr(aFR', spd', 'Rows', 'complete');  % transpose to ensure column vectors
+    c3_1 = find_rising_edge(tdataT.C3,0.5,0.05); x1 = tm(c3_1);
+    c3_2 = find_falling_edge(tdataT.C3,-0.5,0.05); %x2 = tm(c3_2);
+    a3_1 = find_rising_edge(tdataT.air,0.5,0.05); a5 = a3_1(find(a3_1 > c3_1,5,'first')); x2 = tm(a5(end));
+    subplot(5,1,an);
+    plot(tm,max(aFR)*spd/max(spd));hold on;
+    plot(tm,aFR,'k');
+    plot(tm,max(aFR)*tdataT.air,'r');
+    plot(tm,mean(aFR)*ones(size(aFR)),'m');
+    title(sprintf('Animal - %d - Correlation %.3f - Mean %% Active = %.2f',an,r,mean(aFR)));
+    % xlim([x1 x1 + round((x2-x1)/1)])
+    xlim([x1 x2])
+    ylabel('Active Cells (%)')
+    if an == 5
+        xlabel('Time (s)')
+    end
+end
+%%
+an = 1;
+aFR_T = squeeze(outT.aFRcc(an,:,:));
+aTR_T = squeeze(outT.atrialcc(an,:,:));
+aSPD_T = squeeze(outT.aspeedcc(an,:,:));
+aFR_D = squeeze(outD.aFRcc(an,:,:));
+aTR_D = squeeze(outD.atrialcc(an,:,:));
+aSPD_D = squeeze(outD.aspeedcc(an,:,:));
+all_spd = [];
+all_tr = [];
+all_fr = [];
+all_air = [];
+all_cn = [];
+for cn = 1%:3
+    taSPD_D = aSPD_D{cn,1}; taSPD_T = aSPD_T{cn,2};
+    taFR_D = aFR_D{cn,1}; taFR_T = aFR_T{cn,2}; 
+    taTR_D = aTR_D{cn,1}; taTR_T = aTR_T{cn,2};
+    for tn = 1:10
+        trial_idx = taTR_D == tn;
+        tr_spd_D = taSPD_D(trial_idx);
+        tr_fr_D = taFR_D(trial_idx,:);
+        trial_idx = taTR_T == tn;
+        tr_spd_T = taSPD_T(trial_idx);
+        tr_fr_T = taFR_T(trial_idx,:);
+        tr_spd = [tr_spd_D;tr_spd_T];
+        tr_fr = [tr_fr_D;tr_fr_T];
+        tr_tr = [tn*ones(size(tr_spd_D));tn*10*ones(size(tr_spd_T))];
+        tr_a = [ones(size(tr_spd_D));0*ones(size(tr_spd_T))];
+        all_spd = [all_spd;tr_spd];
+        all_tr = [all_tr;tr_tr];
+        all_fr = [all_fr;tr_fr];
+        all_air = [all_air;tr_a];
+        all_cn = [all_cn;cn*ones(size(tr_a))];
+    end
+end
+
+spd = all_spd; aFR = sum(all_fr>0,2)/size(all_fr,2);
+figure(100);clf;
+plot(spd/max(spd));hold on;
+plot(aFR/max(aFR));
+plot(all_air)
+% plot(all_cn);
+
+
 
 %%
 % 

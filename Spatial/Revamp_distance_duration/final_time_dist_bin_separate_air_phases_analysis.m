@@ -113,20 +113,22 @@ tcolors = repmat(mData.dcolors(8:10),1,3); MY = 0.1; ysp = 0.01; mY = -0.05; yst
 variable_combs = {'time_speed','dist_speed'};
 met = 'MI'; trialsOrConcat = 'concatenate'; %'trials' or "concatenate"
 out = outD; avar = [];
-for vn = 1:length(variable_combs)
-    avar = [avar get_metrics(out,variable_combs{vn},met,trialsOrConcat)];
-end
+% for vn = 1:length(variable_combs)
+%     avar = [avar get_metrics(out,variable_combs{vn},met,trialsOrConcat)];
+% end
+avar = [avar get_metrics(outT,variable_combs{1},met,trialsOrConcat)];
+avar = [avar get_metrics(outD,variable_combs{2},met,trialsOrConcat)];
 
 fac_names = {'PT','CN','AP'}; fac_levels = [2,3,2];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
 ra = RMA(dataT,within,{0.05,{''}});
 print_for_manuscript(ra)
-clc
-raR = RMA_subset(ra,'AP');
+% clc
+% raR = RMA_subset(ra,'AP');
 % visualizing the results in the previous section
 tcolors = repmat(mData.dcolors(1:10),1,3); MY = 1.11; ysp = 0.01; mY = -0.5; ystf = 0.12; ysigf = 0.025;titletxt = ''; ylabeltxt = {'Cells (%)'}; % for all cells (vals) MY = 80
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],raR{1},{'PT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'AP:PT','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 
 
 %%

@@ -34,6 +34,7 @@ end
 
 frf = tudata.frf;
 firing_rate = tudata.firing_rate;
+ca_signal = tudata.ca_signal;
 % initialize variables in memory
 for ii = 1:length(field_names)
     varname = field_names{ii};
@@ -55,6 +56,7 @@ res = false;
 % Initialize matrices to store binned data
 num_neurons = size(firing_rate, 1);  % Number of neurons
 firing_rate_binned = NaN(num_neurons, length(bins)-1);  % Preallocate binned firing rate
+ca_signal_binned = NaN(num_neurons, length(bins)-1);  % Preallocate binned firing rate
 
 % Use frf to restrict firing rate binning to frames (assuming frf is a logical index)
 frame_times = var(frf);  % Get the actual frame times corresponding to 'frf'
@@ -72,6 +74,7 @@ frame_bin_indices = discretize(frame_times, bins);  % Bin the frame times
 parfor neuron_idx = 1:num_neurons
     % Calculate the binned firing rate for each neuron using the frame-based bin indices
     firing_rate_binned(neuron_idx, :) = accumarray(frame_bin_indices', firing_rate(neuron_idx, :),[length(bins)-1, 1], @mean, NaN)';
+    ca_signal_binned(neuron_idx, :) = accumarray(frame_bin_indices', ca_signal(neuron_idx, :),[length(bins)-1, 1], @mean, NaN)';
 end
 
 % Use accumarray to bin the speed
@@ -83,7 +86,7 @@ end
 
 for ii = 1:length(field_names)
     varname = field_names{ii};
-    if strcmp(varname,'firing_rate')
+    if strcmp(varname,'firing_rate') || strcmp(varname,'ca_signal')
         continue;
     end
     cmdTxt = sprintf('res = islogical(%s);',varname);eval(cmdTxt)

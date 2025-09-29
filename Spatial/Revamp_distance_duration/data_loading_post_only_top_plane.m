@@ -11,6 +11,25 @@ udata = evalin('base','udata1');
 
 outT = get_the_binned_data(udata,'time',0.3);
 outD = get_the_binned_data(udata,'dist',3);
+outTB = get_the_binned_data_generic(udata,{'C2','C7'},'time',0.3);
+
+filename = fullfile(mData.pd_folder,'FR_tuningB.mat');
+if exist(filename,'file')
+    load(filename);
+else
+    % Get the metrics and run stats
+    variable_combs = {'FR_time','FR_speed'};
+    trialsOrConcat = 'concatenate'; %'trials' or "concatenate"
+    nshuffles = 1000;
+    clc
+    for vn = 1:length(variable_combs)
+        vn
+        met_valsTB{vn} = get_metrics_FR(outTB,variable_combs{vn},trialsOrConcat,nshuffles);
+        % met_valsD{vn} = get_metrics_FR(outD,variable_combs{vn},trialsOrConcat,nshuffles);
+    end
+    
+    save(filename,"met_valsTB");
+end
 
 filename = fullfile(mData.pd_folder,'FR_tuning.mat');
 if exist(filename,'file')

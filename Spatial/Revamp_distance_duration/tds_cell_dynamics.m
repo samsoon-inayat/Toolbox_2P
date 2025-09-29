@@ -8,10 +8,14 @@ clear t_cells_I d_cells_I s_cells_I td_cells_I ds_cells_I ts_cells_I tds_cells_I
 all_cells = {};
 si = [Ar_t_T Ar_i_T Ar_t_D Ar_i_D ArL_t_T ArL_i_T ArL_t_D ArL_i_D Ars_t_T Ars_i_T Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
 si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; si_cn_ap = [[1 1 2 2 3 3];[1 2 1 2 1 2]];
+sib = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; propsB = get_props_Rs(o.Rs(:,sib),30);
 % si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; 
 props = get_props_Rs(o.Rs(:,si),30);
 propsT = get_props_new(outT,met_valsT,props,si_cn_ap);
 propsD = get_props_new(outD,met_valsD,props,si_cn_ap);
+
+siB = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; si_cn_apB = [[1 1 2 2];[1 2 1 2]];
+propsTB = get_props_newB(outTB,met_valsTB,propsB,si_cn_apB);
 % [SinT,MixT,AllT] = get_the_pops(propsT,propsD);
 %%
 cell_popsPC = [];%[propsT.newPC.cells_time propsD.newPC.cells_dist propsT.newPC.cells_speed];
@@ -391,3 +395,59 @@ for b=1:B
     cboot(b) = cophenet(tree_b,Y);
 end
 ci = prctile(cboot,[2.5 97.5]) % 95% CI
+
+
+    %%
+    % === Set metric ===
+idv = idvPC;   % later: idv = idvMI;
+
+% Optional nice labels for the 6 cases:
+case_labels = {'C3-A1','C3-A2','C4-A1','C4-A2','C5-A1','C5-A2'};
+
+% Build 18 singular-only populations and compute agreement + clustering
+[pop, labels18] = build_pop18_singular(idv, case_labels);
+labels22 = [{'C2-A1-T','C2-A2-T','C7-A1-T','C7-A2-T'} labels18];
+
+cells_Ab = propsTB.newPC.cells_speed;
+pop.X = [cells_Ab cell_popsPC]; 
+
+cells_Ab = propsTB.newMI.cells_speed;
+pop.X = [cells_Ab cell_popsMI]; 
+
+
+pop.M = 22;
+S = pop18_agreement_cluster(pop);
+ord = S.leafOrder;
+% ord = 1:18;
+
+% Plot group mean agreement (diag masked), with NaNs as light gray
+A18 = S.J_mean(ord,ord);
+hf = figure(1000);
+set(hf,'Color','w','Position',[100 100 900 360]);
+subplot(1,2,1);
+h = imagesc(A18, [0 0.3]); axis square; colormap(parula); colorbar
+set(h,'AlphaData',~isnan(A18)); set(gca,'Color',[0.9 0.9 0.9]);
+set(gca,'XTick',1:22,'XTickLabel',labels22(ord),'XTickLabelRotation',45,...
+        'YTick',1:22,'YTickLabel',labels22(ord),'Ydir','normal');
+title(sprintf('Population agreement (singular-only), group mean (c=%.2f)', S.coph_r));
+
+% Plot SEM
+Ase = S.J_sem(ord,ord);
+subplot(1,2,2);
+mx = max(Ase(:),[],'omitnan'); if isempty(mx) || mx==0, mx=0.05; end
+h2 = imagesc(Ase, [0 mx]); axis square; colormap(parula); colorbar
+set(h2,'AlphaData',~isnan(Ase)); set(gca,'Color',[0.9 0.9 0.9],'Ydir','normal');
+set(gca,'XTick',[],'YTick',[]); title('SEM across animals');
+
+% (Optional) Dendrogram using same order
+hf = figure(2000);clf
+% pause(2)
+set(hf,'Color','w','Position',[100 200 900 260]);
+set(hf,'Units','inches');set(hf,'Position',[1 1 3.5 1.25])
+[Hd,~,~] = dendrogram(S.tree, 0, 'Reorder', ord, 'Orientation', 'top','ColorThreshold',0.96); ha = gca;
+set(Hd,'LineWidth',0.51); xlim([0.5 18.5]);
+set(gca,'XTick',1:22,'XTickLabel',labels22(ord),'XTickLabelRotation',45);
+ylabel('Jaccard Distance'); htit = title(sprintf('Hierarchical clustering (c = %.2f)', S.coph_r)); set(htit,'FontWeight','Normal')
+changePosition(ha,[-0.0061 0 0.06 0])
+format_axes(ha)
+save_pdf(hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);

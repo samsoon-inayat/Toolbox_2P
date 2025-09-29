@@ -147,11 +147,11 @@ for ii = 1:5
 end
 
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[3 3 4.8 1.5],'RowsCols',[1 10],'spaceRowsCols',[0.01 -0.02],...
-    'rightUpShifts',[0.31 0.4],'widthHeightAdjustment',[10 -650]);
+ff = makeFigureRowsCols(108,[3 3 6.9 1.5],'RowsCols',[1 10],'spaceRowsCols',[0.01 -0.02],...
+    'rightUpShifts',[0.31 0.4],'widthHeightAdjustment',[20 -650]);
 MY = MMFR; ysp = 0.025; mY = mmFR; titletxt = ''; ylabeltxt = {'Avg. FR (Z-score)'};
 
-stp = 0.3*magfac; widths = ([0.3*ones(1,10)])*magfac; gap = 0.16*magfac;
+stp = 0.3*magfac; widths = ([0.51*ones(1,10)])*magfac; gap = 0.16*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,ylabeltxt);
 
 for gii = 1:10
@@ -207,7 +207,7 @@ save_pdf(ff.hf,mData.pdf_folder,'allFR.pdf',600);
 [within,dvn,xlabels] = make_within_table({'Cond','Ph'},[5,2]);
 dataT = make_between_table({all_avgFR_animals},dvn);
 ra = RMA(dataT,within,{0.05,{'hsd'}});
-ra.ranova
+% ra.ranova
 print_for_manuscript(ra)
 %% run to get firing rates rest vs motion % added on Sep 13 to check the difference between locomotion and rest periods firing rate during air-off phase
 out_C_off = get_spike_rate_air_off(ei,thr,sel_pop_C);
@@ -358,7 +358,7 @@ ra.ranova
 print_for_manuscript(ra)
 %%
 magfac = mData.magfac;
-ff = makeFigureRowsCols(108,[10 3 4.4 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 0.21],'rightUpShifts',[0.31 0.35],'widthHeightAdjustment',[10 -450]);
+ff = makeFigureRowsCols(108,[5 3 4.4 1],'RowsCols',[1 3],'spaceRowsCols',[0.01 0.21],'rightUpShifts',[0.31 0.35],'widthHeightAdjustment',[10 -450]);
 MY = 0.05; ysp = 0.01; mY = -0.03; titletxt = ''; ylabeltxt = {'Avg. FR (Z-score)'};
 stp = 0.45*magfac; widths = ([2.25 1 0.4 0.4 1.3 1.3 0.5 0.5 0.5])*magfac; gap = 0.1*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});

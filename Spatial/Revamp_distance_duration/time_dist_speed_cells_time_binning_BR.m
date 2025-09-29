@@ -6,66 +6,14 @@ clear time_cells distance_cells speed_cells
 clear t_cells_T d_cells_T s_cells_T td_cells_T ds_cells_T ts_cells_T tds_cells_T ntds_cells_T
 clear t_cells_I d_cells_I s_cells_I td_cells_I ds_cells_I ts_cells_I tds_cells_I ntds_cells_I
 all_cells = {};
-si = [Ar_t_T Ar_i_T Ar_t_D Ar_i_D ArL_t_T ArL_i_T ArL_t_D ArL_i_D Ars_t_T Ars_i_T Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
+si = [Ab_t_T Ab_i_T Ar_t_D Ar_i_T ArL_t_D ArL_i_T Ars_t_D Ars_i_T Abs_t_T Abs_i_T];  propsPL = get_props_Rs(o.Rs(:,si),30);
+si = [Ab_t_T Ab_i_T Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T Abs_t_T Abs_i_T];  propsPLT = get_props_Rs(o.Rs(:,si),30);
 si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; si_cn_ap = [[1 1 2 2 3 3];[1 2 1 2 1 2]];
 % si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; 
 props = get_props_Rs(o.Rs(:,si),30);
 propsT = get_props_new(outT,met_valsT,props,si_cn_ap);
 propsD = get_props_new(outD,met_valsD,props,si_cn_ap);
-
-siB = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; si_cn_apB = [[1 1 2 2];[1 2 1 2]]; propsB = get_props_Rs(o.Rs(:,siB),30);
-propsTB = get_props_newB(outTB,met_valsTB,propsB,si_cn_apB);
-
 % [SinT,MixT,AllT] = get_the_pops(propsT,propsD);
-
-%% untuned or non-responsive cells
-pop_names = {'R','NR'};
-all_cellsnew = []; all_cellsnew_vals = [];
-for ii = 1:length(pop_names)
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsTB.newPC.cells_%s propsTB.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-    % cmdTxt = sprintf('all_cellsnew_vals = [all_cellsnew propsT.newPC.cells_%s_zvals propsD.newPC.cells_%s propsT.newMI.cells_%s propsD.newMI.cells_%s];',pop_names{ii},pop_names{ii},pop_names{ii},pop_names{ii}); eval(cmdTxt);
-end
-
-avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
-fac_names = {'PoT','MT','CN','AP'}; fac_levels = [2,2,2,2];
-[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-clc
-print_for_manuscript(ra)
-%%
-MY = 57; ysp = 5; mY = 0; ystf = 2; ysigf = 0.5;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-hf  = figure(100);clf; 
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(hf,raR{1},{'PoT:MT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
-
-%% this is basically for singularly_tuned mixed_tuned etc., but I am just checking for other to use the same code
-pop_names = {'singularly_tuned','mixed_tuned'};
-% % pop_names = {'NR','speed','dist','dist_speed','time','time_speed','time_dist','time_dist_speed','singularly_tuned','mixed_tuned','all_tuned'};
-pop_names = {'time','speed'};
-all_cellsnew = [];
-for ii = 1:length(pop_names)
-    cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsTB.newPC.cells_%s propsTB.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
-end
-
-avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
-fac_names = {'PoT','MT','CN','AP'}; fac_levels = [length(pop_names),2,2,2];
-[within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
-dataT = make_between_table({avar},dvn);
-ra = RMA(dataT,within,{0.05,{''}});
-clc
-print_for_manuscript(ra)
-
-%%
-clc
-raR = RMA_subset(ra,'AP');
-%%
-an = 1; anud = udata{an};
-figure(1000);clf
-plot(anud.ts,anud.air); hold on;
-plot(anud.ts,anud.speed);
-ylim([0 0.5])
-
-
 %% untuned or non-responsive cells
 pop_names = {'R','NR'};
 all_cellsnew = []; all_cellsnew_vals = [];

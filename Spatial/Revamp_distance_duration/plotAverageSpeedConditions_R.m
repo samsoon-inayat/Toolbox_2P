@@ -46,7 +46,7 @@ ra.ranova
 
 [xdata,mVar,semVar,combs,p,h,colorsi,xlabels] = get_vals_for_bar_graph_RMA(mData,ra,{'Conds_by_TI','hsd'},[1 1 1]);
 colors = [mData.dcolors(1);mData.dcolors(1);mData.dcolors(2);mData.dcolors(2);mData.dcolors(3);mData.dcolors(3)];
-hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 7 1.65 1],'color','w');
+hf = figure(5);clf;set(gcf,'Units','Inches');set(gcf,'Position',[5 5 1.65 1],'color','w');
 hold on;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
     'ySpacing',5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.1,...
