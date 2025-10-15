@@ -49,6 +49,7 @@ for rr = 1:size(Rs,1)
         o.rs{rr,cc} = rs'; o.MFR{rr,cc} = MFR';  o.PWs{rr,cc} = PWs';
         o.peak_locations{rr,cc} = R.peak_location';
         o.peak_locations_trials{rr,cc} = R.peak_location_trials';
+        o.peak_locations_trialsM{rr,cc} = mean(o.peak_locations_trials{rr,cc},2);
         if strcmp(R.marker_name,'airD')
           centersD = centers';
           o.centersD{rr,cc} = centersD;

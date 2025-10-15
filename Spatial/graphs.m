@@ -531,7 +531,7 @@ save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
 mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
 tcolors = repmat(mData.colors(7:8),1,2);
 % figure(300);clf; ha = gca
-ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.335],'widthHeightAdjustment',[-650 -380]);
+ff = makeFigureRowsCols(2020,[5 4 1.25 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.335],'widthHeightAdjustment',[-650 -380]);
 MY = 65; ysp = 10; mY = 0; ystf = 10; ysigf = 0.025;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'PoT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
 format_axes(gca);
@@ -540,11 +540,6 @@ set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
 shift_ticklabels(gca,-3,0)
 ylabel('Cells (%)')
 axes_title_shifts_line = [0 0 0 0]; axes_title_shifts_text = [0.051 0.5155 0.3 0];
-% ht = axes_title(ff,{1},{'PC-Based Time-Binned Data'},axes_title_shifts_line,axes_title_shifts_text,'no');
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0.0131]});
-% set_sub_graph_text(ff,1,{'Pooled'},[0.05 -0.375 0.3 0],[0.25 -0.041 0 0]);
-% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,3,{'Pooled'},{[0 -0.095]});
-% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('Pooled'),[0.051 0.0 0 0]); 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
 
 %% Figure 5G ... comparison of time-binned PC response vs non-responsive AP main effect

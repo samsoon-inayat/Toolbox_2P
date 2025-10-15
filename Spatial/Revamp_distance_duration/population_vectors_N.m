@@ -174,7 +174,7 @@ end
     conf = repmat([3 4 5],1,2);
     o = o; G = 'C'; %all_cells_1 = all_cells(:,1:2:end); all_cells_1 = cell_list_op(all_cells_1,props.good_FR,'and');
     % all_cells_1 = cell_list_op(propsD.newMI.cells_R,props.good_FR,'and'); 
-    an = 4; all_cells_1 = propsTB.newPC.cells_speed; %all_cells_1 = props.all;
+    an = 4; all_cells_1 = propsTB.newPC.cells_time; %all_cells_1 = props.all;
     good_FR = all_cells_1(:,[1 3 2 4]);
     cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
     tim = 1;

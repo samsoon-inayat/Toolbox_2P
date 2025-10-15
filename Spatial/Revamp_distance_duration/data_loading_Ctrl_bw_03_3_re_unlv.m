@@ -85,7 +85,8 @@ close all;
 disp('Done');
 
 %% new analysis
-[udata,udata1] = get_unlv_analysis_data(ei);
+[udataG,udata1G] = get_unlv_analysis_data(ei);
+udata1 = udata1G;
 % udataT = get_unlv_analysis_data_bin(udata1,0.3,'time');
 % udataD = get_unlv_analysis_data_bin(udata1,3,'distance');
 % udataT = get_unlv_analysis_data_time_bin(udata1,0.3);

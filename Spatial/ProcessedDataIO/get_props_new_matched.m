@@ -21,7 +21,8 @@ for cti = 1:length(ctnums)
         for ii = 1:size(si,2)
             cn = si(1,ii); ap = si(2,ii);
             idx = 3; pvals = [MVT{1}{an,cn,ap}.PC(:,idx) MVD{2}{an,cn,ap}.PC(:,idx) MVT{3}{an,cn,ap}.PC(:,idx)];
-            idx = 2; zvals = [MVT{1}{an,cn,ap}.PC(:,idx) MVD{2}{an,cn,ap}.PC(:,idx) MVT{3}{an,cn,ap}.PC(:,idx)];
+            idx = 2; zvals = [MVT{1}{an,cn,ap}.PC(:,idx) MVT{2}{an,cn,ap}.PC(:,idx) MVT{3}{an,cn,ap}.PC(:,idx)];
+            % idx = 2; zvals = [MVD{1}{an,cn,ap}.PC(:,idx) MVD{2}{an,cn,ap}.PC(:,idx) MVD{3}{an,cn,ap}.PC(:,idx)];
             this_cells = ((pvals < 0.05) * [4; 2; 1]) == ctnums(cti);
             all_cells_an = [all_cells_an this_cells];
             all_cells_an_zvals = [all_cells_an_zvals zvals];
@@ -41,7 +42,8 @@ for cti = 1:length(ctnums)
         for ii = 1:size(si,2)
             cn = si(1,ii); ap = si(2,ii);
             idx = 3; pvals = [MVT{1}{an,cn,ap}.MI(:,idx) MVD{2}{an,cn,ap}.MI(:,idx) MVT{3}{an,cn,ap}.MI(:,idx)];
-            idx = 2; zvals = [MVT{1}{an,cn,ap}.MI(:,idx) MVD{2}{an,cn,ap}.MI(:,idx) MVT{3}{an,cn,ap}.MI(:,idx)];
+            idx = 2; zvals = [MVT{1}{an,cn,ap}.MI(:,idx) MVT{2}{an,cn,ap}.MI(:,idx) MVT{3}{an,cn,ap}.MI(:,idx)];
+            % idx = 2; zvals = [MVD{1}{an,cn,ap}.PC(:,idx) MVD{2}{an,cn,ap}.PC(:,idx) MVD{3}{an,cn,ap}.PC(:,idx)];
             this_cells = ((pvals < 0.05) * [4; 2; 1]) == ctnums(cti);
             all_cells_an = [all_cells_an this_cells];
             all_cells_an_zvals = [all_cells_an_zvals zvals];

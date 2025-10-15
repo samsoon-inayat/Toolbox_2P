@@ -1,22 +1,24 @@
-%% first find the variables time_cells, distance_cells, and speed_cells in the final_time_dist_bin...m file
-variable_combs = {'FR_time','FR_dist','FR_speed'};
-metric = 'MI';
-metric = 'PC';
-clear time_cells distance_cells speed_cells
-clear t_cells_T d_cells_T s_cells_T td_cells_T ds_cells_T ts_cells_T tds_cells_T ntds_cells_T
-clear t_cells_I d_cells_I s_cells_I td_cells_I ds_cells_I ts_cells_I tds_cells_I ntds_cells_I
-all_cells = {};
-si = [Ar_t_T Ar_i_T Ar_t_D Ar_i_D ArL_t_T ArL_i_T ArL_t_D ArL_i_D Ars_t_T Ars_i_T Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
-si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; si_cn_ap = [[1 1 2 2 3 3];[1 2 1 2 1 2]];
-sib = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; propsB = get_props_Rs(o.Rs(:,sib),30);
-% si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; 
-props = get_props_Rs(o.Rs(:,si),30);
-propsT = get_props_new(outT,met_valsT,props,si_cn_ap);
-propsD = get_props_new(outD,met_valsD,props,si_cn_ap);
-
-siB = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; si_cn_apB = [[1 1 2 2];[1 2 1 2]];
-propsTB = get_props_newB(outTB,met_valsTB,propsB,si_cn_apB);
-% [SinT,MixT,AllT] = get_the_pops(propsT,propsD);
+% %% first find the variables time_cells, distance_cells, and speed_cells in the final_time_dist_bin...m file
+% variable_combs = {'FR_time','FR_dist','FR_speed'};
+% metric = 'MI';
+% metric = 'PC';
+% clear time_cells distance_cells speed_cells
+% clear t_cells_T d_cells_T s_cells_T td_cells_T ds_cells_T ts_cells_T tds_cells_T ntds_cells_T
+% clear t_cells_I d_cells_I s_cells_I td_cells_I ds_cells_I ts_cells_I tds_cells_I ntds_cells_I
+% all_cells = {};
+% si = [Ar_t_T Ar_i_T Ar_t_D Ar_i_D ArL_t_T ArL_i_T ArL_t_D ArL_i_D Ars_t_T Ars_i_T Ars_t_D Ars_i_D]; propsPL = get_props_Rs(o.Rs(:,si),30);
+% si = [Ar_t_T Ar_i_T ArL_t_T ArL_i_T Ars_t_T Ars_i_T]; si_cn_ap = [[1 1 2 2 3 3];[1 2 1 2 1 2]];
+% sib = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; propsB = get_props_Rs(o.Rs(:,sib),30);
+% % si = [Ar_t_D Ar_i_D ArL_t_D ArL_i_D Ars_t_D Ars_i_D]; 
+% props = get_props_Rs(o.Rs(:,si),30);
+% propsT = get_props_new(outT,met_valsT,props,si_cn_ap);
+% propsD = get_props_new(outD,met_valsD,props,si_cn_ap);
+% propsTDM = get_props_new_matched({outT;outD},{met_valsT;met_valsD},props,si_cn_ap);
+% 
+% 
+% siB = [Ab_t_T Ab_i_T Abs_t_T Abs_i_T]; si_cn_apB = [[1 1 2 2];[1 2 1 2]];
+% propsTB = get_props_newB(outTB,met_valsTB,propsB,si_cn_apB);
+% % [SinT,MixT,AllT] = get_the_pops(propsT,propsD);
 %%
 cell_popsPC = [];%[propsT.newPC.cells_time propsD.newPC.cells_dist propsT.newPC.cells_speed];
 cell_popsMI = [];%[propsT.newMI.cells_time propsD.newMI.cells_dist propsT.newMI.cells_speed];
