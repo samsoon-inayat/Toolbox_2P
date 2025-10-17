@@ -11,7 +11,7 @@
     conf = repmat([3 4 5],1,2);
     o = o; G = 'C'; %all_cells_1 = all_cells(:,1:2:end); all_cells_1 = cell_list_op(all_cells_1,props.good_FR,'and');
     % all_cells_1 = cell_list_op(propsD.newMI.cells_R,props.good_FR,'and'); 
-    an = 4; all_cells_1 = propsTDM.newPC.cells_speed; %all_cells_1 = props.all;
+    an = 4; all_cells_1 = propsTDM.newMI.cells_speed; %all_cells_1 = props.all;
     good_FR = all_cells_1(:,[1 3 5 2 4 6]);
     cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
     for ii = 1:size(ff.h_axes,2)
@@ -164,10 +164,10 @@ end
 
 %% population vector and correlation sensory (Dist - time) change var tim
     magfac = mData.magfac; pdfopen = 0;
-    ff = makeFigureRowsCols(108,[6 3 2.5 2.15],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.1 0.12],'widthHeightAdjustment',[10 -140]);
+    ff = makeFigureRowsCols(108,[6 3 3.25 2],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.13 0.14],'widthHeightAdjustment',[10 -110]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
-    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.08)*magfac; gap = 0.115*magfac;
+    stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.08)*magfac; gap = 0.115*magfac; widths(3) = 0.84; widths(4) = 0.84;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     % shift_axes(ff,[4 5 6;4 5 6;4 5 6],0.1,gap);
     % shift_axes_up(ff,[1 2 3 4;1 2 3 4],[0 0.15]);
@@ -221,7 +221,7 @@ end
         end
 %         textstr = sprintf('C%d',conf(ii)); set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.085 0 0]);
         format_axes(gca);
-        if ii == 6
+        if ii == 4
           mM = min(tmRR(:)); MM = max(tmRR(:)); 
           [hc,hca] = putColorBar(gca,cbar_p_shift,[m_mRR M_mRR],5,'eastoutside',[0.15 0.18 0.12 0.3]);
         end
@@ -265,7 +265,7 @@ end
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
         format_axes(gca);
         mM = -0.3;min(tmRR(:)); MM = max(tmRR(:));
-        if ii == 6
+        if ii == 4
           [hc,hca] = putColorBar(gca,cbar_p_shift,[m_CRc M_CRc],5,'eastoutside',[0.13 0.18 0.12 0.3]);
         end
         
@@ -308,7 +308,7 @@ end
 %         set_axes_top_text_no_line(ff.hf,gca,textstr,[0 -0.07 0 0]);
         format_axes(gca);
         mM = -0.3;min(tmRR(:)); MM = max(tmRR(:)); 
-        if ii == 6
+        if ii == 4
           [hc,hca] = putColorBar(gca,cbar_p_shift,[m_aCRc M_aCRc],5,'eastoutside',[0.13 0.18 0.12 0.3]);
         end
     end

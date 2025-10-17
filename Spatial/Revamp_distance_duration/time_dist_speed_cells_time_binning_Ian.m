@@ -41,18 +41,22 @@ raR = RMA_subset(ra,'MT');
 %%
 MY = 57; ysp = 5; mY = 0; ystf = 2; ysigf = 0.5;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
 hf  = figure(100);clf; 
-[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(hf,raR{1},{'AP:PoT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(hf,raR{2},{'AP:PoT','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
 
 %% this is basically for singularly_tuned mixed_tuned etc., but I am just checking for other to use the same code
 pop_names = {'singularly_tuned','mixed_tuned'};
 % % pop_names = {'NR','speed','dist','dist_speed','time','time_speed','time_dist','time_dist_speed','singularly_tuned','mixed_tuned','all_tuned'};
-% pop_names = {'time','speed'};
-all_cellsnew = [];
+pop_names = {'time','speed'};
+all_cellsnew = []; all_cellsnew_peakvalsT = [];
 for ii = 1:length(pop_names)
     cmdTxt = sprintf('all_cellsnew = [all_cellsnew propsTB.newPC.cells_%s propsTB.newMI.cells_%s];',pop_names{ii},pop_names{ii}); eval(cmdTxt);
+
+    si = [[Ab_t_T Ab_i_T Abs_t_T Abs_i_T]]; propsPL = get_props_Rs(o.Rs(:,si),30);
+    all_cellsnew_peakvalsT = [all_cellsnew_peakvalsT propsPL.peak_locations propsPL.peak_locations];
 end
 
 avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
+avar = exec_fun_on_cell_mat(all_cellsnew_peakvalsT,'nanmean',all_cellsnew);
 fac_names = {'PoT','MT','CN','AP'}; fac_levels = [length(pop_names),2,2,2];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
@@ -63,6 +67,10 @@ print_for_manuscript(ra)
 %%
 clc
 raR = RMA_subset(ra,'MT');
+
+%%
+clc
+raRR = RMA_bonferroni(raR{1},'CN');
 %%
 an = 1; anud = udata{an};
 figure(1000);clf

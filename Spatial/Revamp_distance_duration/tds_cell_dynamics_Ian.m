@@ -37,6 +37,20 @@ for an = 1:5
     end
 end
 
+cell_popsPCB = [];%[propsT.newPC.cells_time propsD.newPC.cells_dist propsT.newPC.cells_speed];
+cell_popsMIB = [];%[propsT.newMI.cells_time propsD.newMI.cells_dist propsT.newMI.cells_speed];
+for an = 1:5
+    cni = 1;
+    for cc = 1:4
+        cell_popsPCB{an,cni} = propsTB.newPC.cells_time{an,cc};
+        cell_popsMIB{an,cni} = propsTB.newMI.cells_time{an,cc};
+        cni = cni + 1;
+        cell_popsPCB{an,cni} = propsTB.newPC.cells_speed{an,cc};
+        cell_popsMIB{an,cni} = propsTB.newMI.cells_speed{an,cc};
+        cni = cni + 1;
+    end
+end
+
 %%
 clc
 eq = [];
@@ -69,6 +83,8 @@ end
 
 pvals = pvalsPC_a; zvals = zvalsPC_a;
 disp('Done')
+
+
 %%
 clc
 % Use either idv = idvPC or idvMI
@@ -93,11 +109,11 @@ fprintf('Wilcoxon signed-rank (Δ>0): p = %.4g\n', pW);
 
 %% Set input (you already have these in workspace)
 % idv = idvPC;              % or: idv = idvMI;
-apstr = {'On','Off'};
+
 txl_all6 = []; cnti = 1;
 for cn = 1:3
     for ap = 1:2
-        txl_all6{cnti} = sprintf('C%d-A%s',cn+2,apstr{ap});
+        txl_all6{cnti} = sprintf('C%d-A%d',cn+2,ap);
         cnti = cnti + 1;
     end
 end
@@ -106,11 +122,24 @@ txl_all18 = []; cnti = 1;
 for cn = 1:3
     for ap = 1:2
         for cti = 1:3
-            txl_all18{cnti} = sprintf('C%d-A%s-%s',cn+2,apstr{ap},ct{cti});
+            txl_all18{cnti} = sprintf('C%d-A%d-%s',cn+2,ap,ct{cti});
             cnti = cnti + 1;
         end
     end
 end
+
+ct = {'T','S'};
+txl_all8B = []; cnti = 1;
+cnums = [2 7];
+for cn = 1:2
+    for ap = 1:2
+        for cti = 1:2
+            txl_all8B{cnti} = sprintf('C%d-A%d-%s',cnums(cn),ap,ct{cti});
+            cnti = cnti + 1;
+        end
+    end
+end
+
 
 %% --- Pick one animal for detailed view
 idv = idvPC;
@@ -122,9 +151,9 @@ adj_idx = sub2ind([6 6], 1:5, 2:6);
 mean_adj = mean(D_mean(adj_idx), 'omitnan');
 fprintf('Animal %d: mean adjacent identity distance = %.3f\n', a, mean_adj);
 
-ff = makeFigureRowsCols(107,[5 3 3.75 2.25],'RowsCols',[2 4],'spaceRowsCols',[0.2 0.0451],'rightUpShifts',[0.01 0.15],'widthHeightAdjustment',[-10 -200]);
+ff = makeFigureRowsCols(107,[5 3 3.65 2.25],'RowsCols',[2 4],'spaceRowsCols',[0.2 0.0451],'rightUpShifts',[0.01 0.119],'widthHeightAdjustment',[-10 -200]);
     set(gcf,'color','w');     ylims = [0 1];
-    stp = 0.31; widths = 0.35*([2 2 2 2 0.4 0.4]+1.05); gap = -0.30251572191; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.2575; widths = 0.35*([2 2 2 2 0.4 0.4]+1.05); gap = -0.30251572191; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
     gap1 = 0.27; widths1 = 1*0.75; height1 = widths1 - 0.05;
 
 cmaplims = [0 0.35];
@@ -229,13 +258,6 @@ for b = 1:3
         P.mean_sem.dynamic_mean(b), P.mean_sem.dynamic_sem(b), ...
         P.mean_sem.middle_mean(b),  P.mean_sem.middle_sem(b));
 end
-
-%% (Optional) save results
-% save results_idv.mat D_cell D_mean D_sem N_pair P_same G P
-
-%%
-
-
 %%
     [OIo,mOIo,semOIo,OI_mat,p_vals,h_vals,all_CI,mCI,semCI,all_CI_mat,uni] = get_overlap_index(cell_popsMI,0.5,0.05);
     % mOI = mCI; semOI = semCI;
@@ -304,17 +326,58 @@ end
         colormap parula
     end
     save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map.pdf'),600);
+   %% for clustering
+   ff = makeFigureRowsCols(107,[5 3 6.9 2.5],'RowsCols',[2 3],'spaceRowsCols',[0.3 -0.02],'rightUpShifts',[1 0.18],'widthHeightAdjustment',[-10 -300]);
+    set(gcf,'color','w');     ylims = [0 1];
+    stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.75; gap = 0.18; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.35; widths = 0.5*([2 2 2 0.4 0.4 0.4]+1.95); gap = 0.2; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+
+       ff = makeFigureRowsCols(107,[5 3 6.9 1.25],'RowsCols',[1 1],'spaceRowsCols',[0.3 -0.02],'rightUpShifts',[1 0.18],'widthHeightAdjustment',[-10 -300]);
+    set(gcf,'color','w');     ylims = [0 1];
+    stp = 0.25; widths = [2 2 2 0.4 0.4 0.4]+0.75; gap = 0.18; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    stp = 0.35; widths = 0.5*([2 2 2 0.4 0.4 0.4]+1.95); gap = 0.2; adjust_axes(ff,ylims,stp,widths,gap,{'Euclidean Distance'});
+    %
+    hms = {1-mOIo,mUni1,mUni2};
+    ahc_col_th = 0.7;
+    
+    hms1 = {1-mOIo,mUni1,mUni2};
+    for hi = 1%:length(hms1)
+        mOI1 = hms1{hi}; mOI1(mask1==1) = 0; mOI1(isnan(mOI1))=0; Di = squareform(mOI1,'tovector');%pdist(mOI1,@naneucdist); 
+        % Di = pdist(mOI1,@naneucdist);
+        tree = linkage(Di,'average'); [c,d] = cophenet(tree,Di); r = corr(Di',d','type','spearman');    leafOrder = optimalleaforder(tree,Di);
+        hf = figure(100000000); %     leafOrder1 = leafOrder([1:3 10:12 4:9]);
+    %     leafOrder1 = circshift(leafOrder,3);
+        figure(hf);clf
+        [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);ylims = ylim; xlims = xlim;    set(gca,'xtick',1:length(txl),'ytick',[]);
+        set(gcf,'units','inches'); set(gcf,'Position',[5 2 0.9 0.5]); close(hf);
+        axes(ff.h_axes(1,hi));
+        [H,T,TC] = dendrogram(tree,'Orientation','top','ColorThreshold',ahc_col_th*max(tree(:,3)),'Reorder',leafOrder);
+        set(H,'linewidth',0.5); set(gca,'xtick',1:length(txl),'xticklabels',txl(leafOrder));xtickangle(45); format_axes(gca);
+        if hi == 1
+            hx = ylabel({'Euc. Dist.'});changePosition(hx,[0 0 0]);
+        end
+    %     xlim([xlims(1)+0.5 xlims(2)-0.5]);
+%         changePosition(gca,[0.0 0.0 0.07 0.05]); text(0.5,ylims(2)+0,sprintf('CC = %.2f',c),'FontSize',6);
+        hcct = set_axes_top_text_no_line(ff.hf,gca,sprintf('CC = %.2f',c),[0 0.05 0 0]); set(hcct,'FontWeight','Normal')
+    end
+
+    save_pdf(ff.hf,mData.pdf_folder,sprintf('OI_Map_cluster.pdf'),600);
+
 
     %%
     % === Set metric ===
+txl = [txl_all8B txl_all18]
 idv = idvPC;   % later: idv = idvMI;
 
 % Optional nice labels for the 6 cases:
-case_labels = {'C3-AOn','C3-AOff','C4-AOn','C4-AOff','C5-AOn','C5-AOff'};
+case_labels = {'C3-A1','C3-A2','C4-A1','C4-A2','C5-A1','C5-A2'};
 
 % Build 18 singular-only populations and compute agreement + clustering
 [pop, labels18] = build_pop18_singular(idv, case_labels);
-pop.X = cell_popsMI;
+labels18 = txl;
+pop.M = 26;
+pop.X = [cell_popsPCB cell_popsPC];
+pop.X = [cell_popsMIB cell_popsMI];
 S = pop18_agreement_cluster(pop);
 ord = S.leafOrder;
 % ord = 1:18;
@@ -324,11 +387,11 @@ A18 = S.J_mean(ord,ord);
 hf = figure(1000);
 set(hf,'Color','w','Position',[100 100 900 360]);
 subplot(1,2,1);
-h = imagesc(A18, [0 0.3]); axis square; colormap(parula); colorbar
+h = imagesc(A18, [0 0.1]); axis square; colormap(parula); colorbar
 set(h,'AlphaData',~isnan(A18)); set(gca,'Color',[0.9 0.9 0.9]);
-set(gca,'XTick',1:18,'XTickLabel',labels18(ord),'XTickLabelRotation',45,...
-        'YTick',1:18,'YTickLabel',labels18(ord),'Ydir','normal');
-title(sprintf('Group mean', S.coph_r));
+set(gca,'XTick',1:length(ord),'XTickLabel',labels18(ord),'XTickLabelRotation',45,...
+        'YTick',1:length(ord),'YTickLabel',labels18(ord),'Ydir','normal');
+title(sprintf('Population agreement (singular-only), group mean (c=%.2f)', S.coph_r));
 
 % Plot SEM
 Ase = S.J_sem(ord,ord);
@@ -344,8 +407,8 @@ hf = figure(2000);clf
 set(hf,'Color','w','Position',[100 200 900 260]);
 set(hf,'Units','inches');set(hf,'Position',[1 1 3.5 1.25])
 [Hd,~,~] = dendrogram(S.tree, 0, 'Reorder', ord, 'Orientation', 'top','ColorThreshold',0.96); ha = gca;
-set(Hd,'LineWidth',0.51); xlim([0.5 18.5]);
-set(gca,'XTick',1:18,'XTickLabel',labels18(ord),'XTickLabelRotation',45);
+set(Hd,'LineWidth',0.51); xlim([0.5 26.5]);
+set(gca,'XTick',1:length(ord),'XTickLabel',labels18(ord),'XTickLabelRotation',45);
 ylabel('Jaccard Distance'); htit = title(sprintf('Hierarchical clustering (c = %.2f)', S.coph_r)); set(htit,'FontWeight','Normal')
 changePosition(ha,[-0.0061 0 0.06 0])
 format_axes(ha)
@@ -376,8 +439,8 @@ labels22 = [{'C2-A1-T','C2-A2-T','C7-A1-T','C7-A2-T'} labels18];
 cells_Ab = propsTB.newPC.cells_speed;
 pop.X = [cells_Ab cell_popsPC]; 
 
-cells_Ab = propsTB.newMI.cells_speed;
-pop.X = [cells_Ab cell_popsMI]; 
+% cells_Ab = propsTB.newMI.cells_speed;
+% pop.X = [cells_Ab cell_popsMI]; 
 
 
 pop.M = 22;
