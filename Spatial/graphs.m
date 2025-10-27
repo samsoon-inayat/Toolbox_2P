@@ -957,3 +957,69 @@ set(gca,'YTickLabel',[])
 
 ht = set_axes_top_text(ff.hf,ff.h_axes(1,2:3),sprintf('MI (Pooled)'),{0.051,[0.0 0.0 0 0]}); 
 save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%% 3E
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors([4 6]),1,2);
+magfac = mData.magfac;
+ff = makeFigureRowsCols(2020,[5 4 2.25 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.335],'widthHeightAdjustment',[-350 -500]);
+MY = 20; ysp = 5; mY = 0; ystf = 5; ysigf = 0.5;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.25*magfac; widths = ([0.9 0.9 0.5 0.5 0.25 0.25 0.25 0.25]+0.0015)*magfac; gap = 0.10915*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+% shift_axes(ff,5:8,0.35,gap);
+
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{1},{'AP:PoT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+% make_bars_hollow(hbs(2:2:end))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Sing','Mix'});xtickangle(20);
+ylabel({'Cells (%)'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air-On','Air-Off'},{[0 0]});
+ht = set_axes_top_text(ff.hf,ff.h_axes(1,1),sprintf('PC (Pooled)'),{0.051,[0.0 0.0 0 0]}); 
+
+% mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+% tcolors = repmat(mData.colors(1:3),1,3);
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raR{2},{'AP:PoT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+% make_bars_hollow(hbs(2:2:end))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Sing','Mix'});xtickangle(20);
+% ylabel({'Peak Loc. (s)'});
+set(gca,'YTickLabel',[])
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air-On','Air-Off'},{[0 0]});
+ht = set_axes_top_text(ff.hf,ff.h_axes(1,2),sprintf('MI (Pooled)'),{0.051,[0.0 0.0 0 0]}); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+%% 3E
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors([1]),1,2);
+magfac = mData.magfac;
+ff = makeFigureRowsCols(2020,[5 4 1.85 1],'RowsCols',[1 2],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.335],'widthHeightAdjustment',[-150 -500]);
+MY = 20; ysp = 5; mY = 0; ystf = 5; ysigf = 0.5;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.25*magfac; widths = ([0.45 0.95 0.45 0.5 0.25 0.25 0.25 0.25]+0.0015)*magfac; gap = 0.10915*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+% shift_axes(ff,5:8,0.35,gap);
+
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),raR{1},{'AP','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+make_bars_hollow(hbs(2:2:end))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'AOn','AOff'});xtickangle(20);
+ylabel({'Cells (%)'});
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air-On','Air-Off'},{[0 0]});
+ht = set_axes_top_text(ff.hf,ff.h_axes(1,1),sprintf('PC (Pooled)'),{0.051,[0.0 0.0 0 0]}); 
+
+% mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors([4 6]),1,3);
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,2),raR{2},{'AP:PoT','hsd',0.05},[1 1.5],tcolors,[mY MY ysp ystf ysigf],mData);
+% make_bars_hollow(hbs(2:2:end))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Time','Mov.'});xtickangle(20);
+% ylabel({'Peak Loc. (s)'});
+set(gca,'YTickLabel',[])
+set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Air-On','Air-Off'},{[0 0]});
+ht = set_axes_top_text(ff.hf,ff.h_axes(1,2),sprintf('MI (Pooled)'),{0.051,[0.0 0.0 0 0]}); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);

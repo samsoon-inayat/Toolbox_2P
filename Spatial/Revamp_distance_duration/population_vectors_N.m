@@ -164,17 +164,20 @@ end
 
 %% population vector and correlation sensory (Dist - time) change var tim
     magfac = mData.magfac; pdfopen = 0;
-    ff = makeFigureRowsCols(108,[6 3 3.25 2],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.13 0.14],'widthHeightAdjustment',[10 -110]);
+    ff = makeFigureRowsCols(108,[6 3 3.25 2.05],'RowsCols',[3 4],'spaceRowsCols',[0.03 -0.01],'rightUpShifts',[0.13 0.14],'widthHeightAdjustment',[10 -130]);
 %     set(gcf,'color','w');    set(gcf,'Position',[10 3 3.5 3.75]);
     MY = 8; ysp = 1; mY = 0; % responsive cells
     stp = 0.15*magfac; widths = (0.5*ones(1,12)-0.08)*magfac; gap = 0.115*magfac; widths(3) = 0.84; widths(4) = 0.84;
     adjust_axes(ff,[mY MY],stp,widths,gap,{'Cell #'});
     % shift_axes(ff,[4 5 6;4 5 6;4 5 6],0.1,gap);
     % shift_axes_up(ff,[1 2 3 4;1 2 3 4],[0 0.15]);
-    conf = repmat([3 4 5],1,2);
+    conf = repmat([2 7],1,2);
     o = o; G = 'C'; %all_cells_1 = all_cells(:,1:2:end); all_cells_1 = cell_list_op(all_cells_1,props.good_FR,'and');
     % all_cells_1 = cell_list_op(propsD.newMI.cells_R,props.good_FR,'and'); 
-    an = 4; all_cells_1 = propsTB.newPC.cells_time; %all_cells_1 = props.all;
+    pti = 4;
+    paneltype = {'Time-Modulated Cells (PC)','Movement-Modulated Cells (PC)','Time-Modulated Cells (MI)','Movement-Modulated Cells (MI)'};
+    poptype = {propsTB.newPC.cells_time,propsTB.newPC.cells_speed,propsTB.newMI.cells_time,propsTB.newMI.cells_speed};
+    an = 4; all_cells_1 = poptype{pti}; %all_cells_1 = props.all;
     good_FR = all_cells_1(:,[1 3 2 4]);
     cbar_p_shift = [-0.011 0.09 -0.03 -0.3];
     tim = 1;
@@ -313,8 +316,9 @@ end
         end
     end
     colormap jet
-    ht = set_axes_top_text(gcf,ff.h_axes(1,1:2),'AOn',{0.08,[0.2 -0.05 0 0]});set(ht,'FontWeight','Bold');
-    ht = set_axes_top_text(gcf,ff.h_axes(1,3:4),'AOff',{0.08,[0.17 -0.05 0 0]});set(ht,'FontWeight','Bold');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,1:2),'AOn',{0.08,[0.1 -0.05 0 0]});set(ht,'FontWeight','Normal');
+    ht = set_axes_top_text(gcf,ff.h_axes(1,3:4),'AOff',{0.08,[0.25 -0.05 0 0]});set(ht,'FontWeight','Normal');
+    ht = set_axes_top_text_no_line(gcf,ff.h_axes(1,3:4),paneltype{pti},[-0.15 0.18 0 0]);set(ht,'FontWeight','Normal','FontSize',7.25);
     filename = save_pdf(ff.hf,mData.pdf_folder,sprintf('pop_vectors_%d_%d.pdf',ntrials,tim),600);
 if pdfopen
 winopen(filename)

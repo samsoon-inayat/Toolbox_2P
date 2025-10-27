@@ -11,12 +11,13 @@ function [D_cell, D_mean, D_sem, N_pair, P_same, P_same_sem] = jaccard_animal(id
 
 C = size(idv,2);
 nCells = size(idv{animal_idx,1},1);
+conds = size(idv{1,1},2);
 
 % Stack to cells x 3 x C
-X3 = false(nCells,3,C);
+X3 = false(nCells,conds,C);
 for c = 1:C
     x = logical(idv{animal_idx,c});
-    if size(x,1)~=nCells || size(x,2)~=3
+    if size(x,1)~=nCells || size(x,2)~=conds
         error('Animal %d: size mismatch at case %d', animal_idx, c);
     end
     X3(:,:,c) = x;

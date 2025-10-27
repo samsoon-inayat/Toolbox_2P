@@ -56,7 +56,7 @@ for ii = 1:length(pop_names)
 end
 
 avar = exec_fun_on_cell_mat(all_cellsnew,'percent');
-avar = exec_fun_on_cell_mat(all_cellsnew_peakvalsT,'nanmean',all_cellsnew);
+% avar = exec_fun_on_cell_mat(all_cellsnew_peakvalsT,'nanmean',all_cellsnew);
 fac_names = {'PoT','MT','CN','AP'}; fac_levels = [length(pop_names),2,2,2];
 [within,dvn,xlabels,awithinD] = make_within_table(fac_names,fac_levels);
 dataT = make_between_table({avar},dvn);
@@ -392,3 +392,22 @@ tcolors = repmat(mData.dcolors(8:10),1,3); MY = 30; ysp = 1; mY = 0; ystf = 2; y
 [hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova([],ra,{'CN','hsd',0.05},[1 1.75],tcolors,[mY MY ysp ystf ysigf],mData);
 
 %%
+zspb = NaN(5,718531);
+for an = 1:5
+    % figure(10000);clf;
+    tud = udata{an}; 
+    C2 = tud.C2; air_on = tud.air_trials_on(C2); ts = tud.ts(C2); speed = tud.speed(C2); air = tud.air(C2);
+    fi = find(air_on == 1,1,'first');
+    li = find(air_on == 10,1,'last')+100;
+    % plot(ts(fi:li),speed(fi:li));
+    % hold on;
+    % plot(ts(fi:li),air(fi:li));
+    % pause(1)
+    [fi length(ts(fi:li))];
+    zspb(an,1:length(ts(fi:li))) = speed(fi:li);
+end
+
+% xlim([90 241])
+figure(10000);
+clf;
+plot(zspb)
