@@ -34,18 +34,17 @@ mD.magfac = 1;
 disp('Done');
 
 %%
-if 0
+if 1
 %     make_db(T_C);
-    process_h264(animal);
+    owr = 0;
+    animal = process_h264(animal,owr);
+    animal = process_behavior_signals(animal);
+    for an = 1:length(animal)
+        animal(an).b = load(animal(an).mat);
+    end
 end
 disp('Done');
-%%
-for an = 1:length(animal)
-    animal(an).b = load(animal(an).mat);
-end
-% animal(1).b.t_start = 444;
-%%
-animal = process_behavior_signals(animal);
+
 %%
 animal = air_signal_reader(animal);
 %%

@@ -64,6 +64,7 @@ end
             % If mp4 already exists, skip conversion
             if exist(out_file, 'file') & owr == 0
                 fprintf('Skipping (already exists): %s\n', mp4_name);
+                animal(an).video.mp4.(cam) = out_file;
                 continue
             end
 
