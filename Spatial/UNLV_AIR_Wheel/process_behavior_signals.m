@@ -1,0 +1,121 @@
+function animal = process_behavior_signals(animal)
+
+if ~exist('animal','var')
+    animal = evalin('base','animal')
+end
+
+n = 0;
+%%
+for an = 1:numel(animal)
+    b = animal(an).b;
+    clear o;
+    o.channels = b.channelNames;
+    % idx = find(b.t > b.t_start,1,'first');
+    d = b.X;
+    for ii = 1:size(d,2)
+        channel = o.channels{ii};
+        if strcmp(channel,'EncCount')
+            continue;
+        end
+        cmdText = sprintf('o.%s_f = find_falling_edge(d(:,ii),-0.5,2);',channel);
+        eval(cmdText);
+        cmdText = sprintf('o.%s_r = find_rising_edge(d(:,ii),0.5,2);',channel);
+        eval(cmdText);
+        if strcmp(channel,'Air')
+            stim = d(:,ii)';
+            stim = stim - min(stim);
+            o.air_raw = stim/max(stim);
+        end
+    end
+    o.number_of_samples = size(d(:,1));
+    o.si = 1/b.fs;
+    try
+        ind = find(strcmp(o.channels,'ChA'));
+        cha = d(:,ind);
+        
+        ind = find(strcmp(o.channels,'ChB'));
+        chb = d(:,ind);
+        o.encoderCount = processEncodeSignals(cha,chb);
+    catch
+        ind = find(strcmp(o.channels,'EncCount'));
+        EC = d(:,ind);
+        o.encoderCount = EC;
+    end
+    
+    fields = fieldnames(o);
+    for ii = 1:length(fields)
+        cmdText = sprintf('b.%s = o.%s;',fields{ii},fields{ii});
+        eval(cmdText);
+    end
+    animal(an).b = b;
+end
+
+
+
+
+
+function dist = processEncodeSignals(chb,cha)
+n = 0;
+chat = cha > 2.5;
+chbt = chb > 2.5;
+encoderCount = 0;
+valP = [chat(1) chbt(1)];
+dist(1) = encoderCount;
+for ii = 2:length(cha)
+    valC = [chat(ii) chbt(ii)];
+    if valC == valP
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[0 0]) && isequal(valC,[1 0])
+        encoderCount = encoderCount + 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[0 0]) && isequal(valC,[0 1])
+        encoderCount = encoderCount - 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[1 0]) && isequal(valC,[1 1])
+        encoderCount = encoderCount + 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[1 0]) && isequal(valC,[0 0])
+        encoderCount = encoderCount - 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[0 1]) && isequal(valC,[0 0])
+        encoderCount = encoderCount + 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[0 1]) && isequal(valC,[1 1])
+        encoderCount = encoderCount - 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[1 1]) && isequal(valC,[0 1])
+        encoderCount = encoderCount + 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+    if isequal(valP,[1 1]) && isequal(valC,[1 0])
+        encoderCount = encoderCount - 1;
+        valP = valC;
+        dist(ii) = encoderCount;
+        continue;
+    end
+end
+dist = dist';
+
