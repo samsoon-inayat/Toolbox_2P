@@ -14,8 +14,10 @@ rdata_dir = fullfile(main_dir,'RData'); mD.rdata_dir = rdata_dir;
 pdata_dir = fullfile(main_dir,'PData'); mD.pdata_dir = pdata_dir;
 adata_dir = fullfile(main_dir,'AData'); mD.adata_dir = adata_dir;
 
-animal_list = {'NML_GC_01','NML_GC_01'};
-date_list = {'2025_12_15','2025_12_16'};
+% animal_list = {'NML_GC_01','NML_GC_01'};
+% date_list = {'2025_12_15','2025_12_16'};
+animal_list = {'NML_GC_01'};
+date_list = {'2025_12_16'};
 
 animal = get_exp_info(mD,animal_list,date_list);
 
@@ -36,7 +38,7 @@ disp('Done');
 %%
 if 1
 %     make_db(T_C);
-    owr = 0;
+    owr = 1;
     animal = process_h264(animal,owr);
     animal = process_behavior_signals(animal);
     for an = 1:length(animal)
