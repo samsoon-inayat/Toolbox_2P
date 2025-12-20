@@ -46,7 +46,7 @@ end
 disp('Done');
 
 %%
-animal = air_signal_reader(animal);
+% animal = air_signal_reader(animal);
 %%
 b = animal(1).b;
 b.dist = b.encoderCount * pi * 32/b.countsPerRev; % in cm
@@ -81,11 +81,23 @@ plot(b.tm,b.fSpeed);
 hold on;
 plot(b.tm,max(b.fSpeed)*(b.air_bin)/max(b.air_raw))
 box off;
-xlabel('Time (sec)');
+xlabel('Time (min)');
 ylabel('Speed cm/s');
 xlim([0 b.tm(end)]);
 ylim([0 14.5])
 format_axes(gca);
 
 save_pdf(ff.hf,mD.pdf_folder,'bar_graph.pdf',600);  
-   
+
+
+%%
+led_paws = extract_led_from_roi(b.led.paws, 60);
+
+figure(100);clf;
+plot(led_paws.time, led_paws.signal_s); hold on
+% stairs(led_paws.time, ...
+%        double(led_paws.is_on) * max(led_paws.signal_s), ...
+%        'LineWidth', 1.5)
+xlabel('Time (s)')
+ylabel('LED signal')
+legend('Smoothed ROI signal','LED ON')

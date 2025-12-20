@@ -62,10 +62,16 @@ end
             mp4_name = [base '.mp4'];
             % mp4_name = [base '.avi'];
             out_file = fullfile(animal(an).pdir, mp4_name);
+            
+            csv_name = [base '_intensity.csv'];
+            % mp4_name = [base '.avi'];
+            out_file_csv = fullfile(animal(an).pdir, csv_name);
+
             % If mp4 already exists, skip conversion
             if exist(out_file, 'file') & owr == 0
                 fprintf('Skipping (already exists): %s\n', mp4_name);
                 animal(an).video.mp4.(cam) = out_file;
+                animal(an).video.led.(cam) = out_file_csv;
                 continue
             end
 
@@ -93,6 +99,7 @@ end
 
             % Store the mp4 file name (just the name, not the full path)
             animal(an).video.mp4.(cam) = mp4_name;
+            animal(an).video.led.(cam) = out_file_csv;
             % animal(an).video.avi.(cam) = mp4_name;
         end
     end

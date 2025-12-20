@@ -18,10 +18,10 @@ t_evt = linspace(-win_pre, win_post, size(trials,1));
 
 
 magfac = mD.magfac;
-ff = makeFigureRowsCols(107,[3 5 2.5 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.02 -0.02],'rightUpShifts',[0.15 0.22],...
+ff = makeFigureRowsCols(107,[3 5 1.75 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.02 -0.02],'rightUpShifts',[0.15 0.22],...
     'widthHeightAdjustment',[10 -250]);
 MY = 2; ysp = 0.15285; mY = -2.5; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.25*magfac; widths = [2.2 1 2.85 1]*magfac; gap = 0.115*magfac;
+stp = 0.25*magfac; widths = [1.5 1 2.85 1]*magfac; gap = 0.115*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 plot(t_evt, mean(trials,2), 'k', 'LineWidth', 2); hold on
@@ -61,10 +61,10 @@ t_evt = linspace(-win_pre, win_post, size(trials,1));
 
 
 magfac = mD.magfac;
-ff = makeFigureRowsCols(107,[3 5 2.5 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.02 -0.02],'rightUpShifts',[0.15 0.22],...
+ff = makeFigureRowsCols(107,[3 5 1.75 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.02 -0.02],'rightUpShifts',[0.15 0.22],...
     'widthHeightAdjustment',[10 -250]);
 MY = 2; ysp = 0.15285; mY = -2.5; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
-stp = 0.25*magfac; widths = [2.2 1 2.85 1]*magfac; gap = 0.115*magfac;
+stp = 0.25*magfac; widths = [1.5 1 2.85 1]*magfac; gap = 0.115*magfac;
 adjust_axes(ff,[mY MY],stp,widths,gap,{''});
 axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
 plot(t_evt, mean(trials,2), 'k', 'LineWidth', 2); hold on
@@ -114,3 +114,96 @@ box off
 
 [h, p] = ttest2(speed(idx_on), speed(idx_off));
 fprintf('t-test p-value: %.3e\n', p);
+
+%%
+%% plot distributions Air On vs Air Off
+magfac = mD.magfac;
+ff = makeFigureRowsCols(107,[3 5 1.75 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.02 -0.02],'rightUpShifts',[0.15 0.22],...
+    'widthHeightAdjustment',[10 -250]);
+MY = 2; ysp = 0.15285; mY = -2.5; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+stp = 0.3*magfac; widths = [1.35 1 2.85 1]*magfac; gap = 0.115*magfac;
+adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+hold on;
+distD = {speed(idx_on),speed(idx_off)};
+
+tcolors = {'b','m'};
+[distDo,allVals,allValsG] = plotDistributions(distD);
+minBin = min(allVals);
+maxBin = max(allVals);
+incr = 1;
+% [ha,hb,hca] = plotDistributions(allValsG,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');
+[ha,hb,hca] = plotDistributions(distDo,'colors',tcolors,'maxY',100,'min',minBin,'incr',incr,'max',maxBin,'do_mean','No');
+set(gca,'FontSize',6,'FontWeight','Bold','TickDir','out','xcolor','k','ycolor','k');
+%     changePosition(gca,[0.129 0.15 -0.09 -0.13]);
+ylim([0 100]); xlim([minBin maxBin]); %xlim([minBin 0.5]);
+put_axes_labels(ha,{{'Speed (cm/s)'},[0 0 0]},{{'%'},[0 0 0]});
+format_axes(ha);
+[ks.h,ks.p,ks.ks2stat] = kstest2(allValsG{1},allValsG{2});
+ks.DF1 = length(allValsG{1}); ks.DF2 = length(allValsG{2});
+ht = set_axes_top_text_no_line(gcf,ha,'KS-Test',[0.1 -0.01 0.1 0]);set(ht,'FontSize',7);
+titletxt = sprintf('%s',getNumberOfAsterisks(ks.p));
+ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.33 -0.01 0.1 0]);set(ht,'FontSize',9);
+legend('Air-On','Air-Off','Location','SouthEast')
+% titletxt = sprintf('n = %d,',length(allValsG{1}));
+% ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.015 -0.45 0 0]);set(ht,'FontSize',7,'Color','k');
+% titletxt = sprintf('%d',length(allValsG{2}));
+% ht = set_axes_top_text_no_line(gcf,ha,titletxt,[0.067 -0.45 0 0]);set(ht,'FontSize',7,'Color','r');
+save_pdf(ff.hf,mData.pdf_folder,'firing_rate.pdf',600);
+
+%%
+%% rest vs motion FR average
+
+air_on_idx  = b.Air_r;   % air onset indices
+air_off_idx = b.Air_f;   % air offset indices
+
+nTrials = numel(air_on_idx);
+
+meanSpeed_ON  = nan(nTrials,1);
+meanSpeed_OFF = nan(nTrials,1);
+
+for k = 1:nTrials
+    % Air ON window
+    idx_on = air_on_idx(k):air_off_idx(k);
+    meanSpeed_ON(k) = mean(b.speed(idx_on), 'omitnan');
+
+    % Preceding Air OFF window
+    if k == 1
+        idx_off = 1:(air_on_idx(k)-1);
+    else
+        idx_off = air_off_idx(k-1):(air_on_idx(k)-1);
+    end
+
+    meanSpeed_OFF(k) = mean(b.speed(idx_off), 'omitnan');
+end
+
+
+
+    
+tcolors = {'b','m'};
+    data_C = [meanSpeed_ON meanSpeed_OFF];
+    [within,dvn,xlabels] = make_within_table({'St'},[2]);
+    dataT = make_between_table({data_C},dvn);
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
+%     ra.ranova
+print_for_manuscript(ra)
+   magfac = mData.magfac;
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors(1:3),1,2);
+
+tcolors = {'b','m'};
+% figure(300);clf; ha = gca;
+ff = makeFigureRowsCols(2020,[10 4 1.25 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.2 0.2],'widthHeightAdjustment',[-550 -280]);
+MY = 9; ysp = 1.5; mY = 0; ystf = 1; ysigf = 0.5;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'St','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+% make_bars_hollow(hbs(2))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Air-On','Air-Off'});xtickangle(30);
+ylabel({'Avg. Speed'});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);
+
+

@@ -5,9 +5,37 @@ if ~exist('animal','var')
 end
 
 n = 0;
+cams = {'face','pupil','paws'};
 %%
 for an = 1:numel(animal)
     b = load(animal(an).mat);
+    
+    for c = 1:numel(cams)
+            cam = cams{c};
+
+            % If we don't have this camera, skip
+            if ~isfield(animal(an).video.h264, cam)
+                continue;
+            end
+
+            h264_name = animal(an).video.h264.(cam);
+
+            if isempty(h264_name)
+                continue;
+            end
+
+            % Full input path
+            in_file = h264_name;
+            if ~exist(in_file,'file')
+                warning('process_h264:FileNotFound', ...
+                    'Could not find %s for animal %d', in_file, an);
+                continue;
+            end
+            thisfile = animal(an).video.csv.(cam);
+            b.led = readtable('led_intensity_cam1.csv');
+    end
+
+    
     % b = animal(an).b;
     clear o;
     o.channels = b.channelNames;
@@ -26,7 +54,7 @@ for an = 1:numel(animal)
             stim = d(:,ii)';
             stim = stim - min(stim);
             o.air_raw = stim/max(stim);
-            o.a
+            o.air_bin = o.air_raw > 0.5 * max(o.air_raw);
         end
     end
     o.number_of_samples = size(d(:,1));
@@ -49,6 +77,19 @@ for an = 1:numel(animal)
         cmdText = sprintf('b.%s = o.%s;',fields{ii},fields{ii});
         eval(cmdText);
     end
+    b.tm = b.t/60;
+
+    b.dist = b.encoderCount * pi * 32/b.countsPerRev; % in cm
+    b.speed =  diff(b.dist)./diff(b.t); % in cm/sec
+    b.speed = double([0;b.speed]);
+    % b.speed = removeSpeedOutliers(b.speed);
+    % b.speed(b.speed < 0) = NaN;
+    % b.speed = fillmissing(b.speed,'linear',2,'EndValues','nearest');
+    
+    samplingRate = b.fs;
+    coeffs = ones(1, samplingRate)/samplingRate;
+    b.fSpeed = filter(coeffs, 1, b.speed);
+
     animal(an).b = b;
 end
 
