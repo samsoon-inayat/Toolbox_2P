@@ -1,4 +1,4 @@
-function animal = process_behavior_signals(animal)
+function animal = air_signal_reader(animal)
 
 if ~exist('animal','var')
     animal = evalin('base','animal')

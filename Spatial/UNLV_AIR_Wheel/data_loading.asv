@@ -81,7 +81,7 @@ plot(b.tm,b.fSpeed);
 hold on;
 plot(b.tm,max(b.fSpeed)*(b.air_bin)/max(b.air_raw))
 box off;
-xlabel('Time (min)');
+xlabel('Time (sec)');
 ylabel('Speed cm/s');
 xlim([0 b.tm(end)]);
 ylim([0 14.5])
