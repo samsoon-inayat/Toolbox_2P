@@ -33,6 +33,8 @@ for an = 1:numel(animal)
             end
             thisfile = animal(an).video.led.(cam);
             b.led.(cam) = readtable(thisfile);
+            b.led_sig.(cam) = extract_led_from_roi(b.led.(cam), 60);
+
     end
 
     

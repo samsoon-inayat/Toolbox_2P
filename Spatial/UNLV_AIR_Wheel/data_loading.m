@@ -23,7 +23,7 @@ animal = get_exp_info(mD,animal_list,date_list);
 
 disp('Done');
 %%
-colormaps = load('../../Common/Matlab/colorblind_colormap.mat');
+colormaps = load('../../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mD.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mD.colors = getColors(10,{'w','g'});
 mD.dcolors = mat2cell(distinguishable_colors(20,'w'),[ones(1,20)]);
@@ -44,6 +44,11 @@ if 1
     animal = process_behavior_signals(animal);
 end
 disp('Done');
+%%
+%% Get Video Pointers
+vp = VideoReader(animal(1).video.mp4.paws);
+vf = VideoReader(animal(1).video.mp4.face);
+v = VideoReader(animal(1).video.mp4.pupil);
 
 %%
 % animal = air_signal_reader(animal);
@@ -91,7 +96,7 @@ save_pdf(ff.hf,mD.pdf_folder,'bar_graph.pdf',600);
 
 
 %%
-led_paws = extract_led_from_roi(b.led.paws, 60);
+led_paws = b.led_sig.paws;
 
 figure(100);clf;
 plot(led_paws.time, led_paws.is_on); hold on
