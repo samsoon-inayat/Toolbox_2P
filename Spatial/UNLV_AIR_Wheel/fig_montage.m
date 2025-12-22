@@ -4,10 +4,10 @@ vp = evalin('base','vp');
 vf = evalin('base','vf');
 v = evalin('base','v');
 mD = evalin('base','mData'); colors = mD.colors; sigColor = mD.sigColor; axes_font_size = mD.axes_font_size;
-mmData = mD;
+mData = mD;
 animal = evalin('base','animal');
 n = 0;
-%%
+%% montage of videos
 magfac = mD.magfac;
 ff = makeFigureRowsCols(107,[3 5 6.75 2.5],'RowsCols',[3 8],'spaceRowsCols',[0.01 0.001],'rightUpShifts',[0.0 0.0],...
     'widthHeightAdjustment',[0 -20]);
@@ -121,7 +121,7 @@ end
 
 save_pdf(ff.hf,mData.pdf_folder,'montage.pdf',600);
 
-%%
+%% air vs time for paws, face, and pupil
 
 magfac = mD.magfac;
 ff = makeFigureRowsCols(107,[3 5 6.75 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.2 0.22],...
@@ -222,36 +222,59 @@ for s = streams
 end
 
 %%
-figure('Color','w'); 
-tiledlayout(2,3,'Padding','compact','TileSpacing','compact');
+% figure('Color','w'); 
+magfac = mD.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.75 1.25],'RowsCols',[1 6],'spaceRowsCols',[0.01 0.001],'rightUpShifts',[0.0 0.0],...
+    'widthHeightAdjustment',[0 -20]);
+MY = 2; ysp = 0.15285; mY = -2.5; titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+% stp = 0.1*magfac; widths = [6.15 1 2.85 1]*magfac; gap = 0.115*magfac;
+% adjust_axes(ff,[mY MY],stp,widths,gap,{''});
+% axes_title_shifts_line = [0 0.55 0 0]; axes_title_shifts_text = [0.02 0.1 0 0]; xs_gaps = [1 2];
+
+tiledlayout(1,6,'Padding','compact','TileSpacing','tight');
 
 % --- ON scatters ---
 for i = 1:numel(streams)
+    % axes(ff.h_axes(1,i));
     s = streams(i);
     nexttile(i);
-    plot(S.daq.on, S.(s).on, 'o'); hold on;
+    plot(S.daq.on, S.(s).on, '.'); hold on;
     xlim([min(S.daq.on) max(S.daq.on)]);
     ylim([min(S.(s).on) max(S.(s).on)]);
     lo = min([xlim ylim]); hi = max([xlim ylim]);
     plot([lo hi],[lo hi],'k--'); % unity
     xlabel('DAQ ON duration (s)'); ylabel(sprintf('%s ON duration (s)', upper(s)));
-    title(sprintf('%s vs DAQ (ON)', upper(s)));
+    % title(sprintf('%s vs DAQ (ON)', upper(s)));
     box off;
+    
+    format_axes(gca)
+    axis equal
+    ylim([2.75 8.75])
+    xlim([2.75 8.75])
 end
 
 % --- OFF scatters ---
 for i = 1:numel(streams)
+    % axes(ff.h_axes(1,i+3));
     s = streams(i);
     nexttile(i+3);
-    plot(S.daq.off, S.(s).off, 'o'); hold on;
+    plot(S.daq.off, S.(s).off, '.'); hold on;
     xlim([min(S.daq.off) max(S.daq.off)]);
     ylim([min(S.(s).off) max(S.(s).off)]);
     lo = min([xlim ylim]); hi = max([xlim ylim]);
-    plot([lo hi],[lo hi],'k--'); % unity
+    plot([lo hi],[lo hi],'k-'); % unity
     xlabel('DAQ OFF duration (s)'); ylabel(sprintf('%s OFF duration (s)', upper(s)));
-    title(sprintf('%s vs DAQ (OFF)', upper(s)));
+    % title(sprintf('%s vs DAQ (OFF)', upper(s)));
     box off;
+    axis equal
+    ylim([14 16])
+    xlim([14 16])
+    format_axes(gca)
 end
+
+save_pdf(gcf,mData.pdf_folder,'error_alignment.pdf',600);
+
+
 %%
 figure('Color','w');
 tiledlayout(2,3,'Padding','compact','TileSpacing','compact');
@@ -273,6 +296,36 @@ for i = 1:numel(streams)
     title(sprintf('%s (OFF)', upper(s)));
     box off;
 end
+%%
+disp([mean(S.daq.on) mean(S.paws.on) mean(S.face.on) mean(S.pupil.on)])
+disp([mean(S.daq.off) mean(S.paws.off) mean(S.face.off) mean(S.pupil.off)])
+
+%%
+streams = {'paws','face','pupil'};
+
+fprintf('\n=== Duration error statistics (LED − DAQ) ===\n');
+
+for i = 1:numel(streams)
+    s = streams{i};
+
+    % --- ON durations ---
+    err_on_ms  = 1000 * (S.(s).on  - S.daq.on);
+    mu_on  = mean(err_on_ms);
+    sd_on  = std(err_on_ms);
+
+    % --- OFF durations ---
+    err_off_ms = 1000 * (S.(s).off - S.daq.off);
+    mu_off = mean(err_off_ms);
+    sd_off = std(err_off_ms);
+
+    fprintf('%s:\n', upper(s));
+    fprintf('  ON  error: mean = %+6.2f ms, SD = %6.2f ms (N = %d)\n', ...
+        mu_on, sd_on, numel(err_on_ms));
+    fprintf('  OFF error: mean = %+6.2f ms, SD = %6.2f ms (N = %d)\n\n', ...
+        mu_off, sd_off, numel(err_off_ms));
+end
+
+
 
 %%
 
