@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import List, Dict, Any
 from process_h264 import process_h264
 import pickle
+import socket
+
 
 
 @dataclass
@@ -95,7 +97,23 @@ def get_exp_info(mD: MouseDirs, animal_list: List[str], date_list: List[str]) ->
 
 # %%
 if __name__ == "__main__":
-    main_dir = r"E:\GoogleDrive\InayatSamsoon\UNLV\AIR_Wheel_Methods"
+    
+    # 1. Get the computer name
+    computer_name = socket.gethostname()
+    
+    # 2. Define the main directory based on which computer is running the script
+    if computer_name == "LA-2114175":
+        main_dir = r"E:\GoogleDrive\InayatSamsoon\UNLV\AIR_Wheel_Methods"
+    elif computer_name == "KoQSam":
+        main_dir = r"J:\My Drive\UNLV\AIR_Wheel_Methods"
+    else:
+        # Fallback or default path
+        main_dir = r"E:\GoogleDrive\InayatSamsoon\UNLV\AIR_Wheel_Methods"
+    
+    print(f"Running on {computer_name}. Path set to: {main_dir}")
+    
+    
+    # main_dir = r"E:\GoogleDrive\InayatSamsoon\UNLV\AIR_Wheel_Methods"
     mD = build_dirs(main_dir)
 
     # Example lists (same as your MATLAB)
