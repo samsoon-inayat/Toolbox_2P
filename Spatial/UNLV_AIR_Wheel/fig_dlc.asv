@@ -302,3 +302,194 @@ if ~isempty(speed_on) && ~isempty(speed_off)
     [~, p_speed] = ttest2(speed_on, speed_off);
     fprintf('Global DLC Speed: Air-ON vs OFF, p = %.2e\n', p_speed);
 end
+
+
+%% ===================== DLC SPEED + AIR ON/OFF =====================
+
+% Inputs assumed from your script:
+%   X_coords (N x 6), Y_coords (N x 6)
+%   time_sec (N x 1) in seconds (DLC time base)
+%   T = animal(1).b.led_sig.paws;  T.time, T.is_on  (LED time base)
+%   bodyparts (1x6 cell), custom_colors (6x3)
+
+% ---- 0) Basic checks
+N = size(X_coords,1);
+assert(numel(time_sec)==N, 'time_sec length must match X_coords rows.');
+
+% ---- 1) Resample/align air signal to DLC time base
+% LED time is in seconds already (but you divided by 60 earlier for t_paws)
+t_led  = double(T.time(:));                % seconds
+air_led = double(strcmpi(string(T.is_on), "True") | double(T.is_on)); % robust
+
+% If T.is_on is already logical numeric, above still works.
+% Make sure time vectors are monotonic
+[~, idxSort] = sort(t_led);
+t_led = t_led(idxSort);
+air_led = air_led(idxSort);
+
+% Resample LED air to DLC time points
+air_dlc = interp1(t_led, air_led, time_sec, 'previous', 0);
+air_dlc(isnan(air_dlc)) = 0;
+air_dlc = air_dlc > 0.5;
+
+% ---- 2) Compute per-bodypart speed in pixels/s
+fs_dlc = 1/median(diff(time_sec));  % inferred FPS from DLC time base
+dx = [zeros(1,6); diff(X_coords,1,1)];
+dy = [zeros(1,6); diff(Y_coords,1,1)];
+speed_pix_s = sqrt(dx.^2 + dy.^2) * fs_dlc * 0.0114 ;   % N x 6
+
+% Optional smoothing (helps readability)
+speed_pix_s_sm = movmedian(speed_pix_s, 5, 1);
+
+% ---- 3) Find air epochs on DLC time base
+air = air_dlc(:);
+on_idx  = find(diff([0; air])== 1);   % rising edges
+off_idx = find(diff([air; 0])==-1);   % falling edges
+nTr = min(numel(on_idx), numel(off_idx));
+on_idx = on_idx(1:nTr);
+off_idx = off_idx(1:nTr);
+
+% sanity: ensure each onset precedes offset
+good = off_idx > on_idx;
+on_idx = on_idx(good);
+off_idx = off_idx(good);
+nTr = numel(on_idx);
+
+% ---- 4) Trial-wise paired comparison: Air-ON vs preceding Air-OFF window
+% Define a "pre" window immediately before each onset (e.g., 1.0 s)
+preWin_s = 1.0;
+preSamp = max(1, round(preWin_s * fs_dlc));
+
+mean_on  = nan(nTr,6);
+mean_off = nan(nTr,6);
+
+for k = 1:nTr
+    idx_on  = on_idx(k):off_idx(k);
+    idx_off = max(1, on_idx(k)-preSamp):on_idx(k)-1;
+
+    if isempty(idx_off) || numel(idx_on) < 3
+        continue
+    end
+
+    mean_on(k,:)  = mean(speed_pix_s_sm(idx_on,:), 1, 'omitnan');
+    mean_off(k,:) = mean(speed_pix_s_sm(idx_off,:), 1, 'omitnan');
+end
+
+% Drop trials with NaNs
+validTr = all(isfinite(mean_on),2) & all(isfinite(mean_off),2);
+mean_on  = mean_on(validTr,:);
+mean_off = mean_off(validTr,:);
+nValid = size(mean_on,1);
+
+% Paired t-test per bodypart
+p_t = nan(1,6);
+tstat = nan(1,6);
+for i = 1:6
+    [~, p_t(i), ~, stats] = ttest(mean_on(:,i), mean_off(:,i)); % paired
+    tstat(i) = stats.tstat;
+end
+
+% ---- 5) Plot 1: Speed time-series with shaded air epochs
+figure(501); clf
+tmin = time_sec/60;
+
+for i = 1:6
+    subplot(3,2,i); hold on
+
+    % Shaded air windows
+    yl = [0, max(speed_pix_s_sm(:,i), [], 'omitnan')*1.05 + eps];
+    ylim(yl)
+
+    for k = 1:nTr
+        x1 = time_sec(on_idx(k))/60;
+        x2 = time_sec(off_idx(k))/60;
+        patch([x1 x2 x2 x1], [yl(1) yl(1) yl(2) yl(2)], ...
+              'k', 'FaceAlpha', 0.12, 'EdgeColor', 'none');
+    end
+
+    plot(tmin, speed_pix_s_sm(:,i), 'Color', custom_colors(i,:), 'LineWidth', 0.5);
+    xlim([0 3]) % match your 3-min window
+    xlabel('Time (min)')
+    ylabel('Speed (px/s)')
+    title(sprintf('%s', bodyparts{i}))
+    box off
+end
+
+sgtitle('DLC point speed over time (shaded = Air ON)')
+
+% ---- 6) Plot 2: Onset-aligned speed (mean ± SD)
+win_pre  = 2;  % seconds before onset
+win_post = 5;  % seconds after onset
+Lpre  = round(win_pre  * fs_dlc);
+Lpost = round(win_post * fs_dlc);
+t_rel = (-Lpre:Lpost)'/fs_dlc;
+
+% Build onset-aligned matrices: (time x trials x bodyparts)
+M = numel(t_rel);
+speed_onset = nan(M, nTr, 6);
+
+for k = 1:nTr
+    c = on_idx(k);
+    idx = (c-Lpre):(c+Lpost);
+    if idx(1) < 1 || idx(end) > N
+        continue
+    end
+    speed_onset(:,k,:) = speed_pix_s_sm(idx,:);
+end
+
+figure(502); clf
+for i = 1:6
+    subplot(3,2,i); hold on
+    X = squeeze(speed_onset(:,:,i)); % M x nTr
+    mu = mean(X, 2, 'omitnan');
+    sd = std(X, 0, 2, 'omitnan');
+
+    plot(t_rel, mu, 'Color', custom_colors(i,:), 'LineWidth', 1.5);
+    plot(t_rel, mu+sd, '--', 'Color', custom_colors(i,:), 'LineWidth', 0.75);
+    plot(t_rel, mu-sd, '--', 'Color', custom_colors(i,:), 'LineWidth', 0.75);
+    xline(0, 'k-');
+    xlabel('Time from air onset (s)')
+    ylabel('Speed (px/s)')
+    title(bodyparts{i})
+    box off
+end
+sgtitle('Onset-aligned DLC speed (mean ± SD)')
+
+% ---- 7) Plot 3: Trial-wise Air-ON vs Air-OFF (paired) bar + dots
+figure(503); clf
+% tiledlayout(1,6,'Padding','compact','TileSpacing','tight');
+%%
+magfac = mD.magfac;
+ff = makeFigureRowsCols(107,[3 5 6.75 1.5],'RowsCols',[1 6],'spaceRowsCols',[0.01 0.04],'rightUpShifts',[0.051 0.2],...
+    'widthHeightAdjustment',[-45 -500]);
+
+
+for i = 1:6
+    % subplot(1,6,i);
+    axes(ff.h_axes(1,i));% nexttile
+    hold on
+    mOn  = mean(mean_on(:,i),  'omitnan');
+    mOff = mean(mean_off(:,i), 'omitnan');
+    seOn  = std(mean_on(:,i),  'omitnan')/sqrt(nValid);
+    seOff = std(mean_off(:,i), 'omitnan')/sqrt(nValid);
+
+    hb = bar([1 2], [mOff mOn]); % OFF then ON
+    errorbar([1 2], [mOff mOn], [seOff seOn], 'k.', 'LineWidth', 1);
+    set(hb,'FaceColor',custom_colors(i,:))
+    % paired dots
+    for k = 1:nValid
+        plot([1 2], [mean_off(k,i) mean_on(k,i)], '-', 'Color', [0 0 0 0.15]);
+    end
+
+    set(gca,'XTick',[1 2],'XTickLabel',{'Air-OFF','Air-ON'});xtickangle(30)
+    if i == 1
+        ylabel('Mean speed (cm/s)')
+    end
+    % title(sprintf('%s | p=%.3g', bodyparts{i}, p_t(i)))
+    ht = title(sprintf('%s | p<0.001', bodyparts{i})); set(ht,'FontWeight','Normal')
+    box off
+    format_axes(gca)
+end
+ht = sgtitle(sprintf('Paired per-trial Air-ON vs pre-Air-OFF (N=%d trials)', nValid));set(ht,'FontSize',8,'FontWeight','Normal')
+
+save_pdf(gcf, mD.pdf_folder, 'DLC_bar_air_on_vs_off.pdf', 600);

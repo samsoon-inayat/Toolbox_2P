@@ -10,7 +10,7 @@ animal = evalin('base','animal');
 n = 0;
 %%
 % 2. Read the first frame
-firstFrame = readFrame(vp);
+firstFrame = readFrame(v);
 
 % 3. Display the frame
 figure('Name', 'Calibration Tool', 'Position', [100, 100, size(firstFrame, 2)/2, size(firstFrame, 1)/2]);

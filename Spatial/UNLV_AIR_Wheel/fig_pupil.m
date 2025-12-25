@@ -1,0 +1,211 @@
+function fig_pupil()
+
+
+vp = evalin('base','vp');
+vf = evalin('base','vf');
+v = evalin('base','v');
+mD = evalin('base','mData'); colors = mD.colors; sigColor = mD.sigColor; axes_font_size = mD.axes_font_size;
+mData = mD;
+animal = evalin('base','animal');
+
+filen = fullfile(animal(1).pdir,'eye_pupil.mat');
+if exist(filen,'file')
+    load(filen)
+end
+n = 0;
+
+%% Pupil Dynamics Extraction - Full Frame Visualization
+% 1. Setup Video Reader & Calibration
+px_dist = 150; 
+cm_per_px = 1.27 / px_dist;
+v.CurrentTime = 0; 
+
+% 2. Initialize Storage
+numFrames = floor(v.Duration * v.FrameRate);
+pupil_area = nan(numFrames, 1);
+pupil_center = nan(numFrames, 2);
+
+% 3. Define ROI (Select the eye region once)
+firstFrame = readFrame(v);
+figure(100); imshow(firstFrame);
+title('Select the Eye ROI');
+roi = round(getrect); % [xmin ymin width height]
+close(100);
+
+% 4. Processing Loop
+hFig = figure('Name', 'Pupil Tracking Debug - Full Frame', 'NumberTitle', 'off');
+v.CurrentTime = 0; 
+frameIdx = 1;
+msg = ''; % Initialize for progress tracking
+
+while hasFrame(v)
+    frame = readFrame(v);
+    img = rgb2gray(frame);
+    eye_img = imcrop(img, roi);
+    
+    % Pupil segmentation
+    bw = eye_img < 40; 
+    bw = bwareaopen(bw, 50); 
+    bw = imfill(bw, 'holes');
+    
+    % Identify properties
+    stats = regionprops(bw, 'Area', 'Centroid', 'BoundingBox');
+    
+    % Display WHOLE FRAME
+    % imshow(frame); hold on;
+    
+    if ~isempty(stats)
+        [~, largestIdx] = max([stats.Area]);
+        
+        % Extract local coordinates
+        area = stats(largestIdx).Area;
+        localCentroid = stats(largestIdx).Centroid;
+        localBbox = stats(largestIdx).BoundingBox;
+        
+        % % --- CONVERT TO GLOBAL COORDINATES ---
+        % % Add the ROI offset to the local coordinates
+        globalCentroid = [localCentroid(1) + roi(1), localCentroid(2) + roi(2)];
+        % globalBbox = [localBbox(1) + roi(1), localBbox(2) + roi(2), localBbox(3), localBbox(4)];
+        % 
+        % % Draw Overlays on Full Frame
+        % rectangle('Position', globalBbox, 'EdgeColor', 'r', 'LineWidth', 1.5);
+        % plot(globalCentroid(1), globalCentroid(2), 'r+', 'MarkerSize', 8, 'LineWidth', 1.5);
+        % 
+        % Store Data
+        pupil_area(frameIdx) = area * (cm_per_px^2);
+        pupil_center(frameIdx, :) = globalCentroid;
+    end
+    
+    hold off;
+    % drawnow limitrate; % Faster than standard drawnow
+    
+    % Check if window closed
+    if ~ishandle(hFig), break; end
+
+    % Update Progress on the same line
+    if mod(frameIdx, 10) == 0 || frameIdx == numFrames
+        fprintf(repmat('\b', 1, length(msg)));
+        prog = (frameIdx / numFrames) * 100;
+        msg = sprintf('Processing Pupil Dynamics: %.1f%%', prog);
+        fprintf('%s', msg);
+    end
+    frameIdx = frameIdx + 1;
+end
+fprintf('\nDone.\n');
+%% 6. Plot Results (Synchronized & Formatted)
+% Re-calculate time based on the actual frames processed to avoid size mismatch
+actualFrames = find(~isnan(pupil_area), 1, 'last'); 
+if isempty(actualFrames), actualFrames = frameIdx - 1; end
+
+% Synchronize vectors to the same length
+time_sync = (0:actualFrames-1) / v.FrameRate;
+pupil_area_sync = pupil_area(1:actualFrames);
+pupil_center_sync = pupil_center(1:actualFrames, :);
+filen = fullfile(animal(1).pdir,'eye_pupil.mat');
+save(filen,'time_sync','pupil_area_sync');
+%%
+T = animal(1).b.led_sig.("pupil");
+t_paws = T.time/60;
+air_paws = double(T.is_on);
+%% Figure raw data
+magfac = mD.magfac;
+ff = makeFigureRowsCols(107,[3 5 4.5 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.01 -0.02],'rightUpShifts',[0.08 0.24],...
+    'widthHeightAdjustment',[-100 -350]);
+time_syncM = time_sync/60;
+% --- Subplot 1: Pupil Area in Physical Units ---
+% subplot(2,1,1);
+plot(time_syncM, pupil_area_sync, 'k', 'LineWidth', 0.25);
+ylabel('Eye-Pupil Area (cm^2)');
+% title('Eye-Pupil Dynamics: Dilation');
+box off;
+% format_axes(gca); % Uncomment if you have your custom formatting function
+
+% % --- Subplot 2: Pupil Center Position (Gaze/Drift) ---
+% subplot(2,1,2);
+% % Plot X and Y positions. Subtracting the mean helps visualize "drift" 
+% % rather than absolute pixel coordinates.
+% plot(time_sync, pupil_center_sync(:,1), 'Color', [0 0.447 0.741], 'LineWidth', 1); hold on;
+% plot(time_sync, pupil_center_sync(:,2), 'Color', [0.85 0.32 0.1], 'LineWidth', 1);
+% 
+% ylabel('Global Position (px)');
+xlabel('Time (s)');
+xlim([0 time_syncM(end)]);
+xlim([0 3])
+% legend({'X-Pos', 'Y-Pos'}, 'Location', 'best', 'Box', 'off');
+% title('Eye-Pupil Center: Spatial Tracking');
+box off;
+format_axes(gca)
+onsets = find_rising_edge(air_paws,0.5,-1);
+offsets = find_falling_edge(air_paws,-0.5,1);
+
+ylims = ylim;
+[TLx TLy] = ds2nfu(time_syncM(onsets(1)),ylims(2)-0);
+axes(ff.h_axes(1,1));ylims = ylim;
+[BLx BLy] = ds2nfu(time_syncM(onsets(1)),ylims(1));
+aH = (TLy - BLy);
+len = sum(find(time_syncM(onsets)<3,1,'last'));
+for ii = 1:len%gth(onsets)
+    [BRx BRy] = ds2nfu(time_syncM(offsets(ii)),ylims(1));
+    [BLx BLy] = ds2nfu(time_syncM(onsets(ii)),ylims(1));
+    aW = (BRx-BLx);
+    annotation('rectangle',[BLx BLy aW aH],'facealpha',0.2,'linestyle','none','facecolor','k');
+end
+% format_axes(gca); % Uncomment if you have your custom formatting function
+
+% Save results to your PDF folder
+save_pdf(gcf, mD.pdf_folder, 'Pupil_Dynamics_Final_Plot.pdf', 600);
+
+
+%% rest vs motion FR average
+
+air_on_idx  = onsets;   % air onset indices
+air_off_idx = offsets;   % air offset indices
+
+nTrials = numel(air_on_idx);
+
+meanSpeed_ON  = nan(nTrials,1);
+meanSpeed_OFF = nan(nTrials,1);
+
+for k = 1:nTrials
+    % Air ON window
+    idx_on = air_on_idx(k):air_off_idx(k);
+    meanSpeed_ON(k) = mean(pupil_area_sync(idx_on), 'omitnan');
+
+    % Preceding Air OFF window
+    if k == 1
+        idx_off = 1:(air_on_idx(k)-1);
+    else
+        idx_off = air_off_idx(k-1):(air_on_idx(k)-1);
+    end
+
+    meanSpeed_OFF(k) = mean(pupil_area_sync(idx_off), 'omitnan');
+end
+
+
+
+    
+tcolors = {'b','c'};
+    data_C = [meanSpeed_ON meanSpeed_OFF];
+    [within,dvn,xlabels] = make_within_table({'St'},[2]);
+    dataT = make_between_table({data_C},dvn);
+    ra = RMA(dataT,within,{0.05,{'hsd'}});
+%     ra.ranova
+print_for_manuscript(ra)
+   magfac = mData.magfac;
+% visualization
+mData = evalin('base','mData'); colors = mData.colors; sigColor = mData.sigColor; axes_font_size = mData.axes_font_size; dcolors = mData.dcolors;
+tcolors = repmat(mData.dcolors(1:3),1,2);
+
+tcolors = {'k',[0.5 0.5 0.5]};
+% figure(300);clf; ha = gca;
+ff = makeFigureRowsCols(2020,[10 4 1.25 1.5],'RowsCols',[1 1],'spaceRowsCols',[0.07 0],'rightUpShifts',[0.27 0.2],'widthHeightAdjustment',[-550 -280]);
+MY = 0.0375; ysp = 0.925; mY = 0; ystf = 0.9251; ysigf = 0.15;titletxt = ''; ylabeltxt = {'PDF'}; % for all cells (vals) MY = 80
+[hbs,xdata,mVar,semVar,combs,p,h] = view_results_rmanova(ff.h_axes(1,1),ra,{'St','hsd',0.05},[1 2],tcolors,[mY MY ysp ystf ysigf],mData);
+% make_bars_hollow(hbs(2))
+format_axes(gca);
+set(gca,'xcolor','k','ycolor','k','xlim',xlim,'ylim',ylim,...
+    'XTick',xdata,'XTickLabel',{'Air-On','Air-Off'});xtickangle(30);
+ylabel({'Avg. Eye-Pupil Area (cm^2)'});
+% set_bar_graph_sub_xtick_text(ff.hf,gca,hbs,2,{'Pooled'},{[0 0]});
+% ht = set_axes_top_text_no_line(ff.hf,gca,sprintf('C1 - AOn'),[0.051 0.0 0 0]); 
+save_pdf(ff.hf,mData.pdf_folder,sprintf('bar_graphs.pdf'),600);

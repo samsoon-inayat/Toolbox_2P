@@ -1,4 +1,4 @@
-function fig_dlc
+function fig_dlc_F
 
 vp = evalin('base','vp');
 
@@ -11,86 +11,93 @@ animal = evalin('base','animal');
 n = 0;
 %%
 
+%% ---------- Load and Clean Face DLC Data ----------
+% Using the path structure for the face tracking file
+file_path = fullfile(animal(1).pdir, 'face_1440x1080_60_20251216_165824DLC_resnet50_face16Dec18shuffle1_125000_filtered.csv');
 
-%% ---------- Load and Clean DLC Data ----------
-% Using the path structure you provided
-file_path = fullfile(animal(1).pdir,'video_20251216_165824DLC_resnet50_gcamp16declimbDec18shuffle1_185000_filtered.csv');
-
-% Set up import options to handle the triple-header (scorer, bodyparts, coords)
+% Set up import options to handle the triple-header
 opts = detectImportOptions(file_path);
-% Start reading from row 4 where the numeric data begins
-opts.DataLines = [4, Inf]; 
+opts.DataLines = [4, Inf]; % Numeric data begins at row 4
 opts.VariableNamingRule = 'preserve';
 tbl = readtable(file_path, opts);
 
-% Mapping likelihood columns based on your CSV image:
-% Column D=4 (Front Right), G=7 (Front Left), J=10 (Hind Right), 
-% M=13 (Hind Left), P=16 (Tail Base), S=19 (Nose)
-lik_indices = [4, 7, 10, 13, 16, 19];
-bodyparts = {'Front Right', 'Front Left', 'Hind Right', 'Hind Left', 'Tail Base', 'Nose'};
+% Defined bodyparts from the face project
+bodyparts = {'Nose', 'nostril1', 'nostril2', 'Mouth', 'bodypart3', 'objectA', ...
+             'wisker1', 'wisker2', 'wisker3', 'wisker4', 'wisker5', ...
+             'wisker6', 'wisker7', 'wisker8', 'wisker9', 'wisker10'};
 
-% Extract likelihood matrix [40748 frames x 6 bodyparts]
+% Mapping likelihood columns (1-based indexing):
+% Each bodypart has 3 columns (x, y, likelihood) starting after the frame index (Col 1).
+% Likelihoods are in columns: 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49
+lik_indices = 4:3:49; 
+
+% Extract likelihood matrix [Frames x 16 bodyparts]
 likelihoods = table2array(tbl(:, lik_indices));
 
+% Quick Quality Check: Percentage of frames with confidence > 0.9
+p_thresh = 0.9;
+percent_high_conf = mean(likelihoods > p_thresh) * 100;
+
+fprintf('DLC Face Tracking Loaded: %d frames for %d bodyparts.\n', size(likelihoods, 1), length(bodyparts));
 %% ---------- Calculate Quality Metrics ----------
 p_thresh = 0.9;
 % Percentage of frames where p > 0.9 for each body part
 percent_high_conf = sum(likelihoods > p_thresh, 1) / size(likelihoods, 1) * 100;
 
-%% ---------- Updated Bodypart Colors (RGB) ----------
-% These values are sampled directly from the markers in your images:
-% Front Right (Blue/Indigo), Front Left (Sky Blue), Hind Right (Teal), 
-% Hind Left (Bright Green), Tail Base (Orange), Nose (Red)
-custom_colors = [
-    0.20, 0.00, 1.00;  % Front Right (Dark Blue/Indigo)
-    0.00, 0.60, 1.00;  % Front Left (Sky Blue)
-    0.00, 0.80, 0.75;  % Hind Right (Teal)
-    0.60, 1.00, 0.40;  % Hind Left (Bright Green)
-    1.00, 0.60, 0.00;  % Tail Base (Orange)
-    1.00, 0.00, 0.00   % Nose (Red)
+%% ---------- 1. Load Face DLC Data (16 Parts) ----------
+file_path = fullfile(animal(1).pdir, 'face_1440x1080_60_20251216_165824DLC_resnet50_face16Dec18shuffle1_125000_filtered.csv');
+opts = detectImportOptions(file_path);
+opts.DataLines = [4, Inf]; 
+opts.VariableNamingRule = 'preserve';
+tbl = readtable(file_path, opts);
+
+% Define bodyparts in the exact order found in your CSV
+bodyparts = {'Nose', 'Nostril1', 'Nostril2', 'Mouth', 'M-Side1', 'M-Side1', ...
+             };
+
+% Likelihood columns: 4, 7, 10, 13, 16, 19, 22... up to 49
+lik_indices = 4:3:49; 
+likelihoods = table2array(tbl(:, lik_indices));
+percent_high_conf = mean(likelihoods > 0.9, 1) * 100;
+
+%% ---------- Updated Colors for Visible Face Parts (RGB) ----------
+% These values match the 6 markers in image_b6c7bd.jpg exactly:
+% Nose (Purple), nostril1 (Cyan), nostril2 (Magenta), Mouth (Blue), 
+% bodypart3 (Green), objectA (Orange)
+custom_colors_vis = [
+    0.65, 0.40, 1.00;  % 1 Nose (Purple)
+    0.00, 0.90, 0.95;  % 2 nostril1 (Cyan)
+    1.00, 0.00, 1.00;  % 3 nostril2 (Magenta/Vibrant Pink)
+    0.15, 0.40, 1.00;  % 4 Mouth (Blue)
+    0.40, 0.95, 0.20;  % 5 bodypart3 (Green)
+    1.00, 0.55, 0.05   % 6 objectA (Orange)
 ];
 
-%% ---------- PANEL C: DLC Quality Analysis ----------
+%% ---------- 3. Quality Analysis Plot ----------
 magfac = mD.magfac;
-ff = makeFigureRowsCols(110, [3 5 4 1.5], 'RowsCols', [1 2], ...
+ff = makeFigureRowsCols(110, [3 5 5 1.5], 'RowsCols', [1 2], ...
     'spaceRowsCols', [0.05 0.1], 'rightUpShifts', [0.1 0.1]);
 
-% --- C1: Bar Graph (% Frames > 0.9) ---
-subplot(1,2,1);
-hold on;
-for i = 1:6
-    % Plot each bar individually to apply specific color
-    bar(i, percent_high_conf(i), 'FaceColor', custom_colors(i,:), 'EdgeColor', 'none');
+% --- C1: Bar Graph ---
+subplot(1,2,1); hold on;
+for i = 1:length(bodyparts)
+    bar(i, percent_high_conf(i), 'FaceColor', custom_colors_vis(i,:), 'EdgeColor', 'none');
 end
-set(gca, 'XTick', 1:6, 'XTickLabel', bodyparts, 'XTickLabelRotation', 45);
-ylabel('% Frames (p > 0.9)');
-ht = title('DLC Tracking Reliability'); set(ht,'FontWeight','Normal');
-ylim([0 105]); 
-box off; 
-format_axes(gca);
+set(gca, 'XTick', 1:6, 'XTickLabel', bodyparts, 'XTickLabelRotation', 45, 'FontSize', 6);
+ylabel('% Frames (p > 0.9)'); title('Face Tracking Reliability');
+ylim([0 105]); box off; format_axes(gca);
 
-% --- C2: Likelihood CDF (Multi-line) ---
-subplot(1,2,2);
-hold on;
-for i = 1:6
+% --- C2: Likelihood CDF ---
+subplot(1,2,2); hold on;
+for i = 1:length(bodyparts)
     [f, x] = ecdf(likelihoods(:, i));
-    plot(x, f, 'LineWidth', 2, 'Color', custom_colors(i,:));
+    plot(x, f, 'LineWidth', 0.25, 'Color', custom_colors(i,:));
 end
+xline(0.9, '--', 'Color', [0.5 0.5 0.5]);
+xlabel('Likelihood'); ylabel('Cumulative Prob'); title('Likelihood CDF');
+grid on; box off; format_axes(gca);
 
-% Reference line at 0.9 threshold
-line([p_thresh p_thresh], [0 1], 'Color', [0.5 0.5 0.5], 'LineStyle', '--', 'LineWidth', 1);
-
-xlabel('Likelihood');
-ylabel('Cumulative Probability');
-% legend(bodyparts, 'Location', 'northwest', 'FontSize', 7, 'Box', 'off');
-ht = title('Likelihood CDF'); set(ht,'FontWeight','Normal');
-grid on; 
-box off; 
-format_axes(gca);
-
-% Save to your designated PDF folder
-save_pdf(ff.hf, mD.pdf_folder, 'DLC_Quality_Analysis_Colored.pdf', 600);
-
+save_pdf(ff.hf, mD.pdf_folder, 'DLC_Face_Quality_Calibrated.pdf', 600);
 %%
 %% ---------- Setup & Data Loading ----------
 file_path = fullfile(animal(1).pdir, 'video_20251216_165824DLC_resnet50_gcamp16declimbDec18shuffle1_185000_filtered.csv');
@@ -493,41 +500,3 @@ end
 ht = sgtitle(sprintf('Paired per-trial Air-ON vs pre-Air-OFF (N=%d trials)', nValid));set(ht,'FontSize',8,'FontWeight','Normal')
 
 save_pdf(gcf, mD.pdf_folder, 'DLC_bar_air_on_vs_off.pdf', 600);
-
-
-%% ---------- 1. Parameter Setup ----------
-win_pre  = 5;  % seconds
-win_post = 5;  % seconds
-fs       = 60; % Sampling rate (frames per second)
-Npre     = round(win_pre  * fs);
-Npost    = round(win_post * fs);
-
-signal   = DLC_speeds_cm(:,6); % Your data vector
-
-% Initialize arrays for mean values
-pre_means  = []; 
-post_means = [];
-
-% ---------- 2. Extraction Loop ----------
-for i = 1:length(onsets)
-    idx = onsets(i);
-    
-    % Ensure the window is within the bounds of the signal
-    if idx > Npre && idx + Npost <= length(signal)
-        
-        % Extract the pre-event segment (5s before onset)
-        pre_segment = signal(idx - Npre : idx - 1);
-        
-        % Extract the post-event segment (5s starting at onset)
-        post_segment = signal(idx : idx + Npost);
-        
-        % Calculate and store the mean for this specific trial
-        pre_means(end+1)  = mean(pre_segment, 'omitnan');
-        post_means(end+1) = mean(post_segment, 'omitnan');
-        
-    end
-end
-
-% Display results for verification
-fprintf('Extracted means for %d valid trials.\n', length(pre_means));
-
