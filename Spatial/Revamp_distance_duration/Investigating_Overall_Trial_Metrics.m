@@ -11,8 +11,8 @@ function Investigating_Overall
 % ANOVA at the animal level will provide me with the information whether
 % there was a certain effect of categorical variables which may be
 % consistent across animals if I find significant differences.
-udata = evalin('base','udata1');
-ei = evalin('base','ei');
+% udata = evalin('base','udata1');
+% ei = evalin('base','ei');
 % trial_dataT = evalin('base','trial_dataT'); trial_dataD = evalin('base','trial_dataD');
 trial_dataT = outT; trial_dataD = outD;
 configurations = {'C3','C4','C5'};

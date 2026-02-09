@@ -35,8 +35,8 @@ for an = 1:5
                 % either air-on or off phases or both
                 
                 % thisvar = tts(end) - tts(1);
-                % thisvar = tds(end) - tds(1);
-                thisvar = skewness(speed(air_trials == tn));
+                thisvar = tds(end) - tds(1);
+                % thisvar = skewness(speed(air_trials == tn));
                 % vn = 2; bn = 1;
                 % params = {'no_of_bins_for_MI',10,'no_of_shuffles_for_norm',0,'animal_info',ei{an},'overwrite_processing',ow,'air_phase',air_phases{ap},...
                 %         'configuration',configurations{cn},'variables',variable_combs{vn},'bin_type',bin_types{bn},'trial_type','individual'};

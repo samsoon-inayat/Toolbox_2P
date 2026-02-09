@@ -194,10 +194,7 @@ pop_var_name = {'all','vals','valsT','Nvals','good_zMI','Ngood_zMI'};
 pop_var_name = {'vals','good_zMI'};
 sel_pop_C = cell_list_op(props_C,pop_var_name); 
 
-siD = [Ar_t_D ArL_t_D Ars_t_D Ar_i_D ArL_i_D Ars_i_D];
-Rs_CD = o.Rs(:,si);mRs_CD = o.mR(:,si);
-props_CD = get_props_Rs(Rs_CD,ntrials);
-sel_pop_CD = cell_list_op(props_CD,pop_var_name); 
+si_cn_ap_H = si_cn_ap(:,[1 3 5 2 4 6]);
 
 an = 4; Rs = Rs_C(an,:);
 sel_pop = sel_pop_C(an,5); sel_pop_or = cell_list_op(sel_pop,[],'or',1); sel_pop_or = sel_pop_or{1};
@@ -206,7 +203,8 @@ cellN = find(sel_pop_orD); ci = 28;%19; % 12 17;
 cbar_p_shift = [0.01 0.09 -0.05 -0.2];
 for cc = 1:6
     c = cellN(ci);
-    R = Rs{cc};
+    R = Rs{cc}; MVT = met_valsT{1}{an,si_cn_ap_H(1,cc),si_cn_ap_H(2,cc)};
+    zval_here = [MVT.PC(c,2) MVT.MI(c,2)];
     thisRaster = R.sp_rasters(:,:,c);
     ax = ff.h_axes(1,cc);
     axes(ax); xlabel(ax,'Time (s)');
@@ -251,7 +249,7 @@ for cc = 1:6
     plot(xs,mSig,'b');hold on;
 
     fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(c,1:3),R.gauss_fit_on_mean.gauss1Formula);
-    plot(xs,fitplot,'linewidth',0.5,'color','m');
+    % plot(xs,fitplot,'linewidth',0.5,'color','m');
     box off;
     YM = round(max(mSig)+(max(mSig)/10),1);
     if YM == 0
@@ -262,13 +260,13 @@ for cc = 1:6
     set(ha,'xtick',[],'ytick',YM);
     format_axes(gca);
     textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
-    if cc == 1
-      textstr = sprintf(' %.1f   A%d-C%d',R.info_metrics.ShannonMI_Zsh(c),an,c);
-      ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 -0.09 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
-    else
-      textstr = sprintf('%.1f',R.info_metrics.ShannonMI_Zsh(c));
-      ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 -0.09 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
-    end
+    % if cc == 1
+    %   textstr = sprintf(' %.1f   A%d-C%d',R.info_metrics.ShannonMI_Zsh(c),an,c);
+    %   ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.0 0.04 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
+    % else
+      textstr = sprintf('%.1f, %.1f',zval_here);
+      ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 0.04 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
+    % end
     if cc == 1
         ylabel('FR (AU)');
     end
@@ -289,7 +287,8 @@ Rs = Rs_C(an,:);
 % cbar_p_shift = [0.01 0.09 -0.05 -0.3];
 for cc = 1:6
     c = cellN(ci);
-    R = Rs{cc};
+    R = Rs{cc};MVD = met_valsD{2}{an,si_cn_ap_H(1,cc),si_cn_ap_H(2,cc)};
+    zval_here = [MVD.PC(c,2) MVD.MI(c,2)];
     thisRaster = R.sp_rasters(:,:,c);
     ax = ff.h_axes(2,cc);
     axes(ax); xlabel(ax,'Distance (cm)');
@@ -333,7 +332,7 @@ for cc = 1:6
     mSig = nanmean(thisRaster);
     plot(xs,mSig,'b');hold on;
     fitplot = gauss_fit(1:length(xs),R.gauss_fit_on_mean.coefficients_Rs_mean(c,1:3),R.gauss_fit_on_mean.gauss1Formula);
-    plot(xs,fitplot,'linewidth',0.5,'color','m');
+    % plot(xs,fitplot,'linewidth',0.5,'color','m');
     box off;
     YM = round(max(mSig)+(max(mSig)/10),1);
     if YM == 0
@@ -344,7 +343,8 @@ for cc = 1:6
     format_axes(gca);
 %     textstr = sprintf('Cell %d (%.1f, %.1f)',c,R.info_metrics.ShannonMI_Zsh(c),R.gauss_fit_on_mean.coefficients_Rs_mean(c,4));
     textstr = sprintf('%.1f',R.info_metrics.ShannonMI_Zsh(c));
-    ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 -0.05 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
+    textstr = sprintf('%.1f, %.1f',zval_here);
+    ht = set_axes_top_text_no_line(ff.hf,gca,textstr,[0.01 0.04 0 0]); set(ht,'Fontsize',6,'FontWeight','Bold');
     if cc == 1
         ylabel('FR (AU)');
     end
