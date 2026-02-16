@@ -8,7 +8,7 @@ disp('Done')
 clear all
 % clc
 %%
-main_dir = 'E:\Data\UNLV\AIR_Wheel_Methods'; mD.main_dir = main_dir;
+main_dir = 'E:\\UNLV\AIR_Wheel_Methods'; mD.main_dir = main_dir;
 
 rdata_dir = fullfile(main_dir,'RData'); mD.rdata_dir = rdata_dir;
 pdata_dir = fullfile(main_dir,'PData'); mD.pdata_dir = pdata_dir;
