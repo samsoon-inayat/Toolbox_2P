@@ -31,7 +31,13 @@ for an = 1:numel(animal)
                     'Could not find %s for animal %d', in_file, an);
                 continue;
             end
+            if ~isfield(animal(an).video,"led")
+                continue;
+            end
             thisfile = animal(an).video.led.(cam);
+            if ~exist(thisfile,'file')
+                continue;
+            end
             b.led.(cam) = readtable(thisfile);
             b.led_sig.(cam) = extract_led_from_roi(b.led.(cam), 60);
 

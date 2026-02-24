@@ -6,9 +6,11 @@ add_to_path_unlv
 disp('Done')
 %%
 clear all
+
+disp('Done');
 % clc
 %%
-main_dir = 'E:\\UNLV\AIR_Wheel_Methods'; mD.main_dir = main_dir;
+main_dir = 'E:\Data\UNLV\AIR_Wheel_Methods'; mD.main_dir = main_dir;
 
 rdata_dir = fullfile(main_dir,'RData'); mD.rdata_dir = rdata_dir;
 pdata_dir = fullfile(main_dir,'PData'); mD.pdata_dir = pdata_dir;
@@ -19,10 +21,30 @@ adata_dir = fullfile(main_dir,'AData'); mD.adata_dir = adata_dir;
 animal_list = {'NML_GC_01'};
 date_list = {'2025_12_16'};
 
+% animal_list = {'NML_04','NML_05','NML_06'};
+% date_list = {'2026_01_15','2026_01_15','2026_01_15'};
+
 animal = get_exp_info(mD,animal_list,date_list);
 
 disp('Done');
 %%
+
+rdata_dir = 'X:\Research\Neuromomentum_Cognemotion Lab\Raw_Data_Backup\Classical_Conditioning'; 
+mD1.rdata_dir = rdata_dir;
+pdata_dir = fullfile(main_dir,'PData'); mD1.pdata_dir = pdata_dir;
+adata_dir = fullfile(main_dir,'AData'); mD1.adata_dir = adata_dir;
+
+% animal_list_1 = {'NML_04','NML_05','NML_06'};
+% date_list_1 = {'2026_01_23','2026_01_23','2026_01_23'};
+
+animal_list_1 = {'NML_04','NML_05','NML_06'};
+date_li
+date_list_1 = {'2026_01_13','2026_01_13','2026_01_13'};
+
+animal = get_exp_info(mD1,animal_list_1,date_list_1);
+
+disp('Done');
+
 colormaps = load('../../../Common/Matlab/colorblind_colormap.mat');
 colormaps.colorblind = flipud(colormaps.colorblind);
 mD.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mD.colors = getColors(10,{'w','g'});
@@ -40,16 +62,22 @@ disp('Done');
 if 1
 %     make_db(T_C);
     owr = 0;
-    animal = process_h264(animal,owr);
+    % animal = process_h264(animal,owr);
     animal = process_behavior_signals(animal);
 end
 disp('Done');
 %%
 %% Get Video Pointers
-vp = VideoReader(animal(1).video.mp4.paws);
-vf = VideoReader(animal(1).video.mp4.face);
-v = VideoReader(animal(1).video.mp4.pupil);
+for ii = 1:4
+    vpa{ii} = VideoReader(animal(ii).video.mp4.paws);
+    vfa{ii} = VideoReader(animal(ii).video.mp4.face);
+    va{ii} = VideoReader(animal(ii).video.mp4.pupil);
+end
 
 %%
 animal = load_dlc_labeled_filenames(animal);
-vp_labeled = VideoReader(animal(1).video.mp4_labeled.paws);
+% vp_labeled = VideoReader(animal(1).video.mp4_labeled.paws);
+
+%%
+% oanimal = animal(1);
+% animal(1) = [];

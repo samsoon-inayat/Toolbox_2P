@@ -103,7 +103,7 @@ if __name__ == "__main__":
     
     # 2. Define the main directory based on which computer is running the script
     if computer_name == "LA-2114175":
-        main_dir = r"E:\GoogleDrive\InayatSamsoon\UNLV\AIR_Wheel_Methods"
+        main_dir = r"E:\Data\UNLV\AIR_Wheel_Methods"
     elif computer_name == "KoQSam":
         main_dir = r"J:\My Drive\UNLV\AIR_Wheel_Methods"
     else:
@@ -117,8 +117,10 @@ if __name__ == "__main__":
     mD = build_dirs(main_dir)
 
     # Example lists (same as your MATLAB)
-    animal_list = ["NML_GC_01"]
-    date_list = ["2025_12_16"]
+    # animal_list = ["NML_GC_01","NML_04","NML_05","NML_06"]
+    # date_list = ["2025_12_16","2026_01_23","2026_01_23","2026_01_23"]
+    animal_list = ["NML_04","NML_05","NML_06"]
+    date_list = ["2026_01_24","2026_01_14","2026_01_16"]
 
     animal = get_exp_info(mD, animal_list, date_list)
     print("Done")
